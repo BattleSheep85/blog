@@ -1,27 +1,25 @@
 +++
-title = 'Automated Daily Arch Linux Updates with Rollback (No Btrfs Required)'
+title = 'Automated daily Arch Linux updates with rollback (no btrfs required)'
 date = 2026-02-25
 draft = false
 tags = ['linux', 'archlinux', 'cachyos', 'pacman', 'systemd', 'automation', 'xfs']
 categories = ['Linux', 'Guides']
-description = "Set up unattended daily pacman updates with automatic reboot, failure detection on login, and a rollback script — no btrfs snapshots needed."
+description = "Unattended daily pacman updates with automatic reboot, failure detection on login, and a rollback script. No btrfs snapshots needed."
 +++
 
-Rolling-release distros like Arch need frequent updates. But running `pacman -Syu` every day gets old, and forgetting to update for weeks makes the eventual update riskier.
+Running `pacman -Syu` every day gets old. But skipping updates for weeks on a rolling-release distro makes the eventual update scarier. I wanted something in between: the machine updates itself at 4 AM, reboots if it worked, and yells at me on login if it didn't.
 
-This guide sets up **fully automated daily updates** with a safety net: package snapshots that let you roll back if something breaks — even on filesystems like XFS that don't support snapshots.
+I also wanted a way to undo the last update without btrfs snapshots. My machines run XFS, so that's not an option.
 
 <!--more-->
 
-## What You Get
+## What this sets up
 
-- **4 AM daily**: system updates and reboots automatically
-- **If the update fails**: no reboot, and you get a warning at next login
-- **If something breaks**: a rollback script that downgrades everything to the pre-update state using pacman's cache
+At 4 AM daily, the system runs `pacman -Syu` and reboots on success. If the update fails, it skips the reboot and drops a red warning into your shell the next time you log in. If something breaks after a successful update, a rollback script downgrades everything to the pre-update state using packages still in pacman's cache.
 
-## The Update Script
+## The update script
 
-This wrapper runs `pacman -Syu`, saves a package snapshot before upgrading, and only reboots on success.
+This wrapper saves a package snapshot before upgrading and only reboots on success.
 
 Create `/usr/local/bin/auto-update.sh`:
 
@@ -56,7 +54,7 @@ fi
 sudo chmod +x /usr/local/bin/auto-update.sh
 ```
 
-## The Systemd Units
+## The systemd units
 
 ### Service
 
@@ -89,7 +87,7 @@ Persistent=true
 WantedBy=timers.target
 ```
 
-`Persistent=true` means if the machine is powered off at 4 AM, the update runs shortly after the next boot.
+`Persistent=true` means if the machine is off at 4 AM, the update runs shortly after the next boot.
 
 ### Enable it
 
@@ -104,7 +102,7 @@ Verify:
 systemctl list-timers auto-update.timer
 ```
 
-## Seed the Initial Snapshot
+## Seed the initial snapshot
 
 Before the first automated run, capture current package state:
 
@@ -113,9 +111,9 @@ sudo mkdir -p /var/lib/auto-update
 pacman -Q | sudo tee /var/lib/auto-update/packages-current.txt > /dev/null
 ```
 
-## Login Warning on Failure
+## Login warning on failure
 
-If an update fails, you want to know about it without having to check logs. Add this to your shell config.
+If an update fails, you want to know without having to check logs. Add this to your shell config.
 
 ### Fish (`~/.config/fish/config.fish`)
 
@@ -137,9 +135,9 @@ if [ -f /var/log/auto-update.log ] && grep -q 'STATUS=failed' /var/log/auto-upda
 fi
 ```
 
-## The Rollback Script
+## The rollback script
 
-This is the safety net. It compares your current packages to the pre-update snapshot and downgrades anything that changed, using the old versions still sitting in pacman's cache.
+This compares your current packages to the pre-update snapshot and downgrades anything that changed, pulling old versions from pacman's cache.
 
 Create `/usr/local/bin/auto-update-rollback.sh`:
 
@@ -199,21 +197,21 @@ If something breaks after an update:
 sudo auto-update-rollback.sh
 ```
 
-It shows you exactly what will be downgraded and asks for confirmation.
+It shows what will be downgraded and asks for confirmation.
 
-## Important: Don't Clean the Cache
+## Don't clean the cache
 
-Pacman keeps old package versions in `/var/cache/pacman/pkg/`. The rollback script depends on this. By default, CachyOS keeps the last 3 versions.
+Pacman keeps old package versions in `/var/cache/pacman/pkg/`. The rollback script depends on this. CachyOS keeps the last 3 versions by default.
 
-Check your current cache policy:
+Check your cache policy:
 
 ```bash
 paccache -dk2  # dry run — shows what would be removed keeping 2 versions
 ```
 
-If you use `paccache` or `pacman -Sc` to clean the cache, you lose the ability to roll back to those versions. Keep at least 2 versions cached.
+If you use `paccache` or `pacman -Sc` to clean the cache, you lose the ability to roll back. Keep at least 2 versions.
 
-## How It All Fits Together
+## How it all fits together
 
 ```text
 4:00 AM
@@ -245,10 +243,10 @@ If you use `paccache` or `pacman -Sc` to clean the cache, you lose the ability t
 
 ## Limitations
 
-- **Rollback depth is one update** — it keeps the previous snapshot, not a full history. If you need to go back further, you'd need btrfs/snapper or manual intervention.
-- **New packages aren't removed on rollback** — if the update installed a new dependency, the rollback only downgrades existing packages, it won't remove newly added ones.
-- **Pacman `.pacnew` files** — if a config file changes upstream, pacman creates a `.pacnew` file instead of overwriting yours. These aren't handled automatically. Check occasionally with `pacdiff`.
-- **Kernel updates + rollback** — if you roll back the kernel package but have already rebooted into the new kernel, you'll need another reboot after the rollback.
+- Rollback depth is one update. It keeps the previous snapshot, not a full history. Going further back means btrfs/snapper or manual work.
+- New packages aren't removed on rollback. If the update pulled in a new dependency, the rollback downgrades existing packages but won't remove newly added ones.
+- Pacman `.pacnew` files aren't handled. If a config file changes upstream, pacman creates a `.pacnew` instead of overwriting yours. Check occasionally with `pacdiff`.
+- Kernel rollback needs another reboot. If you roll back the kernel package but already booted into the new kernel, you need to reboot again after the rollback.
 
 ## References
 

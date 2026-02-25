@@ -1,0 +1,94 @@
+/* Chrisputer.tech custom styles */
+
+:root {
+    --main-width: 780px;
+    --accent: #4a9eed;
+}
+
+[data-theme="dark"] {
+    --accent: #6db8f2;
+}
+
+/* Links */
+.post-content a {
+    color: var(--accent);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+}
+
+.post-content a:hover {
+    text-decoration-thickness: 2px;
+}
+
+/* Code blocks - tighten up */
+.post-content pre {
+    border-radius: 6px;
+    border: 1px solid var(--tertiary);
+}
+
+.post-content code:not(pre code) {
+    border-radius: 4px;
+    padding: 2px 5px;
+    font-size: 0.88em;
+}
+
+/* Post entry cards on home/list pages */
+.post-entry {
+    border-radius: 10px;
+    transition: transform 0.15s ease;
+}
+
+.post-entry:hover {
+    transform: translateY(-2px);
+}
+
+/* Table styling */
+.post-content table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 1.5em 0;
+}
+
+.post-content th,
+.post-content td {
+    border: 1px solid var(--tertiary);
+    padding: 8px 12px;
+    text-align: left;
+}
+
+.post-content th {
+    background: var(--code-bg);
+    font-weight: 600;
+}
+
+[data-theme="dark"] .post-content th {
+    background: var(--code-block-bg);
+}
+
+/* ToC tweaks */
+.toc {
+    border-radius: 8px;
+    border: 1px solid var(--tertiary);
+    padding: 1em;
+    margin-bottom: 1.5em;
+}
+
+/* Tag pills */
+.post-tags a {
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 0.85em;
+}
+
+/* Breadcrumbs */
+.breadcrumbs {
+    font-size: 0.85em;
+    opacity: 0.7;
+}
+
+/* Home info section */
+.first-entry .entry-content {
+    font-size: 1.05em;
+    line-height: 1.6;
+}

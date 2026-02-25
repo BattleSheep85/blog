@@ -27,8 +27,33 @@ buildDrafts = false
     name = "github"
     url = "https://github.com/BattleSheep85"
 
+[params.label]
+  text = "Chrisputer"
+
 [params.assets]
   disableHLJS = true
+  theme_color = "#1a1a2e"
+  msapplication_TileColor = "#1a1a2e"
+
+[[menu.main]]
+  name = "Home"
+  url = "/"
+  weight = 1
+
+[[menu.main]]
+  name = "Archives"
+  url = "/archives/"
+  weight = 5
+
+[[menu.main]]
+  name = "Tags"
+  url = "/tags/"
+  weight = 10
+
+[[menu.main]]
+  name = "Search"
+  url = "/search/"
+  weight = 15
 
 [markup]
   [markup.highlight]

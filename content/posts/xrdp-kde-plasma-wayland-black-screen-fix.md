@@ -1,5 +1,5 @@
 +++
-title = 'Fix xrdp Black Screen with KDE Plasma Wayland on Arch Linux'
+title = 'Fix xrdp black screen with KDE Plasma Wayland on Arch Linux'
 date = 2026-02-25
 draft = false
 tags = ['linux', 'xrdp', 'kde', 'plasma', 'wayland', 'archlinux', 'cachyos', 'rdp', 'guacamole']
@@ -7,31 +7,31 @@ categories = ['Linux', 'Guides']
 description = "How to fix the black screen when using xrdp with KDE Plasma on Wayland. The root cause is a D-Bus collision between your Wayland and X11 sessions."
 +++
 
-You have a KDE Plasma desktop running on Wayland and want to access it remotely via RDP (e.g. through Apache Guacamole). You need a **private, independent session** — not screen sharing — so activity isn't visible on the physical monitors.
+I wanted to RDP into my CachyOS machine through Apache Guacamole and get a separate Plasma session, not screen sharing, so nothing shows up on the physical monitors. xrdp is supposed to handle this by spinning up an X11 Plasma session on a new display.
 
-**xrdp** creates a separate X11 Plasma session for this, but out of the box it results in a **black screen with only a cursor visible** (sometimes after the KDE splash screen).
-
-Here's why, and how to fix it.
+Instead I got a black screen with a lonely cursor. Sometimes the KDE splash would flash first, then black. I burned a couple hours on this before figuring out the actual cause.
 
 <!--more-->
 
-## Why It Happens
+## Why this happens
 
-On a typical Arch/CachyOS system, xrdp's X11 session inherits the shared D-Bus session bus at `/run/user/<uid>/bus` — the same bus your local Wayland Plasma session is using.
+On Arch/CachyOS, xrdp's X11 session inherits the shared D-Bus session bus at `/run/user/<uid>/bus`, the same bus your local Wayland Plasma session is already using.
 
-This causes two critical problems:
+Two things go wrong:
 
-1. **kwin_x11** launched by the RDP session sends a `--replace` to the existing kwin_wayland via D-Bus, hijacking window management from your local desktop
-2. **plasmashell** refuses to start because it sees one already running on that bus (the Wayland one)
+1. kwin_x11 from the RDP session sends a `--replace` to the existing kwin_wayland over D-Bus, hijacking window management on your local desktop
+2. plasmashell refuses to start because it sees one already registered on that bus (the Wayland one)
 
-Result: you get kwin_x11 running (so you see a cursor) but no shell, no panel, no desktop — just black.
+So you get kwin_x11 running (cursor visible) but no shell, no panel, no desktop. Just black.
 
-## The Environment
+## My setup
 
-- **OS**: Arch-based (CachyOS, EndeavourOS, Manjaro, etc.)
-- **DE**: KDE Plasma 6 on Wayland (local session)
-- **Remote**: xrdp + xorgxrdp for RDP access
-- **Client**: Any RDP client (tested with Apache Guacamole)
+- OS: CachyOS (Arch-based)
+- DE: KDE Plasma 6 on Wayland (local session)
+- Remote: xrdp + xorgxrdp
+- Client: Apache Guacamole
+
+This applies to any Arch-based distro. Debian/Ubuntu users will need slightly different paths (noted below).
 
 ## Prerequisites
 
@@ -46,19 +46,19 @@ Open the firewall if needed:
 sudo ufw allow 3389/tcp
 ```
 
-## The Fix: Isolate D-Bus
+## The fix: isolate D-Bus
 
-The fix is simple: wrap `startplasma-x11` with `dbus-run-session` so the RDP session gets its own private D-Bus instance.
+Wrap `startplasma-x11` with `dbus-run-session` so the RDP session gets its own private D-Bus instance. That's the whole fix.
 
 ### Which startup file to edit
 
 xrdp's `startwm.sh` (`/etc/xrdp/startwm.sh`) checks files in this order on Arch:
 
-1. **`~/.xinitrc`** — checked first on Arch (takes priority)
-2. `~/.xsession` — checked on Debian-based distros
-3. `/etc/X11/xinit/xinitrc` — system fallback
+1. `~/.xinitrc` -- checked first on Arch (takes priority)
+2. `~/.xsession` -- checked on Debian-based distros
+3. `/etc/X11/xinit/xinitrc` -- system fallback
 
-On Arch-based distros, edit **`~/.xinitrc`**. On Debian/Ubuntu, edit **`~/.xsession`**.
+On Arch, edit `~/.xinitrc`. On Debian/Ubuntu, edit `~/.xsession`.
 
 ### ~/.xinitrc (Arch-based)
 
@@ -84,9 +84,9 @@ export XDG_CURRENT_DESKTOP=KDE
 exec dbus-run-session startplasma-x11
 ```
 
-### Key environment variables explained
+### What the environment variables do
 
-| Variable | Purpose |
+| Variable | What it does |
 |---|---|
 | `DESKTOP_SESSION=plasma` | Tells xrdp to launch Plasma |
 | `XDG_SESSION_DESKTOP=KDE` | Identifies the session to XDG-aware apps |
@@ -94,15 +94,15 @@ exec dbus-run-session startplasma-x11
 | `KWIN_COMPOSE=N` | Disables compositing (better performance over RDP) |
 | `QT_XCB_GL_INTEGRATION=none` | Prevents OpenGL issues in the software-rendered X11 session |
 
-## Preventing System Sleep
+## Preventing system sleep
 
-If this is a remote-access machine, you probably want to prevent it from sleeping while still allowing monitors to power off:
+If this is a remote-access machine, you probably want to prevent it from sleeping while still letting monitors power off:
 
 ```bash
 sudo systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.target suspend-then-hibernate.target
 ```
 
-Monitor DPMS (power saving) is unaffected — screens will still turn off after the configured timeout.
+Monitor DPMS is unaffected. Screens still turn off after the configured timeout.
 
 To undo later:
 
@@ -112,9 +112,9 @@ sudo systemctl unmask sleep.target suspend.target hibernate.target hybrid-sleep.
 
 ## Troubleshooting
 
-### Black screen with cursor
+### Still getting a black screen with cursor
 
-This is the D-Bus collision described above. Verify with:
+That's the D-Bus collision. Verify with:
 
 ```bash
 # Find the xrdp startplasma-x11 process
@@ -128,7 +128,7 @@ If it shows `unix:path=/run/user/1000/bus`, the fix didn't take effect. Make sur
 
 ### Stale sessions
 
-If you've been testing and have leftover sessions:
+If you've been testing and have leftover sessions hanging around:
 
 ```bash
 # Find stale xrdp session processes
@@ -142,17 +142,17 @@ ls /tmp/.X11-unix/
 # Should show only X0 (or X1) for your local session
 ```
 
-Then reconnect — sesman will create a fresh session.
+Then reconnect. sesman will create a fresh session.
 
 ### kwin_x11 keeps respawning after killing a session
 
-This happens when kwin_x11 is parented to your Wayland session's process tree (due to the shared D-Bus). Kill the Xorg process for that display first, then kwin_x11 will stop respawning.
+This happens when kwin_x11 is parented to your Wayland session's process tree because of the shared D-Bus. Kill the Xorg process for that display first, then kwin_x11 stops respawning.
 
-### xrdp.ini security note
+### A note on xrdp.ini security
 
-The default CachyOS/Arch xrdp config uses `security_layer=rdp` (legacy encryption) with no TLS certificate. This is fine on a trusted LAN but not suitable for internet exposure. If you're accessing this through Guacamole over the internet, make sure the Guacamole connection handles the encryption (e.g. HTTPS to Guacamole, then Guacamole connects to xrdp on the LAN).
+The default CachyOS/Arch xrdp config uses `security_layer=rdp` (legacy encryption) with no TLS certificate. Fine on a trusted LAN, not suitable for internet exposure. If you're going through Guacamole over the internet, make sure Guacamole handles encryption (HTTPS to Guacamole, then Guacamole connects to xrdp on the LAN).
 
-## How It All Fits Together
+## How it all fits together
 
 ```text
 [RDP Client / Guacamole]
@@ -178,7 +178,7 @@ The default CachyOS/Arch xrdp config uses `security_layer=rdp` (legacy encryptio
         +-- xrdp-chansrv (clipboard, audio, drives)
 ```
 
-Your local Wayland session on `:0` remains completely independent.
+Your local Wayland session on `:0` stays completely separate.
 
 ## References
 
