@@ -1,0 +1,48 @@
+baseURL = "https://chrisputer.tech/"
+languageCode = "en-us"
+title = "Chris's Tech Notes"
+theme = "PaperMod"
+
+paginate = 10
+enableRobotsTXT = true
+buildDrafts = false
+
+[params]
+  env = "production"
+  description = "Linux sysadmin notes, fixes, and guides — mostly CachyOS, KDE Plasma, and self-hosting"
+  author = "Chrisputer"
+  defaultTheme = "auto"
+  ShowReadingTime = true
+  ShowShareButtons = true
+  ShowPostNavLinks = true
+  ShowBreadCrumbs = true
+  ShowCodeCopyButtons = true
+  ShowToc = true
+
+  [params.homeInfoParams]
+    Title = "Hey there"
+    Content = "Linux sysadmin stuff — fixes, guides, and notes from running CachyOS as a daily driver."
+
+  [[params.socialIcons]]
+    name = "github"
+    url = "https://github.com/BattleSheep85"
+
+[params.assets]
+  disableHLJS = true
+
+[markup]
+  [markup.highlight]
+    style = "monokai"
+    lineNos = false
+    codeFences = true
+    guessSyntax = true
+
+  [markup.goldmark.renderer]
+    unsafe = true
+
+[outputs]
+  home = ["HTML", "RSS", "JSON"]
+
+[taxonomies]
+  tag = "tags"
+  category = "categories"
