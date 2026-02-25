@@ -27,6 +27,10 @@ buildDrafts = false
     name = "github"
     url = "https://github.com/BattleSheep85"
 
+  [[params.socialIcons]]
+    name = "rss"
+    url = "/index.xml"
+
 [params.label]
   text = "Chrisputer"
 
@@ -57,7 +61,7 @@ buildDrafts = false
 
 [markup]
   [markup.highlight]
-    style = "monokai"
+    style = "dracula"
     lineNos = false
     codeFences = true
     guessSyntax = true

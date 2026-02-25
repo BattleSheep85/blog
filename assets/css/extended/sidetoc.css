@@ -1,0 +1,45 @@
+/* Sticky sidebar table of contents on wide screens */
+:root {
+    --nav-width: 1200px;
+}
+
+.post-single {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-column-gap: 20px;
+}
+
+@media (min-width: 1200px) {
+    .post-single {
+        grid-template-columns: minmax(0, 3fr) minmax(0, 1fr);
+    }
+
+    .post-single .toc {
+        grid-column: 2;
+        position: sticky;
+        top: 80px;
+    }
+}
+
+.post-single .post-header { grid-column: 1; width: 100%; }
+.post-single .entry-cover { grid-column: 1; }
+.post-single .post-content { grid-column: 1; }
+.post-single .post-footer { grid-column: 1; }
+
+.post-single .toc {
+    height: fit-content;
+    grid-row: span 3;
+}
+
+.post-single .toc #TableOfContents {
+    overflow-y: auto;
+    overflow-x: auto;
+    padding-left: 20px;
+    max-height: 70vh;
+    font-size: 0.85em;
+}
+
+.post-single .toc .inner {
+    margin: 5px;
+    padding: 0;
+}

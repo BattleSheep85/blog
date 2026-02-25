@@ -1,3 +1,17 @@
+{{- /* Reading progress bar - only on posts */}}
+{{ if .IsPage }}
+<div class="reading-progress" id="reading-progress"></div>
+<script>
+document.addEventListener('scroll', function() {
+    var p = document.getElementById('reading-progress');
+    if (!p) return;
+    var h = document.documentElement;
+    var pct = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
+    p.style.width = pct + '%';
+});
+</script>
+{{ end }}
+
 {{- /* Ad placement after post content - uncomment when AdSense is approved */}}
 {{- /*
 {{ if .IsPage }}

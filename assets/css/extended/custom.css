@@ -9,6 +9,24 @@
     --accent: #6db8f2;
 }
 
+/* Typography spacing */
+.post-content {
+    line-height: 1.75;
+    letter-spacing: -0.011em;
+}
+
+.post-content h1,
+.post-content h2,
+.post-content h3 {
+    letter-spacing: -0.02em;
+    font-weight: 700;
+    margin-top: 2em;
+}
+
+.entry-header h2 {
+    letter-spacing: -0.015em;
+}
+
 /* Links */
 .post-content a {
     color: var(--accent);
@@ -21,26 +39,46 @@
     text-decoration-thickness: 2px;
 }
 
-/* Code blocks - tighten up */
+/* Code blocks */
 .post-content pre {
-    border-radius: 6px;
+    border-radius: 8px;
     border: 1px solid var(--tertiary);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
+[data-theme="dark"] .post-content pre {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    border-color: var(--border);
+}
+
+.post-content pre code {
+    font-size: 0.88em;
+    line-height: 1.6;
+    tab-size: 4;
+}
+
+/* Inline code */
 .post-content code:not(pre code) {
     border-radius: 4px;
-    padding: 2px 5px;
-    font-size: 0.88em;
+    padding: 2px 6px;
+    font-size: 0.85em;
+    background: var(--code-bg);
+    border: 1px solid var(--border);
 }
 
-/* Post entry cards on home/list pages */
+/* Post entry cards */
 .post-entry {
     border-radius: 10px;
-    transition: transform 0.15s ease;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .post-entry:hover {
     transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="dark"] .post-entry:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 /* Table styling */
@@ -87,8 +125,31 @@
     opacity: 0.7;
 }
 
-/* Home info section */
-.first-entry .entry-content {
-    font-size: 1.05em;
-    line-height: 1.6;
+/* Home info hero */
+.first-entry {
+    min-height: 180px;
+    border: none;
+    background: linear-gradient(135deg, var(--code-bg) 0%, var(--theme) 100%);
+}
+
+[data-theme="dark"] .first-entry {
+    background: linear-gradient(135deg, var(--entry) 0%, var(--theme) 100%);
+}
+
+.home-info .entry-content {
+    max-width: 600px;
+    font-size: 1.1em;
+    color: var(--secondary);
+}
+
+/* Reading progress bar */
+.reading-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 3px;
+    background: var(--accent);
+    z-index: 999;
+    transition: width 0.1s;
+    width: 0%;
 }

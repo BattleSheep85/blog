@@ -1,0 +1,25 @@
+/* Light theme */
+:root {
+    --theme: #fafafa;
+    --entry: #ffffff;
+    --primary: rgb(25, 25, 35);
+    --secondary: rgb(100, 100, 120);
+    --tertiary: rgb(220, 220, 230);
+    --content: rgb(35, 35, 50);
+    --code-block-bg: #1a1a2e;
+    --code-bg: #eef0f5;
+    --border: #e0e2e8;
+}
+
+/* Dark theme - midnight terminal */
+[data-theme="dark"] {
+    --theme: #0f0f1a;
+    --entry: #16162a;
+    --primary: rgb(220, 225, 240);
+    --secondary: rgb(140, 150, 175);
+    --tertiary: rgb(40, 42, 65);
+    --content: rgb(195, 200, 215);
+    --code-block-bg: #12122a;
+    --code-bg: #1e1e35;
+    --border: #2a2a45;
+}
