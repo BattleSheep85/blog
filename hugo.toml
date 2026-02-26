@@ -42,8 +42,8 @@ I'm a network engineer and sysadmin with 20 years of experience, helping small b
 
 [params.assets]
   disableHLJS = true
-  theme_color = "#1a1a2e"
-  msapplication_TileColor = "#1a1a2e"
+  theme_color = "#111318"
+  msapplication_TileColor = "#111318"
 
 [[menu.main]]
   name = "Home"

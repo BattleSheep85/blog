@@ -1,0 +1,86 @@
+{{- define "main" }}
+
+{{/* Hero Section */}}
+<section class="hero">
+  <div class="hero-content">
+    <h1>IT support that actually shows up</h1>
+    <p>I'm a network engineer with 20 years of experience, helping small businesses in Wichita get their IT right. No contracts, no call center. Just me, at your office, fixing the problem.</p>
+    <div class="hero-buttons">
+      <a href="/services/" class="btn btn-primary">See services</a>
+      <a href="mailto:chris@chrisputer.tech" class="btn btn-secondary">Get in touch</a>
+    </div>
+  </div>
+</section>
+
+{{/* Services Grid */}}
+<section class="services-home">
+  <h2>What I do</h2>
+  <div class="services-grid">
+
+    <a href="/services/#network-assessments-and-firewall-audits" class="service-card">
+      <div class="service-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"/><rect x="2" y="14" width="20" height="8" rx="2" ry="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
+      </div>
+      <h3>Network assessments</h3>
+      <p>I look at your network and firewall, then give you a plain-English report on what needs fixing. Starting at $500.</p>
+    </a>
+
+    <a href="/services/#wi-fi-surveys-and-deployments" class="service-card">
+      <div class="service-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>
+      </div>
+      <h3>Wi-Fi fixes</h3>
+      <p>Site surveys, proper access point placement, and business-grade wireless that actually covers your whole office.</p>
+    </a>
+
+    <a href="/services/#security-and-compliance-consulting" class="service-card">
+      <div class="service-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+      <h3>Cybersecurity</h3>
+      <p>Cyber insurance questionnaires, HIPAA and PCI basics, vulnerability scanning. Honest answers, not scare tactics.</p>
+    </a>
+
+    <a href="/services/#general-it-consulting" class="service-card">
+      <div class="service-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+      </div>
+      <h3>General IT</h3>
+      <p>Hardware refresh, Microsoft 365, backups, printers, vendor coordination. The stuff that piles up when nobody is the IT person.</p>
+    </a>
+
+  </div>
+</section>
+
+{{/* Service Area */}}
+<section class="service-area">
+  <div class="area-badge">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+    <span>Serving Wichita, Haysville, Derby, Andover, and all of Sedgwick County</span>
+  </div>
+</section>
+
+{{/* Recent Posts */}}
+<section class="recent-posts">
+  <h2>Recent posts</h2>
+  {{- $pages := where site.RegularPages "Type" "posts" }}
+  {{- $pages = $pages | first 4 }}
+  {{- range $pages }}
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>
+        <a href="{{ .Permalink }}" style="text-decoration: none; color: var(--primary);">{{ .Title }}</a>
+      </h2>
+    </header>
+    <div class="entry-content">
+      <p>{{ .Description }}</p>
+    </div>
+    <footer class="entry-footer">
+      <span>{{ .ReadingTime }} min read</span>
+    </footer>
+    <a class="entry-link" aria-label="post link to {{ .Title }}" href="{{ .Permalink }}"></a>
+  </article>
+  {{- end }}
+</section>
+
+{{- end }}

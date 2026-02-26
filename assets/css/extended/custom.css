@@ -1,15 +1,200 @@
-/* Chrisputer.tech custom styles */
+/* Chrisputer.tech - Professional IT consulting site */
 
 :root {
     --main-width: 780px;
-    --accent: #4a9eed;
+    --accent: #2563eb;
 }
 
 [data-theme="dark"] {
-    --accent: #6db8f2;
+    --accent: #60a5fa;
 }
 
-/* Typography spacing */
+/* ===================== */
+/* HOMEPAGE              */
+/* ===================== */
+
+/* Hero section */
+.hero {
+    text-align: center;
+    padding: 4rem 1.5rem 3rem;
+    max-width: 720px;
+    margin: 0 auto;
+}
+
+.hero h1 {
+    font-size: 2.4rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+    margin-bottom: 1rem;
+    color: var(--primary);
+}
+
+.hero p {
+    font-size: 1.15rem;
+    line-height: 1.7;
+    color: var(--secondary);
+    max-width: 560px;
+    margin: 0 auto 2rem;
+}
+
+.hero-buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn {
+    display: inline-block;
+    padding: 12px 28px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none;
+    transition: all 0.15s ease;
+}
+
+.btn-primary {
+    background: var(--accent);
+    color: #fff;
+}
+
+.btn-primary:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+.btn-secondary {
+    background: transparent;
+    color: var(--primary);
+    border: 2px solid var(--tertiary);
+}
+
+.btn-secondary:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+/* Services grid */
+.services-home {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 3rem;
+}
+
+.services-home h2 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.services-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+
+@media (max-width: 640px) {
+    .services-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .hero h1 {
+        font-size: 1.8rem;
+    }
+}
+
+.service-card {
+    display: block;
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid var(--tertiary);
+    background: var(--entry);
+    text-decoration: none;
+    color: var(--content);
+    transition: all 0.2s ease;
+}
+
+.service-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="dark"] .service-card:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+
+.service-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    background: var(--accent-light, #dbeafe);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+    color: var(--accent);
+}
+
+.service-card h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: var(--primary);
+}
+
+.service-card p {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: var(--secondary);
+    margin: 0;
+}
+
+/* Service area badge */
+.service-area {
+    text-align: center;
+    padding: 1.5rem;
+}
+
+.area-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 100px;
+    background: var(--accent-light, #dbeafe);
+    color: var(--accent);
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.area-badge svg {
+    flex-shrink: 0;
+}
+
+/* Recent posts */
+.recent-posts {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 3rem;
+}
+
+.recent-posts h2 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+/* ===================== */
+/* TYPOGRAPHY            */
+/* ===================== */
+
 .post-content {
     line-height: 1.75;
     letter-spacing: -0.011em;
@@ -27,7 +212,10 @@
     letter-spacing: -0.015em;
 }
 
-/* Links */
+/* ===================== */
+/* LINKS                 */
+/* ===================== */
+
 .post-content a {
     color: var(--accent);
     text-decoration: underline;
@@ -39,7 +227,10 @@
     text-decoration-thickness: 2px;
 }
 
-/* Code blocks */
+/* ===================== */
+/* CODE                  */
+/* ===================== */
+
 .post-content pre {
     border-radius: 8px;
     border: 1px solid var(--tertiary);
@@ -57,7 +248,6 @@
     tab-size: 4;
 }
 
-/* Inline code */
 .post-content code:not(pre code) {
     border-radius: 4px;
     padding: 2px 6px;
@@ -66,22 +256,30 @@
     border: 1px solid var(--border);
 }
 
-/* Post entry cards */
+/* ===================== */
+/* POST CARDS            */
+/* ===================== */
+
 .post-entry {
-    border-radius: 10px;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border-radius: 12px;
+    border: 1px solid var(--tertiary);
+    transition: all 0.2s ease;
 }
 
 .post-entry:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    border-color: var(--accent);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
 }
 
 [data-theme="dark"] .post-entry:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
 }
 
-/* Table styling */
+/* ===================== */
+/* TABLES                */
+/* ===================== */
+
 .post-content table {
     border-collapse: collapse;
     width: 100%;
@@ -104,7 +302,10 @@
     background: var(--code-block-bg);
 }
 
-/* ToC tweaks */
+/* ===================== */
+/* TOC                   */
+/* ===================== */
+
 .toc {
     border-radius: 8px;
     border: 1px solid var(--tertiary);
@@ -112,37 +313,29 @@
     margin-bottom: 1.5em;
 }
 
-/* Tag pills */
+/* ===================== */
+/* TAGS                  */
+/* ===================== */
+
 .post-tags a {
     border-radius: 20px;
     padding: 4px 12px;
     font-size: 0.85em;
 }
 
-/* Breadcrumbs */
+/* ===================== */
+/* BREADCRUMBS           */
+/* ===================== */
+
 .breadcrumbs {
     font-size: 0.85em;
     opacity: 0.7;
 }
 
-/* Home info hero */
-.first-entry {
-    min-height: 180px;
-    border: none;
-    background: linear-gradient(135deg, var(--code-bg) 0%, var(--theme) 100%);
-}
+/* ===================== */
+/* READING PROGRESS      */
+/* ===================== */
 
-[data-theme="dark"] .first-entry {
-    background: linear-gradient(135deg, var(--entry) 0%, var(--theme) 100%);
-}
-
-.home-info .entry-content {
-    max-width: 600px;
-    font-size: 1.1em;
-    color: var(--secondary);
-}
-
-/* Reading progress bar */
 .reading-progress {
     position: fixed;
     top: 0;
@@ -152,4 +345,36 @@
     z-index: 999;
     transition: width 0.1s;
     width: 0%;
+}
+
+/* ===================== */
+/* HEADER/NAV            */
+/* ===================== */
+
+.nav {
+    max-width: 900px;
+}
+
+/* ===================== */
+/* FOOTER                */
+/* ===================== */
+
+.custom-footer {
+    max-width: 900px;
+    margin: 3rem auto 0;
+    padding: 2rem 1.5rem;
+    border-top: 1px solid var(--tertiary);
+    text-align: center;
+    color: var(--secondary);
+    font-size: 0.85rem;
+    line-height: 1.8;
+}
+
+.custom-footer a {
+    color: var(--accent);
+    text-decoration: none;
+}
+
+.custom-footer a:hover {
+    text-decoration: underline;
 }
