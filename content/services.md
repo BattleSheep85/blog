@@ -7,7 +7,7 @@ layout = "single"
 
 I work with small businesses in the Wichita metro area -- dental offices, law firms, auto shops, churches, retail stores, accounting firms. If you have 5 to 100 employees and your IT situation is held together with duct tape and prayers, I can help.
 
-I'm not an MSP. I'm a solo consultant with a day job as a network engineer. I work with Cisco, FortiGate, Palo Alto, Juniper, and Ubiquiti equipment every day. You get that experience applied to your business without the MSP price tag or the long-term contract.
+I'm not an MSP. I'm a solo consultant with 20 years of experience as a network engineer and sysadmin. I work with Cisco, FortiGate, Palo Alto, Juniper, and Ubiquiti equipment every day. You get that experience applied to your business without the MSP price tag or the long-term contract.
 
 ## Network assessments and firewall audits
 

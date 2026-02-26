@@ -23,7 +23,7 @@ buildDrafts = false
   [params.homeInfoParams]
     Title = "Local IT help for Wichita small businesses"
     Content = """Network assessments, firewall audits, Wi-Fi fixes, cybersecurity guidance, and hands-on IT support. \
-I'm a network engineer who helps small businesses in the Wichita area get their IT right — no contracts, no call center, just straightforward help from someone who does this for a living."""
+I'm a network engineer and sysadmin with 20 years of experience, helping small businesses in the Wichita area get their IT right. No contracts, no call center, just straightforward help from someone who does this for a living."""
 
   [[params.socialIcons]]
     name = "email"

@@ -5,7 +5,7 @@ description = "Chris is a network engineer and IT consultant serving small busin
 layout = "single"
 +++
 
-I'm Chris. I'm a network engineer working in IT Operations at a mid-size bank in the Wichita area. During the day I manage Cisco switching infrastructure, FortiGate and Palo Alto firewalls, Juniper routing, Ubiquiti wireless, and all the other pieces that keep a regulated enterprise running.
+I'm Chris. I've been a network engineer and systems administrator for 20 years. Right now I work in IT Operations at a mid-size bank in the Wichita area, managing Cisco switching infrastructure, FortiGate and Palo Alto firewalls, Juniper routing, Ubiquiti wireless, and all the other pieces that keep a regulated enterprise running.
 
 On the side, I do IT consulting for small businesses in Wichita and the surrounding area.
 
