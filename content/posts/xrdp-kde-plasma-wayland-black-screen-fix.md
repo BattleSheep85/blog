@@ -1,6 +1,6 @@
 +++
 title = 'Fix xrdp black screen with KDE Plasma Wayland on Arch Linux'
-date = 2026-02-25
+date = 2026-02-25T08:15:00-06:00
 draft = false
 tags = ['linux', 'xrdp', 'kde', 'plasma', 'wayland', 'archlinux', 'cachyos', 'rdp', 'guacamole']
 categories = ['Linux', 'Guides']

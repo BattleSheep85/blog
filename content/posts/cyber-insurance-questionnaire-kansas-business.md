@@ -1,6 +1,6 @@
 +++
 title = "What to do when your Kansas business gets a cyber insurance questionnaire"
-date = 2026-02-26
+date = 2026-02-26T10:30:00-06:00
 draft = false
 tags = ['cybersecurity', 'insurance', 'small-business', 'wichita', 'compliance']
 categories = ['Small Business IT']

@@ -1,6 +1,6 @@
 +++
 title = 'Firefox profile lock over xrdp (and why I just use separate browsers)'
-date = 2026-02-25
+date = 2026-02-25T14:45:00-06:00
 draft = false
 tags = ['linux', 'firefox', 'xrdp', 'kde', 'plasma', 'archlinux', 'cachyos', 'waterfox', 'brave']
 categories = ['Linux', 'Fixes']

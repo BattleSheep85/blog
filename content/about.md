@@ -1,13 +1,19 @@
 +++
 title = "About"
 url = "/about/"
-description = "Chris is a network engineer and IT consultant serving small businesses in Wichita, Kansas and Sedgwick County."
+description = "Chris is a network engineer, Army veteran, and IT consultant serving small businesses in Wichita, Kansas and Sedgwick County."
 layout = "single"
 +++
 
-I'm Chris. I've been a network engineer and systems administrator for 20 years. Right now I work in IT Operations at a mid-size bank in the Wichita area, managing Cisco switching infrastructure, FortiGate and Palo Alto firewalls, Juniper routing, Ubiquiti wireless, and all the other pieces that keep a regulated enterprise running.
+<div class="page-intro">
+I'm Chris. Army veteran, network engineer, systems administrator. I've been doing this for 20 years, and I consult for small businesses in Wichita on the side.
+</div>
 
-On the side, I do IT consulting for small businesses in Wichita and the surrounding area.
+## Background
+
+I started in Military Intelligence in the U.S. Army, where keeping networks secure wasn't optional. It was the mission. That's where I learned to think about IT infrastructure the way I still do: figure out what's actually happening on the wire, lock down what needs locking down, and keep things running no matter what.
+
+After the Army, I moved into the private sector. I've spent the last two decades as a network engineer and systems administrator, currently working in IT Operations at a mid-size bank in the Wichita area. I manage switching infrastructure, firewalls, routing, wireless, and everything else that keeps a regulated enterprise running. I work across every major vendor platform, so I'm never going to push one brand's gear on you just because it's what I know.
 
 ## Why I do this
 
@@ -27,4 +33,13 @@ If you need 24/7 monitoring and a dedicated help desk, you probably need an MSP.
 
 Wichita, Haysville, Derby, Andover, and anywhere in Sedgwick County. I come to you.
 
-**Email:** chris@chrisputer.tech
+<div class="cta-inline">
+  <div class="cta-inline-text">
+    <strong>Ready to talk?</strong>
+    <span>Email me and describe what's going on. No ticket systems, no phone trees.</span>
+  </div>
+  <a href="mailto:chris@chrisputer.tech" class="btn btn-primary">
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+    chris@chrisputer.tech
+  </a>
+</div>

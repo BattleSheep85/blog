@@ -1,8 +1,8 @@
 +++
 title = "Why your Wichita office Wi-Fi keeps dropping (and how to fix it)"
-date = 2026-02-26
+date = 2026-02-26T07:00:00-06:00
 draft = false
-tags = ['wifi', 'small-business', 'wichita', 'ubiquiti', 'networking']
+tags = ['wifi', 'small-business', 'wichita', 'networking']
 categories = ['Small Business IT']
 description = "If your Wichita office Wi-Fi drops connections throughout the day, the problem is almost never your internet provider. Here's what's actually going on and what to do about it."
 +++

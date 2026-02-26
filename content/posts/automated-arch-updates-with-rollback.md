@@ -1,6 +1,6 @@
 +++
 title = 'Automated daily Arch Linux updates with rollback (no btrfs required)'
-date = 2026-02-25
+date = 2026-02-25T09:30:00-06:00
 draft = false
 tags = ['linux', 'archlinux', 'cachyos', 'pacman', 'systemd', 'automation', 'xfs']
 categories = ['Linux', 'Guides']

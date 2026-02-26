@@ -12,6 +12,7 @@ buildDrafts = false
   description = "Local IT consulting for small businesses in Wichita, KS. Network assessments, firewall audits, Wi-Fi deployments, cybersecurity, and ongoing IT support."
   author = "Chris"
   defaultTheme = "auto"
+  DateFormat = "02 Jan 2006 1504"
   ShowReadingTime = true
   ShowShareButtons = true
   ShowPostNavLinks = true

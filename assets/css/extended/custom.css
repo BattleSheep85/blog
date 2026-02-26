@@ -848,6 +848,200 @@
 }
 
 /* ===================== */
+/* PAGE INTRO            */
+/* ===================== */
+
+.page-intro {
+    font-size: 1.2rem;
+    line-height: 1.7;
+    color: var(--primary);
+    font-weight: 500;
+    padding: 1.5rem 2rem;
+    margin: 0 0 2rem;
+    border-left: 4px solid var(--accent);
+    background: linear-gradient(135deg, rgba(var(--accent-rgb), 0.06) 0%, rgba(var(--accent-rgb), 0.02) 100%);
+    border-radius: 0 12px 12px 0;
+}
+
+/* ===================== */
+/* PRICE BADGE           */
+/* ===================== */
+
+.price-badge {
+    display: inline-block;
+    padding: 8px 20px;
+    border-radius: 8px;
+    background: var(--accent-light, #dbeafe);
+    color: var(--accent);
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin: 0.5rem 0 1rem;
+}
+
+/* ===================== */
+/* INLINE CTA            */
+/* ===================== */
+
+.cta-inline {
+    background: linear-gradient(135deg, rgba(var(--accent-rgb), 0.06) 0%, rgba(var(--accent-rgb), 0.02) 100%);
+    border: 1px solid rgba(var(--accent-rgb), 0.15);
+    border-radius: 14px;
+    padding: 1.5rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    margin: 2rem 0;
+}
+
+[data-theme="dark"] .cta-inline {
+    background: linear-gradient(135deg, rgba(var(--accent-rgb), 0.1) 0%, rgba(var(--accent-rgb), 0.03) 100%);
+    border-color: rgba(var(--accent-rgb), 0.2);
+}
+
+.cta-inline-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.cta-inline-text strong {
+    font-size: 1.05rem;
+    color: var(--primary);
+}
+
+.cta-inline-text span {
+    font-size: 0.9rem;
+    color: var(--secondary);
+}
+
+/* ===================== */
+/* INLINE STEPS          */
+/* ===================== */
+
+.steps-inline {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 1.5rem 0;
+}
+
+.step-inline {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 1rem 1.25rem;
+    border-radius: 10px;
+    border: 1px solid var(--tertiary);
+    background: var(--entry);
+    transition: border-color 0.2s;
+}
+
+.step-inline:hover {
+    border-color: var(--accent);
+}
+
+.step-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    font-size: 0.85rem;
+    font-weight: 700;
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(var(--accent-rgb), 0.25);
+}
+
+.step-inline div:last-child {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--content);
+    padding-top: 4px;
+}
+
+/* ===================== */
+/* LIST PAGES            */
+/* ===================== */
+
+.page-header h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+}
+
+.terms-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    list-style: none;
+    padding: 0;
+}
+
+.terms-tags li a {
+    display: inline-block;
+    padding: 6px 16px;
+    border-radius: 8px;
+    background: var(--entry);
+    border: 1px solid var(--tertiary);
+    text-decoration: none;
+    color: var(--primary);
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.terms-tags li a:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="dark"] .terms-tags li a:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.terms-tags li a sup {
+    color: var(--accent);
+}
+
+/* Hide default PaperMod footer (powered by Hugo) */
+.footer {
+    display: none;
+}
+
+/* ===================== */
+/* PAGINATION            */
+/* ===================== */
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 2rem;
+}
+
+.pagination a {
+    padding: 8px 20px;
+    border-radius: 8px;
+    border: 1px solid var(--tertiary);
+    text-decoration: none;
+    color: var(--primary);
+    font-weight: 500;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+}
+
+.pagination a:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+/* ===================== */
 /* RESPONSIVE            */
 /* ===================== */
 
@@ -895,6 +1089,17 @@
 
     .hero-illustration {
         max-width: 300px;
+    }
+
+    .cta-inline {
+        flex-direction: column;
+        text-align: center;
+        padding: 1.25rem;
+    }
+
+    .page-intro {
+        font-size: 1.05rem;
+        padding: 1.25rem 1.5rem;
     }
 }
 
