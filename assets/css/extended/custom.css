@@ -10,6 +10,10 @@
     --amber-light: #fef3c7;
     --purple: #7c3aed;
     --purple-light: #ede9fe;
+    --red: #dc2626;
+    --red-light: #fee2e2;
+    --teal: #0d9488;
+    --teal-light: #ccfbf1;
 }
 
 [data-theme="dark"] {
@@ -21,6 +25,10 @@
     --amber-light: #451a03;
     --purple: #a78bfa;
     --purple-light: #2e1065;
+    --red: #f87171;
+    --red-light: #450a0a;
+    --teal: #2dd4bf;
+    --teal-light: #042f2e;
 }
 
 /* ===================== */
@@ -421,6 +429,16 @@
 .si-purple {
     background: var(--purple-light);
     color: var(--purple);
+}
+
+.si-red {
+    background: var(--red-light);
+    color: var(--red);
+}
+
+.si-teal {
+    background: var(--teal-light);
+    color: var(--teal);
 }
 
 .service-card h3 {

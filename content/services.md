@@ -1,7 +1,7 @@
 +++
 title = "IT Services for Wichita Small Businesses"
 url = "/services/"
-description = "Network assessments, firewall audits, Wi-Fi deployments, cybersecurity consulting, and ongoing IT support for small businesses in Wichita, KS and Sedgwick County."
+description = "Network assessments, firewall audits, Wi-Fi deployments, backup and disaster recovery, virtualization, automation, cybersecurity, and ongoing IT support for small businesses in Wichita, KS and Sedgwick County."
 layout = "single"
 +++
 
@@ -9,7 +9,7 @@ layout = "single"
 I work with small businesses in the Wichita metro area: dental offices, law firms, auto shops, churches, retail stores, accounting firms. If you have 5 to 100 employees and your IT situation is held together with duct tape and prayers, I can help.
 </div>
 
-I'm not an MSP. I'm a solo consultant and Army veteran with 20 years of experience as a network engineer and sysadmin. I work across every major vendor platform. You get that experience applied to your business without the MSP price tag or the long-term contract.
+I'm not an MSP. I'm a solo consultant and Army veteran with 20 years of experience across every level of IT, from help desk to enterprise network and storage engineering. I work across every major vendor platform. You get that experience applied to your business without the MSP price tag or the long-term contract.
 
 ## Network assessments and firewall audits
 
@@ -39,9 +39,31 @@ I help small businesses work through:
 
 I'm not a compliance auditor, but I can get your network into shape so the answers on those forms are actually true.
 
+## Backup and disaster recovery
+
+If your backup strategy is "we think somebody set up Carbonite a few years ago," we should talk. I design and implement backup systems that actually work when you need them, built around Veeam and the 3-2-1 rule: three copies of your data, on two different types of media, with one copy offsite.
+
+I'll also help you think through RPO and RTO, which is a fancy way of saying: how much data can you afford to lose, and how long can you afford to be down? Most small businesses have never had that conversation, and it matters more than they think.
+
+## Virtualization and server infrastructure
+
+If you're running VMware and watching the licensing costs climb after the Broadcom acquisition, you're not alone. I've been helping businesses evaluate their options, and my honest recommendation for most situations is OpenShift or OKD. It's container-native, it scales well, and it doesn't lock you into another vendor's pricing whims.
+
+Proxmox is the other name that comes up a lot. It's fine for a homelab, but I've seen enough production environments held together with forum posts and hope to have opinions about when it's the right call and when it isn't. I'll give you a straight answer based on what you actually need.
+
+Whether it's a VMware migration, a new server build, or just figuring out what you're running and whether it makes sense, I can help.
+
+## Automation and scripting
+
+If someone in your office is doing the same thing manually every day, whether that's running reports, copying files, checking logs, or restarting services, there's a good chance I can automate it. I write scripts and build automation for repetitive tasks, deployment workflows, and monitoring setups.
+
+This isn't about replacing people. It's about freeing them up to do actual work instead of the same 15-step process they've been doing since 2017.
+
 ## General IT consulting
 
-Sometimes you just need someone who knows what they're doing to help with a specific project. Hardware refresh, Microsoft 365 migration, backup strategy, printer nightmares, vendor coordination: the stuff that piles up when nobody in the office is an IT person.
+Sometimes you just need someone who knows what they're doing to help with a specific project. Hardware refresh, Microsoft 365 migration, storage planning, printer nightmares, vendor coordination, business systems administration: the stuff that piles up when nobody in the office is an IT person.
+
+I've worked with gear from every major vendor. For networking, I'll recommend Cisco or Juniper when the situation calls for it and MikroTik when you need solid performance without the enterprise price tag. I don't have a vendor relationship with any of them, so the recommendation is always based on what actually makes sense for your setup and your budget.
 
 I charge by the hour or by the project depending on what makes sense. No retainer, no commitment.
 

@@ -1,19 +1,23 @@
 +++
 title = "About"
 url = "/about/"
-description = "Chris is a network engineer, Army veteran, and IT consultant serving small businesses in Wichita, Kansas and Sedgwick County."
+description = "Chris is a sysadmin, network engineer, Army veteran, and IT consultant serving small businesses in Wichita, Kansas and Sedgwick County."
 layout = "single"
 +++
 
 <div class="page-intro">
-I'm Chris. Army veteran, network engineer, systems administrator. I've been doing this for 20 years, and I consult for small businesses in Wichita on the side.
+I'm Chris. Army veteran, sysadmin, network engineer. I've been doing this for 20 years across every level of IT, and I consult for small businesses in Wichita on the side.
 </div>
 
 ## Background
 
 I started in Military Intelligence in the U.S. Army, where keeping networks secure wasn't optional. It was the mission. That's where I learned to think about IT infrastructure the way I still do: figure out what's actually happening on the wire, lock down what needs locking down, and keep things running no matter what.
 
-After the Army, I moved into the private sector. I've spent the last two decades as a network engineer and systems administrator, currently working in IT Operations at a mid-size bank in the Wichita area. I manage switching infrastructure, firewalls, routing, wireless, and everything else that keeps a regulated enterprise running. I work across every major vendor platform, so I'm never going to push one brand's gear on you just because it's what I know.
+After the Army, I worked my way up through the full stack. Help desk, residential repair, business systems administration, then into network engineering and enterprise storage at scale. I've touched every layer of IT that exists, from swapping hard drives in someone's living room to managing core switching infrastructure at a regulated financial institution.
+
+These days I work in IT Operations at a mid-size bank in the Wichita area. I manage switching, firewalls, routing, wireless, enterprise storage, and backup infrastructure. I work across every major vendor platform: Cisco and Juniper for enterprise networking, MikroTik when the budget matters more than the logo on the box, Veeam for backup and disaster recovery, and I've been pushing OpenShift and OKD as the answer for organizations looking to get off VMware without landing on something half-baked.
+
+I'm also the person who builds things on the side just to see if they work. Homelab experiments, automation scripts, weird configurations nobody asked for. That tinkering mindset is how I stay sharp, and it's why I tend to have answers for problems that fall outside the usual playbook.
 
 ## Why I do this
 

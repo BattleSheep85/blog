@@ -9,7 +9,7 @@ buildDrafts = false
 
 [params]
   env = "production"
-  description = "Local IT consulting for small businesses in Wichita, KS. Network assessments, firewall audits, Wi-Fi deployments, cybersecurity, and ongoing IT support."
+  description = "Local IT consulting for small businesses in Wichita, KS. Network assessments, firewall audits, Wi-Fi deployments, backup and disaster recovery, virtualization, automation, cybersecurity, and ongoing IT support."
   author = "Chris"
   defaultTheme = "auto"
   DateFormat = "02 Jan 2006 1504"
@@ -23,8 +23,8 @@ buildDrafts = false
 
   [params.homeInfoParams]
     Title = "Local IT help for Wichita small businesses"
-    Content = """Network assessments, firewall audits, Wi-Fi fixes, cybersecurity guidance, and hands-on IT support. \
-I'm a network engineer and sysadmin with 20 years of experience, helping small businesses in the Wichita area get their IT right. No contracts, no call center, just straightforward help from someone who does this for a living."""
+    Content = """Network assessments, firewall audits, Wi-Fi fixes, backup and disaster recovery, virtualization, automation, cybersecurity, and hands-on IT support. \
+I'm a sysadmin and network engineer with 20 years of experience across every level of IT. I help small businesses in the Wichita area get their infrastructure right. No contracts, no call center, just straightforward help from someone who does this for a living."""
 
   [[params.socialIcons]]
     name = "email"
