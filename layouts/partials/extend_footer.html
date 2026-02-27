@@ -7,7 +7,7 @@ document.addEventListener('scroll', function() {
     if (!p) return;
     var h = document.documentElement;
     var pct = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
-    p.style.width = pct + '%';
+    p.style.width = Math.min(pct, 100) + '%';
 });
 </script>
 {{ end }}
@@ -19,10 +19,13 @@ document.addEventListener('scroll', function() {
     <strong>Chrisputer IT Consulting</strong>
   </div>
   <p>Wichita, Haysville, Derby, Andover, and Sedgwick County, KS</p>
-  <p>
+  <p class="footer-links">
     <a href="mailto:chris@chrisputer.tech">chris@chrisputer.tech</a>
-    &middot; <a href="/services/">Services</a>
-    &middot; <a href="/about/">About</a>
-    &middot; <a href="/posts/">Blog</a>
+    <span class="footer-sep">&middot;</span>
+    <a href="/services/">Services</a>
+    <span class="footer-sep">&middot;</span>
+    <a href="/about/">About</a>
+    <span class="footer-sep">&middot;</span>
+    <a href="/posts/">Blog</a>
   </p>
 </div>

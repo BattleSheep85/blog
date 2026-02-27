@@ -3,6 +3,13 @@
 <article class="post-single">
   <header class="post-header">
     {{ partial "breadcrumbs.html" . }}
+
+    {{- /* Category badge */}}
+    {{- $categories := .GetTerms "categories" }}
+    {{- if $categories }}
+    <a href="{{ (index $categories 0).Permalink }}" class="post-category-badge cat-{{ urlize (index $categories 0).LinkTitle }}">{{ (index $categories 0).LinkTitle }}</a>
+    {{- end }}
+
     <h1 class="post-title entry-hint-parent">
       {{ .Title }}
       {{- if .Draft }}
@@ -28,6 +35,10 @@
     </div>
     {{- end }}
   </header>
+
+  {{- /* Top-of-post ad (leaderboard) */}}
+  {{ partial "ad-unit.html" (dict "slot" "9678397357" "format" "auto") }}
+
   {{- $isHidden := (.Param "cover.hiddenInSingle") | default (.Param "cover.hidden") | default false }}
   {{- partial "cover.html" (dict "cxt" . "IsSingle" true "isHidden" $isHidden) }}
   {{- if (.Param "ShowToc") }}
@@ -42,16 +53,8 @@
   </div>
   {{- end }}
 
-  {{- /* Display ad between content and footer */}}
-  <div style="margin: 2em 0; text-align: center;">
-    <ins class="adsbygoogle"
-         style="display:block"
-         data-ad-client="ca-pub-6952672558994325"
-         data-ad-slot="9678397357"
-         data-ad-format="auto"
-         data-full-width-responsive="true"></ins>
-    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-  </div>
+  {{- /* Bottom-of-post ad (display) */}}
+  {{ partial "ad-unit.html" (dict "slot" "9678397357" "format" "auto") }}
 
   <footer class="post-footer">
     {{- $tags := .Language.Params.Taxonomies.tag | default "tags" }}

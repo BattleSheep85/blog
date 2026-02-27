@@ -11,19 +11,21 @@
     --border: #e2e5ec;
     --accent: #2563eb;
     --accent-light: #dbeafe;
+    --gap: 24px;
 }
 
-/* Dark theme - clean dark, not too blue */
+/* Dark theme - clean dark with better contrast */
 [data-theme="dark"] {
-    --theme: #111318;
-    --entry: #1a1c24;
-    --primary: rgb(230, 232, 240);
-    --secondary: rgb(150, 155, 170);
-    --tertiary: rgb(45, 48, 60);
-    --content: rgb(200, 205, 218);
+    --theme: #0f1117;
+    --entry: #181a22;
+    --primary: rgb(235, 237, 245);
+    --secondary: rgb(155, 160, 175);
+    --tertiary: rgb(42, 45, 58);
+    --content: rgb(205, 210, 222);
     --code-block-bg: #151720;
     --code-bg: #1e2030;
     --border: #2a2d3a;
     --accent: #60a5fa;
     --accent-light: #1e2a4a;
+    --gap: 24px;
 }
