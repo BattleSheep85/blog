@@ -222,6 +222,7 @@
 .btn-lg {
     padding: 14px 32px;
     font-size: 1rem;
+    white-space: nowrap;
 }
 
 /* ===================== */
@@ -1078,8 +1079,6 @@
     }
 
     .cta-inner {
-        flex-direction: column;
-        text-align: center;
         padding: 2rem 1.5rem;
     }
 

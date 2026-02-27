@@ -1,6 +1,6 @@
 +++
 title = "What to do when your Kansas business gets a cyber insurance questionnaire"
-date = 2026-02-26T10:30:00-06:00
+date = 2026-02-06
 draft = false
 tags = ['cybersecurity', 'insurance', 'small-business', 'wichita', 'compliance']
 categories = ['Small Business IT']
@@ -33,7 +33,7 @@ The fix is straightforward. Microsoft 365 has MFA built in. Turning it on takes 
 
 They're asking if you have antivirus that actually works. Not the free Windows Defender (though Defender has gotten better), but something that actively monitors for suspicious behavior and can isolate a compromised machine.
 
-If you don't know whether you have EDR, you probably don't. Options like SentinelOne, CrowdStrike, or Microsoft Defender for Business work well for small offices and cost $3-8/device/month.
+If you don't know whether you have EDR, you probably don't. Microsoft Defender for Business runs about $3/user/month and covers up to 5 devices per user. SentinelOne and CrowdStrike start around $5-8/device/month for their EDR tiers. Any of these work well for small offices.
 
 ### "Do you perform regular backups and are they stored offline?"
 
@@ -68,7 +68,7 @@ Most of the controls these questionnaires ask about are achievable for a small b
 - Offsite backups: $50-200/month depending on data volume
 - Vulnerability scan: a few hundred dollars, done quarterly or annually
 - Incident response plan: a few hours to write
-- Firewall that's not a home router: $300-800 one-time for the hardware
+- Firewall that's not a home router: $300-800 for the hardware, plus $100-300/year for security subscription renewals on most models
 
 The total cost of getting to "yes" on the important questions is almost always less than the premium increase or claim denial from answering "no."
 

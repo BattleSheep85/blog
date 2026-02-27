@@ -1,6 +1,6 @@
 +++
 title = 'Firefox profile lock over xrdp (and why I just use separate browsers)'
-date = 2026-02-25T14:45:00-06:00
+date = 2026-02-17
 draft = false
 tags = ['linux', 'firefox', 'xrdp', 'kde', 'plasma', 'archlinux', 'cachyos', 'waterfox', 'brave']
 categories = ['Linux', 'Fixes']
@@ -69,8 +69,67 @@ Use the separate profile if you only RDP in occasionally and don't want extra pa
 
 I RDP into my machine daily through Guacamole, so separate browsers was the obvious call.
 
+## Full setup script
+
+This script installs a separate browser for the RDP session and sets it as the default. Run it as your normal user.
+
+```bash
+#!/bin/bash
+set -e
+
+echo "=== Separate browser setup for xrdp ==="
+
+# Pick a browser
+echo "Which browser for the RDP session?"
+echo "  1) Waterfox (Firefox fork, familiar UI)"
+echo "  2) Brave (Chromium-based)"
+read -p "Choice [1/2]: " choice
+
+case "$choice" in
+    2)
+        PKG="brave-bin"
+        BROWSER_NAME="brave"
+        ;;
+    *)
+        PKG="waterfox-bin"
+        BROWSER_NAME="waterfox"
+        ;;
+esac
+
+# Install
+if command -v pacman &>/dev/null; then
+    sudo pacman -S --needed --noconfirm "$PKG"
+else
+    echo "This script is for Arch-based distros."
+    exit 1
+fi
+
+echo "Installed $PKG."
+
+# Add BROWSER export to ~/.xinitrc if it exists
+XINITRC="$HOME/.xinitrc"
+if [ -f "$XINITRC" ]; then
+    if ! grep -q "export BROWSER=" "$XINITRC"; then
+        # Insert before the exec line
+        sed -i "/^exec /i export BROWSER=$BROWSER_NAME" "$XINITRC"
+        echo "Added 'export BROWSER=$BROWSER_NAME' to $XINITRC"
+    else
+        echo "$XINITRC already has a BROWSER export. Update it manually if needed."
+    fi
+else
+    echo "No ~/.xinitrc found. If you're using the xrdp guide, create it first."
+    echo "Then add 'export BROWSER=$BROWSER_NAME' before the exec line."
+fi
+
+echo ""
+echo "Done. $BROWSER_NAME will be available in your RDP session."
+echo "Firefox continues to work normally on your local desktop."
+```
+
+Save this as `setup-rdp-browser.sh`, make it executable with `chmod +x setup-rdp-browser.sh`, and run it.
+
 ## References
 
-- [Mozilla: Profile in use](https://support.mozilla.org/en-US/kb/profile-in-use)
+- [Mozilla: Firefox is already running but is not responding](https://support.mozilla.org/en-US/kb/firefox-already-running-not-responding)
 - [Waterfox](https://www.waterfox.net/)
 - [Brave](https://brave.com/)

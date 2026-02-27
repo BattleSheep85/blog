@@ -1,6 +1,6 @@
 +++
 title = 'Automated daily Arch Linux updates with rollback (no btrfs required)'
-date = 2026-02-25T09:30:00-06:00
+date = 2026-02-22
 draft = false
 tags = ['linux', 'archlinux', 'cachyos', 'pacman', 'systemd', 'automation', 'xfs']
 categories = ['Linux', 'Guides']
@@ -37,9 +37,9 @@ pacman -Q > "$SNAPSHOT_DIR/packages-current.txt"
 echo "Saved package snapshot to $SNAPSHOT_DIR/packages-current.txt" >> "$LOG"
 
 if pacman -Syu --noconfirm >> "$LOG" 2>&1; then
-    # Record what actually changed
+    # Capture post-upgrade state, then record what changed
+    pacman -Q > "$SNAPSHOT_DIR/packages-current.txt"
     diff "$SNAPSHOT_DIR/packages-previous.txt" "$SNAPSHOT_DIR/packages-current.txt" > "$SNAPSHOT_DIR/last-diff.txt" 2>/dev/null
-    pacman -Q > "$SNAPSHOT_DIR/packages-current.txt"  # update with post-upgrade state
     echo "STATUS=success" >> "$LOG"
     echo "=== Update finished: $(date) ===" >> "$LOG"
     systemctl reboot
@@ -159,7 +159,7 @@ while IFS=' ' read -r pkg ver; do
     current_ver=$(pacman -Q "$pkg" 2>/dev/null | awk '{print $2}')
     if [ -n "$current_ver" ] && [ "$current_ver" != "$ver" ]; then
         # Find the old version in the cache
-        cached=$(find "$CACHE" -name "${pkg}-${ver}-*.pkg.tar.*" | head -1)
+        cached=$(find "$CACHE" -name "${pkg}-${ver}-*.pkg.tar.*" ! -name "*.sig" | head -1)
         if [ -n "$cached" ]; then
             ROLLBACK_LIST+=("$cached")
             echo "  $pkg: $current_ver → $ver"
@@ -201,7 +201,7 @@ It shows what will be downgraded and asks for confirmation.
 
 ## Don't clean the cache
 
-Pacman keeps old package versions in `/var/cache/pacman/pkg/`. The rollback script depends on this. CachyOS keeps the last 3 versions by default.
+Pacman keeps old package versions in `/var/cache/pacman/pkg/`. The rollback script depends on this. On CachyOS, the `paccache.timer` is disabled by default, so all cached versions are kept indefinitely. If you or something else enables it, paccache defaults to keeping the last 3 versions.
 
 Check your cache policy:
 
@@ -247,6 +247,133 @@ If you use `paccache` or `pacman -Sc` to clean the cache, you lose the ability t
 - New packages aren't removed on rollback. If the update pulled in a new dependency, the rollback downgrades existing packages but won't remove newly added ones.
 - Pacman `.pacnew` files aren't handled. If a config file changes upstream, pacman creates a `.pacnew` instead of overwriting yours. Check occasionally with `pacdiff`.
 - Kernel rollback needs another reboot. If you roll back the kernel package but already booted into the new kernel, you need to reboot again after the rollback.
+
+## Full installer script
+
+This creates all the files and enables the timer in one shot. Run as root or with sudo.
+
+```bash
+#!/bin/bash
+set -e
+
+echo "=== Auto-update with rollback setup ==="
+
+# Create the update script
+cat > /usr/local/bin/auto-update.sh << 'SCRIPT'
+#!/bin/bash
+LOG="/var/log/auto-update.log"
+SNAPSHOT_DIR="/var/lib/auto-update"
+mkdir -p "$SNAPSHOT_DIR"
+
+echo "=== Update started: $(date) ===" > "$LOG"
+
+# Save current package state before updating
+cp "$SNAPSHOT_DIR/packages-current.txt" "$SNAPSHOT_DIR/packages-previous.txt" 2>/dev/null
+pacman -Q > "$SNAPSHOT_DIR/packages-current.txt"
+echo "Saved package snapshot to $SNAPSHOT_DIR/packages-current.txt" >> "$LOG"
+
+if pacman -Syu --noconfirm >> "$LOG" 2>&1; then
+    # Capture post-upgrade state, then record what changed
+    pacman -Q > "$SNAPSHOT_DIR/packages-current.txt"
+    diff "$SNAPSHOT_DIR/packages-previous.txt" "$SNAPSHOT_DIR/packages-current.txt" > "$SNAPSHOT_DIR/last-diff.txt" 2>/dev/null
+    echo "STATUS=success" >> "$LOG"
+    echo "=== Update finished: $(date) ===" >> "$LOG"
+    systemctl reboot
+else
+    echo "STATUS=failed" >> "$LOG"
+    echo "=== Update FAILED: $(date) ===" >> "$LOG"
+    # packages-current.txt still has the pre-update state since upgrade failed
+fi
+SCRIPT
+chmod +x /usr/local/bin/auto-update.sh
+
+# Create the rollback script
+cat > /usr/local/bin/auto-update-rollback.sh << 'SCRIPT'
+#!/bin/bash
+SNAPSHOT_DIR="/var/lib/auto-update"
+CACHE="/var/cache/pacman/pkg"
+PRE_UPDATE="$SNAPSHOT_DIR/packages-previous.txt"
+
+if [ ! -f "$PRE_UPDATE" ]; then
+    echo "No previous package snapshot found. Nothing to roll back to."
+    exit 1
+fi
+
+echo "Comparing current packages to pre-update snapshot..."
+ROLLBACK_LIST=()
+
+while IFS=' ' read -r pkg ver; do
+    current_ver=$(pacman -Q "$pkg" 2>/dev/null | awk '{print $2}')
+    if [ -n "$current_ver" ] && [ "$current_ver" != "$ver" ]; then
+        cached=$(find "$CACHE" -name "${pkg}-${ver}-*.pkg.tar.*" ! -name "*.sig" | head -1)
+        if [ -n "$cached" ]; then
+            ROLLBACK_LIST+=("$cached")
+            echo "  $pkg: $current_ver → $ver"
+        else
+            echo "  $pkg: $current_ver → $ver (NOT IN CACHE — cannot rollback)"
+        fi
+    fi
+done < "$PRE_UPDATE"
+
+if [ ${#ROLLBACK_LIST[@]} -eq 0 ]; then
+    echo "Nothing to roll back."
+    exit 0
+fi
+
+echo ""
+echo "${#ROLLBACK_LIST[@]} package(s) to downgrade."
+read -p "Proceed? [y/N] " confirm
+if [[ "$confirm" =~ ^[Yy]$ ]]; then
+    pacman -U --noconfirm "${ROLLBACK_LIST[@]}"
+    echo "Rollback complete."
+else
+    echo "Cancelled."
+fi
+SCRIPT
+chmod +x /usr/local/bin/auto-update-rollback.sh
+
+# Create systemd service
+cat > /etc/systemd/system/auto-update.service << 'UNIT'
+[Unit]
+Description=Auto update and reboot
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/auto-update.sh
+UNIT
+
+# Create systemd timer
+cat > /etc/systemd/system/auto-update.timer << 'UNIT'
+[Unit]
+Description=Run auto update daily at 4AM
+
+[Timer]
+OnCalendar=*-*-* 04:00:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target
+UNIT
+
+# Seed initial snapshot
+mkdir -p /var/lib/auto-update
+pacman -Q > /var/lib/auto-update/packages-current.txt
+
+# Enable the timer
+systemctl daemon-reload
+systemctl enable --now auto-update.timer
+
+echo ""
+echo "Done. Auto-updates will run daily at 4 AM."
+echo "Check status: systemctl list-timers auto-update.timer"
+echo "Rollback:     sudo auto-update-rollback.sh"
+```
+
+Save as `setup-auto-update.sh` and run with `sudo bash setup-auto-update.sh`.
+
+After running it, add the login warning to your shell config manually (Fish or Bash, shown earlier in the post).
 
 ## References
 

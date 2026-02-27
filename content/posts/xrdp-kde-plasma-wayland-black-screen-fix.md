@@ -1,6 +1,6 @@
 +++
 title = 'Fix xrdp black screen with KDE Plasma Wayland on Arch Linux'
-date = 2026-02-25T08:15:00-06:00
+date = 2026-02-11
 draft = false
 tags = ['linux', 'xrdp', 'kde', 'plasma', 'wayland', 'archlinux', 'cachyos', 'rdp', 'guacamole']
 categories = ['Linux', 'Guides']
@@ -19,7 +19,7 @@ On Arch/CachyOS, xrdp's X11 session inherits the shared D-Bus session bus at `/r
 
 Two things go wrong:
 
-1. kwin_x11 from the RDP session sends a `--replace` to the existing kwin_wayland over D-Bus, hijacking window management on your local desktop
+1. kwin_x11 from the RDP session registers as `org.kde.KWin` on the shared D-Bus, colliding with the existing kwin_wayland's registration and disrupting window management on your local desktop
 2. plasmashell refuses to start because it sees one already registered on that bus (the Wayland one)
 
 So you get kwin_x11 running (cursor visible) but no shell, no panel, no desktop. Just black.
@@ -35,9 +35,22 @@ This applies to any Arch-based distro. Debian/Ubuntu users will need slightly di
 
 ## Prerequisites
 
+On CachyOS, these are in the repos:
+
 ```bash
 sudo pacman -S xrdp xorgxrdp
-sudo systemctl enable --now xrdp xrdp-sesman
+```
+
+On vanilla Arch, they're AUR packages. Use your AUR helper:
+
+```bash
+yay -S xrdp xorgxrdp
+```
+
+Then enable the service:
+
+```bash
+sudo systemctl enable --now xrdp
 ```
 
 Open the firewall if needed:
@@ -150,7 +163,7 @@ This happens when kwin_x11 is parented to your Wayland session's process tree be
 
 ### A note on xrdp.ini security
 
-The default CachyOS/Arch xrdp config uses `security_layer=rdp` (legacy encryption) with no TLS certificate. Fine on a trusted LAN, not suitable for internet exposure. If you're going through Guacamole over the internet, make sure Guacamole handles encryption (HTTPS to Guacamole, then Guacamole connects to xrdp on the LAN).
+The default CachyOS/Arch xrdp config uses `security_layer=negotiate`, which will fall back to legacy RDP encryption if the client doesn't support TLS. Fine on a trusted LAN, not suitable for internet exposure. If you're going through Guacamole over the internet, make sure Guacamole handles encryption (HTTPS to Guacamole, then Guacamole connects to xrdp on the LAN).
 
 ## How it all fits together
 
@@ -179,6 +192,69 @@ The default CachyOS/Arch xrdp config uses `security_layer=rdp` (legacy encryptio
 ```
 
 Your local Wayland session on `:0` stays completely separate.
+
+## Full setup script
+
+This script does everything covered above in one shot. Run it as your normal user (it will `sudo` where needed).
+
+```bash
+#!/bin/bash
+set -e
+
+echo "=== xrdp + KDE Plasma X11 setup ==="
+
+# Install xrdp and xorgxrdp
+if command -v pacman &>/dev/null; then
+    if pacman -Si xrdp &>/dev/null 2>&1; then
+        sudo pacman -S --needed --noconfirm xrdp xorgxrdp
+    else
+        echo "xrdp is an AUR package on your system."
+        echo "Install manually: yay -S xrdp xorgxrdp"
+        exit 1
+    fi
+else
+    echo "This script is for Arch-based distros."
+    exit 1
+fi
+
+# Enable xrdp service
+sudo systemctl enable --now xrdp
+
+# Create ~/.xinitrc with isolated D-Bus session
+cat > ~/.xinitrc << 'XINITRC'
+export DESKTOP_SESSION=plasma
+export XDG_SESSION_DESKTOP=KDE
+export XDG_CURRENT_DESKTOP=KDE
+export KWIN_COMPOSE=N
+export QT_XCB_GL_INTEGRATION=none
+
+# Use a private D-Bus session so xrdp doesn't collide with the Wayland desktop
+exec dbus-run-session startplasma-x11
+XINITRC
+chmod 644 ~/.xinitrc
+
+echo "Created ~/.xinitrc"
+
+# Prevent system sleep (optional, for remote-access machines)
+read -p "Disable system sleep? Monitors will still turn off. [y/N] " disable_sleep
+if [[ "$disable_sleep" =~ ^[Yy]$ ]]; then
+    sudo systemctl mask sleep.target suspend.target hibernate.target \
+        hybrid-sleep.target suspend-then-hibernate.target
+    echo "Sleep targets masked."
+fi
+
+# Open firewall if ufw is active
+if systemctl is-active --quiet ufw; then
+    sudo ufw allow 3389/tcp
+    echo "Opened port 3389 in ufw."
+fi
+
+echo ""
+echo "Done. Connect with any RDP client on port 3389."
+echo "Your local Wayland session will not be affected."
+```
+
+Save this as `setup-xrdp-plasma.sh`, make it executable with `chmod +x setup-xrdp-plasma.sh`, and run it.
 
 ## References
 
