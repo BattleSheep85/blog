@@ -1,0 +1,41 @@
+name = "truerank"
+main = "worker/index.js"
+compatibility_date = "2025-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+[assets]
+directory = "./public"
+
+[vars]
+ENVIRONMENT = "production"
+RATE_LIMIT_MAX = "5"
+RATE_LIMIT_WINDOW_SECONDS = "3600"
+CACHE_TTL_SECONDS = "86400"
+
+# D1 Database
+[[d1_databases]]
+binding = "DB"
+database_name = "truerank-db"
+database_id = "placeholder-will-be-set-on-deploy"
+
+# KV Namespace
+[[kv_namespaces]]
+binding = "KV"
+id = "placeholder-will-be-set-on-deploy"
+
+# Queue Producer
+[[queues.producers]]
+binding = "RESEARCH_QUEUE"
+queue = "truerank-research"
+
+# Queue Consumer
+[[queues.consumers]]
+queue = "truerank-research"
+max_batch_size = 1
+max_retries = 2
+dead_letter_queue = "truerank-dlq"
+
+# Secrets (set via wrangler secret put):
+# OPENROUTER_API_KEY  — free tier, no credit card needed
+# SERPER_API_KEY      — optional, 2500 free Google searches
+# AMAZON_ASSOCIATE_TAG

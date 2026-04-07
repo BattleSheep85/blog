@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Research Report — TrueRank</title>
+    <meta name="description" content="Honest product comparison report from TrueRank">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔍</text></svg>">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        trust: {
+                            high: '#22c55e',
+                            medium: '#eab308',
+                            low: '#ef4444',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="/vendor/htmx.min.js"></script>
+    <link rel="stylesheet" href="/css/app.css">
+</head>
+<body class="bg-gray-950 text-gray-100 min-h-screen">
+
+    <!-- Header -->
+    <header class="border-b border-gray-800">
+        <div class="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
+            <a href="/" class="text-xl font-bold text-white">
+                <span class="text-emerald-400">True</span>Rank
+            </a>
+            <a href="/" class="text-sm text-gray-400 hover:text-white transition-colors">New search</a>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto px-4 py-8">
+        <!-- Loading state -->
+        <div id="report-loading" class="text-center py-16">
+            <div class="animate-spin w-8 h-8 border-2 border-emerald-400 border-t-transparent rounded-full mx-auto mb-4"></div>
+            <p class="text-gray-400">Loading report...</p>
+        </div>
+
+        <!-- Report content (filled by JS) -->
+        <div id="report-content" class="hidden">
+            <!-- Rendered by report.js -->
+        </div>
+
+        <!-- Error state -->
+        <div id="report-error" class="hidden text-center py-16">
+            <h2 class="text-lg font-semibold text-red-400 mb-2">Report not found</h2>
+            <p class="text-gray-400 mb-4">This report may have expired or the ID is invalid.</p>
+            <a href="/" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 rounded-lg transition-colors inline-block">
+                Start new research
+            </a>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-gray-800 mt-8">
+        <div class="max-w-5xl mx-auto px-4 py-6 text-center text-sm text-gray-500">
+            <p>
+                TrueRank contains affiliate links. If you buy through our links, we may earn a commission at no extra cost to you.
+                Our rankings are never influenced by affiliate relationships.
+            </p>
+        </div>
+    </footer>
+
+    <script src="/js/app.js"></script>
+    <script src="/js/report.js"></script>
+</body>
+</html>

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrueRank — Honest Product Research</title>
+    <meta name="description" content="Product research that filters out fake reviews and affiliate garbage. Real opinions from real people.">
+    <meta property="og:title" content="TrueRank — Honest Product Research">
+    <meta property="og:description" content="Product research that filters out fake reviews and affiliate garbage.">
+    <meta property="og:type" content="website">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔍</text></svg>">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        trust: {
+                            high: '#22c55e',
+                            medium: '#eab308',
+                            low: '#ef4444',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="/vendor/htmx.min.js"></script>
+    <link rel="stylesheet" href="/css/app.css">
+</head>
+<body class="bg-gray-950 text-gray-100 min-h-screen">
+
+    <!-- Header -->
+    <header class="border-b border-gray-800">
+        <div class="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
+            <a href="/" class="text-xl font-bold text-white">
+                <span class="text-emerald-400">True</span>Rank
+            </a>
+            <button id="theme-toggle" class="text-gray-400 hover:text-white transition-colors p-2" aria-label="Toggle theme">
+                <svg id="icon-moon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                </svg>
+                <svg id="icon-sun" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-4xl mx-auto px-4">
+
+        <!-- Hero -->
+        <section class="py-16 md:py-24 text-center">
+            <h1 class="text-4xl md:text-5xl font-bold mb-4 leading-tight">
+                Product research without<br>
+                <span class="text-emerald-400">the BS</span>
+            </h1>
+            <p class="text-lg text-gray-400 mb-10 max-w-2xl mx-auto">
+                We scrape real reviews from Reddit, forums, and independent sites.
+                Filter out fakes. Give you an honest comparison.
+            </p>
+
+            <!-- Search Form -->
+            <form id="search-form" class="max-w-2xl mx-auto">
+                <div class="flex gap-2">
+                    <label for="query-input" class="sr-only">Product research query</label>
+                    <input
+                        type="text"
+                        id="query-input"
+                        name="query"
+                        placeholder="e.g. best mechanical keyboard under $100"
+                        aria-label="Product research query"
+                        class="flex-1 px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors"
+                        autocomplete="off"
+                        required
+                        minlength="3"
+                        maxlength="500"
+                    >
+                    <button
+                        type="submit"
+                        id="search-btn"
+                        class="px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-medium rounded-lg transition-colors whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        Research
+                    </button>
+                </div>
+            </form>
+
+            <!-- Example Queries -->
+            <div class="mt-4 flex flex-wrap justify-center gap-2">
+                <span class="text-sm text-gray-500">Try:</span>
+                <button class="example-query text-sm text-emerald-400 hover:text-emerald-300 transition-colors"
+                    data-query="best NAS for home media server">NAS for media server</button>
+                <button class="example-query text-sm text-emerald-400 hover:text-emerald-300 transition-colors"
+                    data-query="best budget mechanical keyboard for programming">mechanical keyboard</button>
+                <button class="example-query text-sm text-emerald-400 hover:text-emerald-300 transition-colors"
+                    data-query="best wireless earbuds under $100 2026">wireless earbuds</button>
+                <button class="example-query text-sm text-emerald-400 hover:text-emerald-300 transition-colors"
+                    data-query="Synology vs QNAP for home lab">Synology vs QNAP</button>
+            </div>
+        </section>
+
+        <!-- Progress Section (hidden by default) -->
+        <section id="progress-section" class="hidden py-8" aria-live="polite">
+            <div class="bg-gray-900 border border-gray-800 rounded-xl p-6">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="animate-spin w-5 h-5 border-2 border-emerald-400 border-t-transparent rounded-full"></div>
+                    <h2 class="text-lg font-semibold">Researching...</h2>
+                </div>
+                <div id="progress-log" class="space-y-2 text-sm text-gray-400 font-mono">
+                    <!-- Progress messages appear here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Report Section (hidden by default) -->
+        <section id="report-section" class="hidden py-8">
+            <!-- Rendered by JS -->
+        </section>
+
+        <!-- Error Section (hidden by default) -->
+        <section id="error-section" class="hidden py-8">
+            <div class="bg-red-950 border border-red-800 rounded-xl p-6 text-center">
+                <h2 class="text-lg font-semibold text-red-400 mb-2">Research Failed</h2>
+                <p id="error-message" class="text-gray-400"></p>
+                <button onclick="resetUI()" class="mt-4 px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors">
+                    Try Again
+                </button>
+            </div>
+        </section>
+
+        <!-- How It Works -->
+        <section id="how-it-works" class="py-16 border-t border-gray-800">
+            <h2 class="text-2xl font-bold text-center mb-10">How it works</h2>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="text-center">
+                    <div class="w-12 h-12 bg-emerald-900/50 rounded-xl flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-semibold mb-2">1. Search</h3>
+                    <p class="text-sm text-gray-400">We search Reddit, forums, and independent review sites for real user opinions. Not affiliate blogs.</p>
+                </div>
+                <div class="text-center">
+                    <div class="w-12 h-12 bg-emerald-900/50 rounded-xl flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-semibold mb-2">2. Filter</h3>
+                    <p class="text-sm text-gray-400">AI analyzes each review for authenticity. Fake reviews, paid promotions, and affiliate bait get flagged and removed.</p>
+                </div>
+                <div class="text-center">
+                    <div class="w-12 h-12 bg-emerald-900/50 rounded-xl flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-semibold mb-2">3. Report</h3>
+                    <p class="text-sm text-gray-400">You get a ranked comparison with trust scores, sourced pros/cons, and links to buy. Every claim is traceable.</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-gray-800 mt-8">
+        <div class="max-w-4xl mx-auto px-4 py-6 text-center text-sm text-gray-500">
+            <p>
+                TrueRank contains affiliate links. If you buy through our links, we may earn a commission at no extra cost to you.
+                Our rankings are never influenced by affiliate relationships.
+            </p>
+            <p class="mt-2">Built with honest intentions.</p>
+        </div>
+    </footer>
+
+    <script src="/js/app.js"></script>
+</body>
+</html>
