@@ -16,12 +16,12 @@ CACHE_TTL_SECONDS = "86400"
 [[d1_databases]]
 binding = "DB"
 database_name = "truerank-db"
-database_id = "placeholder-will-be-set-on-deploy"
+database_id = "d02b3826-a46a-4821-8f3a-6e3a80407155"
 
 # KV Namespace
 [[kv_namespaces]]
 binding = "KV"
-id = "placeholder-will-be-set-on-deploy"
+id = "e4ac5aa9e3514eb58612b5c79956bf51"
 
 # Queue Producer
 [[queues.producers]]
