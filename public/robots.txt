@@ -3,4 +3,4 @@ Allow: /
 Disallow: /api/
 Disallow: /report/
 
-Sitemap: https://truerank.io/sitemap.xml
+Sitemap: https://chrisputer.tech/sitemap.xml

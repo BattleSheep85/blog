@@ -6,6 +6,8 @@ compatibility_flags = ["nodejs_compat"]
 [assets]
 directory = "./public"
 binding = "ASSETS"
+# Run the Worker first so it can inject a per-request CSP nonce into HTML.
+run_worker_first = true
 
 [vars]
 ENVIRONMENT = "production"
