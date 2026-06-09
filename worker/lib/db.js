@@ -102,6 +102,15 @@ export async function logAffiliateClick(db, { productId, reportId, network, ipHa
     ).bind(productId, reportId, network || 'amazon', ipHash || '').run();
 }
 
+// -- Guide Clicks (static "best of" pages; no FK to products/reports) --
+
+export async function logGuideClick(db, { guideSlug, productQuery, network, ipHash }) {
+    await db.prepare(
+        `INSERT INTO guide_clicks (guide_slug, product_query, affiliate_network, ip_hash)
+         VALUES (?, ?, ?, ?)`
+    ).bind(guideSlug || '', productQuery || '', network || 'amazon', ipHash || '').run();
+}
+
 // -- Feedback --
 
 export async function insertFeedback(db, { reportId, rating, comment }) {

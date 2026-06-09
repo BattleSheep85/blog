@@ -40,6 +40,8 @@ export async function handleStartResearch(request, env) {
                 status: 'completed',
                 cached: true,
                 report,
+                sourceCount: cached.source_count,
+                filteredCount: cached.filtered_count,
             });
         }
     }

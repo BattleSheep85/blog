@@ -31,6 +31,7 @@ export async function runResearchPipeline(env, reportId, query) {
         if (searchResults.parse_error || !searchResults.sources?.length) {
             await progress('Could not find enough sources. Generating report with limited data...');
             const limitedReport = {
+                query,
                 executive_summary: `Limited results for "${query}". Not enough verified sources were found for a comprehensive comparison. Try being more specific, e.g. "best budget mechanical keyboard under $100 for gaming".`,
                 products: [],
                 methodology: 'Search returned insufficient results for reliable analysis.',
@@ -83,17 +84,22 @@ export async function runResearchPipeline(env, reportId, query) {
 
         // Step 5: Enrich with affiliate links
         const enrichedReport = enrichWithAffiliateLinks(report, amazonTag);
+        enrichedReport.query = query;
 
-        // Store products in D1
+        // Store products in D1. Stamp a stable id and rank onto each product so
+        // the persisted report JSON and the D1 row share them; the client
+        // affiliate CTA links to /api/go/:id, which looks the product up here.
         if (enrichedReport.products) {
             for (let i = 0; i < enrichedReport.products.length; i++) {
                 const product = enrichedReport.products[i];
+                product.id = product.id || generateId();
+                product.rank = product.rank || i + 1;
                 await insertProduct(env.DB, {
-                    id: generateId(),
+                    id: product.id,
                     reportId,
                     name: product.name,
                     category: query,
-                    rank: product.rank || i + 1,
+                    rank: product.rank,
                     trustScore: product.trust_score || 0,
                     specs: product.specs || {},
                     pros: product.pros || [],

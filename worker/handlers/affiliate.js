@@ -1,9 +1,9 @@
 /**
  * Affiliate click tracking handler.
- * GET /api/go/:productId — redirect through affiliate link, log click.
+ * GET /api/go/:productId - redirect through affiliate link, log click.
  */
 
-import { logAffiliateClick } from '../lib/db.js';
+import { logAffiliateClick, logGuideClick } from '../lib/db.js';
 
 /**
  * Handle GET /api/go/:productId
@@ -49,6 +49,44 @@ export async function handleAffiliateClick(productId, request, env) {
 
     // Wait for logging before redirecting
     await logPromise;
+
+    return new Response(null, {
+        status: 302,
+        headers: {
+            'Location': redirectUrl,
+            'Cache-Control': 'no-cache, no-store',
+        },
+    });
+}
+
+/**
+ * Handle GET /api/go/search?q=...&ref=<guide-slug>
+ * Redirect for static guide pages (no DB product). Builds an Amazon search
+ * link with the associate tag server-side, so the tag stays out of static
+ * files, and records a best-effort guide click.
+ */
+export async function handleAffiliateSearch(request, env) {
+    const url = new URL(request.url);
+    const q = (url.searchParams.get('q') || '').trim().slice(0, 200);
+    const ref = (url.searchParams.get('ref') || '').slice(0, 64);
+    const network = (url.searchParams.get('network') || 'amazon').slice(0, 32);
+
+    const amazonTag = env.AMAZON_ASSOCIATE_TAG || '';
+    const tagSuffix = amazonTag ? `&tag=${encodeURIComponent(amazonTag)}` : '';
+    // Only ever build an amazon.com URL server-side. No user-controlled host,
+    // so there is no open-redirect surface.
+    const redirectUrl = q
+        ? `https://www.amazon.com/s?k=${encodeURIComponent(q)}${tagSuffix}`
+        : `https://www.amazon.com/${amazonTag ? `?tag=${encodeURIComponent(amazonTag)}` : ''}`;
+
+    // Best-effort analytics. Never let logging break the redirect.
+    try {
+        const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+        const ipHash = await hashString(ip);
+        await logGuideClick(env.DB, { guideSlug: ref, productQuery: q, network, ipHash });
+    } catch (err) {
+        console.error('Guide click logging failed:', err);
+    }
 
     return new Response(null, {
         status: 302,

@@ -44,8 +44,9 @@ npx wrangler queues create truerank-dlq
 
 # 2. Update wrangler.toml with the IDs from step 1
 
-# 3. Run database migration
+# 3. Run database migrations
 npx wrangler d1 execute truerank-db --file=schema/001_initial.sql
+npx wrangler d1 execute truerank-db --file=schema/002_guide_clicks.sql
 
 # 4. Set secrets
 npx wrangler secret put OPENROUTER_API_KEY
@@ -67,11 +68,18 @@ npx wrangler dev
 ```
 public/              Static frontend (served by Cloudflare Pages/Assets)
   index.html         Homepage with search
-  report.html        Report viewer
-  js/app.js          Search, SSE, report rendering
+  report.html        Permalink report viewer
+  best/              Evergreen affiliate buying guides (SEO)
+    index.html       Guides hub
+    <slug>/index.html  One guide per topic
+  js/tailwind-config.js  Shared Tailwind (Play CDN) design-system config
+  js/render.js       Shared report rendering (one source of truth)
+  js/app.js          Theme, search, SSE, ?q deep-link prefill
   js/report.js       Permalink report loader
-  css/app.css        Custom styles
-  vendor/htmx.min.js Vendored htmx 2.0.8
+  css/app.css        Design tokens (CSS variables) + base styles
+  robots.txt         Crawl rules
+  sitemap.xml        Sitemap
+  vendor/htmx.min.js Vendored htmx 2.0.8 (available, not currently loaded)
 
 worker/              Cloudflare Worker (API + Queue consumer)
   index.js           Router + queue handler
@@ -94,6 +102,21 @@ User query
   → Inject affiliate links
   → Cache and deliver report
 ```
+
+## Buying guides (SEO + affiliate)
+
+Evergreen guides live under `public/best/` as static, cacheable pages (served
+directly by the catch-all asset route, no extra routing needed). They are the
+SEO and direct-conversion surface that complements the live research tool.
+
+Guide "Check price" links route through `GET /api/go/search?q=<query>&ref=<slug>`,
+which appends the `AMAZON_ASSOCIATE_TAG` server-side (so the tag never lives in
+static files), records a best-effort click in `guide_clicks`, and 302-redirects
+to an Amazon search. The handler only ever builds `amazon.com` URLs, so there is
+no open-redirect surface.
+
+> Note: canonical URLs, Open Graph tags, and `sitemap.xml` use
+> `https://truerank.io`. Update that domain if you deploy elsewhere.
 
 ## Configuration
 

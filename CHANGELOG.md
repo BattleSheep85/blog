@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.1.0] - 2026-06-09
+
+### Added
+- High-end editorial design system: Newsreader serif headlines, Inter UI, JetBrains Mono numerals, CSS-variable theming (one `.dark` class flips every token), warm-paper light mode
+- Redesigned landing page and report page (verdict block with animated radial trust ring, comparison table, sourced citation chips with hover popovers, shimmer loading states)
+- Evergreen affiliate buying guides under `/best/` (NAS, mechanical keyboards, wireless earbuds, Synology vs QNAP) plus a guides hub
+- SEO: canonical tags, Open Graph/Twitter cards, JSON-LD (WebSite, BreadcrumbList, ItemList, FAQPage), `robots.txt`, `sitemap.xml`
+- `GET /api/go/search` affiliate redirect for static guides (server-side associate tag, best-effort click logging via new `guide_clicks` table, migration 002)
+- `?q=` deep-link prefill on the homepage search (guides link into a live report)
+
+### Changed
+- Repository renamed `blog` to `truerank`
+- Extracted all report rendering into a single shared module (`js/render.js`), removing the duplication between `app.js` and `report.js`
+- Accent color moved from emerald to editorial blue
+- `prefers-reduced-motion` is respected globally
+
+### Fixed
+- Theme toggle now present on the report permalink page
+- `escapeHtml()` no longer duplicated across frontend scripts
+
 ## [1.0.0] - 2026-04-07
 
 ### Added

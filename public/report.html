@@ -3,73 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Research Report — TrueRank</title>
-    <meta name="description" content="Honest product comparison report from TrueRank">
+    <title>Research report | TrueRank</title>
+    <meta name="description" content="An honest, sourced product comparison from TrueRank.">
+    <meta name="robots" content="noindex, follow">
+
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔍</text></svg>">
-    <script src="https://cdn.tailwindcss.com"></script>
+
     <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        trust: {
-                            high: '#22c55e',
-                            medium: '#eab308',
-                            low: '#ef4444',
-                        }
-                    }
-                }
-            }
-        }
+        (function () {
+            var t = localStorage.getItem('theme');
+            if (t === 'light') { document.documentElement.classList.remove('dark'); }
+            else if (t === 'dark') { document.documentElement.classList.add('dark'); }
+            else if (window.matchMedia('(prefers-color-scheme: light)').matches) { document.documentElement.classList.remove('dark'); }
+        })();
     </script>
-    <script src="/vendor/htmx.min.js"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/js/tailwind-config.js"></script>
     <link rel="stylesheet" href="/css/app.css">
 </head>
-<body class="bg-gray-950 text-gray-100 min-h-screen">
+<body class="bg-bg text-ink-2 font-sans antialiased min-h-screen">
 
     <!-- Header -->
-    <header class="border-b border-gray-800">
-        <div class="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
-            <a href="/" class="text-xl font-bold text-white">
-                <span class="text-emerald-400">True</span>Rank
-            </a>
-            <a href="/" class="text-sm text-gray-400 hover:text-white transition-colors">New search</a>
+    <header class="sticky top-0 z-40 border-b border-line bg-bg/80 backdrop-blur-md">
+        <div class="mx-auto flex h-16 max-w-5xl items-center justify-between px-6">
+            <a href="/" class="text-lg font-semibold tracking-tight text-ink">True<span class="font-serif italic text-accent">Rank</span></a>
+            <div class="flex items-center gap-6">
+                <a href="/" class="text-body-sm text-ink-2 transition-colors hover:text-ink">New search →</a>
+                <button id="theme-toggle" class="rounded-lg p-2 text-ink-3 transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60" aria-label="Toggle light and dark theme">
+                    <svg id="icon-moon" class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+                    <svg id="icon-sun" class="hidden h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                </button>
+            </div>
         </div>
     </header>
 
-    <main class="max-w-5xl mx-auto px-4 py-8">
-        <!-- Loading state -->
-        <div id="report-loading" class="text-center py-16">
-            <div class="animate-spin w-8 h-8 border-2 border-emerald-400 border-t-transparent rounded-full mx-auto mb-4"></div>
-            <p class="text-gray-400">Loading report...</p>
+    <main class="mx-auto max-w-5xl px-6 py-12">
+
+        <!-- Breadcrumb + title -->
+        <div class="mb-8">
+            <span class="text-overline uppercase text-accent">Research report</span>
+            <h1 id="report-heading" class="mt-2 font-serif text-h1 font-semibold text-ink">Research report</h1>
         </div>
 
-        <!-- Report content (filled by JS) -->
-        <div id="report-content" class="hidden">
-            <!-- Rendered by report.js -->
+        <!-- Loading -->
+        <div id="report-loading" class="py-8" role="status" aria-live="polite">
+            <div class="mb-6 flex items-center gap-3">
+                <span class="h-5 w-5 animate-spin rounded-full border-2 border-accent border-t-transparent" aria-hidden="true"></span>
+                <p class="font-serif text-h3 text-ink">Reading the reviews…</p>
+            </div>
+            <p data-loading-status class="mb-8 font-mono text-caption text-ink-3 num">Loading report…</p>
+            <div class="flex flex-col gap-5">
+                <div class="h-40 w-full animate-shimmer rounded-xl border border-line bg-surface-1 bg-gradient-to-r from-transparent via-surface-3/50 to-transparent bg-[length:200%_100%]"></div>
+                <div class="h-40 w-full animate-shimmer rounded-xl border border-line bg-surface-1 bg-gradient-to-r from-transparent via-surface-3/50 to-transparent bg-[length:200%_100%]"></div>
+            </div>
         </div>
 
-        <!-- Error state -->
-        <div id="report-error" class="hidden text-center py-16">
-            <h2 class="text-lg font-semibold text-red-400 mb-2">Report not found</h2>
-            <p class="text-gray-400 mb-4">This report may have expired or the ID is invalid.</p>
-            <a href="/" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 rounded-lg transition-colors inline-block">
-                Start new research
-            </a>
+        <!-- Report content (filled by render.js) -->
+        <div id="report-content" class="hidden" role="region" aria-label="Research report"></div>
+
+        <!-- Error -->
+        <div id="report-error" class="hidden py-16 text-center" role="alert">
+            <h2 class="mb-2 font-serif text-h2 font-semibold text-trust-low">Report not found</h2>
+            <p data-error-message class="mb-6 text-body text-ink-2">This report may have expired or the link is invalid.</p>
+            <a href="/" class="inline-flex items-center gap-2 rounded-lg bg-accent px-5 py-2.5 text-body-sm font-semibold text-white transition-colors hover:bg-accent-hover">Start new research</a>
         </div>
     </main>
 
     <!-- Footer -->
-    <footer class="border-t border-gray-800 mt-8">
-        <div class="max-w-5xl mx-auto px-4 py-6 text-center text-sm text-gray-500">
-            <p>
-                TrueRank contains affiliate links. If you buy through our links, we may earn a commission at no extra cost to you.
-                Our rankings are never influenced by affiliate relationships.
-            </p>
+    <footer class="border-t border-line">
+        <div class="mx-auto max-w-5xl px-6 py-10">
+            <p class="max-w-[80ch] text-caption text-ink-3">TrueRank contains affiliate links. If you buy through our links we may earn a commission at no extra cost to you. Our rankings are never influenced by affiliate relationships.</p>
         </div>
     </footer>
 
+    <script src="/js/render.js"></script>
     <script src="/js/app.js"></script>
     <script src="/js/report.js"></script>
 </body>

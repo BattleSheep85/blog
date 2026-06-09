@@ -1,140 +1,97 @@
-/* TrueRank — Custom styles beyond Tailwind */
+/* TrueRank - design tokens + base styles.
+   Editorial-authority system: serif headlines, sans UI, mono numerals.
+   Theming is done with CSS variables; a single `.dark` class on <html> flips
+   every token. Tailwind utilities (see js/tailwind-config.js) alias these vars
+   via color-mix so alpha modifiers (e.g. ring-accent/60) work. */
 
-/* Light mode overrides */
-html:not(.dark) body {
-    background-color: #f9fafb;
-    color: #111827;
+/* ----------------------------------------------------------------------------
+   Theme tokens. Dark is the default (html.dark). Light = html:not(.dark).
+---------------------------------------------------------------------------- */
+:root {
+    /* DARK theme */
+    --bg: #0B0C0E;
+    --surface-1: #121316;
+    --surface-2: #1A1C20;
+    --surface-3: #23262B;
+    --line: #2A2D33;
+    --line-strong: #3A3E45;
+    --ink: #F4F5F7;
+    --ink-2: #B9BFC9;
+    --ink-3: #898F9A;          /* darkened for WCAG AA on surfaces */
+    --accent: #3B82F6;
+    --accent-hover: #5C9CFF;
+    --accent-quiet: #13203A;
+    --trust-high: #34D399;
+    --trust-high-bg: #0F2A22;
+    --trust-medium: #FBBF24;
+    --trust-medium-bg: #2A2310;
+    --trust-low: #FB7185;
+    --trust-low-bg: #2C1418;
+    --xs: 0 1px 2px 0 rgb(0 0 0 / 0.30);
+    --card: 0 1px 0 rgb(0 0 0 / 0.40);
+    --lift: 0 8px 24px -6px rgb(0 0 0 / 0.50), 0 2px 6px -2px rgb(0 0 0 / 0.35);
 }
 
-html:not(.dark) header,
-html:not(.dark) footer {
-    border-color: #e5e7eb;
+html:not(.dark) {
+    /* LIGHT theme - warm paper */
+    --bg: #FBFBF9;
+    --surface-1: #FFFFFF;
+    --surface-2: #F4F4F1;
+    --surface-3: #ECECE7;
+    --line: #E4E3DD;
+    --line-strong: #CFCEC6;
+    --ink: #16181D;
+    --ink-2: #474B53;
+    --ink-3: #5F636B;          /* darkened for WCAG AA on warm paper */
+    --accent: #2563EB;
+    --accent-hover: #1D4ED8;
+    --accent-quiet: #EAF1FF;
+    --trust-high: #0A7A55;     /* darkened for WCAG AA on badge bg */
+    --trust-high-bg: #E6F6EF;
+    --trust-medium: #B45309;
+    --trust-medium-bg: #FBF1DD;
+    --trust-low: #C81840;      /* darkened for WCAG AA on badge bg */
+    --trust-low-bg: #FCE8EC;
+    --xs: 0 1px 2px 0 rgb(0 0 0 / 0.04);
+    --card: 0 1px 3px rgb(0 0 0 / 0.06), 0 1px 2px rgb(0 0 0 / 0.04);
+    --lift: 0 8px 24px -6px rgb(0 0 0 / 0.18), 0 2px 6px -2px rgb(0 0 0 / 0.10);
 }
 
-html:not(.dark) .bg-gray-900 {
-    background-color: #ffffff;
+/* ----------------------------------------------------------------------------
+   Base
+---------------------------------------------------------------------------- */
+html {
+    scroll-behavior: smooth;
 }
 
-html:not(.dark) .bg-gray-950 {
-    background-color: #f9fafb;
+body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--ink-2);
+    font-feature-settings: "cv05" 1, "tnum" 1;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
 }
 
-html:not(.dark) .border-gray-800 {
-    border-color: #e5e7eb;
+/* Tabular figures for any number that must align (scores, prices, counts). */
+.num {
+    font-variant-numeric: tabular-nums;
 }
 
-html:not(.dark) .border-gray-700 {
-    border-color: #d1d5db;
+/* Respect users who ask for less motion. Kills all animation/transition. */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    ::before,
+    ::after {
+        animation: none !important;
+        transition: none !important;
+        scroll-behavior: auto !important;
+    }
 }
 
-html:not(.dark) .text-gray-400 {
-    color: #6b7280;
-}
-
-html:not(.dark) .text-gray-500 {
-    color: #6b7280;
-}
-
-html:not(.dark) .text-white {
-    color: #111827;
-}
-
-html:not(.dark) input {
-    background-color: #ffffff;
-    border-color: #d1d5db;
-    color: #111827;
-}
-
-/* Trust score badges */
-.trust-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.25rem;
-    padding: 0.125rem 0.5rem;
-    border-radius: 9999px;
-    font-size: 0.75rem;
-    font-weight: 600;
-}
-
-.trust-badge.high {
-    background-color: rgba(34, 197, 94, 0.15);
-    color: #22c55e;
-}
-
-.trust-badge.medium {
-    background-color: rgba(234, 179, 8, 0.15);
-    color: #eab308;
-}
-
-.trust-badge.low {
-    background-color: rgba(239, 68, 68, 0.15);
-    color: #ef4444;
-}
-
-/* Product cards */
-.product-card {
-    background: linear-gradient(to bottom right, rgba(16, 185, 129, 0.05), transparent);
-    border: 1px solid rgba(75, 85, 99, 0.4);
-    border-radius: 0.75rem;
-    padding: 1.5rem;
-    transition: border-color 0.2s;
-}
-
-.product-card:hover {
-    border-color: rgba(16, 185, 129, 0.4);
-}
-
-.product-card .rank-badge {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 2rem;
-    height: 2rem;
-    border-radius: 0.5rem;
-    font-weight: 700;
-    font-size: 0.875rem;
-}
-
-.product-card .rank-badge.rank-1 {
-    background-color: rgba(234, 179, 8, 0.2);
-    color: #eab308;
-}
-
-.product-card .rank-badge.rank-2 {
-    background-color: rgba(156, 163, 175, 0.2);
-    color: #9ca3af;
-}
-
-.product-card .rank-badge.rank-3 {
-    background-color: rgba(180, 83, 9, 0.2);
-    color: #d97706;
-}
-
-.product-card .rank-badge.rank-other {
-    background-color: rgba(75, 85, 99, 0.2);
-    color: #6b7280;
-}
-
-/* Affiliate button */
-.affiliate-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.375rem;
-    padding: 0.5rem 1rem;
-    background-color: #f59e0b;
-    color: #000;
-    border-radius: 0.5rem;
-    font-weight: 600;
-    font-size: 0.875rem;
-    transition: background-color 0.2s;
-    text-decoration: none;
-}
-
-.affiliate-btn:hover {
-    background-color: #fbbf24;
-}
-
-/* Progress log */
+/* ----------------------------------------------------------------------------
+   Live "reading reviews" progress log
+---------------------------------------------------------------------------- */
 #progress-log .progress-entry {
     display: flex;
     align-items: flex-start;
@@ -142,49 +99,45 @@ html:not(.dark) input {
 }
 
 #progress-log .progress-entry::before {
-    content: ">";
-    color: #10b981;
+    content: "\203A"; /* > chevron */
+    color: var(--accent);
     flex-shrink: 0;
 }
 
-/* Source list */
-.source-item {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.5rem 0;
-    border-bottom: 1px solid rgba(75, 85, 99, 0.3);
-}
-
-.source-item:last-child {
-    border-bottom: none;
-}
-
-/* Smooth transitions */
-section {
-    transition: opacity 0.3s ease;
-}
-
-/* Print styles */
+/* ----------------------------------------------------------------------------
+   Print: force the light token set (dark is the default theme) so a printed
+   report is readable on white paper, then strip chrome. Interactive chrome is
+   also tagged with Tailwind's `print:hidden` in markup.
+---------------------------------------------------------------------------- */
 @media print {
-    header, footer, #search-form, .example-query, #how-it-works, .affiliate-btn {
-        display: none !important;
+    :root {
+        --bg: #FFFFFF;
+        --surface-1: #FFFFFF;
+        --surface-2: #F4F4F1;
+        --surface-3: #ECECE7;
+        --line: #E4E3DD;
+        --line-strong: #CFCEC6;
+        --ink: #16181D;
+        --ink-2: #474B53;
+        --ink-3: #5F636B;
+        --accent: #2563EB;
+        --accent-hover: #1D4ED8;
+        --accent-quiet: #EAF1FF;
+        --trust-high: #0A7A55;
+        --trust-high-bg: #E6F6EF;
+        --trust-medium: #B45309;
+        --trust-medium-bg: #FBF1DD;
+        --trust-low: #C81840;
+        --trust-low-bg: #FCE8EC;
     }
 
     body {
-        background: white;
-        color: black;
+        background: #fff;
+        color: #000;
     }
 
-    .product-card {
-        border: 1px solid #ccc;
+    article {
         break-inside: avoid;
-    }
-}
-
-/* Responsive fixes */
-@media (max-width: 640px) {
-    .product-card {
-        padding: 1rem;
+        border: 1px solid #ccc;
     }
 }
