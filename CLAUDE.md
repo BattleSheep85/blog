@@ -5,7 +5,7 @@ Product research web app that scrapes real reviews, filters out fakes/affiliate 
 and produces honest comparison reports. Monetized via affiliate links (Amazon Associates, etc.).
 
 ## Stack (ZERO package managers)
-- **Frontend**: Static HTML/CSS/JS, vendored htmx, Tailwind via CDN
+- **Frontend**: Static HTML/CSS/JS, Tailwind via CDN (no runtime JS dependencies)
 - **API**: Cloudflare Workers (plain JS, no npm)
 - **Database**: Cloudflare D1 (SQLite)
 - **Cache**: Cloudflare KV
@@ -30,7 +30,6 @@ Supply chain security is a hard requirement.
 - `/worker/pipeline/` — Research pipeline (search, analyze, synthesize, affiliate, orchestrator)
 - `/worker/handlers/` — HTTP route handlers (research, report, affiliate)
 - `/schema/` — D1 database migrations
-- `/vendor/` — Vendored JS libraries (htmx)
 
 ## Secrets (set via wrangler secret put)
 - OPENROUTER_API_KEY — free tier, no credit card needed

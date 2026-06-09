@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Synology vs QNAP (2026) | TrueRank</title>
+    <meta name="description" content="Synology vs QNAP in 2026, compared honestly. Software, hardware value, transcoding, and security track record across the key models, with a clear verdict on which to buy.">
+    <link rel="canonical" href="https://truerank.io/best/synology-vs-qnap/">
+    <meta name="robots" content="index, follow">
+
+    <meta property="og:type" content="article">
+    <meta property="og:site_name" content="TrueRank">
+    <meta property="og:title" content="Synology vs QNAP (2026) | TrueRank">
+    <meta property="og:description" content="Synology vs QNAP in 2026, compared honestly. Software, hardware value, transcoding, and security track record across the key models, with a clear verdict on which to buy.">
+    <meta property="og:url" content="https://truerank.io/best/synology-vs-qnap/">
+    <meta property="og:image" content="https://truerank.io/og.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://truerank.io/og.png">
+
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔍</text></svg>">
+
+    <script>
+        (function () {
+            var t = localStorage.getItem('theme');
+            if (t === 'light') { document.documentElement.classList.remove('dark'); }
+            else if (t === 'dark') { document.documentElement.classList.add('dark'); }
+            else if (window.matchMedia('(prefers-color-scheme: light)').matches) { document.documentElement.classList.remove('dark'); }
+        })();
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/css/tailwind.css">
+    <link rel="stylesheet" href="/css/app.css">
+
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://truerank.io/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Guides",
+      "item": "https://truerank.io/best/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Synology vs QNAP",
+      "item": "https://truerank.io/best/synology-vs-qnap/"
+    }
+  ]
+}
+    </script>
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "name": "Synology vs QNAP",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Synology DS923+"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "QNAP TS-464"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Synology DS224+"
+    },
+    {
+      "@type": "ListItem",
+      "position": 4,
+      "name": "QNAP TS-264"
+    },
+    {
+      "@type": "ListItem",
+      "position": 5,
+      "name": "Synology DS423+"
+    },
+    {
+      "@type": "ListItem",
+      "position": 6,
+      "name": "QNAP TS-673A"
+    }
+  ]
+}
+    </script>
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Synology or QNAP: which should I actually buy in 2026?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Buy Synology if you want the box to mostly manage itself, you like polished first-party apps (Photos, Drive, Hyper Backup), and a calmer security history matters to you. Buy QNAP if you want more hardware for the money, you need built-in hardware transcoding for Plex or Jellyfin, you want 2.5GbE and HDMI out as standard, or you plan to run lots of VMs and containers. For a typical home user who values simplicity, Synology edges it. For a media server or tinkerer on a budget, QNAP usually wins."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is QNAP safe to use given its ransomware history?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "It can be, but you have to do the work. QNAP has been hit by real, widely reported ransomware campaigns (Deadbolt and Qlocker among them), largely against devices exposed directly to the internet. If you keep QTS patched, never port-forward the admin interface, disable UPnP, use a VPN for remote access, and avoid exposing services directly, the practical risk drops a lot. Synology has had fewer major incidents, but no NAS is safe if you expose it carelessly. Treat any NAS as something that should sit behind a firewall, not on the open internet."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Do I need hardware transcoding, and which brand has it?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "You need it mainly for Plex or Jellyfin when clients cannot play a file directly and the server must convert it on the fly, especially for 4K or multiple simultaneous streams. The Intel-based QNAP units here (TS-264, TS-464) include an integrated GPU that does this well. The Synology Plus models in this guide use AMD CPUs without an iGPU, so they do not hardware transcode. If your devices can direct-play your files (common with modern apps and good clients), transcoding matters far less and Synology's other strengths come back into play."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How does TrueRank make money?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Affiliate links. If you buy through one of our Amazon search links we may earn a small commission at no extra cost to you. That commission never changes our rankings, our trust scores, or which products we recommend. We picked the DS923+ as our top overall and the QNAP TS-464 as best value based on software, hardware value, transcoding, and security track record, not on which one pays more. If a product is the right call we say so, and we always list at least one real downside for every pick."
+      }
+    }
+  ]
+}
+    </script>
+</head>
+<body class="bg-bg text-ink-2 font-sans antialiased min-h-screen">
+
+    <header class="sticky top-0 z-40 border-b border-line bg-bg/80 backdrop-blur-md">
+        <div class="mx-auto flex h-16 max-w-5xl items-center justify-between px-6">
+            <a href="/" class="text-lg font-semibold tracking-tight text-ink">True<span class="font-serif italic text-accent">Rank</span></a>
+            <nav class="flex items-center gap-6">
+                <a href="/#how-it-works" class="hidden text-body-sm text-ink-2 transition-colors hover:text-ink sm:inline">How it works</a>
+                <a href="/best/" class="hidden text-body-sm text-ink-2 transition-colors hover:text-ink sm:inline">Guides</a>
+                <button id="theme-toggle" class="rounded-lg p-2 text-ink-3 transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60" aria-label="Toggle light and dark theme">
+                    <svg id="icon-moon" class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+                    <svg id="icon-sun" class="hidden h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="mx-auto max-w-5xl px-6 py-12 md:py-16">
+
+        <!-- Breadcrumb -->
+        <nav class="mb-6 flex items-center gap-2 text-caption text-ink-3" aria-label="Breadcrumb">
+            <a href="/" class="hover:text-ink">Home</a><span>/</span>
+            <a href="/best/" class="hover:text-ink">Guides</a><span>/</span>
+            <span class="text-ink-2">Comparison</span>
+        </nav>
+
+        <!-- Hero -->
+        <header class="mb-10 flex flex-col gap-4">
+            <span class="text-overline uppercase text-accent">Comparison guide</span>
+            <h1 class="font-serif text-h1 font-semibold text-ink">Synology vs QNAP</h1>
+            <p class="max-w-[68ch] text-lead text-ink-2">For most home and small-office buyers in 2026 Synology wins on software polish and a cleaner security track record, but QNAP wins on raw hardware value and transcoding, so the DS923+ is our overall pick while the QNAP TS-464 takes the value crown.</p>
+            <p class="font-mono text-caption text-ink-3 num">Updated June 2026 · 6 picks compared · every weakness listed</p>
+        </header>
+
+        <!-- Intro -->
+        <section class="mb-12 max-w-[68ch]">
+            <p class="text-body text-ink-2">This is a head to head, not a popularity contest. Synology and QNAP both make solid NAS boxes, and the right answer depends entirely on what you value. Synology bets on its DSM operating system, a tight app ecosystem, and a conservative, locked-down approach (including a controversial move toward verified drives on some newer models). QNAP undercuts on price, ships more powerful hardware (faster CPUs, 2.5GbE, sometimes built-in HDMI), and is far more flexible, but its software is busier and its security history is rougher. Below are the representative models on each side so you can match the box to your actual needs rather than the brand hype.</p>
+            <p class="mt-4 text-caption text-ink-3">Trust scores on this page are our editorial judgement. For scores built from the latest sources, run a live TrueRank report.</p>
+        </section>
+
+        <!-- Comparison table -->
+        <section class="mb-12">
+            <header class="mb-6 flex flex-col gap-2"><span class="text-overline uppercase text-accent">Side by side</span><h2 class="font-serif text-h2 font-semibold text-ink">The short version</h2></header>
+            <div class="overflow-x-auto rounded-xl border border-line">
+                <table class="w-full border-collapse">
+                    <caption class="sr-only">Product comparison</caption>
+                    <thead class="border-b border-line-strong"><tr>
+                        <th scope="col" class="bg-surface-2 px-4 py-3 text-left text-overline uppercase text-ink-3">Product</th>
+                        <th scope="col" class="bg-surface-2 px-4 py-3 text-left text-overline uppercase text-ink-3">Trust</th>
+                        <th scope="col" class="bg-surface-2 px-4 py-3 text-left text-overline uppercase text-ink-3">Price</th>
+                        <th scope="col" class="bg-surface-2 px-4 py-3 text-left text-overline uppercase text-ink-3">Best for</th>
+                        <th scope="col" class="bg-surface-2 px-4 py-3"><span class="sr-only">Buy</span></th>
+                    </tr></thead>
+                    <tbody>
+              <tr class="border-b border-line transition-colors hover:bg-surface-2/60">
+                <td class="px-4 py-4"><div class="flex items-center gap-3"><span class="font-mono text-caption text-ink-3 num">#1</span><div><a href="#pick-1" class="font-sans text-body font-medium text-ink hover:text-accent">Synology DS923+</a><div class="text-caption text-ink-3">Top pick</div></div></div></td>
+                <td class="px-4 py-4"><span class="inline-flex items-center gap-1.5 rounded-full bg-trust-high-bg px-2.5 py-1 font-mono text-caption font-medium text-trust-high num"><span class="h-1.5 w-1.5 rounded-full bg-trust-high"></span>91</span></td>
+                <td class="px-4 py-4 font-mono text-body text-ink num">$600 (diskless, before drives)</td>
+                <td class="px-4 py-4 font-sans text-body-sm text-ink-2">Home and small-office users who value DSM software and reliability over raw specs</td>
+                <td class="px-4 py-4 text-right"><a href="/api/go/search?q=Synology%20DS923%2B%204-bay%20NAS%20diskless&amp;ref=synology-vs-qnap" target="_blank" rel="sponsored nofollow noopener" class="whitespace-nowrap font-sans text-body-sm font-semibold text-accent hover:text-accent-hover">Check price &rarr;</a></td>
+              </tr>
+              <tr class="border-b border-line transition-colors hover:bg-surface-2/60">
+                <td class="px-4 py-4"><div class="flex items-center gap-3"><span class="font-mono text-caption text-ink-3 num">#2</span><div><a href="#pick-2" class="font-sans text-body font-medium text-ink hover:text-accent">QNAP TS-464</a><div class="text-caption text-ink-3">Best value</div></div></div></td>
+                <td class="px-4 py-4"><span class="inline-flex items-center gap-1.5 rounded-full bg-trust-high-bg px-2.5 py-1 font-mono text-caption font-medium text-trust-high num"><span class="h-1.5 w-1.5 rounded-full bg-trust-high"></span>85</span></td>
+                <td class="px-4 py-4 font-mono text-body text-ink num">$580 (diskless, before drives)</td>
+                <td class="px-4 py-4 font-sans text-body-sm text-ink-2">Value hunters and media servers (Plex/Jellyfin) who want transcoding and 2.5GbE</td>
+                <td class="px-4 py-4 text-right"><a href="/api/go/search?q=QNAP%20TS-464%204-bay%20NAS%20diskless&amp;ref=synology-vs-qnap" target="_blank" rel="sponsored nofollow noopener" class="whitespace-nowrap font-sans text-body-sm font-semibold text-accent hover:text-accent-hover">Check price &rarr;</a></td>
+              </tr>
+              <tr class="border-b border-line transition-colors hover:bg-surface-2/60">
+                <td class="px-4 py-4"><div class="flex items-center gap-3"><span class="font-mono text-caption text-ink-3 num">#3</span><div><a href="#pick-3" class="font-sans text-body font-medium text-ink hover:text-accent">Synology DS224+</a><div class="text-caption text-ink-3">Best budget Synology</div></div></div></td>
+                <td class="px-4 py-4"><span class="inline-flex items-center gap-1.5 rounded-full bg-trust-high-bg px-2.5 py-1 font-mono text-caption font-medium text-trust-high num"><span class="h-1.5 w-1.5 rounded-full bg-trust-high"></span>83</span></td>
+                <td class="px-4 py-4 font-mono text-body text-ink num">$300 (diskless, before drives)</td>
+                <td class="px-4 py-4 font-sans text-body-sm text-ink-2">First-time buyers who want DSM for backups, files, and light photo duties</td>
+                <td class="px-4 py-4 text-right"><a href="/api/go/search?q=Synology%20DS224%2B%202-bay%20NAS&amp;ref=synology-vs-qnap" target="_blank" rel="sponsored nofollow noopener" class="whitespace-nowrap font-sans text-body-sm font-semibold text-accent hover:text-accent-hover">Check price &rarr;</a></td>
+              </tr>
+              <tr class="border-b border-line transition-colors hover:bg-surface-2/60">
+                <td class="px-4 py-4"><div class="flex items-center gap-3"><span class="font-mono text-caption text-ink-3 num">#4</span><div><a href="#pick-4" class="font-sans text-body font-medium text-ink hover:text-accent">QNAP TS-264</a><div class="text-caption text-ink-3">Best budget QNAP</div></div></div></td>
+                <td class="px-4 py-4"><span class="inline-flex items-center gap-1.5 rounded-full bg-trust-high-bg px-2.5 py-1 font-mono text-caption font-medium text-trust-high num"><span class="h-1.5 w-1.5 rounded-full bg-trust-high"></span>80</span></td>
+                <td class="px-4 py-4 font-mono text-body text-ink num">$450 (diskless, before drives)</td>
+                <td class="px-4 py-4 font-sans text-body-sm text-ink-2">Budget media servers and tinkerers who want power and ports for less</td>
+                <td class="px-4 py-4 text-right"><a href="/api/go/search?q=QNAP%20TS-264%202-bay%20NAS&amp;ref=synology-vs-qnap" target="_blank" rel="sponsored nofollow noopener" class="whitespace-nowrap font-sans text-body-sm font-semibold text-accent hover:text-accent-hover">Check price &rarr;</a></td>
+              </tr>
+              <tr class="border-b border-line transition-colors hover:bg-surface-2/60">
+                <td class="px-4 py-4"><div class="flex items-center gap-3"><span class="font-mono text-caption text-ink-3 num">#5</span><div><a href="#pick-5" class="font-sans text-body font-medium text-ink hover:text-accent">Synology DS423+</a><div class="text-caption text-ink-3">Best for first-party apps</div></div></div></td>
+                <td class="px-4 py-4"><span class="inline-flex items-center gap-1.5 rounded-full bg-trust-high-bg px-2.5 py-1 font-mono text-caption font-medium text-trust-high num"><span class="h-1.5 w-1.5 rounded-full bg-trust-high"></span>82</span></td>
+                <td class="px-4 py-4 font-mono text-body text-ink num">$430 (diskless, before drives)</td>
+                <td class="px-4 py-4 font-sans text-body-sm text-ink-2">Households wanting a 4-bay DSM box for Synology Photos and backups, not transcoding</td>
+                <td class="px-4 py-4 text-right"><a href="/api/go/search?q=Synology%20DS423%2B%204-bay%20NAS&amp;ref=synology-vs-qnap" target="_blank" rel="sponsored nofollow noopener" class="whitespace-nowrap font-sans text-body-sm font-semibold text-accent hover:text-accent-hover">Check price &rarr;</a></td>
+              </tr>
+              <tr class="border-b border-line transition-colors hover:bg-surface-2/60">
+                <td class="px-4 py-4"><div class="flex items-center gap-3"><span class="font-mono text-caption text-ink-3 num">#6</span><div><a href="#pick-6" class="font-sans text-body font-medium text-ink hover:text-accent">QNAP TS-673A</a><div class="text-caption text-ink-3">Premium pick</div></div></div></td>
+                <td class="px-4 py-4"><span class="inline-flex items-center gap-1.5 rounded-full bg-trust-high-bg px-2.5 py-1 font-mono text-caption font-medium text-trust-high num"><span class="h-1.5 w-1.5 rounded-full bg-trust-high"></span>84</span></td>
+                <td class="px-4 py-4 font-mono text-body text-ink num">$900 (diskless, before drives)</td>
+                <td class="px-4 py-4 font-sans text-body-sm text-ink-2">Power users running VMs, containers, and heavy multi-user workloads</td>
+                <td class="px-4 py-4 text-right"><a href="/api/go/search?q=QNAP%20TS-673A%206-bay%20NAS&amp;ref=synology-vs-qnap" target="_blank" rel="sponsored nofollow noopener" class="whitespace-nowrap font-sans text-body-sm font-semibold text-accent hover:text-accent-hover">Check price &rarr;</a></td>
+              </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="mt-3 text-caption text-ink-3">We earn a commission if you buy through these links. It does not change the ranking.</p>
+        </section>
+
+        <!-- Pick cards -->
+        <section class="mb-12">
+            <header class="mb-6 flex flex-col gap-2"><span class="text-overline uppercase text-accent">The picks</span><h2 class="font-serif text-h2 font-semibold text-ink">Every choice, with its trade-offs</h2></header>
+            <div class="flex flex-col gap-5">
+        <article id="pick-1" class="group relative flex flex-col gap-4 rounded-xl border border-line bg-surface-1 p-6 shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:border-line-strong hover:shadow-lift">
+          <div class="flex flex-wrap items-start justify-between gap-3">
+            <div class="flex flex-col gap-2">
+              <div class="flex items-center gap-2">
+                <span class="font-mono text-caption text-ink-3 num">#1</span>
+                <span class="inline-flex items-center rounded-full bg-accent-quiet px-2.5 py-1 text-overline uppercase text-accent">Top pick</span>
+              </div>
+              <h3 class="font-serif text-h3 font-semibold text-ink">Synology DS923+</h3>
+              <p class="max-w-[60ch] text-body-sm text-ink-2">The best-rounded 4-bay for people who want a NAS that mostly runs itself with the least drama.</p>
+            </div>
+            <span class="inline-flex items-center gap-1.5 rounded-full bg-trust-high-bg px-2.5 py-1 font-mono text-mono-data font-medium text-trust-high num"><span class="h-1.5 w-1.5 rounded-full bg-trust-high"></span>Trust 91</span>
+          </div>
+          <div class="flex items-center gap-3"><div class="h-1.5 w-28 overflow-hidden rounded-full bg-surface-2"><div class="h-full rounded-full bg-trust-high" style="width:91%"></div></div><span class="font-mono text-caption font-medium text-ink-2 num">91<span class="text-ink-3">/100</span></span></div>
+          <div class="grid gap-5 md:grid-cols-2">
+            <div><h4 class="mb-2 text-overline uppercase text-ink-3">What holds up</h4><ul class="flex flex-col gap-1.5 text-body-sm text-ink-2"><li class="flex gap-2"><span class="mt-0.5 shrink-0 text-trust-high">+</span><span>DSM is the most polished, beginner-friendly NAS OS available</span></li><li class="flex gap-2"><span class="mt-0.5 shrink-0 text-trust-high">+</span><span>Strong, mature first-party apps (Synology Photos, Drive, Hyper Backup)</span></li><li class="flex gap-2"><span class="mt-0.5 shrink-0 text-trust-high">+</span><span>ECC memory support and an optional 10GbE upgrade slot</span></li><li class="flex gap-2"><span class="mt-0.5 shrink-0 text-trust-high">+</span><span>Cleaner security and patch-response track record than QNAP</span></li></ul></div>
+            <div><h4 class="mb-2 text-overline uppercase text-ink-3">Where it falls short</h4><ul class="flex flex-col gap-1.5 text-body-sm text-ink-2"><li class="flex gap-2"><span class="mt-0.5 shrink-0 text-trust-low">−</span><span>AMD Ryzen R1600 has no integrated GPU, so no hardware video transcoding</span></li><li class="flex gap-2"><span class="mt-0.5 shrink-0 text-trust-low">−</span><span>Pricey for the specs, and only 1GbE ports out of the box in 2026</span></li><li class="flex gap-2"><span class="mt-0.5 shrink-0 text-trust-low">−</span><span>Synology has been tightening its drive-compatibility policy, which limits HDD choice</span></li></ul></div>
+          </div>
+          <div class="mt-auto flex flex-wrap items-center justify-between gap-3 border-t border-line pt-4">
+            <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-body-sm">
+              <span><span class="text-ink-3">Best for </span><span class="text-ink-2">Home and small-office users who value DSM software and reliability over raw specs</span></span>
+              <span class="font-mono text-ink num">$600 (diskless, before drives)</span>
+            </div>
+            <a href="/api/go/search?q=Synology%20DS923%2B%204-bay%20NAS%20diskless&amp;ref=synology-vs-qnap" target="_blank" rel="sponsored nofollow noopener" class="inline-flex items-center justify-center gap-1.5 rounded-lg bg-accent-strong px-4 py-2 text-body-sm font-semibold text-white transition-colors hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-1 ">Check price<svg class="h-3.5 w-3.5" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 17L17 7M17 7H9M17 7v8"/></svg></a>
+          </div>
+        </article>
+        <article id="pick-2" class="group relative flex flex-col gap-4 rounded-xl border border-line bg-surface-1 p-6 shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:border-line-strong hover:shadow-lift">
+          <div class="flex flex-wrap items-start justify-between gap-3">
+            <div class="flex flex-col gap-2">
+              <div class="flex items-center gap-2">
+                <span class="font-mono text-caption text-ink-3 num">#2</span>
+                <span class="inline-flex items-center rounded-full bg-accent-quiet px-2.5 py-1 text-overline uppercase text-accent">Best value</span>
+              </div>
+              <h3 class="font-serif text-h3 font-semibold text-ink">QNAP TS-464</h3>
+              <p class="max-w-[60ch] text-body-sm text-ink-2">More hardware for the money than the Synology equivalent, with proper hardware transcoding built in.</p>
+            </div>
+            <span class="inline-flex items-center gap-1.5 rounded-full bg-trust-high-bg px-2.5 py-1 font-mono text-mono-data font-medium text-trust-high num"><span class="h-1.5 w-1.5 rounded-full bg-trust-high"></span>Trust 85</span>
+          </div>
+          <div class="flex items-center gap-3"><div class="h-1.5 w-28 overflow-hidden rounded-full bg-surface-2"><div class="h-full rounded-full bg-trust-high" style="width:85%"></div></div><span class="font-mono text-caption font-medium text-ink-2 num">85<span class="text-ink-3">/100</span></span></div>
+          <div class="grid gap-5 md:grid-cols-2">
+            <div><h4 class="mb-2 text-overline uppercase text-ink-3">What holds up</h4><ul class="flex flex-col gap-1.5 text-body-sm text-ink-2"><li class="flex gap-2"><span class="mt-0.5 shrink-0 text-trust-high">+</span><span>Intel Celeron N5095 with an iGPU handles hardware video transcoding well</span></li><li class="flex gap-2"><span class="mt-0.5 shrink-0 text-trust-high">+</span><span>Dual 2.5GbE ports and two M.2 NVMe slots at this price</span></li><li class="flex gap-2"><span class="mt-0.5 shrink-0 text-trust-high">+</span><span>HDMI out for direct media playback or a local console</span></li><li class="flex gap-2"><span class="mt-0.5 shrink-0 text-trust-high">+</span><span>Open about third-party drive use, so you buy whatever disks you want</span></li></ul></div>
+            <div><h4 class="mb-2 text-overline uppercase text-ink-3">Where it falls short</h4><ul class="flex flex-col gap-1.5 text-body-sm text-ink-2"><li class="flex gap-2"><span class="mt-0.5 shrink-0 text-trust-low">−</span><span>QTS is more cluttered and has a steeper learning curve than DSM</span></li><li class="flex gap-2"><span class="mt-0.5 shrink-0 text-trust-low">−</span><span>QNAP's security history includes serious ransomware campaigns (Deadbolt, Qlocker)</span></li><li class="flex gap-2"><span class="mt-0.5 shrink-0 text-trust-low">−</span><span>First-party app polish trails Synology, especially photo and backup apps</span></li></ul></div>
+          </div>
+          <div class="mt-auto flex flex-wrap items-center justify-between gap-3 border-t border-line pt-4">
+            <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-body-sm">
+              <span><span class="text-ink-3">Best for </span><span class="text-ink-2">Value hunters and media servers (Plex/Jellyfin) who want transcoding and 2.5GbE</span></span>
+              <span class="font-mono text-ink num">$580 (diskless, before drives)</span>
+            </div>
+            <a href="/api/go/search?q=QNAP%20TS-464%204-bay%20NAS%20diskless&amp;ref=synology-vs-qnap" target="_blank" rel="sponsored nofollow noopener" class="inline-flex items-center justify-center gap-1.5 rounded-lg bg-accent-strong px-4 py-2 text-body-sm font-semibold text-white transition-colors hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-1 ">Check price<svg class="h-3.5 w-3.5" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 17L17 7M17 7H9M17 7v8"/></svg></a>
+          </div>
+        </article>
+        <article id="pick-3" class="group relative flex flex-col gap-4 rounded-xl border border-line bg-surface-1 p-6 shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:border-line-strong hover:shadow-lift">
+          <div class="flex flex-wrap items-start justify-between gap-3">
+            <div class="flex flex-col gap-2">
+              <div class="flex items-center gap-2">
+                <span class="font-mono text-caption text-ink-3 num">#3</span>
+                <span class="inline-flex items-center rounded-full bg-accent-quiet px-2.5 py-1 text-overline uppercase text-accent">Best budget Synology</span>
+              </div>
+              <h3 class="font-serif text-h3 font-semibold text-ink">Synology DS224+</h3>
+              <p class="max-w-[60ch] text-body-sm text-ink-2">The simplest, cheapest way into the DSM ecosystem for backups and file sharing.</p>
+            </div>
+            <span class="inline-flex items-center gap-1.5 rounded-full bg-trust-high-bg px-2.5 py-1 font-mono text-mono-data font-medium text-trust-high num"><span class="h-1.5 w-1.5 rounded-full bg-trust-high"></span>Trust 83</span>
+          </div>
+          <div class="flex items-center gap-3"><div class="h-1.5 w-28 overflow-hidden rounded-full bg-surface-2"><div class="h-full rounded-full bg-trust-high" style="width:83%"></div></div><span class="font-mono text-caption font-medium text-ink-2 num">83<span class="text-ink-3">/100</span></span></div>
+          <div class="grid gap-5 md:grid-cols-2">
+            <div><h4 class="mb-2 text-overline uppercase text-ink-3">What holds up</h4><ul class="flex flex-col gap-1.5 text-body-sm text-ink-2"><li class="flex gap-2"><span class="mt-0.5 shrink-0 text-trust-high">+</span><span>Same well-regarded DSM experience at an entry price</span></li><li class="flex gap-2"><span class="mt-0.5 shrink-0 text-trust-high">+</span><span>Two 2.5GbE ports, a nice step up for a budget 2-bay</span></li><li class="flex gap-2"><span class="mt-0.5 shrink-0 text-trust-high">+</span><span>Low power draw and quiet, good as an always-on appliance</span></li></ul></div>
+            <div><h4 class="mb-2 text-overline uppercase text-ink-3">Where it falls short</h4><ul class="flex flex-col gap-1.5 text-body-sm text-ink-2"><li class="flex gap-2"><span class="mt-0.5 shrink-0 text-trust-low">−</span><span>Intel Celeron J4125 is modest and not meant for heavy multi-stream transcoding</span></li><li class="flex gap-2"><span class="mt-0.5 shrink-0 text-trust-low">−</span><span>Only 2 bays, so storage headroom runs out fast</span></li><li class="flex gap-2"><span class="mt-0.5 shrink-0 text-trust-low">−</span><span>RAM tops out at 6GB, limiting how many apps and containers you run</span></li></ul></div>
+          </div>
+          <div class="mt-auto flex flex-wrap items-center justify-between gap-3 border-t border-line pt-4">
+            <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-body-sm">
+              <span><span class="text-ink-3">Best for </span><span class="text-ink-2">First-time buyers who want DSM for backups, files, and light photo duties</span></span>
+              <span class="font-mono text-ink num">$300 (diskless, before drives)</span>
+            </div>
+            <a href="/api/go/search?q=Synology%20DS224%2B%202-bay%20NAS&amp;ref=synology-vs-qnap" target="_blank" rel="sponsored nofollow noopener" class="inline-flex items-center justify-center gap-1.5 rounded-lg bg-accent-strong px-4 py-2 text-body-sm font-semibold text-white transition-colors hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-1 ">Check price<svg class="h-3.5 w-3.5" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 17L17 7M17 7H9M17 7v8"/></svg></a>
+          </div>
+        </article>
+        <article id="pick-4" class="group relative flex flex-col gap-4 rounded-xl border border-line bg-surface-1 p-6 shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:border-line-strong hover:shadow-lift">
+          <div class="flex flex-wrap items-start justify-between gap-3">
+            <div class="flex flex-col gap-2">
+              <div class="flex items-center gap-2">
+                <span class="font-mono text-caption text-ink-3 num">#4</span>
+                <span class="inline-flex items-center rounded-full bg-accent-quiet px-2.5 py-1 text-overline uppercase text-accent">Best budget QNAP</span>
+              </div>
+              <h3 class="font-serif text-h3 font-semibold text-ink">QNAP TS-264</h3>
+              <p class="max-w-[60ch] text-body-sm text-ink-2">A punchy little 2-bay that out-specs its Synology rival, if you can stomach QTS.</p>
+            </div>
+            <span class="inline-flex items-center gap-1.5 rounded-full bg-trust-high-bg px-2.5 py-1 font-mono text-mono-data font-medium text-trust-high num"><span class="h-1.5 w-1.5 rounded-full bg-trust-high"></span>Trust 80</span>
+          </div>
+          <div class="flex items-center gap-3"><div class="h-1.5 w-28 overflow-hidden rounded-full bg-surface-2"><div class="h-full rounded-full bg-trust-high" style="width:80%"></div></div><span class="font-mono text-caption font-medium text-ink-2 num">80<span class="text-ink-3">/100</span></span></div>
+          <div class="grid gap-5 md:grid-cols-2">
+            <div><h4 class="mb-2 text-overline uppercase text-ink-3">What holds up</h4><ul class="flex flex-col gap-1.5 text-body-sm text-ink-2"><li class="flex gap-2"><span class="mt-0.5 shrink-0 text-trust-high">+</span><span>Intel Celeron N5095 with iGPU gives real hardware transcoding in a 2-bay</span></li><li class="flex gap-2"><span class="mt-0.5 shrink-0 text-trust-high">+</span><span>Dual 2.5GbE plus a PCIe slot for 10GbE or extra NVMe</span></li><li class="flex gap-2"><span class="mt-0.5 shrink-0 text-trust-high">+</span><span>HDMI 2.0 out for local 4K playback</span></li></ul></div>
+            <div><h4 class="mb-2 text-overline uppercase text-ink-3">Where it falls short</h4><ul class="flex flex-col gap-1.5 text-body-sm text-ink-2"><li class="flex gap-2"><span class="mt-0.5 shrink-0 text-trust-low">−</span><span>QTS interface is overwhelming for a first-time NAS owner</span></li><li class="flex gap-2"><span class="mt-0.5 shrink-0 text-trust-low">−</span><span>Inherits QNAP's weaker security reputation, so internet exposure needs care</span></li><li class="flex gap-2"><span class="mt-0.5 shrink-0 text-trust-low">−</span><span>Costs more than the DS224+ while asking more of the user</span></li></ul></div>
+          </div>
+          <div class="mt-auto flex flex-wrap items-center justify-between gap-3 border-t border-line pt-4">
+            <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-body-sm">
+              <span><span class="text-ink-3">Best for </span><span class="text-ink-2">Budget media servers and tinkerers who want power and ports for less</span></span>
+              <span class="font-mono text-ink num">$450 (diskless, before drives)</span>
+            </div>
+            <a href="/api/go/search?q=QNAP%20TS-264%202-bay%20NAS&amp;ref=synology-vs-qnap" target="_blank" rel="sponsored nofollow noopener" class="inline-flex items-center justify-center gap-1.5 rounded-lg bg-accent-strong px-4 py-2 text-body-sm font-semibold text-white transition-colors hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-1 ">Check price<svg class="h-3.5 w-3.5" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 17L17 7M17 7H9M17 7v8"/></svg></a>
+          </div>
+        </article>
+        <article id="pick-5" class="group relative flex flex-col gap-4 rounded-xl border border-line bg-surface-1 p-6 shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:border-line-strong hover:shadow-lift">
+          <div class="flex flex-wrap items-start justify-between gap-3">
+            <div class="flex flex-col gap-2">
+              <div class="flex items-center gap-2">
+                <span class="font-mono text-caption text-ink-3 num">#5</span>
+                <span class="inline-flex items-center rounded-full bg-accent-quiet px-2.5 py-1 text-overline uppercase text-accent">Best for first-party apps</span>
+              </div>
+              <h3 class="font-serif text-h3 font-semibold text-ink">Synology DS423+</h3>
+              <p class="max-w-[60ch] text-body-sm text-ink-2">A 4-bay that leans on DSM and dual NVMe cache for a smooth files-and-photos hub.</p>
+            </div>
+            <span class="inline-flex items-center gap-1.5 rounded-full bg-trust-high-bg px-2.5 py-1 font-mono text-mono-data font-medium text-trust-high num"><span class="h-1.5 w-1.5 rounded-full bg-trust-high"></span>Trust 82</span>
+          </div>
+          <div class="flex items-center gap-3"><div class="h-1.5 w-28 overflow-hidden rounded-full bg-surface-2"><div class="h-full rounded-full bg-trust-high" style="width:82%"></div></div><span class="font-mono text-caption font-medium text-ink-2 num">82<span class="text-ink-3">/100</span></span></div>
+          <div class="grid gap-5 md:grid-cols-2">
+            <div><h4 class="mb-2 text-overline uppercase text-ink-3">What holds up</h4><ul class="flex flex-col gap-1.5 text-body-sm text-ink-2"><li class="flex gap-2"><span class="mt-0.5 shrink-0 text-trust-high">+</span><span>Four bays plus two M.2 NVMe cache slots for snappier everyday use</span></li><li class="flex gap-2"><span class="mt-0.5 shrink-0 text-trust-high">+</span><span>Excellent Synology Photos and Drive experience for family use</span></li><li class="flex gap-2"><span class="mt-0.5 shrink-0 text-trust-high">+</span><span>Quiet and power-efficient for 24/7 operation</span></li></ul></div>
+            <div><h4 class="mb-2 text-overline uppercase text-ink-3">Where it falls short</h4><ul class="flex flex-col gap-1.5 text-body-sm text-ink-2"><li class="flex gap-2"><span class="mt-0.5 shrink-0 text-trust-low">−</span><span>Celeron J4125 and only 1GbE ports feel dated for the price in 2026</span></li><li class="flex gap-2"><span class="mt-0.5 shrink-0 text-trust-low">−</span><span>No meaningful hardware transcoding for demanding Plex setups</span></li><li class="flex gap-2"><span class="mt-0.5 shrink-0 text-trust-low">−</span><span>RAM ceiling of 6GB limits container and VM ambitions</span></li></ul></div>
+          </div>
+          <div class="mt-auto flex flex-wrap items-center justify-between gap-3 border-t border-line pt-4">
+            <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-body-sm">
+              <span><span class="text-ink-3">Best for </span><span class="text-ink-2">Households wanting a 4-bay DSM box for Synology Photos and backups, not transcoding</span></span>
+              <span class="font-mono text-ink num">$430 (diskless, before drives)</span>
+            </div>
+            <a href="/api/go/search?q=Synology%20DS423%2B%204-bay%20NAS&amp;ref=synology-vs-qnap" target="_blank" rel="sponsored nofollow noopener" class="inline-flex items-center justify-center gap-1.5 rounded-lg bg-accent-strong px-4 py-2 text-body-sm font-semibold text-white transition-colors hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-1 ">Check price<svg class="h-3.5 w-3.5" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 17L17 7M17 7H9M17 7v8"/></svg></a>
+          </div>
+        </article>
+        <article id="pick-6" class="group relative flex flex-col gap-4 rounded-xl border border-line bg-surface-1 p-6 shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:border-line-strong hover:shadow-lift">
+          <div class="flex flex-wrap items-start justify-between gap-3">
+            <div class="flex flex-col gap-2">
+              <div class="flex items-center gap-2">
+                <span class="font-mono text-caption text-ink-3 num">#6</span>
+                <span class="inline-flex items-center rounded-full bg-accent-quiet px-2.5 py-1 text-overline uppercase text-accent">Premium pick</span>
+              </div>
+              <h3 class="font-serif text-h3 font-semibold text-ink">QNAP TS-673A</h3>
+              <p class="max-w-[60ch] text-body-sm text-ink-2">The flexible power-user choice when you want bays, cores, and 2.5GbE without paying Synology rack prices.</p>
+            </div>
+            <span class="inline-flex items-center gap-1.5 rounded-full bg-trust-high-bg px-2.5 py-1 font-mono text-mono-data font-medium text-trust-high num"><span class="h-1.5 w-1.5 rounded-full bg-trust-high"></span>Trust 84</span>
+          </div>
+          <div class="flex items-center gap-3"><div class="h-1.5 w-28 overflow-hidden rounded-full bg-surface-2"><div class="h-full rounded-full bg-trust-high" style="width:84%"></div></div><span class="font-mono text-caption font-medium text-ink-2 num">84<span class="text-ink-3">/100</span></span></div>
+          <div class="grid gap-5 md:grid-cols-2">
+            <div><h4 class="mb-2 text-overline uppercase text-ink-3">What holds up</h4><ul class="flex flex-col gap-1.5 text-body-sm text-ink-2"><li class="flex gap-2"><span class="mt-0.5 shrink-0 text-trust-high">+</span><span>AMD Ryzen V1500B (8 threads) handles VMs and containers comfortably</span></li><li class="flex gap-2"><span class="mt-0.5 shrink-0 text-trust-high">+</span><span>Six bays plus dual 2.5GbE and PCIe expansion room</span></li><li class="flex gap-2"><span class="mt-0.5 shrink-0 text-trust-high">+</span><span>Strong value per dollar against comparable Synology Plus and rack units</span></li></ul></div>
+            <div><h4 class="mb-2 text-overline uppercase text-ink-3">Where it falls short</h4><ul class="flex flex-col gap-1.5 text-body-sm text-ink-2"><li class="flex gap-2"><span class="mt-0.5 shrink-0 text-trust-low">−</span><span>No integrated GPU, so no hardware transcoding on this model</span></li><li class="flex gap-2"><span class="mt-0.5 shrink-0 text-trust-low">−</span><span>QTS plus Virtualization Station has a real learning curve</span></li><li class="flex gap-2"><span class="mt-0.5 shrink-0 text-trust-low">−</span><span>QNAP security history means you should keep it off the open internet</span></li></ul></div>
+          </div>
+          <div class="mt-auto flex flex-wrap items-center justify-between gap-3 border-t border-line pt-4">
+            <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-body-sm">
+              <span><span class="text-ink-3">Best for </span><span class="text-ink-2">Power users running VMs, containers, and heavy multi-user workloads</span></span>
+              <span class="font-mono text-ink num">$900 (diskless, before drives)</span>
+            </div>
+            <a href="/api/go/search?q=QNAP%20TS-673A%206-bay%20NAS&amp;ref=synology-vs-qnap" target="_blank" rel="sponsored nofollow noopener" class="inline-flex items-center justify-center gap-1.5 rounded-lg bg-accent-strong px-4 py-2 text-body-sm font-semibold text-white transition-colors hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-1 ">Check price<svg class="h-3.5 w-3.5" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 17L17 7M17 7H9M17 7v8"/></svg></a>
+          </div>
+        </article>
+            </div>
+        </section>
+
+        <!-- FAQ -->
+        <section class="mb-12">
+            <header class="mb-6 flex flex-col gap-2"><span class="text-overline uppercase text-accent">Straight answers</span><h2 class="font-serif text-h2 font-semibold text-ink">Questions worth asking first</h2></header>
+            <div class="mx-auto max-w-3xl">
+          <details class="group border-b border-line py-4">
+            <summary class="flex cursor-pointer items-center justify-between gap-4 font-sans text-body font-medium text-ink">Synology or QNAP: which should I actually buy in 2026?<span class="text-ink-3 transition-transform group-open:rotate-45">+</span></summary>
+            <p class="mt-3 max-w-[68ch] text-body-sm text-ink-2">Buy Synology if you want the box to mostly manage itself, you like polished first-party apps (Photos, Drive, Hyper Backup), and a calmer security history matters to you. Buy QNAP if you want more hardware for the money, you need built-in hardware transcoding for Plex or Jellyfin, you want 2.5GbE and HDMI out as standard, or you plan to run lots of VMs and containers. For a typical home user who values simplicity, Synology edges it. For a media server or tinkerer on a budget, QNAP usually wins.</p>
+          </details>
+          <details class="group border-b border-line py-4">
+            <summary class="flex cursor-pointer items-center justify-between gap-4 font-sans text-body font-medium text-ink">Is QNAP safe to use given its ransomware history?<span class="text-ink-3 transition-transform group-open:rotate-45">+</span></summary>
+            <p class="mt-3 max-w-[68ch] text-body-sm text-ink-2">It can be, but you have to do the work. QNAP has been hit by real, widely reported ransomware campaigns (Deadbolt and Qlocker among them), largely against devices exposed directly to the internet. If you keep QTS patched, never port-forward the admin interface, disable UPnP, use a VPN for remote access, and avoid exposing services directly, the practical risk drops a lot. Synology has had fewer major incidents, but no NAS is safe if you expose it carelessly. Treat any NAS as something that should sit behind a firewall, not on the open internet.</p>
+          </details>
+          <details class="group border-b border-line py-4">
+            <summary class="flex cursor-pointer items-center justify-between gap-4 font-sans text-body font-medium text-ink">Do I need hardware transcoding, and which brand has it?<span class="text-ink-3 transition-transform group-open:rotate-45">+</span></summary>
+            <p class="mt-3 max-w-[68ch] text-body-sm text-ink-2">You need it mainly for Plex or Jellyfin when clients cannot play a file directly and the server must convert it on the fly, especially for 4K or multiple simultaneous streams. The Intel-based QNAP units here (TS-264, TS-464) include an integrated GPU that does this well. The Synology Plus models in this guide use AMD CPUs without an iGPU, so they do not hardware transcode. If your devices can direct-play your files (common with modern apps and good clients), transcoding matters far less and Synology's other strengths come back into play.</p>
+          </details>
+          <details class="group border-b border-line py-4">
+            <summary class="flex cursor-pointer items-center justify-between gap-4 font-sans text-body font-medium text-ink">How does TrueRank make money?<span class="text-ink-3 transition-transform group-open:rotate-45">+</span></summary>
+            <p class="mt-3 max-w-[68ch] text-body-sm text-ink-2">Affiliate links. If you buy through one of our Amazon search links we may earn a small commission at no extra cost to you. That commission never changes our rankings, our trust scores, or which products we recommend. We picked the DS923+ as our top overall and the QNAP TS-464 as best value based on software, hardware value, transcoding, and security track record, not on which one pays more. If a product is the right call we say so, and we always list at least one real downside for every pick.</p>
+          </details>
+            </div>
+        </section>
+
+        <!-- Live report CTA -->
+        <section class="rounded-2xl border border-line bg-surface-1 p-8 text-center shadow-card">
+            <h2 class="font-serif text-h2 font-semibold text-ink">Want a live ranking on this?</h2>
+            <p class="mx-auto mt-2 max-w-[52ch] text-body text-ink-2">Run a fresh TrueRank report that reads the latest reviews and sources them, in about a minute.</p>
+            <a href="/?q=Synology%20vs%20QNAP%20for%20home%20lab" class="mt-6 inline-flex items-center gap-2 rounded-lg bg-accent-strong px-5 py-2.5 text-body-sm font-semibold text-white transition-colors hover:bg-accent-hover">Research this live &rarr;</a>
+        </section>
+    </main>
+
+    <footer class="border-t border-line mt-12">
+        <div class="mx-auto max-w-5xl px-6 py-10">
+            <p class="max-w-[80ch] text-caption text-ink-3">TrueRank contains affiliate links. If you buy through our links we may earn a commission at no extra cost to you. Our rankings are never influenced by affiliate relationships. Prices are approximate and change often; check the retailer for the current price.</p>
+        </div>
+    </footer>
+
+    <script src="/js/app.js"></script>
+</body>
+</html>

@@ -5,7 +5,7 @@
 
 import { handleStartResearch, handleResearchStatus, handleResearchStream } from './handlers/research.js';
 import { handleGetReport, handleFeedback } from './handlers/report.js';
-import { handleAffiliateClick } from './handlers/affiliate.js';
+import { handleAffiliateClick, handleAffiliateSearch } from './handlers/affiliate.js';
 import { runResearchPipeline } from './pipeline/orchestrator.js';
 
 export default {
@@ -52,6 +52,12 @@ export default {
 
             if (path === '/api/feedback' && method === 'POST') {
                 return handleFeedback(request, env);
+            }
+
+            // Search-based affiliate redirect for static guide pages.
+            // Must be checked before the generic /api/go/:id route below.
+            if (path === '/api/go/search' && method === 'GET') {
+                return handleAffiliateSearch(request, env);
             }
 
             const affiliateMatch = path.match(/^\/api\/go\/([a-z0-9]+)$/);

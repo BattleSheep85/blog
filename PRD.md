@@ -84,7 +84,7 @@ The final output is a structured comparison report:
 
 | Component | Technology | Notes |
 |-----------|-----------|-------|
-| Frontend | Static HTML + CSS + JS | Vendored htmx, Tailwind via CDN |
+| Frontend | Static HTML + CSS + JS | Tailwind via CDN |
 | API Layer | Cloudflare Workers | Plain JavaScript, no npm |
 | Database | Cloudflare D1 | SQLite, stores cached research and affiliate mappings |
 | Key-Value Cache | Cloudflare KV | Session state, rate limiting, hot result cache |

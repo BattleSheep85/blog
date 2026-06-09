@@ -3,181 +3,386 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TrueRank — Honest Product Research</title>
-    <meta name="description" content="Product research that filters out fake reviews and affiliate garbage. Real opinions from real people.">
-    <meta property="og:title" content="TrueRank — Honest Product Research">
-    <meta property="og:description" content="Product research that filters out fake reviews and affiliate garbage.">
+    <title>TrueRank: Honest product research, with receipts</title>
+    <meta name="description" content="TrueRank reads the real reviews on Reddit, forums, and independent testers, filters out fakes and affiliate bait, and gives you one honest ranking. Every claim is sourced.">
+    <link rel="canonical" href="https://truerank.io/">
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph / Twitter -->
     <meta property="og:type" content="website">
+    <meta property="og:site_name" content="TrueRank">
+    <meta property="og:title" content="TrueRank: Honest product research, with receipts">
+    <meta property="og:description" content="One honest ranking instead of 200 reviews. Real opinions, fakes filtered out, every claim sourced.">
+    <meta property="og:url" content="https://truerank.io/">
+    <meta property="og:image" content="https://truerank.io/og.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="TrueRank: Honest product research, with receipts">
+    <meta name="twitter:description" content="One honest ranking instead of 200 reviews. Real opinions, fakes filtered out, every claim sourced.">
+    <meta name="twitter:image" content="https://truerank.io/og.png">
+
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔍</text></svg>">
-    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- FOUC-free theme bootstrap (runs before paint; matches app.js key 'theme') -->
     <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        trust: {
-                            high: '#22c55e',
-                            medium: '#eab308',
-                            low: '#ef4444',
-                        }
-                    }
-                }
-            }
-        }
+        (function () {
+            var t = localStorage.getItem('theme');
+            if (t === 'light') { document.documentElement.classList.remove('dark'); }
+            else if (t === 'dark') { document.documentElement.classList.add('dark'); }
+            else if (window.matchMedia('(prefers-color-scheme: light)').matches) { document.documentElement.classList.remove('dark'); }
+        })();
     </script>
-    <script src="/vendor/htmx.min.js"></script>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Tailwind: prebuilt stylesheet (see tailwind.config.cjs / README) -->
+    <link rel="stylesheet" href="/css/tailwind.css">
     <link rel="stylesheet" href="/css/app.css">
+
+    <!-- Structured data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "TrueRank",
+      "url": "https://truerank.io/",
+      "description": "Honest product research that filters out fake reviews and affiliate bait. Every claim is sourced."
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "How do you make money?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Affiliate links. If you buy through a link here, we may earn a small commission at no extra cost to you. That commission never changes the ranking. The product that wins is the product the reviews say wins."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Where do the reviews come from?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Reddit, forums, Hacker News, and independent review sites. We favor places where people share real, first-hand experience and have no incentive to oversell."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I know you are not making it up?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Every report lists its sources, and every score traces back to them. Hover or focus any source on a report to see exactly what it contributed. If we cannot source a claim, we do not make it."
+          }
+        }
+      ]
+    }
+    </script>
 </head>
-<body class="bg-gray-950 text-gray-100 min-h-screen">
+<body class="bg-bg text-ink-2 font-sans antialiased min-h-screen">
 
     <!-- Header -->
-    <header class="border-b border-gray-800">
-        <div class="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
-            <a href="/" class="text-xl font-bold text-white">
-                <span class="text-emerald-400">True</span>Rank
-            </a>
-            <button id="theme-toggle" class="text-gray-400 hover:text-white transition-colors p-2" aria-label="Toggle theme">
-                <svg id="icon-moon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
-                </svg>
-                <svg id="icon-sun" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
-                </svg>
-            </button>
+    <header class="sticky top-0 z-40 border-b border-line bg-bg/80 backdrop-blur-md">
+        <div class="mx-auto flex h-16 max-w-5xl items-center justify-between px-6">
+            <a href="/" class="text-lg font-semibold tracking-tight text-ink">True<span class="font-serif italic text-accent">Rank</span></a>
+            <nav class="flex items-center gap-6">
+                <a href="#how-it-works" class="hidden text-body-sm text-ink-2 transition-colors hover:text-ink sm:inline">How it works</a>
+                <a href="#method" class="hidden text-body-sm text-ink-2 transition-colors hover:text-ink sm:inline">Method</a>
+                <a href="/best/" class="hidden text-body-sm text-ink-2 transition-colors hover:text-ink sm:inline">Guides</a>
+                <button id="theme-toggle" class="rounded-lg p-2 text-ink-3 transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60" aria-label="Toggle light and dark theme">
+                    <svg id="icon-moon" class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+                    <svg id="icon-sun" class="hidden h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                </button>
+            </nav>
         </div>
     </header>
 
-    <!-- Main Content -->
-    <main class="max-w-4xl mx-auto px-4">
+    <main class="mx-auto max-w-5xl px-6">
 
         <!-- Hero -->
-        <section class="py-16 md:py-24 text-center">
-            <h1 class="text-4xl md:text-5xl font-bold mb-4 leading-tight">
-                Product research without<br>
-                <span class="text-emerald-400">the BS</span>
-            </h1>
-            <p class="text-lg text-gray-400 mb-10 max-w-2xl mx-auto">
-                We scrape real reviews from Reddit, forums, and independent sites.
-                Filter out fakes. Give you an honest comparison.
-            </p>
+        <section id="hero" class="py-20 text-center md:py-28">
+            <span class="text-overline uppercase text-accent">Product research without the BS</span>
+            <h1 class="mx-auto mt-4 max-w-3xl font-serif text-display font-semibold leading-tight text-ink">Find the best one. <span class="text-accent">Trust why.</span></h1>
+            <p class="mx-auto mt-5 max-w-[52ch] text-lead text-ink-2">We read the real reviews on Reddit, forums, and independent testers, strip out the fakes and affiliate bait, then hand you one honest ranking with a clickable receipt for every claim.</p>
 
-            <!-- Search Form -->
-            <form id="search-form" class="max-w-2xl mx-auto">
-                <div class="flex gap-2">
-                    <label for="query-input" class="sr-only">Product research query</label>
-                    <input
-                        type="text"
-                        id="query-input"
-                        name="query"
-                        placeholder="e.g. best mechanical keyboard under $100"
-                        aria-label="Product research query"
-                        class="flex-1 px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors"
-                        autocomplete="off"
-                        required
-                        minlength="3"
-                        maxlength="500"
-                    >
-                    <button
-                        type="submit"
-                        id="search-btn"
-                        class="px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-medium rounded-lg transition-colors whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                        Research
-                    </button>
-                </div>
+            <form class="search-form group mx-auto mt-10 flex w-full max-w-2xl items-center gap-2 rounded-xl border border-line bg-surface-1 p-2 shadow-card transition-colors focus-within:border-line-strong focus-within:ring-2 focus-within:ring-accent/25">
+                <svg class="ml-2 h-5 w-5 shrink-0 text-ink-3" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M11 18a7 7 0 110-14 7 7 0 010 14z"/></svg>
+                <label for="query-input" class="sr-only">What are you trying to buy?</label>
+                <input id="query-input" name="query" type="text" autocomplete="off" required minlength="3" maxlength="500"
+                    placeholder="What are you trying to buy? e.g. quiet mechanical keyboard under $120"
+                    class="w-full bg-transparent px-1 py-2 font-sans text-body text-ink placeholder:text-ink-3 focus:outline-none">
+                <button type="submit" class="shrink-0 rounded-lg bg-accent-strong px-4 py-2 font-sans text-body-sm font-semibold text-white transition-colors hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-1 disabled:opacity-60">
+                    <span data-btn-label>Research it</span>
+                </button>
             </form>
 
-            <!-- Example Queries -->
-            <div class="mt-4 flex flex-wrap justify-center gap-2">
-                <span class="text-sm text-gray-500">Try:</span>
-                <button class="example-query text-sm text-emerald-400 hover:text-emerald-300 transition-colors"
-                    data-query="best NAS for home media server">NAS for media server</button>
-                <button class="example-query text-sm text-emerald-400 hover:text-emerald-300 transition-colors"
-                    data-query="best budget mechanical keyboard for programming">mechanical keyboard</button>
-                <button class="example-query text-sm text-emerald-400 hover:text-emerald-300 transition-colors"
-                    data-query="best wireless earbuds under $100 2026">wireless earbuds</button>
-                <button class="example-query text-sm text-emerald-400 hover:text-emerald-300 transition-colors"
-                    data-query="Synology vs QNAP for home lab">Synology vs QNAP</button>
+            <div class="mt-4 flex flex-wrap items-center justify-center gap-x-3 gap-y-2">
+                <span class="text-caption text-ink-3">Try</span>
+                <button class="example-query text-caption font-medium text-accent transition-colors hover:text-accent-hover" data-query="best NAS for home media server">NAS for media server</button>
+                <span class="text-ink-3">·</span>
+                <button class="example-query text-caption font-medium text-accent transition-colors hover:text-accent-hover" data-query="best budget mechanical keyboard for programming">mechanical keyboard</button>
+                <span class="text-ink-3">·</span>
+                <button class="example-query text-caption font-medium text-accent transition-colors hover:text-accent-hover" data-query="best wireless earbuds under $100 2026">wireless earbuds</button>
+                <span class="text-ink-3">·</span>
+                <button class="example-query text-caption font-medium text-accent transition-colors hover:text-accent-hover" data-query="Synology vs QNAP for home lab">Synology vs QNAP</button>
+            </div>
+
+            <div class="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-caption text-ink-3">
+                <span class="inline-flex items-center gap-1.5"><span class="h-1.5 w-1.5 rounded-full bg-trust-high"></span>Reddit and forums</span>
+                <span class="inline-flex items-center gap-1.5"><span class="h-1.5 w-1.5 rounded-full bg-trust-high"></span>Fake reviews removed</span>
+                <span class="inline-flex items-center gap-1.5"><span class="h-1.5 w-1.5 rounded-full bg-trust-high"></span>Every claim sourced</span>
             </div>
         </section>
 
-        <!-- Progress Section (hidden by default) -->
+        <!-- Progress (hidden until research starts) -->
         <section id="progress-section" class="hidden py-8" aria-live="polite">
-            <div class="bg-gray-900 border border-gray-800 rounded-xl p-6">
-                <div class="flex items-center gap-3 mb-4">
-                    <div class="animate-spin w-5 h-5 border-2 border-emerald-400 border-t-transparent rounded-full"></div>
-                    <h2 class="text-lg font-semibold">Researching...</h2>
+            <div class="rounded-xl border border-line bg-surface-1 p-6 shadow-card">
+                <div class="mb-4 flex items-center gap-3">
+                    <span class="h-5 w-5 animate-spin rounded-full border-2 border-accent border-t-transparent" aria-hidden="true"></span>
+                    <h2 class="font-serif text-h3 font-semibold text-ink">Reading the reviews…</h2>
                 </div>
-                <div id="progress-log" class="space-y-2 text-sm text-gray-400 font-mono">
-                    <!-- Progress messages appear here -->
-                </div>
+                <div id="progress-log" class="flex flex-col gap-2 font-mono text-caption text-ink-3"></div>
             </div>
         </section>
 
-        <!-- Report Section (hidden by default) -->
-        <section id="report-section" class="hidden py-8">
-            <!-- Rendered by JS -->
-        </section>
+        <!-- Report (hidden until ready) -->
+        <section id="report-section" class="hidden py-8" role="region" aria-label="Research report" tabindex="-1"></section>
 
-        <!-- Error Section (hidden by default) -->
-        <section id="error-section" class="hidden py-8">
-            <div class="bg-red-950 border border-red-800 rounded-xl p-6 text-center">
-                <h2 class="text-lg font-semibold text-red-400 mb-2">Research Failed</h2>
-                <p id="error-message" class="text-gray-400"></p>
-                <button onclick="resetUI()" class="mt-4 px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors">
-                    Try Again
-                </button>
+        <!-- Error (hidden until needed) -->
+        <section id="error-section" class="hidden py-8" role="alert" aria-live="assertive">
+            <div class="rounded-xl border border-trust-low/40 bg-trust-low-bg p-6 text-center">
+                <h2 class="mb-2 font-serif text-h3 font-semibold text-trust-low">Research failed</h2>
+                <p id="error-message" class="text-body-sm text-ink-2"></p>
+                <button onclick="resetUI()" class="mt-4 rounded-lg border border-line bg-surface-1 px-4 py-2 text-body-sm font-semibold text-ink transition-colors hover:bg-surface-2">Try again</button>
             </div>
         </section>
 
-        <!-- How It Works -->
-        <section id="how-it-works" class="py-16 border-t border-gray-800">
-            <h2 class="text-2xl font-bold text-center mb-10">How it works</h2>
-            <div class="grid md:grid-cols-3 gap-8">
-                <div class="text-center">
-                    <div class="w-12 h-12 bg-emerald-900/50 rounded-xl flex items-center justify-center mx-auto mb-4">
-                        <svg class="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                        </svg>
-                    </div>
-                    <h3 class="font-semibold mb-2">1. Search</h3>
-                    <p class="text-sm text-gray-400">We search Reddit, forums, and independent review sites for real user opinions. Not affiliate blogs.</p>
-                </div>
-                <div class="text-center">
-                    <div class="w-12 h-12 bg-emerald-900/50 rounded-xl flex items-center justify-center mx-auto mb-4">
-                        <svg class="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-                        </svg>
-                    </div>
-                    <h3 class="font-semibold mb-2">2. Filter</h3>
-                    <p class="text-sm text-gray-400">AI analyzes each review for authenticity. Fake reviews, paid promotions, and affiliate bait get flagged and removed.</p>
-                </div>
-                <div class="text-center">
-                    <div class="w-12 h-12 bg-emerald-900/50 rounded-xl flex items-center justify-center mx-auto mb-4">
-                        <svg class="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                        </svg>
-                    </div>
-                    <h3 class="font-semibold mb-2">3. Report</h3>
-                    <p class="text-sm text-gray-400">You get a ranked comparison with trust scores, sourced pros/cons, and links to buy. Every claim is traceable.</p>
-                </div>
-            </div>
-        </section>
+        <!-- Everything below the fold (hidden during an active research run) -->
+        <div id="landing-extra">
 
+            <!-- Trust strip -->
+            <div class="border-y border-line py-6 text-center font-mono text-caption text-ink-3 num">
+                Real reviews read, fakes removed, zero paid placements. The ranking is the ranking.
+            </div>
+
+            <!-- How it works -->
+            <section id="how-it-works" class="border-t border-line py-20 md:py-28">
+                <header class="mb-12 flex flex-col items-center gap-3 text-center">
+                    <span class="text-overline uppercase text-accent">How TrueRank works</span>
+                    <h2 class="max-w-2xl font-serif text-h2 font-semibold text-ink">We read the reviews real people wrote, not the ones brands paid for.</h2>
+                </header>
+                <div class="grid gap-8 md:grid-cols-3">
+                    <div class="flex flex-col gap-3">
+                        <span class="font-mono text-caption text-ink-3 num">01</span>
+                        <h3 class="font-serif text-h3 font-semibold text-ink">Scrape real sources</h3>
+                        <p class="text-body-sm text-ink-2">We pull opinions from Reddit threads, forum posts, and independent testers. The places people are honest because they have nothing to sell.</p>
+                    </div>
+                    <div class="flex flex-col gap-3">
+                        <span class="font-mono text-caption text-ink-3 num">02</span>
+                        <h3 class="font-serif text-h3 font-semibold text-ink">Filter out the fakes</h3>
+                        <p class="text-body-sm text-ink-2">AI flags review-farm five stars, paid promotions, and affiliate listicles, then drops them. What is left is signal.</p>
+                    </div>
+                    <div class="flex flex-col gap-3">
+                        <span class="font-mono text-caption text-ink-3 num">03</span>
+                        <h3 class="font-serif text-h3 font-semibold text-ink">Rank with receipts</h3>
+                        <p class="text-body-sm text-ink-2">You get a ranked comparison with trust scores and sourced pros and cons. Every claim links back to where it came from.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sample report preview (the money shot) -->
+            <section class="border-t border-line py-20 md:py-28">
+                <header class="mb-10 flex flex-col gap-3">
+                    <span class="text-overline uppercase text-accent">What you get</span>
+                    <h2 class="max-w-2xl font-serif text-h2 font-semibold text-ink">A ranking that shows its work.</h2>
+                </header>
+                <div class="rounded-2xl border border-line bg-surface-1 p-2 shadow-lift">
+                    <div class="rounded-xl bg-bg p-5 md:p-6">
+                        <article class="flex flex-col gap-4 rounded-xl border border-line bg-surface-1 p-6 shadow-card">
+                            <span class="text-overline uppercase text-accent">The verdict</span>
+                            <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                                <div>
+                                    <h3 class="font-serif text-h3 font-semibold text-ink">Keychron K8 Pro</h3>
+                                    <p class="mt-1 text-body-sm text-ink-2">The quietest of the bunch, with the fewest credible quality complaints.</p>
+                                    <div class="mt-3 flex items-center gap-3">
+                                        <div class="h-1.5 w-28 overflow-hidden rounded-full bg-surface-2"><div class="h-full rounded-full bg-trust-high" style="width:92%"></div></div>
+                                        <span class="font-mono text-caption font-medium text-ink-2 num">92<span class="text-ink-3">/100</span></span>
+                                    </div>
+                                </div>
+                                <span class="inline-flex items-center gap-1.5 self-start rounded-full bg-trust-high-bg px-2.5 py-1 font-mono text-mono-data font-medium text-trust-high num"><span class="h-1.5 w-1.5 rounded-full bg-trust-high"></span>Trust 92</span>
+                            </div>
+                            <div class="overflow-x-auto rounded-xl border border-line">
+                                <table class="w-full border-collapse">
+                                    <thead class="border-b border-line-strong"><tr>
+                                        <th class="bg-surface-2 px-4 py-3 text-left text-overline uppercase text-ink-3">Product</th>
+                                        <th class="bg-surface-2 px-4 py-3 text-left text-overline uppercase text-ink-3">Trust</th>
+                                        <th class="bg-surface-2 px-4 py-3 text-left text-overline uppercase text-ink-3">Price</th>
+                                    </tr></thead>
+                                    <tbody>
+                                        <tr class="border-b border-line"><td class="px-4 py-3"><span class="font-mono text-caption text-ink-3 num">#1</span> <span class="text-body font-medium text-ink">Keychron K8 Pro</span></td><td class="px-4 py-3"><span class="inline-flex items-center gap-1.5 rounded-full bg-trust-high-bg px-2.5 py-1 font-mono text-caption font-medium text-trust-high num"><span class="h-1.5 w-1.5 rounded-full bg-trust-high"></span>92</span></td><td class="px-4 py-3 font-mono text-body text-ink num">$94</td></tr>
+                                        <tr class="border-b border-line"><td class="px-4 py-3"><span class="font-mono text-caption text-ink-3 num">#2</span> <span class="text-body font-medium text-ink">NuPhy Air75 V2</span></td><td class="px-4 py-3"><span class="inline-flex items-center gap-1.5 rounded-full bg-trust-medium-bg px-2.5 py-1 font-mono text-caption font-medium text-trust-medium num"><span class="h-1.5 w-1.5 rounded-full bg-trust-medium"></span>78</span></td><td class="px-4 py-3 font-mono text-body text-ink num">$110</td></tr>
+                                        <tr><td class="px-4 py-3"><span class="font-mono text-caption text-ink-3 num">#3</span> <span class="text-body font-medium text-ink">Royal Kludge RK84</span></td><td class="px-4 py-3"><span class="inline-flex items-center gap-1.5 rounded-full bg-trust-medium-bg px-2.5 py-1 font-mono text-caption font-medium text-trust-medium num"><span class="h-1.5 w-1.5 rounded-full bg-trust-medium"></span>64</span></td><td class="px-4 py-3 font-mono text-body text-ink num">$72</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+                <p class="mt-3 text-caption text-ink-3">An example of the format. Run your own query above for a live ranking.</p>
+            </section>
+
+            <!-- Method / why trust us -->
+            <section id="method" class="border-t border-line py-20 md:py-28">
+                <div class="grid gap-10 md:grid-cols-2 md:gap-16">
+                    <div class="flex flex-col gap-4">
+                        <span class="text-overline uppercase text-accent">Why trust this</span>
+                        <blockquote class="font-serif text-h2 font-medium leading-snug text-ink">“The honest answer was always buried in a Reddit thread. We just go read all of them for you.”</blockquote>
+                        <p class="text-body text-ink-2">No vendor pays for placement. No ranking moves because of an affiliate deal. If the cheapest option is the best option, that is what we will tell you.</p>
+                    </div>
+                    <div class="rounded-xl border border-line bg-accent-quiet/60 p-6">
+                        <h3 class="mb-4 font-serif text-h3 font-semibold text-ink">How a trust score is built</h3>
+                        <ul class="flex flex-col gap-3 text-body-sm text-ink-2">
+                            <li class="flex gap-3"><span class="font-mono text-accent num">1</span>Weigh sentiment across every real review we can find.</li>
+                            <li class="flex gap-3"><span class="font-mono text-accent num">2</span>Discount sources that look like marketing or review farming.</li>
+                            <li class="flex gap-3"><span class="font-mono text-accent num">3</span>Reward consistent, specific, first-hand experience.</li>
+                            <li class="flex gap-3"><span class="font-mono text-accent num">4</span>Attach a clickable source to every claim so you can check us.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- What we filter out / keep -->
+            <section class="border-t border-line py-20 md:py-28">
+                <header class="mb-10 flex flex-col gap-3">
+                    <span class="text-overline uppercase text-accent">Signal over noise</span>
+                    <h2 class="max-w-2xl font-serif text-h2 font-semibold text-ink">What we throw out, and what we keep.</h2>
+                </header>
+                <div class="grid gap-6 md:grid-cols-2">
+                    <div class="rounded-xl border border-line bg-surface-1 p-6 shadow-card">
+                        <h3 class="mb-4 text-overline uppercase text-ink-3">Filtered out</h3>
+                        <ul class="flex flex-col gap-2.5 text-body-sm text-ink-2">
+                            <li class="flex gap-2"><span class="mt-0.5 shrink-0 text-trust-low">−</span>Paid placements and sponsored rankings</li>
+                            <li class="flex gap-2"><span class="mt-0.5 shrink-0 text-trust-low">−</span>Review-farm five star ratings</li>
+                            <li class="flex gap-2"><span class="mt-0.5 shrink-0 text-trust-low">−</span>"Top 10 best" affiliate listicles</li>
+                        </ul>
+                    </div>
+                    <div class="rounded-xl border border-line bg-surface-1 p-6 shadow-card">
+                        <h3 class="mb-4 text-overline uppercase text-ink-3">Kept in</h3>
+                        <ul class="flex flex-col gap-2.5 text-body-sm text-ink-2">
+                            <li class="flex gap-2"><span class="mt-0.5 shrink-0 text-trust-high">+</span>Reddit threads from people who actually bought it</li>
+                            <li class="flex gap-2"><span class="mt-0.5 shrink-0 text-trust-high">+</span>Forum posts with specific, first-hand detail</li>
+                            <li class="flex gap-2"><span class="mt-0.5 shrink-0 text-trust-high">+</span>Independent testers with no affiliate stake</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Popular categories -->
+            <section id="categories" class="border-t border-line py-20 md:py-28">
+                <header class="mb-10 flex items-end justify-between gap-4">
+                    <div class="flex flex-col gap-3">
+                        <span class="text-overline uppercase text-accent">Start here</span>
+                        <h2 class="font-serif text-h2 font-semibold text-ink">Popular guides</h2>
+                    </div>
+                    <a href="/best/" class="shrink-0 text-body-sm font-semibold text-accent hover:text-accent-hover">All guides →</a>
+                </header>
+                <div class="grid grid-cols-2 gap-4 md:grid-cols-4">
+                    <a href="/best/nas-for-home-media-server/" class="rounded-xl border border-line bg-surface-1 p-5 transition-all hover:-translate-y-0.5 hover:border-line-strong hover:shadow-lift">
+                        <h3 class="font-serif text-h3 font-semibold text-ink">NAS for home media</h3>
+                        <p class="mt-1 text-caption text-ink-3">Storage</p>
+                    </a>
+                    <a href="/best/mechanical-keyboards-under-100/" class="rounded-xl border border-line bg-surface-1 p-5 transition-all hover:-translate-y-0.5 hover:border-line-strong hover:shadow-lift">
+                        <h3 class="font-serif text-h3 font-semibold text-ink">Mechanical keyboards</h3>
+                        <p class="mt-1 text-caption text-ink-3">Under $100</p>
+                    </a>
+                    <a href="/best/wireless-earbuds-under-100/" class="rounded-xl border border-line bg-surface-1 p-5 transition-all hover:-translate-y-0.5 hover:border-line-strong hover:shadow-lift">
+                        <h3 class="font-serif text-h3 font-semibold text-ink">Wireless earbuds</h3>
+                        <p class="mt-1 text-caption text-ink-3">Under $100</p>
+                    </a>
+                    <a href="/best/synology-vs-qnap/" class="rounded-xl border border-line bg-surface-1 p-5 transition-all hover:-translate-y-0.5 hover:border-line-strong hover:shadow-lift">
+                        <h3 class="font-serif text-h3 font-semibold text-ink">Synology vs QNAP</h3>
+                        <p class="mt-1 text-caption text-ink-3">Comparison</p>
+                    </a>
+                </div>
+            </section>
+
+            <!-- FAQ -->
+            <section class="border-t border-line py-20 md:py-28">
+                <header class="mb-10 flex flex-col gap-3">
+                    <span class="text-overline uppercase text-accent">Straight answers</span>
+                    <h2 class="font-serif text-h2 font-semibold text-ink">The questions a skeptic asks first.</h2>
+                </header>
+                <div class="mx-auto max-w-3xl">
+                    <details class="group border-b border-line py-4">
+                        <summary class="flex cursor-pointer items-center justify-between gap-4 font-sans text-body font-medium text-ink">How do you make money?<span class="text-ink-3 transition-transform group-open:rotate-45">+</span></summary>
+                        <p class="mt-3 max-w-[68ch] text-body-sm text-ink-2">Affiliate links. If you buy through a link here, we may earn a small commission at no extra cost to you. That commission never changes the ranking. The product that wins is the product the reviews say wins.</p>
+                    </details>
+                    <details class="group border-b border-line py-4">
+                        <summary class="flex cursor-pointer items-center justify-between gap-4 font-sans text-body font-medium text-ink">Where do the reviews come from?<span class="text-ink-3 transition-transform group-open:rotate-45">+</span></summary>
+                        <p class="mt-3 max-w-[68ch] text-body-sm text-ink-2">Reddit, forums, Hacker News, and independent review sites. We favor places where people share real, first-hand experience and have no incentive to oversell.</p>
+                    </details>
+                    <details class="group border-b border-line py-4">
+                        <summary class="flex cursor-pointer items-center justify-between gap-4 font-sans text-body font-medium text-ink">How do I know you are not making it up?<span class="text-ink-3 transition-transform group-open:rotate-45">+</span></summary>
+                        <p class="mt-3 max-w-[68ch] text-body-sm text-ink-2">Every report lists its sources, and every score traces back to them. Hover any source on a report to see exactly what it contributed. If we cannot source a claim, we do not make it.</p>
+                    </details>
+                </div>
+            </section>
+
+            <!-- Final CTA -->
+            <section class="border-t border-line py-20 text-center md:py-28">
+                <h2 class="mx-auto max-w-2xl font-serif text-h1 font-semibold text-ink">Stop reading 200 reviews. Read one honest ranking.</h2>
+                <form class="search-form group mx-auto mt-8 flex w-full max-w-2xl items-center gap-2 rounded-xl border border-line bg-surface-1 p-2 shadow-card transition-colors focus-within:border-line-strong focus-within:ring-2 focus-within:ring-accent/25">
+                    <svg class="ml-2 h-5 w-5 shrink-0 text-ink-3" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M11 18a7 7 0 110-14 7 7 0 010 14z"/></svg>
+                    <label for="query-input-cta" class="sr-only">What are you trying to buy?</label>
+                    <input id="query-input-cta" name="query" type="text" autocomplete="off" required minlength="3" maxlength="500"
+                        placeholder="What are you trying to buy?"
+                        class="w-full bg-transparent px-1 py-2 font-sans text-body text-ink placeholder:text-ink-3 focus:outline-none">
+                    <button type="submit" class="shrink-0 rounded-lg bg-accent-strong px-4 py-2 font-sans text-body-sm font-semibold text-white transition-colors hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-1 disabled:opacity-60">
+                        <span data-btn-label>Research it</span>
+                    </button>
+                </form>
+            </section>
+
+        </div>
     </main>
 
     <!-- Footer -->
-    <footer class="border-t border-gray-800 mt-8">
-        <div class="max-w-4xl mx-auto px-4 py-6 text-center text-sm text-gray-500">
-            <p>
-                TrueRank contains affiliate links. If you buy through our links, we may earn a commission at no extra cost to you.
-                Our rankings are never influenced by affiliate relationships.
-            </p>
-            <p class="mt-2">Built with honest intentions.</p>
+    <footer class="border-t border-line">
+        <div class="mx-auto max-w-5xl px-6 py-12">
+            <div class="flex flex-col gap-8 md:flex-row md:justify-between">
+                <div class="max-w-xs">
+                    <a href="/" class="text-lg font-semibold tracking-tight text-ink">True<span class="font-serif italic text-accent">Rank</span></a>
+                    <p class="mt-3 text-body-sm text-ink-3">Honest product research, with receipts.</p>
+                </div>
+                <div class="flex gap-12">
+                    <div class="flex flex-col gap-2">
+                        <span class="text-overline uppercase text-ink-3">Explore</span>
+                        <a href="/best/" class="text-body-sm text-ink-2 hover:text-ink">Guides</a>
+                        <a href="#how-it-works" class="text-body-sm text-ink-2 hover:text-ink">How it works</a>
+                        <a href="#method" class="text-body-sm text-ink-2 hover:text-ink">Method</a>
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <span class="text-overline uppercase text-ink-3">Categories</span>
+                        <a href="/best/nas-for-home-media-server/" class="text-body-sm text-ink-2 hover:text-ink">NAS and storage</a>
+                        <a href="/best/mechanical-keyboards-under-100/" class="text-body-sm text-ink-2 hover:text-ink">Keyboards</a>
+                        <a href="/best/wireless-earbuds-under-100/" class="text-body-sm text-ink-2 hover:text-ink">Earbuds</a>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-10 border-t border-line pt-6">
+                <p class="max-w-[80ch] text-caption text-ink-3">TrueRank contains affiliate links. If you buy through our links we may earn a commission at no extra cost to you. Our rankings are never influenced by affiliate relationships.</p>
+            </div>
         </div>
     </footer>
 
+    <script src="/js/render.js"></script>
     <script src="/js/app.js"></script>
 </body>
 </html>
