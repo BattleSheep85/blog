@@ -14,9 +14,13 @@
     <meta property="og:title" content="TrueRank: Honest product research, with receipts">
     <meta property="og:description" content="One honest ranking instead of 200 reviews. Real opinions, fakes filtered out, every claim sourced.">
     <meta property="og:url" content="https://truerank.io/">
-    <meta name="twitter:card" content="summary">
+    <meta property="og:image" content="https://truerank.io/og.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="TrueRank: Honest product research, with receipts">
     <meta name="twitter:description" content="One honest ranking instead of 200 reviews. Real opinions, fakes filtered out, every claim sourced.">
+    <meta name="twitter:image" content="https://truerank.io/og.png">
 
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔍</text></svg>">
 
@@ -35,9 +39,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
-    <!-- Tailwind (Play CDN) + shared config -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="/js/tailwind-config.js"></script>
+    <!-- Tailwind: prebuilt stylesheet (see tailwind.config.cjs / README) -->
+    <link rel="stylesheet" href="/css/tailwind.css">
     <link rel="stylesheet" href="/css/app.css">
 
     <!-- Structured data -->
@@ -115,7 +118,7 @@
                 <input id="query-input" name="query" type="text" autocomplete="off" required minlength="3" maxlength="500"
                     placeholder="What are you trying to buy? e.g. quiet mechanical keyboard under $120"
                     class="w-full bg-transparent px-1 py-2 font-sans text-body text-ink placeholder:text-ink-3 focus:outline-none">
-                <button type="submit" class="shrink-0 rounded-lg bg-accent px-4 py-2 font-sans text-body-sm font-semibold text-white transition-colors hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-1 disabled:opacity-60">
+                <button type="submit" class="shrink-0 rounded-lg bg-accent-strong px-4 py-2 font-sans text-body-sm font-semibold text-white transition-colors hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-1 disabled:opacity-60">
                     <span data-btn-label>Research it</span>
                 </button>
             </form>
@@ -341,7 +344,7 @@
                     <input id="query-input-cta" name="query" type="text" autocomplete="off" required minlength="3" maxlength="500"
                         placeholder="What are you trying to buy?"
                         class="w-full bg-transparent px-1 py-2 font-sans text-body text-ink placeholder:text-ink-3 focus:outline-none">
-                    <button type="submit" class="shrink-0 rounded-lg bg-accent px-4 py-2 font-sans text-body-sm font-semibold text-white transition-colors hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-1 disabled:opacity-60">
+                    <button type="submit" class="shrink-0 rounded-lg bg-accent-strong px-4 py-2 font-sans text-body-sm font-semibold text-white transition-colors hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-1 disabled:opacity-60">
                         <span data-btn-label>Research it</span>
                     </button>
                 </form>

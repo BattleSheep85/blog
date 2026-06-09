@@ -9,6 +9,18 @@
 - SEO: canonical tags, Open Graph/Twitter cards, JSON-LD (WebSite, BreadcrumbList, ItemList, FAQPage), `robots.txt`, `sitemap.xml`
 - `GET /api/go/search` affiliate redirect for static guides (server-side associate tag, best-effort click logging via new `guide_clicks` table, migration 002)
 - `?q=` deep-link prefill on the homepage search (guides link into a live report)
+- Prebuilt Tailwind CSS (`public/css/tailwind.css` via the standalone CLI, `tailwind.config.cjs`), replacing the runtime Play CDN
+- Open Graph share image (`public/og.png`, 1200x630)
+- Security headers via `public/_headers` (Content-Security-Policy, X-Content-Type-Options, Referrer-Policy, X-Frame-Options, Permissions-Policy)
+- Dedicated `accent-strong` token so primary buttons pass WCAG AA
+
+### Security
+- Fixed a stored XSS: attribute-safe `escapeHtml` plus an http(s) `href` scheme allowlist for source URLs
+- Fixed missing-path 500s (declared the `ASSETS` binding); added the CSP above as defense-in-depth
+- Removed the unused vendored htmx (supply-chain hygiene)
+
+### Accessibility
+- WCAG AA contrast fixes (ink-3, trust tiers, primary button), focus-reachable source citations, reduced-motion scrolling, aria-live status regions, table caption/scope
 
 ### Changed
 - Repository renamed `blog` to `truerank`

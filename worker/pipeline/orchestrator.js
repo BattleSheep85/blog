@@ -58,23 +58,21 @@ export async function runResearchPipeline(env, reportId, query) {
 
         await progress(`Filtered to ${filtered.length} genuine sources (removed ${filteredOutCount} fake/low-quality)`);
 
-        // Store sources in D1
-        for (const source of analysisResults.analyzed_sources) {
-            await insertSource(env.DB, {
-                id: generateId(),
-                reportId,
-                url: source.url || '',
-                sourceType: source.source_type || 'unknown',
-                trustScore: source.trust_score || 0,
-                contentSummary: source.summary || '',
-                isFake: source.is_fake || false,
-                analysisJson: JSON.stringify({
-                    red_flags: source.red_flags || [],
-                    green_flags: source.green_flags || [],
-                    key_claims: source.key_claims || [],
-                }),
-            });
-        }
+        // Store sources in D1 (concurrently, not one round-trip at a time)
+        await Promise.all(analysisResults.analyzed_sources.map(source => insertSource(env.DB, {
+            id: generateId(),
+            reportId,
+            url: source.url || '',
+            sourceType: source.source_type || 'unknown',
+            trustScore: source.trust_score || 0,
+            contentSummary: source.summary || '',
+            isFake: source.is_fake || false,
+            analysisJson: JSON.stringify({
+                red_flags: source.red_flags || [],
+                green_flags: source.green_flags || [],
+                key_claims: source.key_claims || [],
+            }),
+        })));
 
         // Step 4: Synthesize (Qwen 3.6 Plus, free via OpenRouter)
         await updateReportStatus(env.DB, reportId, 'synthesizing', null, totalSources, filteredOutCount);
@@ -90,11 +88,10 @@ export async function runResearchPipeline(env, reportId, query) {
         // the persisted report JSON and the D1 row share them; the client
         // affiliate CTA links to /api/go/:id, which looks the product up here.
         if (enrichedReport.products) {
-            for (let i = 0; i < enrichedReport.products.length; i++) {
-                const product = enrichedReport.products[i];
+            await Promise.all(enrichedReport.products.map((product, i) => {
                 product.id = product.id || generateId();
                 product.rank = product.rank || i + 1;
-                await insertProduct(env.DB, {
+                return insertProduct(env.DB, {
                     id: product.id,
                     reportId,
                     name: product.name,
@@ -108,7 +105,7 @@ export async function runResearchPipeline(env, reportId, query) {
                     priceRange: product.price_range || '',
                     affiliateLinks: product.affiliate_links || {},
                 });
-            }
+            }));
         }
 
         // Finalize

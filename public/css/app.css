@@ -1,7 +1,7 @@
 /* TrueRank - design tokens + base styles.
    Editorial-authority system: serif headlines, sans UI, mono numerals.
    Theming is done with CSS variables; a single `.dark` class on <html> flips
-   every token. Tailwind utilities (see js/tailwind-config.js) alias these vars
+   every token. Tailwind utilities (see tailwind.config.cjs) alias these vars
    via color-mix so alpha modifiers (e.g. ring-accent/60) work. */
 
 /* ----------------------------------------------------------------------------
@@ -18,8 +18,9 @@
     --ink: #F4F5F7;
     --ink-2: #B9BFC9;
     --ink-3: #898F9A;          /* darkened for WCAG AA on surfaces */
-    --accent: #3B82F6;
+    --accent: #3B82F6;          /* bright: links, borders, dots, accent text */
     --accent-hover: #5C9CFF;
+    --accent-strong: #2563EB;   /* darker: filled buttons (white text passes AA) */
     --accent-quiet: #13203A;
     --trust-high: #34D399;
     --trust-high-bg: #0F2A22;
@@ -45,10 +46,11 @@ html:not(.dark) {
     --ink-3: #5F636B;          /* darkened for WCAG AA on warm paper */
     --accent: #2563EB;
     --accent-hover: #1D4ED8;
+    --accent-strong: #1D4ED8;  /* filled buttons (white text passes AA) */
     --accent-quiet: #EAF1FF;
     --trust-high: #0A7A55;     /* darkened for WCAG AA on badge bg */
     --trust-high-bg: #E6F6EF;
-    --trust-medium: #B45309;
+    --trust-medium: #9A4A07;   /* darkened for WCAG AA on badge bg */
     --trust-medium-bg: #FBF1DD;
     --trust-low: #C81840;      /* darkened for WCAG AA on badge bg */
     --trust-low-bg: #FCE8EC;
@@ -122,10 +124,11 @@ body {
         --ink-3: #5F636B;
         --accent: #2563EB;
         --accent-hover: #1D4ED8;
+        --accent-strong: #1D4ED8;
         --accent-quiet: #EAF1FF;
         --trust-high: #0A7A55;
         --trust-high-bg: #E6F6EF;
-        --trust-medium: #B45309;
+        --trust-medium: #9A4A07;
         --trust-medium-bg: #FBF1DD;
         --trust-low: #C81840;
         --trust-low-bg: #FCE8EC;

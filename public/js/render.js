@@ -119,7 +119,7 @@
     function affiliateButton(product, reportId) {
         if (!(product.affiliate_links && product.affiliate_links.amazon)) return '';
         return '<a href="' + affiliateHref(product, reportId) + '" target="_blank" rel="sponsored nofollow noopener" ' +
-            'class="inline-flex items-center gap-1.5 rounded-lg bg-accent px-4 py-2 text-body-sm font-semibold text-white transition-colors hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-1">' +
+            'class="inline-flex items-center gap-1.5 rounded-lg bg-accent-strong px-4 py-2 text-body-sm font-semibold text-white transition-colors hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-1">' +
             'Check price' + EXTERNAL_ICON + '</a>';
     }
 
