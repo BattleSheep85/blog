@@ -8,7 +8,7 @@ production domain, your Cloudflare credentials, or are intentional design choice
 ## Security
 
 - [x] CRITICAL: Stored XSS via unescaped quotes + no URL-scheme allowlist. (Fixed: attribute-safe `escapeHtml` + `safeHref` in render.js.)
-- [x] LOW: No Content-Security-Policy. (Fixed: `public/_headers` adds CSP, X-Content-Type-Options, Referrer-Policy, X-Frame-Options, Permissions-Policy. Verified served via `wrangler dev`.)
+- [x] LOW: No Content-Security-Policy. (Fixed: the Worker injects a per-request nonce into HTML and sets a `nonce + strict-dynamic` CSP plus X-Content-Type-Options, Referrer-Policy, X-Frame-Options, Permissions-Policy. Matches the production policy. Verified scripts run under it via headless chromium.)
 - [ ] LOW (by design): CORS is wildcard (*) on the API. Intentional for a public tool. Tighten to the production origin or an allowlist if cross-origin abuse appears. Needs the real domain.
 - [ ] LOW (inherent): LLM prompt-injection surface via user queries. Inherent to LLM systems; mitigated by output escaping and not executing model output.
 
@@ -40,7 +40,8 @@ production domain, your Cloudflare credentials, or are intentional design choice
 - [x] LOW: Homepage had visible FAQ but no FAQPage JSON-LD. (Fixed.)
 - [x] LOW: WebSite SearchAction advertised a search the deep link did not run. (Fixed: removed.)
 - [x] LOW: Static guide trust scores not flagged as editorial. (Fixed: visible note on each guide.)
-- [ ] LOW (needs domain): Canonical, OG, and sitemap use the placeholder `https://truerank.io`. Replace with the real production domain on deploy.
+- [x] LOW: Canonical, OG, and sitemap domain. (Fixed: set to `https://chrisputer.tech`.)
+- [x] MEDIUM: Production parity. (Fixed: re-added Google AdSense auto-ads and the nonce-based CSP that the live site has, so deploying this repo does not regress them. Cloudflare Web Analytics + managed challenge are zone-level and unaffected by deploys.)
 
 ## Production reliability
 

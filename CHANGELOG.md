@@ -11,12 +11,14 @@
 - `?q=` deep-link prefill on the homepage search (guides link into a live report)
 - Prebuilt Tailwind CSS (`public/css/tailwind.css` via the standalone CLI, `tailwind.config.cjs`), replacing the runtime Play CDN
 - Open Graph share image (`public/og.png`, 1200x630)
-- Security headers via `public/_headers` (Content-Security-Policy, X-Content-Type-Options, Referrer-Policy, X-Frame-Options, Permissions-Policy)
+- Per-request nonce Content-Security-Policy (`strict-dynamic`) plus X-Content-Type-Options, Referrer-Policy, X-Frame-Options, and Permissions-Policy, all served by the Worker (`run_worker_first`)
+- Google AdSense auto-ads loader on all pages (`ca-pub-6952672558994325`)
 - Dedicated `accent-strong` token so primary buttons pass WCAG AA
+- Production domain `chrisputer.tech` in canonical, Open Graph, and sitemap
 
 ### Security
 - Fixed a stored XSS: attribute-safe `escapeHtml` plus an http(s) `href` scheme allowlist for source URLs
-- Fixed missing-path 500s (declared the `ASSETS` binding); added the CSP above as defense-in-depth
+- Fixed missing-path 500s (declared the `ASSETS` binding); added the nonce CSP above
 - Removed the unused vendored htmx (supply-chain hygiene)
 
 ### Accessibility

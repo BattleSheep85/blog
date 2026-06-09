@@ -65,22 +65,14 @@ export default {
                 return handleAffiliateClick(affiliateMatch[1], request, env);
             }
 
-            // Serve static files from the site bucket
-            if (path === '/' || path === '/index.html') {
-                return env.ASSETS.fetch(new Request(new URL('/index.html', url), request));
-            }
-
+            // Static assets. HTML responses get a fresh per-request CSP nonce
+            // injected, so inline + first-party scripts run under strict-dynamic.
+            // Permalink /report/:id has no asset of its own; render report.html
+            // (served at /report, which avoids the .html redirect).
             if (path === '/report' || path.startsWith('/report/')) {
-                return env.ASSETS.fetch(new Request(new URL('/report.html', url), request));
+                return serveAsset(request, env, new URL('/report', url));
             }
-
-            // Try to serve static asset
-            const assetResponse = await env.ASSETS.fetch(request);
-            if (assetResponse.status !== 404) {
-                return assetResponse;
-            }
-
-            return new Response('Not found', { status: 404 });
+            return serveAsset(request, env, null);
 
         } catch (err) {
             console.error('Request error:', err);
@@ -110,3 +102,51 @@ export default {
         }
     },
 };
+
+// --- Static asset serving with a per-request CSP nonce -------------------
+// HTML is templated with `__CSP_NONCE__` on every <script>. The worker swaps
+// it for a fresh random nonce per request and sets a matching nonce + strict
+// -dynamic CSP, so inline and first-party scripts run while injected ones do
+// not. Allowed hosts mirror the production policy (AdSense, Cloudflare).
+
+const CSP = (nonce) =>
+    "default-src 'self'; " +
+    "script-src 'self' 'nonce-" + nonce + "' 'strict-dynamic' https://challenges.cloudflare.com https://static.cloudflareinsights.com https://pagead2.googlesyndication.com; " +
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
+    "font-src 'self' https://fonts.gstatic.com; " +
+    "img-src 'self' data: https:; " +
+    "connect-src 'self' https://challenges.cloudflare.com https://cloudflareinsights.com; " +
+    "frame-src https://challenges.cloudflare.com https://googleads.g.doubleclick.net; " +
+    "object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests";
+
+function makeNonce() {
+    const bytes = new Uint8Array(16);
+    crypto.getRandomValues(bytes);
+    let s = '';
+    for (let i = 0; i < bytes.length; i++) s += String.fromCharCode(bytes[i]);
+    return btoa(s);
+}
+
+function withSecurityHeaders(res, nonce, body) {
+    const headers = new Headers(res.headers);
+    headers.set('X-Content-Type-Options', 'nosniff');
+    headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+    headers.set('X-Frame-Options', 'DENY');
+    headers.set('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
+    if (nonce) headers.set('Content-Security-Policy', CSP(nonce));
+    return new Response(body !== undefined ? body : res.body, { status: res.status, headers });
+}
+
+async function serveAsset(request, env, overrideUrl) {
+    const res = await env.ASSETS.fetch(overrideUrl ? new Request(overrideUrl, request) : request);
+    if (res.status === 404 && !overrideUrl) {
+        return new Response('Not found', { status: 404 });
+    }
+    const contentType = res.headers.get('Content-Type') || '';
+    if (contentType.includes('text/html')) {
+        const nonce = makeNonce();
+        const html = (await res.text()).replaceAll('__CSP_NONCE__', nonce);
+        return withSecurityHeaders(res, nonce, html);
+    }
+    return withSecurityHeaders(res, null);
+}
