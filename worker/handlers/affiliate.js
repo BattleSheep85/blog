@@ -25,26 +25,19 @@ export async function handleAffiliateClick(productId, request, env) {
         ipHash,
     }).catch(err => console.error('Click logging failed:', err));
 
-    // Look up the product's affiliate link
+    // Look up the product's affiliate link (v2 schema: single affiliate_url,
+    // with product_url as the untagged fallback).
     const product = await env.DB.prepare(
-        'SELECT affiliate_links_json FROM products WHERE id = ?'
+        'SELECT affiliate_url, product_url FROM products WHERE id = ?'
     ).bind(productId).first();
 
-    // Default to Amazon search if product not found
-    const amazonTag = env.AMAZON_ASSOCIATE_TAG || '';
+    const amazonTag = env.AMAZON_ASSOCIATE_TAG || env.AMAZON_AFFILIATE_TAG || '';
     let redirectUrl = `https://www.amazon.com/?tag=${amazonTag}`;
 
-    if (product?.affiliate_links_json) {
-        try {
-            const links = JSON.parse(product.affiliate_links_json);
-            const candidate = links[network] || links.amazon;
-            // Only allow https:// URLs to prevent javascript: or other protocol attacks
-            if (candidate && candidate.startsWith('https://')) {
-                redirectUrl = candidate;
-            }
-        } catch {
-            // Use default redirect
-        }
+    const candidate = product?.affiliate_url || product?.product_url;
+    // Only allow https:// URLs to prevent javascript: or other protocol attacks
+    if (candidate && candidate.startsWith('https://')) {
+        redirectUrl = candidate;
     }
 
     // Wait for logging before redirecting

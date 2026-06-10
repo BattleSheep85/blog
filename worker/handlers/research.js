@@ -1,16 +1,21 @@
 /**
  * Research API handlers.
- * POST /api/research — start a new research job
+ * POST /api/research — start a new research job (canonical-query clustering)
  * GET /api/research/:id — poll for status/progress/results
  * GET /api/research/:id/stream — SSE with short-lived connection + client reconnect
+ * GET /api/research/:slug/events — activity-feed poll for the server-rendered page
  */
 
 import { checkRateLimit } from '../lib/rate-limit.js';
-import { createReport, findCachedReport, getReport, generateId } from '../lib/db.js';
+import {
+    generateId, insertResearch, findResearchByCanonicalQuery,
+    getResearchById, getResearchBySlug,
+} from '../lib/db.js';
+import { slugify, canonicalizeQuery, parseJsonSafe } from '../lib/utils.js';
 
 /**
  * Handle POST /api/research
- * Validates input, checks cache, checks rate limit, enqueues research job.
+ * Validates input, clusters on canonical query, checks rate limit, enqueues job.
  */
 export async function handleStartResearch(request, env) {
     let body;
@@ -28,22 +33,20 @@ export async function handleStartResearch(request, env) {
         return jsonResponse({ error: 'Query must be under 500 characters' }, 400);
     }
 
-    // Check cache first
     const normalizedQuery = query.toLowerCase();
-    const cached = await findCachedReport(env.DB, normalizedQuery);
-    if (cached && cached.report_json) {
-        let report;
-        try { report = JSON.parse(cached.report_json); } catch { report = null; }
-        if (report) {
-            return jsonResponse({
-                id: cached.id,
-                status: 'completed',
-                cached: true,
-                report,
-                sourceCount: cached.source_count,
-                filteredCount: cached.filtered_count,
-            });
-        }
+
+    // Clustering: a completed run with the same canonical query within 14 days
+    // is the same research — send the client to its permanent page.
+    const canonical = canonicalizeQuery(normalizedQuery);
+    const existing = await findResearchByCanonicalQuery(env.DB, canonical, 14);
+    if (existing) {
+        return jsonResponse({
+            id: existing.id,
+            slug: existing.slug,
+            status: 'completed',
+            cached: true,
+            clustered: true,
+        });
     }
 
     // Rate limit check
@@ -60,25 +63,37 @@ export async function handleStartResearch(request, env) {
         }, 429);
     }
 
-    // Create report record
-    const reportId = generateId();
-    await createReport(env.DB, {
-        id: reportId,
+    // Create the permanent research row. Slug mirrors Exhaustive's shape:
+    // slugify(query) + '-' + first 8 chars of the id.
+    const id = generateId();
+    const slug = `${slugify(normalizedQuery)}-${id.slice(0, 8)}`;
+    await insertResearch(env.DB, {
+        id,
+        slug,
         query: normalizedQuery,
-        filtersJson: JSON.stringify(body.filters || {}),
+        canonicalQuery: canonical,
+        tier: 'full',
     });
 
-    // Enqueue research job
+    // Enqueue research job (message shape unchanged — queue consumer keys on it)
     await env.RESEARCH_QUEUE.send({
-        reportId,
+        reportId: id,
         query: normalizedQuery,
     });
 
     return jsonResponse({
-        id: reportId,
+        id,
+        slug,
         status: 'pending',
         remaining: rateCheck.remaining,
     });
+}
+
+// New-table statuses → legacy API vocabulary the frontend understands.
+function apiStatus(dbStatus) {
+    if (dbStatus === 'complete') return 'completed';
+    if (dbStatus === 'failed') return 'error';
+    return dbStatus; // pending | processing
 }
 
 /**
@@ -86,29 +101,28 @@ export async function handleStartResearch(request, env) {
  * Returns current status. Designed for polling from the client.
  */
 export async function handleResearchStatus(reportId, env) {
-    const report = await getReport(env.DB, reportId);
-    if (!report) {
+    const row = await getResearchById(env.DB, reportId);
+    if (!row) {
         return jsonResponse({ error: 'Report not found' }, 404);
     }
 
-    // If already completed, return the report directly
-    if (report.status === 'completed' && report.report_json) {
-        let parsed;
-        try { parsed = JSON.parse(report.report_json); } catch { parsed = null; }
+    if (row.status === 'complete') {
+        const report = parseJsonSafe(row.result, null);
         return jsonResponse({
-            id: report.id,
+            id: row.id,
+            slug: row.slug,
             status: 'completed',
-            report: parsed,
-            sourceCount: report.source_count,
-            filteredCount: report.filtered_count,
+            report,
+            sourceCount: report?.source_count ?? parseJsonSafe(row.sources, []).length,
+            filteredCount: report?.filtered_count ?? 0,
         });
     }
 
-    if (report.status === 'error') {
-        let errMsg = 'Unknown error';
-        try { errMsg = JSON.parse(report.report_json).error; } catch { /* use default */ }
+    if (row.status === 'failed') {
+        const errMsg = parseJsonSafe(row.result, {}).error || 'Unknown error';
         return jsonResponse({
-            id: report.id,
+            id: row.id,
+            slug: row.slug,
             status: 'error',
             error: errMsg,
         });
@@ -118,8 +132,9 @@ export async function handleResearchStatus(reportId, env) {
     const progress = await env.KV.get(`progress:${reportId}`, 'json');
     const progressLog = await env.KV.get(`progress_log:${reportId}`, 'json') || [];
     return jsonResponse({
-        id: report.id,
-        status: report.status,
+        id: row.id,
+        slug: row.slug,
+        status: apiStatus(row.status),
         progress: progress || { message: 'Queued for processing...' },
         progressLog,
     });
@@ -129,7 +144,6 @@ export async function handleResearchStatus(reportId, env) {
  * Handle GET /api/research/:id/stream
  * Short-lived SSE: flushes all current progress, then closes.
  * Client reconnects with Last-Event-ID to get new updates.
- * Stays within Workers wall-clock limits.
  */
 export async function handleResearchStream(reportId, env, request) {
     const lastEventId = parseInt(request?.headers?.get('Last-Event-ID') || '0', 10);
@@ -143,8 +157,7 @@ export async function handleResearchStream(reportId, env, request) {
 
             // Check for final report first
             const finalReport = await env.KV.get(`report:${reportId}`, 'json');
-            if (finalReport) {
-                // Send any unseen progress
+            if (finalReport && !finalReport.error) {
                 const log = await env.KV.get(`progress_log:${reportId}`, 'json') || [];
                 for (const entry of log) {
                     if (entry.step > lastEventId) {
@@ -152,22 +165,22 @@ export async function handleResearchStream(reportId, env, request) {
                     }
                 }
 
-                const dbReport = await getReport(env.DB, reportId);
+                const dbRow = await getResearchById(env.DB, reportId);
                 send(9999, {
                     type: 'complete',
+                    slug: dbRow?.slug || null,
                     report: finalReport,
-                    sourceCount: dbReport?.source_count || 0,
-                    filteredCount: dbReport?.filtered_count || 0,
+                    sourceCount: finalReport.source_count || 0,
+                    filteredCount: finalReport.filtered_count || 0,
                 });
                 controller.close();
                 return;
             }
 
             // Check for error
-            const dbReport = await getReport(env.DB, reportId);
-            if (dbReport?.status === 'error') {
-                let errMsg = 'Unknown error';
-                try { errMsg = JSON.parse(dbReport.report_json).error; } catch { /* default */ }
+            const dbRow = await getResearchById(env.DB, reportId);
+            if (dbRow?.status === 'failed') {
+                const errMsg = parseJsonSafe(dbRow.result, {}).error || 'Unknown error';
                 send(9998, { type: 'error', error: errMsg });
                 controller.close();
                 return;
@@ -183,9 +196,7 @@ export async function handleResearchStream(reportId, env, request) {
                 }
             }
 
-            // Send a keepalive so the client knows we're still here,
-            // then close. Client will reconnect in ~2s to check for more.
-            send(maxStep, { type: 'keepalive', status: dbReport?.status || 'pending' });
+            send(maxStep, { type: 'keepalive', status: apiStatus(dbRow?.status || 'pending') });
             controller.close();
         },
     });
@@ -197,6 +208,32 @@ export async function handleResearchStream(reportId, env, request) {
             'Access-Control-Allow-Origin': '*',
         },
     });
+}
+
+/**
+ * Handle GET /api/research/:slug/events?since=N
+ * Activity-feed poll used by the server-rendered processing page. Phase 1
+ * adapts the KV progress log into Exhaustive's events shape; phase 2 swaps in
+ * a real research_events table with typed events + preview text.
+ */
+export async function handleResearchEvents(slug, url, env) {
+    const since = parseInt(url.searchParams.get('since') || '0', 10) || 0;
+    const row = await getResearchBySlug(env.DB, slug);
+    if (!row) {
+        return jsonResponse({ error: 'Not found' }, 404);
+    }
+
+    const log = await env.KV.get(`progress_log:${row.id}`, 'json') || [];
+    const events = log
+        .filter((e) => e.step > since)
+        .map((e) => ({
+            seq: e.step,
+            event_type: 'status',
+            message: e.message,
+            created_at: Math.floor((e.timestamp || Date.now()) / 1000),
+        }));
+
+    return jsonResponse({ status: row.status, events, preview: row.preview ?? null });
 }
 
 function jsonResponse(data, status = 200) {

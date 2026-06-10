@@ -90,20 +90,20 @@
             .then(function (res) { return res.json(); })
             .then(function (data) {
                 if (data.error) { showError(data.error); return; }
-                if (data.cached) {
-                    addProgress('Found a fresh cached ranking.');
-                    renderReport(data.report, data.id, data.sourceCount, data.filteredCount);
+                if (data.cached && data.slug) {
+                    addProgress('Found existing research. Redirecting…');
+                    window.location.href = '/research/' + data.slug;
                     return;
                 }
                 addProgress('Queued. Connecting to the live read…');
-                connectSSE(data.id);
+                connectSSE(data.id, data.slug);
             })
             .catch(function (err) {
                 showError('Could not start the research: ' + err.message);
             });
     }
 
-    function connectSSE(reportId) {
+    function connectSSE(reportId, slug) {
         var done = false;
         var errorCount = 0;
         var source = new EventSource('/api/research/' + reportId + '/stream');
@@ -117,9 +117,15 @@
                 addProgress(data.message);
             } else if (data.type === 'complete') {
                 done = true;
-                addProgress('Done. Building your ranking…');
                 source.close();
-                renderReport(data.report, reportId, data.sourceCount, data.filteredCount);
+                var dest = data.slug || slug;
+                if (dest) {
+                    addProgress('Done. Opening your report…');
+                    window.location.href = '/research/' + dest;
+                } else {
+                    addProgress('Done. Building your ranking…');
+                    renderReport(data.report, reportId, data.sourceCount, data.filteredCount);
+                }
             } else if (data.type === 'error') {
                 done = true;
                 source.close();
@@ -133,27 +139,30 @@
             if (errorCount > 5) {
                 source.close();
                 addProgress('Connection unstable. Switching to polling…');
-                pollForResults(reportId, 0);
+                pollForResults(reportId, 0, slug);
             }
         };
     }
 
-    function pollForResults(reportId, attempts) {
+    function pollForResults(reportId, attempts, slug) {
         if (attempts > 120) { showError('Research timed out. Please try again.'); return; }
         fetch('/api/research/' + reportId)
             .then(function (res) { return res.json(); })
             .then(function (data) {
-                if (data.status === 'completed' && data.report) {
-                    renderReport(data.report, reportId, data.sourceCount, data.filteredCount);
+                if (data.status === 'completed') {
+                    var dest = data.slug || slug;
+                    if (dest) { window.location.href = '/research/' + dest; return; }
+                    if (data.report) { renderReport(data.report, reportId, data.sourceCount, data.filteredCount); return; }
+                    showError('Research finished but the result could not be loaded.');
                 } else if (data.status === 'error') {
                     showError(data.error || 'Research failed');
                 } else {
                     if (data.progress) addProgress(data.progress.message);
-                    setTimeout(function () { pollForResults(reportId, attempts + 1); }, 2000);
+                    setTimeout(function () { pollForResults(reportId, attempts + 1, slug); }, 2000);
                 }
             })
             .catch(function () {
-                setTimeout(function () { pollForResults(reportId, attempts + 1); }, 3000);
+                setTimeout(function () { pollForResults(reportId, attempts + 1, slug); }, 3000);
             });
     }
 

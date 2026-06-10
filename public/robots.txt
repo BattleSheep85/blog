@@ -1,6 +1,7 @@
 User-agent: *
 Allow: /
+Allow: /research/
 Disallow: /api/
-Disallow: /report/
+Disallow: /research/new
 
 Sitemap: https://chrisputer.tech/sitemap.xml

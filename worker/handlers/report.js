@@ -4,40 +4,51 @@
  * POST /api/feedback — store user feedback
  */
 
-import { getReport, getSourcesByReport, getProductsByReport, insertFeedback } from '../lib/db.js';
+import { getResearchById, getProductsByResearchId, insertFeedback } from '../lib/db.js';
+import { parseJsonSafe } from '../lib/utils.js';
 
 /**
  * Handle GET /api/report/:id
- * Returns the full report with sources and products.
+ * Returns the full report with sources and products (v2 research tables).
  */
 export async function handleGetReport(reportId, env) {
-    const report = await getReport(env.DB, reportId);
-    if (!report) {
+    const row = await getResearchById(env.DB, reportId);
+    if (!row) {
         return jsonResponse({ error: 'Report not found' }, 404);
     }
 
-    if (report.status !== 'completed') {
+    if (row.status === 'failed') {
         return jsonResponse({
-            id: report.id,
-            status: report.status,
+            id: row.id,
+            slug: row.slug,
+            status: 'error',
+            error: parseJsonSafe(row.result, {}).error || 'Research failed',
+        }, 200);
+    }
+
+    if (row.status !== 'complete') {
+        return jsonResponse({
+            id: row.id,
+            slug: row.slug,
+            status: row.status,
             message: 'Report is still being generated',
         }, 202);
     }
 
-    const sourcesResult = await getSourcesByReport(env.DB, reportId);
-    const productsResult = await getProductsByReport(env.DB, reportId);
+    const productsResult = await getProductsByResearchId(env.DB, reportId);
+    const report = parseJsonSafe(row.result, null);
 
     return jsonResponse({
-        id: report.id,
-        query: report.query,
+        id: row.id,
+        slug: row.slug,
+        query: row.query,
         status: 'completed',
-        report: report.report_json ? JSON.parse(report.report_json) : null,
-        sources: sourcesResult.results || [],
+        report,
+        sources: parseJsonSafe(row.sources, []),
         products: productsResult.results || [],
-        sourceCount: report.source_count,
-        filteredCount: report.filtered_count,
-        createdAt: report.created_at,
-        expiresAt: report.expires_at,
+        sourceCount: report?.source_count ?? 0,
+        filteredCount: report?.filtered_count ?? 0,
+        createdAt: row.created_at,
     });
 }
 
@@ -65,7 +76,7 @@ export async function handleFeedback(request, env) {
     }
 
     // Verify report exists
-    const report = await getReport(env.DB, reportId);
+    const report = await getResearchById(env.DB, reportId);
     if (!report) {
         return jsonResponse({ error: 'Report not found' }, 404);
     }
