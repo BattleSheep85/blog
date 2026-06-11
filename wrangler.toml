@@ -37,6 +37,9 @@ ADSENSE_SLOT_MID = "8942652687"
 ADSENSE_SLOT_BOTTOM = "7765302384"
 AMAZON_AFFILIATE_TAG = "battlesheep0a-20"
 CF_ANALYTICS_TOKEN = "ea97bb136135401584c3547bd0d73b66"
+# IndexNow verification key. Intentionally public — the protocol requires it to
+# be hosted at https://chrisputer.tech/<key>.txt (served by the worker route).
+INDEXNOW_KEY = "2b049a04674b366dc9b485b792ad823e"
 
 # D1 Database
 [[d1_databases]]

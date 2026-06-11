@@ -319,6 +319,65 @@ body {
 }
 .summary-box h2 { font-family: 'Newsreader', Georgia, serif; font-size: 1.375rem; font-weight: 600; color: var(--ink); margin-bottom: 0.75rem; }
 .summary-box p { color: var(--ink-2); }
+
+/* "Our pick" — high-visibility rank-1 card above the fold */
+.ourpick-box {
+    background: color-mix(in srgb, var(--accent) 7%, var(--surface-1));
+    border: 1px solid color-mix(in srgb, var(--accent) 38%, transparent);
+    border-radius: 0.875rem;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--card);
+}
+.ourpick-eyebrow {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 0.4rem;
+}
+.ourpick-name { font-family: 'Newsreader', Georgia, serif; font-size: 1.5rem; font-weight: 600; color: var(--ink); line-height: 1.2; }
+.ourpick-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem 1rem; margin-top: 0.5rem; }
+.ourpick-rating { font-size: 0.9rem; color: var(--trust-medium); display: inline-flex; gap: 0.35rem; align-items: center; }
+.ourpick-rating > span:last-child { color: var(--ink-2); }
+.ourpick-price { font-size: 1.05rem; font-weight: 700; color: var(--ink); }
+.ourpick-verdict { color: var(--ink-2); font-size: 0.95rem; line-height: 1.6; margin-top: 0.75rem; }
+.ourpick-cta { max-width: 22rem; }
+
+/* "Why trust this" — quiet E-E-A-T panel */
+.trust-panel {
+    background: var(--surface-1);
+    border: 1px solid var(--line);
+    border-radius: 0.875rem;
+    padding: 1.15rem 1.35rem;
+    margin-bottom: 2rem;
+}
+.trust-panel-head {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 600;
+    color: var(--ink-3);
+    margin-bottom: 0.65rem;
+}
+.trust-chips { display: flex; flex-wrap: wrap; gap: 0.4rem 0.5rem; }
+.trust-chip {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.3rem;
+    padding: 0.25rem 0.6rem;
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    font-size: 0.8rem;
+    color: var(--ink-2);
+}
+.trust-chip strong { color: var(--ink); font-weight: 700; }
+.trust-chip-warn { background: var(--trust-medium-bg); border-color: color-mix(in srgb, var(--trust-medium) 40%, transparent); }
+.trust-chip-warn strong { color: var(--trust-medium); }
+.trust-panel-date { font-size: 0.8rem; color: var(--ink-3); margin-top: 0.75rem; }
+.trust-panel-disclosure { font-size: 0.78rem; color: var(--ink-3); line-height: 1.55; margin-top: 0.5rem; }
 .sources h2 { font-family: 'Newsreader', Georgia, serif; color: var(--ink); }
 .sources a { display: block; margin-bottom: 0.3rem; font-size: 0.85rem; color: var(--accent); word-break: break-all; }
 .sources a:hover { color: var(--accent-hover); }

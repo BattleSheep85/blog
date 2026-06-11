@@ -25,7 +25,7 @@ import { displayQuery, escapeLikeWildcards, publicResearchFilter, canonicalizeQu
 
 // Bump when the page template/schema shape changes in a way that should
 // invalidate every KV-cached HTML blob. Old keys age out on their own TTL.
-const CACHE_VERSION = 'tr2';
+const CACHE_VERSION = 'tr3';
 // Lastmod advertised for the static /best/ guide pages in the sitemap.
 const GUIDES_LASTMOD = '2026-06-09';
 
@@ -171,6 +171,18 @@ export default {
                 if (bestMatch) {
                     return handleBestHub(bestMatch[1], request, env);
                 }
+            }
+
+            // IndexNow ownership verification file. Must echo the key exactly,
+            // as text/plain, at https://chrisputer.tech/<key>.txt. Matched
+            // dynamically off env so the route follows the configured key.
+            if (env.INDEXNOW_KEY && isGetLike && path === `/${env.INDEXNOW_KEY}.txt`) {
+                return withSecurityHeaders(new Response(env.INDEXNOW_KEY, {
+                    headers: {
+                        'Content-Type': 'text/plain;charset=utf-8',
+                        'Cache-Control': 'public, max-age=86400',
+                    },
+                }), null);
             }
 
             // Static assets (home, guides, css/js). HTML gets a fresh

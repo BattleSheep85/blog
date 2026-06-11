@@ -203,28 +203,22 @@ async function getRelatedResearch(db, currentSlug, canonical, category) {
   return deduped;
 }
 
-// `p` arrives with pros/cons/specs/metadata already parsed (see
-// renderResearchResult — the JSON columns are parsed exactly once after fetch).
-function renderProduct(p, index, ids, isService, slug, cleanLinks) {
-  const { pros, cons, specs, metadata } = p;
-  const rankClass = p.rank === 1 ? 'rank-1' : p.rank === 2 ? 'rank-2' : p.rank === 3 ? 'rank-3' : 'rank-n';
-
-  // Manufacturer product page (non-affiliate, informational)
+// Resolve every CTA target for one product in one place so renderProduct and
+// the "Our pick" box stay in lockstep (same labels, same rel, same redirect
+// vs. clean-link behavior). Returns:
+//   retailer — small non-Amazon pill { url, label, rel, isSponsored }
+//   amazon   — the primary Amazon button { url, label, href } where href is the
+//              click-tracked /api/go/:id redirect (or the plain url for
+//              cleanLinks / missing id). url stays the raw https target used for
+//              the isValidHttpsUrl guard.
+function resolveProductCtas(p, ids, isService, slug, cleanLinks) {
   const mfrUrl = p.manufacturer_url && isValidHttpsUrl(p.manufacturer_url) ? p.manufacturer_url : '';
-
-  // Two CTAs per product:
-  //   1. amazonCta — BIG full-width button at the card bottom. Always Amazon:
-  //      exact /dp/ URL when we have one, else a "Find on Amazon" search URL.
-  //      Hidden for services, and for clean-link renders (no tag → search
-  //      fallback returns '').
-  //   2. retailerCta — small pill in the links row. Non-Amazon retailers only
-  //      (Walmart, Best Buy, etc.) so we don't duplicate the Amazon button.
   const buyRaw = p.affiliate_url || p.product_url || '';
+
   let retailerCtaUrl = '';
   let retailerCtaLabel = '';
   let retailerCtaRel = 'noopener noreferrer nofollow sponsored';
   let retailerCtaIsSponsored = true;
-
   let amazonCtaUrl = '';
   let amazonCtaLabel = '';
 
@@ -255,6 +249,45 @@ function renderProduct(p, index, ids, isService, slug, cleanLinks) {
     }
   }
 
+  // Route clicks through /api/go/:productId so every click lands in
+  // affiliate_clicks. Exceptions: cleanLinks renders (the redirect always tags
+  // the URL, which we must NOT do for affiliate-prohibited communities) and a
+  // missing product id both fall back to the direct URL.
+  let amazonCtaHref = amazonCtaUrl;
+  if (amazonCtaUrl && !cleanLinks && p.id && slug) {
+    amazonCtaHref = `/api/go/${encodeURIComponent(p.id)}?ref=${encodeURIComponent(slug)}&network=amazon`;
+  }
+
+  return {
+    mfrUrl,
+    retailer: { url: retailerCtaUrl, label: retailerCtaLabel, rel: retailerCtaRel, isSponsored: retailerCtaIsSponsored },
+    amazon: { url: amazonCtaUrl, label: amazonCtaLabel, href: amazonCtaHref },
+  };
+}
+
+// `p` arrives with pros/cons/specs/metadata already parsed (see
+// renderResearchResult — the JSON columns are parsed exactly once after fetch).
+function renderProduct(p, index, ids, isService, slug, cleanLinks) {
+  const { pros, cons, specs, metadata } = p;
+  const rankClass = p.rank === 1 ? 'rank-1' : p.rank === 2 ? 'rank-2' : p.rank === 3 ? 'rank-3' : 'rank-n';
+
+  // Two CTAs per product:
+  //   1. amazonCta — BIG full-width button at the card bottom. Always Amazon:
+  //      exact /dp/ URL when we have one, else a "Find on Amazon" search URL.
+  //      Hidden for services, and for clean-link renders (no tag → search
+  //      fallback returns '').
+  //   2. retailerCta — small pill in the links row. Non-Amazon retailers only
+  //      (Walmart, Best Buy, etc.) so we don't duplicate the Amazon button.
+  const ctas = resolveProductCtas(p, ids, isService, slug, cleanLinks);
+  const mfrUrl = ctas.mfrUrl;
+  const retailerCtaUrl = ctas.retailer.url;
+  const retailerCtaLabel = ctas.retailer.label;
+  const retailerCtaRel = ctas.retailer.rel;
+  const retailerCtaIsSponsored = ctas.retailer.isSponsored;
+  const amazonCtaUrl = ctas.amazon.url;
+  const amazonCtaLabel = ctas.amazon.label;
+  const amazonCtaHref = ctas.amazon.href;
+
   const prosHtml = pros.map((pr) => html`<li>${pr}</li>`).join('');
   const consHtml = cons.map((c) => html`<li>${c}</li>`).join('');
   const specsHtml = Object.entries(specs).map(([k, v]) => html`<dt style="color:var(--ink-3)">${k}</dt><dd>${v}</dd>`).join('');
@@ -269,17 +302,8 @@ function renderProduct(p, index, ids, isService, slug, cleanLinks) {
     links.push(`<a href="${escapeHtml(retailerCtaUrl)}" target="_blank" rel="${retailerCtaRel}" class="${cls}">${escapeHtml(retailerCtaLabel)} <span aria-hidden="true">&#8599;</span></a>`);
   }
 
-  // Primary Amazon CTA: full-width button at the very bottom of the card.
-  // Route clicks through /api/go/:productId so every click lands in
-  // affiliate_clicks (the redirect resolves the real tagged Amazon URL or a
-  // rebuilt tagged search server-side). Exceptions:
-  //   - cleanLinks renders: the redirect always tags the URL, which we must NOT
-  //     do for affiliate-prohibited communities — link the plain URL directly.
-  //   - missing product id: fall back to the direct URL so the CTA still works.
-  let amazonCtaHref = amazonCtaUrl;
-  if (amazonCtaUrl && !cleanLinks && p.id && slug) {
-    amazonCtaHref = `/api/go/${encodeURIComponent(p.id)}?ref=${encodeURIComponent(slug)}&network=amazon`;
-  }
+  // Primary Amazon CTA: full-width button at the very bottom of the card. The
+  // click-tracked href is resolved in resolveProductCtas (shared with Our pick).
   const amazonCtaBlock = amazonCtaUrl && isValidHttpsUrl(amazonCtaUrl)
     ? `<a href="${escapeHtml(amazonCtaHref)}" target="_blank" rel="noopener noreferrer nofollow sponsored" class="product-cta-amazon">${escapeHtml(amazonCtaLabel)} <span aria-hidden="true">&#8599;</span></a>`
     : '';
@@ -312,6 +336,87 @@ ${specsHtml ? `<details><summary style="cursor:pointer;font-size:.85rem;color:va
 ${links.length > 0 ? `<div class="product-links">${links.join('')}</div>` : ''}
 ${amazonCtaBlock}
 </article>`;
+}
+
+// "Our pick" box: a high-visibility card for the rank-1 product, shown above the
+// fold (right after the summary, before the top ad) so the answer beats the ad.
+// Reuses resolveProductCtas so the CTA is byte-identical to the product card's.
+function renderOurPick(p, ids, isService, slug, cleanLinks) {
+  if (!p) return '';
+  const ctas = resolveProductCtas(p, ids, isService, slug, cleanLinks);
+  const ratingHtml = p.rating != null
+    ? `<span class="ourpick-rating"><span aria-hidden="true">${'★'.repeat(Math.floor(p.rating))}${'☆'.repeat(5 - Math.floor(p.rating))}</span> <span>${p.rating}/5</span></span>`
+    : '';
+  const priceHtml = p.price != null ? `<span class="ourpick-price">$${p.price.toLocaleString()}</span>` : '';
+  const a = ctas.amazon;
+  const r = ctas.retailer;
+  // Prefer the Amazon button (matches the card's primary CTA); fall back to the
+  // retailer/service pill so services and non-Amazon picks still get a CTA.
+  let ctaHtml = '';
+  if (a.url && isValidHttpsUrl(a.url)) {
+    ctaHtml = `<a href="${escapeHtml(a.href)}" target="_blank" rel="noopener noreferrer nofollow sponsored" class="product-cta-amazon ourpick-cta">${escapeHtml(a.label)} <span aria-hidden="true">&#8599;</span></a>`;
+  } else if (r.url && isValidHttpsUrl(r.url)) {
+    ctaHtml = `<a href="${escapeHtml(r.url)}" target="_blank" rel="${r.rel}" class="product-cta-amazon ourpick-cta">${escapeHtml(r.label)} <span aria-hidden="true">&#8599;</span></a>`;
+  }
+  return `<div class="ourpick-box" id="our-pick">
+<div class="ourpick-eyebrow">Our pick</div>
+<h2 class="ourpick-name">${escapeHtml(p.name)}</h2>
+${(ratingHtml || priceHtml) ? `<div class="ourpick-meta">${ratingHtml}${priceHtml}</div>` : ''}
+${p.verdict ? `<p class="ourpick-verdict">${escapeHtml(p.verdict)}</p>` : ''}
+${ctaHtml}
+</div>`;
+}
+
+// Tally credibility signals across the sources JSON for the "Why trust this"
+// E-E-A-T panel. Sources persist as either plain URL strings (legacy: no
+// credibility object → degrade to a bare count) or {url, credibility:{tags,...}}
+// objects (engine port). Parse defensively; never throw on malformed rows.
+function summarizeSourceCredibility(rawSources) {
+  const arr = parseJsonSafe(rawSources, []);
+  const list = Array.isArray(arr) ? arr : [];
+  const stats = { total: 0, handsOn: 0, expert: 0, community: 0, downWeighted: 0, hasCredibility: false };
+  for (const s of list) {
+    if (!s) continue;
+    stats.total++;
+    // Credibility tags may live on s.credibility.tags, s.tags, or be absent.
+    const cred = (s && typeof s === 'object') ? (s.credibility || s) : null;
+    const tags = cred && Array.isArray(cred.tags) ? cred.tags : null;
+    if (!tags) continue;
+    stats.hasCredibility = true;
+    const lower = tags.map((t) => String(t).toLowerCase());
+    if (lower.some((t) => t.includes('hands-on'))) stats.handsOn++;
+    if (lower.some((t) => t.includes('expert-domain') || t.includes('expert'))) stats.expert++;
+    if (lower.some((t) => t.includes('community'))) stats.community++;
+    if (lower.some((t) => t.includes('affiliate-conflict') || t.includes('listicle'))) stats.downWeighted++;
+  }
+  return stats;
+}
+
+// Quiet bordered E-E-A-T panel computed entirely from row data. Sits between the
+// summary/Our-pick area and the buyer's guide: that is where a skeptical reader
+// pauses before the recommendations, so the trust signal lands before the picks
+// rather than buried near the sources footer.
+function renderTrustPanel(rawSources, completedAtTs) {
+  const s = summarizeSourceCredibility(rawSources);
+  if (s.total === 0) return '';
+  const dateLabel = completedAtTs
+    ? new Date(completedAtTs * 1000).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+    : '';
+  const dateIso = completedAtTs ? new Date(completedAtTs * 1000).toISOString().slice(0, 10) : '';
+  const chips = [];
+  chips.push(`<span class="trust-chip"><strong>${s.total}</strong> source${s.total === 1 ? '' : 's'} analyzed</span>`);
+  if (s.hasCredibility) {
+    if (s.handsOn > 0) chips.push(`<span class="trust-chip"><strong>${s.handsOn}</strong> hands-on</span>`);
+    if (s.expert > 0) chips.push(`<span class="trust-chip"><strong>${s.expert}</strong> expert</span>`);
+    if (s.community > 0) chips.push(`<span class="trust-chip"><strong>${s.community}</strong> community</span>`);
+    if (s.downWeighted > 0) chips.push(`<span class="trust-chip trust-chip-warn"><strong>${s.downWeighted}</strong> down-weighted</span>`);
+  }
+  return `<aside class="trust-panel" aria-label="Why trust this">
+<div class="trust-panel-head">Why trust this</div>
+<div class="trust-chips">${chips.join('')}</div>
+${dateLabel ? `<p class="trust-panel-date">Synthesized <time datetime="${dateIso}">${escapeHtml(dateLabel)}</time>${s.hasCredibility ? '' : ' &middot; legacy report (no per-source credibility data)'}</p>` : ''}
+<p class="trust-panel-disclosure">We may earn a commission on purchases made through links on this page. Rankings are produced from independent source analysis and are never paid placements.</p>
+</aside>`;
 }
 
 // Return shape (was `export interface RenderedResearch` in the TS source):
@@ -468,6 +573,10 @@ ${entry.status === 'complete' ? (() => {
 })() : ''}
 
 ${entry.summary ? `<div class="summary-box"><h2 id="summary">Summary</h2><p>${escapeHtml(entry.summary)}</p></div>` : ''}
+
+${entry.status === 'complete' && products.length > 0 ? renderOurPick(products.find((p) => p.rank === 1) || products[0], affiliateIds, isService, slug, cleanLinks) : ''}
+
+${entry.status === 'complete' ? renderTrustPanel(entry.sources, entry.completed_at) : ''}
 
 ${entry.status === 'complete' ? adSlot(env, 'top', 'Advertisement') : ''}
 

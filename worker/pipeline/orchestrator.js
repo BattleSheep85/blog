@@ -17,6 +17,7 @@ import { buildAffiliateUrl } from '../lib/affiliate-links.js';
 import { resolveAsins } from '../lib/asin-resolver.js';
 import { getResearchById, generateId } from '../lib/db.js';
 import { sanitizeUrl } from '../lib/utils.js';
+import { submitToIndexNow } from '../lib/indexnow.js';
 
 const DEFAULT_AFFILIATE_TAG = 'battlesheep0a-20';
 // Monthly spend ceiling default; overridden by env.MONTHLY_BUDGET_USD.
@@ -190,6 +191,13 @@ export async function runResearchPipeline(env, reportId, query) {
         await incrementMonthlyCost(env, totalCostUsd);
         await setFinalReport(env.KV, reportId, resultJson);
         await progress(`Research complete: ${result.products.length} products ranked.`);
+
+        // Fire-and-forget: ping IndexNow so the freshly published/updated page
+        // gets indexed by Bing/DuckDuckGo/Yandex within hours. submitToIndexNow
+        // never throws and self-times-out, so it can't delay or fail the run.
+        if (row.slug) {
+            await submitToIndexNow(env, [`https://chrisputer.tech/research/${row.slug}`]);
+        }
 
     } catch (err) {
         console.error('Pipeline error:', err);
