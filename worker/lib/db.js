@@ -19,11 +19,11 @@ function nowEpoch() {
 
 // -- Research (permanent rows, server-rendered at /research/:slug) --
 
-export async function insertResearch(db, { id, slug, query, canonicalQuery, tier }) {
+export async function insertResearch(db, { id, slug, query, canonicalQuery, tier, clarifications }) {
     await db.prepare(
-        `INSERT INTO research (id, slug, query, status, tier, canonical_query, created_at)
-         VALUES (?, ?, ?, 'pending', ?, ?, ?)`
-    ).bind(id, slug, query, tier || 'full', canonicalQuery || null, nowEpoch()).run();
+        `INSERT INTO research (id, slug, query, status, tier, canonical_query, clarifications, created_at)
+         VALUES (?, ?, ?, 'pending', ?, ?, ?, ?)`
+    ).bind(id, slug, query, tier || 'full', canonicalQuery || null, clarifications || null, nowEpoch()).run();
     return id;
 }
 

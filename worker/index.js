@@ -12,6 +12,8 @@ import { handleGetReport, handleFeedback } from './handlers/report.js';
 import { handleAffiliateClick, handleAffiliateSearch } from './handlers/affiliate.js';
 import { runResearchPipeline } from './pipeline/orchestrator.js';
 import { renderResearchResult } from './pages/research-page.js';
+import { renderClarifyPage, extractClarifications } from './pages/clarify.js';
+import { classifyQuery } from './lib/classifier.js';
 import { renderBrowse } from './pages/browse.js';
 import { renderCategoryHub } from './pages/category.js';
 import { handleSubscribe } from './handlers/subscribe.js';
@@ -19,7 +21,7 @@ import { handleMetrics } from './pages/metrics.js';
 import { runFlywheelTick } from './lib/keywords.js';
 import { getLatestResearchLastmod, generateSitemap, generateAtomFeed, generateOgImage } from './lib/sitemap.js';
 import { getResearchById } from './lib/db.js';
-import { displayQuery, escapeLikeWildcards, publicResearchFilter } from './lib/utils.js';
+import { displayQuery, escapeLikeWildcards, publicResearchFilter, canonicalizeQuery } from './lib/utils.js';
 
 // Bump when the page template/schema shape changes in a way that should
 // invalidate every KV-cached HTML blob. Old keys age out on their own TTL.
@@ -370,13 +372,48 @@ async function handleNewResearch(request, url, env) {
         return Response.redirect(new URL('/', url.origin).toString(), 302);
     }
 
+    // Tier: default 'full'. Only 'full' submissions get the clarifying-questions
+    // grill below; instant (if ever wired) skips it for speed.
+    const tier = param('tier') || 'full';
+
+    // Clarifying-questions interstitial. For a Full-tier submission that is NOT a
+    // re-run (fresh), does NOT already carry clarification answers, and was NOT
+    // an explicit skip, ask the classifier (KV-cached, so cheap) whether the
+    // query needs disambiguation. If it returns >=1 question, render the clarify
+    // page instead of starting research. Prefetches already returned 204 above.
+    const hasAnswers = Array.from(url.searchParams.keys()).some((k) => k.startsWith('clarify_'))
+        || (form ? Array.from(form.keys()).some((k) => k.startsWith('clarify_')) : false);
+    const skipClarify = param('skip_clarify') === '1';
+    let clarifications = {};
+    if (tier === 'full' && !fresh && !hasAnswers && !skipClarify) {
+        try {
+            const classification = await classifyQuery(env, query, canonicalizeQuery(query.toLowerCase()));
+            if (classification.accept && classification.clarifying_questions.length > 0) {
+                return htmlPageResponse(
+                    renderClarifyPage(query, tier, classification.clarifying_questions, env),
+                    env,
+                    { cacheControl: 'no-store' },
+                );
+            }
+        } catch { /* classifier failure: fall open and proceed without the grill */ }
+    }
+    if (hasAnswers) {
+        // Extract directly from the request URL — works even if the classifier
+        // failed open after the interstitial rendered, so the answers still land.
+        clarifications = extractClarifications(url);
+    }
+
+    const apiBody = { query };
+    if (fresh) apiBody.fresh = true;
+    if (Object.keys(clarifications).length > 0) apiBody.clarifications = clarifications;
+
     const result = await handleStartResearch(new Request(new URL('/api/research', url.origin), {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             'CF-Connecting-IP': request.headers.get('CF-Connecting-IP') || '127.0.0.1',
         },
-        body: JSON.stringify(fresh ? { query, fresh: true } : { query }),
+        body: JSON.stringify(apiBody),
     }), env);
 
     if (result.ok) {

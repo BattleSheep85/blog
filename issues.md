@@ -1,6 +1,30 @@
 # Issues
 
-Last updated: 2026-06-11
+Last updated: 2026-06-12
+
+## Engine quality round (2026-06-12)
+
+Verified end-to-end locally (full-tier webcam run: 3/4 products with direct tagged /dp/
+links, video sources ingested, $0.081/run) and deployed to production.
+
+- [x] MEDIUM: Direct /dp/ ASIN links — post-synthesis resolver (worker/lib/asin-resolver.js):
+      one Serper site:amazon.com query per linkless product (cap 5), title sanity-match,
+      tagged via buildAffiliateUrl. Unmatched products keep the tagged-search fallback.
+- [x] Video provider restored: Serper /videos + ported worker/lib/youtube.js description
+      scrape (affiliate-conflict detection on video descriptions works again).
+- [x] Clarifying-questions interstitial restored (worker/pages/clarify.js): full-tier
+      underspecified queries ask up to 3 chip-answer questions before spending; answers
+      thread into canonical clustering + synthesis constraints; skip path preserved.
+- [x] Model upgrade per BullshitBench v2 (3-judge consensus, 100 trap questions):
+      exhaustive/unbound synth → anthropic/claude-opus-4.8 NO reasoning (94% BS detection
+      vs 76% for opus-4.7; no-reasoning beats xhigh). Sonnet-4.6 stays on full (84%).
+      Planner gemini-2.5-flash scores 15% (77% fooled) — mitigated with a synthesis-prompt
+      guard: note sentiment is untrusted, deterministic credibility tags outrank it.
+- [x] Full tier depth: maxFetches 3→6, maxSearches 12→14.
+- [x] Metrics-driven re-research sweep in the flywheel tick: pages with ≥25 views, zero
+      affiliate clicks in 30d, >30d old → re-run at exhaustive tier IN PLACE (same row/slug,
+      SEO equity kept), max 2/day (RERESEARCH_DAILY_MAX), budget-gated.
+- [x] Jina resilience: direct-fetch + tag-stripping readability fallback on 429/5xx/timeout.
 
 ## Phase 1: SSR/SEO port + code review (2026-06-11)
 

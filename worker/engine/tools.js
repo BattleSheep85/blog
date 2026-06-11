@@ -2,6 +2,7 @@ import { duckduckgoSearch } from '../lib/duckduckgo.js';
 import { rssSearch } from '../lib/rss.js';
 import { fetchPageContent } from '../lib/jina.js';
 import { scoreSource, extractAmazonProductUrls } from '../lib/credibility.js';
+import { fetchYoutubeDescription, isYouTube } from '../lib/youtube.js';
 
 // ─── Provider primitives (Serper + HN Algolia) ───────────────────────────────
 // NOTE: Do NOT evaluate `new Date()` at module load. Cloudflare Workers freeze
@@ -82,6 +83,63 @@ async function serperSearch(query, apiKey, opts = {}) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Serper.dev Video Search — https://serper.dev/videos
+// Returns YouTube (and other) video results. Used by the `video` provider so
+// hands-on review videos enter the source pool; their descriptions are then
+// scraped (see youtube.js) to surface affiliate links for credibility scoring.
+// Returns null when the provider is unavailable so the caller can fall back.
+// ─────────────────────────────────────────────────────────────────────────────
+
+async function serperVideos(query, apiKey) {
+  if (!apiKey) return null;
+  try {
+    const response = await fetch('https://google.serper.dev/videos', {
+      method: 'POST',
+      signal: AbortSignal.timeout(TIMEOUT_MS),
+      headers: {
+        'Content-Type': 'application/json',
+        'X-API-KEY': apiKey,
+      },
+      body: JSON.stringify({ q: query, num: 10 }),
+    });
+    if (!response.ok) {
+      const text = await response.text().catch(() => '');
+      console.log(`[serper-videos] HTTP ${response.status} q="${query}" body=${text.slice(0, 200)}`);
+      if (response.status === 401 || response.status === 403 || response.status === 429) return null;
+      return [];
+    }
+    const data = await response.json();
+    // Serper /videos returns `videos: [{title, link, snippet, date, ...}]`.
+    // Guard defensively in case the shape drifts or the key is missing.
+    const items = Array.isArray(data?.videos) ? data.videos : [];
+    console.log(`[serper-videos] q="${query}" → ${items.length}`);
+
+    return items
+      .filter((r) => r && typeof r.link === 'string')
+      .map((r) => {
+        let publishedAt;
+        if (r.date) {
+          const ms = Date.parse(r.date);
+          if (!Number.isNaN(ms)) publishedAt = Math.floor(ms / 1000);
+        }
+        return {
+          url: r.link,
+          title: r.title ?? r.link,
+          content: [
+            r.date ? `[${r.date}]` : '',
+            r.snippet ?? '',
+          ].filter(Boolean).join('\n'),
+          source: 'video',
+          publishedAt,
+        };
+      });
+  } catch (err) {
+    console.log(`[serper-videos] ERROR q="${query}": ${err instanceof Error ? err.message : String(err)}`);
+    return [];
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // HackerNews via Algolia — free, no auth, works from CF Workers
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -149,8 +207,8 @@ export const AGENT_TOOLS = [
           query: { type: 'string', description: 'Search query. Be specific — include product names, model numbers, years.' },
           provider: {
             type: 'string',
-            enum: ['web', 'news', 'hackernews', 'duckduckgo', 'rss'],
-            description: 'Search provider. web=general web, news=recent articles, hackernews=tech discussions, duckduckgo=alternative web results, rss=expert review sites (Wirecutter/RTINGS/etc).',
+            enum: ['web', 'news', 'video', 'hackernews', 'duckduckgo', 'rss'],
+            description: 'Search provider. web=general web, news=recent articles, video=YouTube reviews, hackernews=tech discussions, duckduckgo=alternative web results, rss=expert review sites (Wirecutter/RTINGS/etc).',
           },
         },
         required: ['query'],
@@ -285,6 +343,15 @@ async function executeSearch(
       subs = 1;
       break;
     }
+    case 'video': {
+      // Serper /videos surfaces YouTube review videos. If the provider is
+      // unavailable (no key / auth-quota reject) fall back to a domain-scoped
+      // DuckDuckGo query so the agent still gets video-adjacent results.
+      const vids = await serperVideos(query, serperApiKey);
+      results = vids === null ? await duckduckgoSearch(`${query} review youtube`) : vids;
+      subs = 1;
+      break;
+    }
     case 'hackernews':
       results = await hackerNews(query);
       subs = 1;
@@ -309,6 +376,24 @@ async function executeSearch(
   const seenUrls = new Set(state.sources.map((s) => s.url));
   const newResults = results.filter((r) => !seenUrls.has(r.url));
 
+  // Video provider: fetch YouTube descriptions in parallel. Descriptions carry
+  // the affiliate-link evidence ("Buy here: amzn.to/...") that title+snippet
+  // never expose. Each fetch is 1 extra subrequest; capped by newResults.length.
+  let videoSubs = 0;
+  if (provider === 'video' && newResults.length > 0) {
+    const descriptions = await Promise.all(
+      newResults.map((r) => (isYouTube(r.url) ? fetchYoutubeDescription(r.url) : Promise.resolve(''))),
+    );
+    for (let i = 0; i < newResults.length; i++) {
+      const desc = descriptions[i];
+      if (desc) {
+        // Append to content so downstream synthesis + credibility scan see it.
+        newResults[i].content = `${newResults[i].content}\n\n[description]\n${desc}`;
+        videoSubs++;
+      }
+    }
+  }
+
   // Score every new source before it enters state — tags/score persist with
   // the source through synthesis and into D1 storage.
   for (const r of newResults) {
@@ -329,7 +414,7 @@ async function executeSearch(
   state.sources.push(...newResults);
 
   if (newResults.length === 0) {
-    return [`Search "${query}" (${provider}): 0 new results (${results.length} duplicates filtered). Try a different query or provider.`, subs];
+    return [`Search "${query}" (${provider}): 0 new results (${results.length} duplicates filtered). Try a different query or provider.`, subs + videoSubs];
   }
 
   // Format results for the LLM — include credibility badge so the agent can
@@ -341,7 +426,7 @@ async function executeSearch(
     })
     .join('\n\n');
 
-  return [`Search "${query}" (${provider}): ${newResults.length} new results (${state.sources.length} total):\n\n${formatted}`, subs];
+  return [`Search "${query}" (${provider}): ${newResults.length} new results (${state.sources.length} total):\n\n${formatted}`, subs + videoSubs];
 }
 
 async function executeReadPage(

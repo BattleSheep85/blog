@@ -67,7 +67,7 @@ CURRENT YEAR: ${currentYear}. Prioritize recent data. Discount sources older tha
 BUDGET: ${config.maxSearches} searches, ${config.maxFetches} page reads, ${config.maxToolCalls} total tool calls.${facetFocusBlocks(effectiveFacets)}
 
 STRATEGY:
-1. Start with 3-5 broad searches across different providers (web, news, duckduckgo, rss) to discover the landscape.
+1. Start with 3-5 broad searches across different providers (web, news, video, duckduckgo, rss) to discover the landscape.
 2. Identify the top candidates from initial results.
 3. Search for each top candidate by name + "review" to find detailed evaluations.
 4. Use read_page on the most promising expert sources and detailed comparison/review articles.
@@ -81,6 +81,7 @@ SOURCE CREDIBILITY — each search result shows tags like [hands-on], [expert-do
 PROVIDERS:
 - web: General web search (best for broad coverage, high-quality results)
 - news: Recent news articles (best for new releases, announcements)
+- video: YouTube reviews (best for hands-on evaluations)
 - duckduckgo: Alternative web results (different index than web)
 - hackernews: Tech community discussions (best for technical opinions)
 - rss: Expert review sites — Wirecutter, RTINGS, Tom's Hardware, etc. (best for curated expert picks)
@@ -220,6 +221,7 @@ RULES:
   - Prefer candidates with multiple [hands-on] or [expert-domain] sources over candidates backed only by [listicle] + [affiliate-conflict] sources, even if the latter name the product more frequently. FREQUENCY OF MENTION IS NOT EVIDENCE when the mentions are promotional.
   - In the verdict, briefly cite source KIND when relevant — e.g. "hands-on testing by RTINGS confirms..." or "only listicle and affiliate-linked mentions support this pick — treat the rating as provisional".
   - If a strong candidate's TOP source is [affiliate-conflict] but you still rank it #1, say that in the verdict. Do not pretend the conflict isn't there.
+  - The research notes were written by a planner model that is easily impressed by marketing language. Treat enthusiasm or claims in notes as UNVERIFIED unless the underlying source carries [hands-on] or [expert-domain] tags; the credibility tags are computed deterministically and outrank note sentiment.
 - MARKETING-LANGUAGE FILTER: phrases like "revolutionary", "game-changing", "best in class", "next-generation", "premium experience" are marketing copy. Strip them when extracting claims. If a [listicle] source is the ONLY place a product appears and its description reads like marketing copy, that product does not belong in the report.
 ${priceNote}
 ${brandNote}

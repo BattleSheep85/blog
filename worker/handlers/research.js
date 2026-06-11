@@ -45,9 +45,28 @@ export async function handleStartResearch(request, env) {
     // not selectable here.
     const tier = PUBLIC_TIERS.includes(body.tier) ? body.tier : 'full';
 
+    // Sanitize clarifications: map of string→string, keys snake_case <=40 chars,
+    // values <=80 chars, max 5 entries. Mirrors the interstitial's extraction so
+    // a forged direct API call can't smuggle oversized/odd keys into clustering
+    // or the synthesis prompt.
+    const clarifications = {};
+    if (body.clarifications && typeof body.clarifications === 'object') {
+        let i = 0;
+        for (const [k, v] of Object.entries(body.clarifications)) {
+            if (i >= 5) break;
+            if (typeof k !== 'string' || typeof v !== 'string') continue;
+            const key = k.trim().slice(0, 40).replace(/[^a-z0-9_]/gi, '_').toLowerCase();
+            const val = v.trim().slice(0, 80);
+            if (key && val) { clarifications[key] = val; i++; }
+        }
+    }
+    const clarificationsJson = Object.keys(clarifications).length > 0 ? JSON.stringify(clarifications) : null;
+
     // Clustering: a completed run with the same canonical query within 14 days
-    // is the same research — send the client to its permanent page.
-    const canonical = canonicalizeQuery(normalizedQuery);
+    // is the same research — send the client to its permanent page. Clarifications
+    // shift the canonical form so differently-clarified runs cluster separately
+    // ("best mesh wifi $200" vs "$500").
+    const canonical = canonicalizeQuery(normalizedQuery, clarifications);
     if (!fresh) {
         const existing = await findResearchByCanonicalQuery(env.DB, canonical, 14);
         if (existing) {
@@ -93,6 +112,7 @@ export async function handleStartResearch(request, env) {
         query: normalizedQuery,
         canonicalQuery: canonical,
         tier,
+        clarifications: clarificationsJson,
     });
 
     // Enqueue research job (message shape unchanged — queue consumer keys on it)

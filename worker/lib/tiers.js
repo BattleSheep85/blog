@@ -15,8 +15,8 @@ export const TIER_CONFIGS = {
   },
   full: {
     maxToolCalls: 18,
-    maxSearches: 12,
-    maxFetches: 3,
+    maxSearches: 14,
+    maxFetches: 6,
     agentLoopBudgetMs: 25_000,
     synthModel: 'anthropic/claude-sonnet-4.6',
     plannerModel: 'google/gemini-2.5-flash',
@@ -29,9 +29,10 @@ export const TIER_CONFIGS = {
     maxSearches: 30,
     maxFetches: 15,
     agentLoopBudgetMs: 180_000,
-    synthModel: 'anthropic/claude-opus-4.7',
+    // opus-4.8 with NO reasoning: the BS-detection benchmark shows opus-4.8
+    // no-reasoning at 94% vs opus-4.7 at 76%. No synthReasoningEffort here.
+    synthModel: 'anthropic/claude-opus-4.8',
     plannerModel: 'google/gemini-2.5-flash',
-    synthReasoningEffort: 'medium',
     reportSections: ['summary', 'products', 'comparison', 'categories', 'pitfalls', 'buyerGuide', 'methodology'],
     requireTurnstile: true,
     requireSubscription: false,
@@ -41,9 +42,10 @@ export const TIER_CONFIGS = {
     maxSearches: 150,
     maxFetches: 100,
     agentLoopBudgetMs: 1_800_000,
-    synthModel: 'anthropic/claude-opus-4.7',
+    // opus-4.8 with NO reasoning: the BS-detection benchmark shows opus-4.8
+    // no-reasoning at 94% vs opus-4.7 at 76%. No synthReasoningEffort here.
+    synthModel: 'anthropic/claude-opus-4.8',
     plannerModel: 'google/gemini-2.5-flash',
-    synthReasoningEffort: 'high',
     reportSections: ['summary', 'products', 'comparison', 'categories', 'pitfalls', 'buyerGuide', 'methodology'],
     requireTurnstile: true,
     requireSubscription: true,
