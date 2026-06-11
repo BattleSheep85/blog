@@ -20,3 +20,4 @@ Thumbs.db
 
 # Node (should not exist, but just in case)
 node_modules/
+.cf-token

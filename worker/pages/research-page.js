@@ -155,7 +155,14 @@ function sourceLabel(url) {
 // the "Related research" block — internal links Google rewards for topical depth,
 // and a browse nudge for users who land on a page from search.
 async function getRelatedResearch(db, currentSlug, canonical, category) {
-  const tokens = (canonical ?? '').split(' ').filter((t) => t.length > 1).slice(0, 8);
+  // Remote D1 rejects LIKE patterns over 50 bytes ("pattern too complex"), so
+  // cap token length (the pattern adds 2 bytes of %). Also skip key:value
+  // tokens that clarification-aware canonical queries embed — they are
+  // metadata, not topic words, and only add noise to relatedness matching.
+  const tokens = (canonical ?? '')
+    .split(' ')
+    .filter((t) => t.length > 1 && t.length <= 40 && !t.includes(':'))
+    .slice(0, 8);
   if (tokens.length === 0) return [];
 
   const likeClauses = tokens.map((_, i) => `canonical_query LIKE ?${i + 2}`).join(' OR ');
