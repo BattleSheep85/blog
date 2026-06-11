@@ -15,7 +15,7 @@ import { renderResearchResult } from './pages/research-page.js';
 import { renderBrowse } from './pages/browse.js';
 import { getLatestResearchLastmod, generateSitemap, generateAtomFeed, generateOgImage } from './lib/sitemap.js';
 import { getResearchById } from './lib/db.js';
-import { displayQuery, escapeLikeWildcards } from './lib/utils.js';
+import { displayQuery, escapeLikeWildcards, publicResearchFilter } from './lib/utils.js';
 
 // Bump when the page template/schema shape changes in a way that should
 // invalidate every KV-cached HTML blob. Old keys age out on their own TTL.
@@ -80,14 +80,6 @@ export default {
                 return handleSearchSuggest(url, env);
             }
 
-            // Notify-me stub: the processing page renders a subscribe box, but
-            // TrueRank has no subscribers table yet (phase 2).
-            if (path === '/api/subscribe' && method === 'POST') {
-                return new Response(JSON.stringify({ ok: false, error: 'Coming soon' }), {
-                    headers: { 'Content-Type': 'application/json' },
-                });
-            }
-
             // Search-based affiliate redirect for static guide pages.
             // Must be checked before the generic /api/go/:id route below.
             if (path === '/api/go/search' && method === 'GET') {
@@ -102,21 +94,28 @@ export default {
             // ── Feeds (replace the old static public/sitemap.xml) ───────────
             const isGetLike = method === 'GET' || method === 'HEAD';
             if (path === '/sitemap.xml' && isGetLike) {
-                return generateSitemap(url.origin, env, request.headers.get('If-Modified-Since'), GUIDES_LASTMOD);
+                return withSecurityHeaders(
+                    await generateSitemap(url.origin, env, request.headers.get('If-Modified-Since'), GUIDES_LASTMOD),
+                    null,
+                );
             }
             if (path === '/feed.xml' && isGetLike) {
-                return generateAtomFeed(url.origin, env, request.headers.get('If-Modified-Since'));
+                return withSecurityHeaders(
+                    await generateAtomFeed(url.origin, env, request.headers.get('If-Modified-Since')),
+                    null,
+                );
+            }
+
+            // Search forms submit via GET; action buttons (re-run) via POST.
+            if (path === '/research/new' && (isGetLike || method === 'POST')) {
+                return handleNewResearch(request, url, env);
             }
 
             // ── Server-rendered pages ───────────────────────────────────────
             if (isGetLike) {
-                if (path === '/research/new') {
-                    return handleNewResearch(request, url, env);
-                }
-
                 const ogMatch = path.match(/^\/research\/([a-z0-9-]+)\/og\.svg$/);
                 if (ogMatch) {
-                    return generateOgImage(ogMatch[1], env);
+                    return withSecurityHeaders(await generateOgImage(ogMatch[1], env), null);
                 }
 
                 if (path === '/research' || path === '/research/') {
@@ -198,6 +197,13 @@ async function handleResearchPage(slug, url, request, env, ctx) {
             env.KV.get(cacheMetaKey),
         ]);
         if (cached) {
+            // Cached views still count — bump view_count out-of-band so the
+            // KV fast path never blocks on D1.
+            ctx.waitUntil(
+                env.DB.prepare("UPDATE research SET view_count = view_count + 1 WHERE slug = ?1 AND status = 'complete'")
+                    .bind(slug).run()
+                    .catch((err) => console.error('View count update failed:', err)),
+            );
             const lm = cachedLm ? parseInt(cachedLm, 10) || undefined : undefined;
             const notModified = maybe304(ifModifiedSince, lm);
             if (notModified) return notModified;
@@ -207,7 +213,9 @@ async function handleResearchPage(slug, url, request, env, ctx) {
 
     const result = await renderResearchResult(slug, env, fromQuery, cleanLinks);
     if (result instanceof Response) {
-        return result; // plain 404 in phase 1 (error pages port is phase 2)
+        // Plain 404 in phase 1 (error pages port is phase 2); wrap it here so
+        // even bare responses carry the security headers.
+        return withSecurityHeaders(result, null);
     }
 
     // Cache completed/failed pages only (not the live-processing variant).
@@ -220,10 +228,31 @@ async function handleResearchPage(slug, url, request, env, ctx) {
     return htmlPageResponse(result.html, env, { lastModifiedSec: result.lastModified });
 }
 
-// GET /research/new?q=... — target of the server-rendered search forms.
+// GET|POST /research/new — target of the server-rendered search forms (GET)
+// and action buttons like re-run (POST). q/fresh come from query params on
+// GET, and from the form body (falling back to query params) on POST.
 // Phase 1: no tiers/Turnstile/clarifying questions; submit and redirect.
 async function handleNewResearch(request, url, env) {
-    const query = (url.searchParams.get('q') || '').trim();
+    // Speculative prefetch (Chrome prerender, link hover prefetchers) must
+    // never enqueue research jobs or burn rate-limit quota.
+    const purposeHeaders = `${request.headers.get('Sec-Purpose') || ''} ${request.headers.get('Purpose') || ''}`.toLowerCase();
+    if (purposeHeaders.includes('prefetch')) {
+        return new Response(null, { status: 204 });
+    }
+
+    let form = null;
+    if (request.method === 'POST') {
+        // Tolerates non-form bodies (formData() throws → query-param fallback).
+        form = await request.formData().catch(() => null);
+    }
+    const param = (name) => {
+        const fromForm = form?.get(name);
+        if (typeof fromForm === 'string' && fromForm !== '') return fromForm;
+        return url.searchParams.get(name) || '';
+    };
+
+    const query = param('q').trim();
+    const fresh = param('fresh') === '1';
     if (!query) {
         return Response.redirect(new URL('/', url.origin).toString(), 302);
     }
@@ -234,7 +263,7 @@ async function handleNewResearch(request, url, env) {
             'Content-Type': 'application/json',
             'CF-Connecting-IP': request.headers.get('CF-Connecting-IP') || '127.0.0.1',
         },
-        body: JSON.stringify({ query }),
+        body: JSON.stringify(fresh ? { query, fresh: true } : { query }),
     }), env);
 
     if (result.ok) {
@@ -260,7 +289,7 @@ async function handleSearchSuggest(url, env) {
         `WITH ranked AS (
            SELECT slug, query, category, view_count,
                   ROW_NUMBER() OVER (PARTITION BY COALESCE(canonical_query, slug) ORDER BY view_count DESC, created_at DESC) AS rn
-           FROM research WHERE status = 'complete' AND query LIKE ?1 ESCAPE '\\'
+           FROM research WHERE ${publicResearchFilter('research')} AND query LIKE ?1 ESCAPE '\\'
          )
          SELECT slug, query, category, view_count FROM ranked WHERE rn = 1
          ORDER BY view_count DESC LIMIT 6`
@@ -278,6 +307,14 @@ function suggestJson(data) {
             'Vary': 'Accept-Encoding',
         },
     });
+}
+
+// Plain-text 404 that still carries the standard security headers.
+function notFound() {
+    return withSecurityHeaders(new Response('Not found', {
+        status: 404,
+        headers: { 'Content-Type': 'text/plain;charset=utf-8', 'Cache-Control': 'no-store' },
+    }), null);
 }
 
 function redirect301(destUrl) {
@@ -373,7 +410,7 @@ function htmlPageResponse(body, env, { status = 200, lastModifiedSec, cacheContr
 async function serveAsset(request, env, overrideUrl) {
     const res = await env.ASSETS.fetch(overrideUrl ? new Request(overrideUrl, request) : request);
     if (res.status === 404 && !overrideUrl) {
-        return new Response('Not found', { status: 404 });
+        return notFound();
     }
     const contentType = res.headers.get('Content-Type') || '';
     if (contentType.includes('text/html')) {

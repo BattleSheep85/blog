@@ -28,6 +28,14 @@ export function raw(s) {
   return { __html: s };
 }
 
+// JSON-LD <script> block builder. Escapes '<' so untrusted strings inside the
+// object (queries, summaries, product names) can never break out of the
+// script element with a literal '</script>' — JSON.stringify alone does NOT
+// protect against that.
+export function jsonLdScript(obj) {
+  return '<script type="application/ld+json" nonce="__CSP_NONCE__">' + JSON.stringify(obj).replace(/</g, '\\u003c') + '</script>';
+}
+
 // Google truncates meta descriptions at ~160 chars. Cap at 155 to leave room for ellipsis.
 function capDescription(desc) {
   if (desc.length <= 155) return desc;
@@ -42,8 +50,9 @@ export function layout(title, description, body, extra_head = '', meta) {
   const escapedDesc = escapeHtml(capDescription(description));
   const ogType = meta?.ogType ?? 'website';
   const ogUrl = meta?.ogUrl ? `\n<meta property="og:url" content="${escapeHtml(meta.ogUrl)}">` : '';
-  const rawOgImage = meta?.ogImage ?? '/og-image.svg';
+  const rawOgImage = meta?.ogImage ?? '/og.png';
   const ogImage = rawOgImage.startsWith('http') ? rawOgImage : `https://chrisputer.tech${rawOgImage}`;
+  const ogImageType = ogImage.endsWith('.svg') ? 'image/svg+xml' : 'image/png';
   const twitterCard = meta?.twitterCard ?? 'summary_large_image';
   return `<!doctype html>
 <html lang="en">
@@ -61,7 +70,7 @@ export function layout(title, description, body, extra_head = '', meta) {
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="${escapedTitle} — Chrisputer Labs">
-<meta property="og:image:type" content="image/svg+xml">
+<meta property="og:image:type" content="${ogImageType}">
 <meta name="twitter:card" content="${twitterCard}">
 <meta name="twitter:title" content="${escapedTitle} | Chrisputer Labs">
 <meta name="twitter:description" content="${escapedDesc}">

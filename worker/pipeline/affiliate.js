@@ -1,6 +1,12 @@
 /**
- * Affiliate Enrichment: Add affiliate links to products in the report.
+ * Affiliate Enrichment: Add affiliate links to products in the report JSON.
  * Currently supports Amazon Associates.
+ *
+ * The enriched `affiliate_links` object only lives in the report JSON blob
+ * (research.result column + KV report copy) consumed by the legacy
+ * /api/report client renderer (public/js/render.js). It is NOT persisted to
+ * products.affiliate_url — the server renderer rejects Amazon search URLs
+ * and builds its own tagged search fallback instead.
  */
 
 /**
@@ -29,17 +35,4 @@ export function enrichWithAffiliateLinks(report, amazonTag) {
         ...report,
         products: enrichedProducts,
     };
-}
-
-/**
- * Generate an affiliate redirect URL for click tracking.
- */
-export function buildAffiliateRedirectUrl(product, network, amazonTag) {
-    if (network === 'amazon' && product.affiliate_links?.amazon) {
-        return product.affiliate_links.amazon;
-    }
-
-    // Default: Amazon search for the product name
-    const searchTerm = encodeURIComponent(product.name);
-    return `https://www.amazon.com/s?k=${searchTerm}&tag=${amazonTag}`;
 }

@@ -1,115 +1,12 @@
-import { layout, html } from '../lib/html.js';
+import { layout, html, jsonLdScript } from '../lib/html.js';
 import { parseJsonSafe, isValidHttpsUrl, escapeHtml, timeAgo, displayQuery } from '../lib/utils.js';
 import { buildAffiliateUrl, buildAmazonSearchFallback, retailerLabel } from '../lib/affiliate-links.js';
 import { adSlot } from '../lib/ads.js';
+import { getResearchBySlug, getProductsByResearchId } from '../lib/db.js';
+import { searchBar } from '../lib/search-bar.js';
 
 // inlined from src/types.ts for phase 1 (types.ts is erased in the port)
 const DEFAULT_AFFILIATE_TAG = 'battlesheep0a-20';
-
-// inlined from src/pages/home.ts for phase 1
-function searchBar(size = 'large', turnstileSiteKey) {
-  const ph = size === 'large'
-    ? 'What product are you researching?'
-    : 'Research a product...';
-  const turnstileWidget = turnstileSiteKey
-    ? `<div id="turnstile-wrap" class="cf-turnstile" data-sitekey="${escapeHtml(turnstileSiteKey)}" data-theme="dark" data-size="compact" style="margin:0.75rem auto 0;display:none"></div>`
-    : '';
-  const tierSelector = size === 'large' ? `<div class="tier-selector" role="radiogroup" aria-label="Research depth">
-<label class="tier-option">
-<input type="radio" name="tier" value="instant" checked>
-<div class="tier-card">
-<span class="tier-name">Instant</span>
-<span class="tier-desc">~90s &middot; 50 sources</span>
-</div>
-</label>
-<label class="tier-option">
-<input type="radio" name="tier" value="full">
-<div class="tier-card">
-<span class="tier-name">Full</span>
-<span class="tier-desc">~3 min &middot; 75+ sources</span>
-</div>
-</label>
-<label class="tier-option">
-<input type="radio" name="tier" value="exhaustive">
-<div class="tier-card tier-featured">
-<span class="tier-name">Deep Dive</span>
-<span class="tier-desc">~7 min &middot; 400+ sources</span>
-<span class="tier-limit">5 free/day</span>
-</div>
-</label>
-</div>` : '<input type="hidden" name="tier" value="instant">';
-
-  const turnstileToggle = (size === 'large' && turnstileSiteKey)
-    ? `<script nonce="__CSP_NONCE__">document.querySelectorAll('input[name="tier"]').forEach(function(r){r.addEventListener('change',function(){var w=document.getElementById('turnstile-wrap');if(w)w.style.display=this.value==='exhaustive'?'':'none'})})</script>`
-    : '';
-
-  const loadingScript = `<script nonce="__CSP_NONCE__">
-(function(){
-if(window.__loadInit)return;window.__loadInit=true;
-document.querySelectorAll('form.search-form').forEach(function(f){
-f.addEventListener('submit',function(){
-var tier=(f.querySelector('input[name="tier"]:checked')||{}).value||'instant';
-var wait=tier==='exhaustive'?'up to 7 minutes':(tier==='full'?'about 3 minutes':'about 90 seconds');
-var o=document.createElement('div');
-o.style.cssText='position:fixed;inset:0;background:rgba(12,17,25,0.94);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;color:#fff;gap:1.25rem;padding:1rem;text-align:center';
-o.innerHTML='<div class="spinner"></div><div style="font-size:1.1rem;font-weight:600">Running research\u2026</div><div style="font-size:0.95rem;color:rgba(255,255,255,0.75);max-width:440px">Takes '+wait+'. Please keep this tab open \u2014 we\u2019ll redirect you automatically when it\u2019s ready.</div>';
-document.body.appendChild(o);
-var btn=f.querySelector('button[type="submit"]');
-if(btn){btn.disabled=true;btn.textContent='Researching\u2026'}
-})
-})
-})();
-</script>`;
-
-  const autocompleteScript = `<script nonce="__CSP_NONCE__">
-(function(){
-if(window.__acInit)return;window.__acInit=true;
-var inputs=document.querySelectorAll('input[name="q"]');
-inputs.forEach(function(input){
-var box=input.closest('.search-box');
-if(!box)return;
-box.style.position='relative';
-var dd=document.createElement('div');
-dd.className='ac-dropdown';
-box.appendChild(dd);
-var t;
-input.addEventListener('input',function(){
-clearTimeout(t);
-var q=input.value.trim();
-if(q.length<2){dd.style.display='none';return}
-t=setTimeout(function(){
-fetch('/api/search/suggest?q='+encodeURIComponent(q))
-.then(function(r){return r.json()})
-.then(function(items){
-if(!items.length){dd.style.display='none';return}
-function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
-dd.innerHTML=items.map(function(i){
-return '<a class="ac-item" href="/research/'+encodeURIComponent(i.slug)+'"><span>'+esc(i.query)+'</span>'+(i.category?'<span class="ac-cat">'+esc(i.category)+'</span>':'')+'</a>'
-}).join('');
-dd.style.display='block'
-}).catch(function(){dd.style.display='none'})
-},200)
-});
-input.addEventListener('blur',function(){setTimeout(function(){dd.style.display='none'},200)});
-input.addEventListener('focus',function(){if(dd.innerHTML&&input.value.trim().length>=2)dd.style.display='block'});
-})
-})();
-</script>`;
-
-  return `<form action="/research/new" method="GET" class="search-form">
-<div class="search-glow"></div>
-<div class="search-box">
-<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-<input type="text" name="q" placeholder="${ph}" required aria-label="Search query" autocomplete="off">
-<button type="submit">Research</button>
-</div>
-${tierSelector}
-${turnstileWidget}
-${turnstileToggle}
-${autocompleteScript}
-${loadingScript}
-</form>`;
-}
 
 // Icons for well-known metadata keys. Unknown keys render with a generic dot so
 // new verticals render sensibly without code changes.
@@ -299,11 +196,10 @@ async function getRelatedResearch(db, currentSlug, canonical, category) {
   return deduped;
 }
 
+// `p` arrives with pros/cons/specs/metadata already parsed (see
+// renderResearchResult — the JSON columns are parsed exactly once after fetch).
 function renderProduct(p, index, ids, isService) {
-  const pros = parseJsonSafe(p.pros, []);
-  const cons = parseJsonSafe(p.cons, []);
-  const specs = parseJsonSafe(p.specs, {});
-  const metadata = parseJsonSafe(p.metadata, {});
+  const { pros, cons, specs, metadata } = p;
   const rankClass = p.rank === 1 ? 'rank-1' : p.rank === 2 ? 'rank-2' : p.rank === 3 ? 'rank-3' : 'rank-n';
 
   // Manufacturer product page (non-affiliate, informational)
@@ -406,20 +302,31 @@ ${amazonCtaBlock}
 // for the HTTP Last-Modified header.
 
 export async function renderResearchResult(slug, env, fromQuery = null, cleanLinks = false) {
-  const entry = await env.DB.prepare('SELECT * FROM research WHERE slug = ?').bind(slug).first();
+  const entry = await getResearchBySlug(env.DB, slug);
   if (!entry) return new Response('Not found', { status: 404 });
 
-  // Increment views only for completed research
-  if (entry.status === 'complete') {
-    await env.DB.prepare('UPDATE research SET view_count = view_count + 1 WHERE id = ?').bind(entry.id).run();
-  }
+  const isComplete = entry.status === 'complete';
 
-  const productRows = await env.DB.prepare('SELECT * FROM products WHERE research_id = ? ORDER BY rank ASC').bind(entry.id).all();
-  const products = productRows.results ?? [];
+  // The three post-entry queries are independent — fetch products, related
+  // research, and bump the view counter concurrently instead of serializing.
+  const [productRows, related] = await Promise.all([
+    getProductsByResearchId(env.DB, entry.id),
+    isComplete ? getRelatedResearch(env.DB, slug, entry.canonical_query, entry.category) : Promise.resolve([]),
+    // Increment views only for completed research.
+    isComplete
+      ? env.DB.prepare('UPDATE research SET view_count = view_count + 1 WHERE id = ?').bind(entry.id).run()
+      : Promise.resolve(),
+  ]);
 
-  const related = entry.status === 'complete'
-    ? await getRelatedResearch(env.DB, slug, entry.canonical_query, entry.category)
-    : [];
+  // Parse each product's JSON columns ONCE here, so renderProduct and the
+  // JSON-LD builder both consume already-parsed values (no double JSON.parse).
+  const products = (productRows.results ?? []).map((p) => ({
+    ...p,
+    pros: parseJsonSafe(p.pros, []),
+    cons: parseJsonSafe(p.cons, []),
+    specs: parseJsonSafe(p.specs, {}),
+    metadata: parseJsonSafe(p.metadata, {}),
+  }));
 
   const isProcessing = entry.status === 'pending' || entry.status === 'processing';
   const isFailed = entry.status === 'failed';
@@ -477,7 +384,7 @@ ${entry.status === 'complete' ? `<div class="share-bar">
 <a href="https://twitter.com/intent/tweet?text=${shareText}&url=${shareUrl}" target="_blank" rel="noopener noreferrer" class="share-btn"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>Post</a>
 <a href="https://reddit.com/submit?url=${shareUrl}&title=${shareText}" target="_blank" rel="noopener noreferrer" class="share-btn"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0A12 12 0 000 12a12 12 0 0012 12 12 12 0 0012-12A12 12 0 0012 0zm5.01 4.744c.688 0 1.25.561 1.25 1.249a1.25 1.25 0 01-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 01.042.52c0 2.694-3.13 4.87-7.004 4.87-3.874 0-7.004-2.176-7.004-4.87 0-.183.015-.366.043-.534A1.748 1.748 0 014.028 12c0-.968.786-1.754 1.754-1.754.463 0 .898.196 1.207.49 1.207-.883 2.878-1.43 4.744-1.487l.885-4.182a.342.342 0 01.14-.197.35.35 0 01.238-.042l2.906.617a1.214 1.214 0 011.108-.701zM9.25 12C8.561 12 8 12.562 8 13.25c0 .687.561 1.248 1.25 1.248.687 0 1.248-.561 1.248-1.249 0-.688-.561-1.249-1.249-1.249zm5.5 0c-.687 0-1.248.561-1.248 1.25 0 .687.561 1.248 1.249 1.248.688 0 1.249-.561 1.249-1.249 0-.687-.562-1.249-1.25-1.249zm-5.466 3.99a.327.327 0 00-.231.094.33.33 0 000 .463c.842.842 2.484.913 2.961.913.477 0 2.105-.056 2.961-.913a.361.361 0 000-.463.327.327 0 00-.464 0c-.547.533-1.684.73-2.512.73-.828 0-1.979-.196-2.512-.73a.326.326 0 00-.232-.095z"/></svg>Reddit</a>
 <button type="button" class="share-btn js-copy-link" data-url="${pageUrl}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>Copy link</button>
-<form action="/research/new" method="GET" style="margin:0;display:inline-block"><input type="hidden" name="q" value="${escapeHtml(entry.query)}"><input type="hidden" name="tier" value="${escapeHtml(entry.tier ?? 'instant')}"><input type="hidden" name="fresh" value="1"><button type="submit" class="share-btn" title="Skip the 14-day cluster cache and run the full pipeline again"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582M20 20v-5h-.581M5.635 9A8 8 0 0118.418 7M18.418 15A8 8 0 015.635 13"/></svg>Re-run fresh</button></form>
+<form action="/research/new" method="POST" style="margin:0;display:inline-block"><input type="hidden" name="q" value="${escapeHtml(entry.query)}"><input type="hidden" name="fresh" value="1"><button type="submit" class="share-btn" title="Skip the 14-day cluster cache and run the full pipeline again"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582M20 20v-5h-.581M5.635 9A8 8 0 0118.418 7M18.418 15A8 8 0 015.635 13"/></svg>Re-run fresh</button></form>
 </div>` : ''}
 </div>
 
@@ -485,7 +392,7 @@ ${fromQuery && fromQuery !== entry.query ? `<div class="cluster-banner" style="p
 <div style="font-size:.88rem;color:var(--text2);flex:1;min-width:0">
 <strong style="color:var(--text)">Matched to existing research.</strong> You asked &ldquo;${escapeHtml(fromQuery)}&rdquo; — we already researched a very similar question (${date}).
 </div>
-<form action="/research/new" method="GET" style="margin:0"><input type="hidden" name="q" value="${escapeHtml(fromQuery)}"><input type="hidden" name="fresh" value="1"><button type="submit" class="btn" style="font-size:.82rem;padding:.5rem .85rem;white-space:nowrap">Re-research with fresh data</button></form>
+<form action="/research/new" method="POST" style="margin:0"><input type="hidden" name="q" value="${escapeHtml(fromQuery)}"><input type="hidden" name="fresh" value="1"><button type="submit" class="btn" style="font-size:.82rem;padding:.5rem .85rem;white-space:nowrap">Re-research with fresh data</button></form>
 </div>` : ''}
 
 ${Object.keys(clarifications).length > 0 ? `<div class="clarifications-bar" style="margin:1.25rem 0;padding:.75rem 1rem;background:var(--surface);border:1px solid var(--surface2);border-radius:10px">
@@ -499,7 +406,7 @@ ${isProcessing ? `<div id="processing" style="padding:1.5rem;background:var(--su
 <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1rem">
 <div class="spinner" style="width:1.5rem;height:1.5rem;border-width:2px;margin:0;flex-shrink:0"></div>
 <div>
-<h2 style="font-size:1.1rem;font-weight:600;margin-bottom:.15rem">Researching<span class="tier-badge">${escapeHtml(entry.tier ?? 'instant')}</span></h2>
+<h2 style="font-size:1.1rem;font-weight:600;margin-bottom:.15rem">Researching</h2>
 <p style="color:var(--text3);font-size:.8rem" id="source-count">Starting...</p>
 </div>
 </div>
@@ -508,19 +415,12 @@ ${isProcessing ? `<div id="processing" style="padding:1.5rem;background:var(--su
 <div id="preview-text" style="font-size:.92rem;line-height:1.55;color:var(--text2);white-space:pre-wrap"></div>
 </div>
 <div id="activity-feed" class="activity-feed"></div>
-<div id="notify-form" style="margin-top:1rem;padding:1rem;background:rgba(37,99,235,.08);border-radius:8px">
-<p style="font-size:.85rem;font-weight:500;margin-bottom:.5rem;color:var(--text2)">Get notified when this research is ready:</p>
-<div style="display:flex;gap:.5rem">
-<input type="email" id="notify-email" placeholder="your@email.com" style="flex:1;padding:.5rem .75rem;border-radius:8px;border:1px solid var(--surface2);background:var(--surface);color:var(--text);font-size:.85rem;font-family:var(--font);outline:none" aria-label="Email for notification">
-<button type="button" id="notify-btn" data-research-id="${escapeHtml(entry.id)}" class="btn" style="font-size:.85rem;padding:.5rem 1rem;white-space:nowrap">Notify me</button>
-</div>
-</div>
 </div>` : ''}
 
 ${isFailed ? `<div style="padding:1.5rem;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:var(--radius);margin:2rem 0">
 <h2 style="color:var(--danger);font-size:1.1rem;font-weight:600;margin-bottom:.5rem">Research failed</h2>
 <p style="color:var(--text2)">Something went wrong during analysis. This could be due to insufficient source data.</p>
-<a href="/research/new?q=${encodeURIComponent(entry.query)}" class="btn" style="margin-top:1rem">Try again</a>
+<form method="POST" action="/research/new" style="margin-top:1rem"><input type="hidden" name="q" value="${escapeHtml(entry.query)}"><input type="hidden" name="fresh" value="1"><button type="submit" class="btn">Try again</button></form>
 </div>` : ''}
 
 ${entry.status === 'complete' ? (() => {
@@ -577,7 +477,7 @@ ${r.category ? `<div class="card-top"><span class="card-badge">${escapeHtml(r.ca
 
 <div style="margin-top:3rem;padding-top:2rem;border-top:1px solid var(--surface2)">
 <h2 style="font-size:1.1rem;font-weight:600;margin-bottom:1rem">Research something else</h2>
-${searchBar('compact', env.TURNSTILE_SITE_KEY)}
+${searchBar('compact')}
 </div>
 </div>`;
 
@@ -591,9 +491,9 @@ ${searchBar('compact', env.TURNSTILE_SITE_KEY)}
       name: p.name,
     };
     if (p.brand) item.brand = { '@type': 'Brand', name: p.brand };
-    // p.pros is raw JSON text from D1 (and the column is best_for, not bestFor) —
-    // parse before slicing or every completed page 500s when verdict is null.
-    const prosArr = parseJsonSafe(p.pros, []);
+    // p.pros is already parsed to an array (parsed once after the products
+    // fetch). The column is best_for, not bestFor.
+    const prosArr = p.pros;
     const descSource = p.verdict || p.best_for || (prosArr.length > 0 ? prosArr.slice(0, 3).join('. ') : '');
     if (descSource) item.description = descSource;
     // Only emit an Offer if we have a real retailer URL for this specific SKU.
@@ -632,7 +532,7 @@ ${searchBar('compact', env.TURNSTILE_SITE_KEY)}
   const isoModified = new Date(lastModifiedTs * 1000).toISOString();
   const articleImage = `https://chrisputer.tech/research/${slug}/og.svg`;
   const keywordTerms = entry.query.split(/\s+/).filter((w) => w.length > 2 && !/^(the|and|for|with|from|best|top|good|great)$/i.test(w)).slice(0, 8);
-  const jsonLd = JSON.stringify({
+  const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Article',
     '@id': `${pageUrl}#article`,
@@ -657,15 +557,15 @@ ${searchBar('compact', env.TURNSTILE_SITE_KEY)}
       '@type': 'Organization',
       name: 'Chrisputer Labs',
       url: 'https://chrisputer.tech',
-      logo: { '@type': 'ImageObject', url: 'https://chrisputer.tech/og-image.svg' },
+      logo: { '@type': 'ImageObject', url: 'https://chrisputer.tech/og.png' },
     },
     mainEntityOfPage: { '@type': 'WebPage', '@id': pageUrl },
-  });
+  };
 
   // Separate top-level ItemList is what Google Rich Results actually parses
   // for "list of products" display. Nesting Products inside Article.about is
   // valid schema.org but rarely triggers list rich snippets.
-  const itemListLd = jsonLdProducts.length > 0 ? JSON.stringify({
+  const itemListLd = jsonLdProducts.length > 0 ? {
     '@context': 'https://schema.org',
     '@type': 'ItemList',
     name: displayTitle,
@@ -676,9 +576,9 @@ ${searchBar('compact', env.TURNSTILE_SITE_KEY)}
       position: i + 1,
       item: p,
     })),
-  }) : '';
+  } : null;
 
-  const breadcrumbLd = JSON.stringify({
+  const breadcrumbLd = {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
@@ -686,12 +586,12 @@ ${searchBar('compact', env.TURNSTILE_SITE_KEY)}
       { '@type': 'ListItem', position: 2, name: 'Research', item: 'https://chrisputer.tech/research' },
       { '@type': 'ListItem', position: 3, name: displayTitle, item: pageUrl },
     ],
-  });
+  };
 
   const structuredData = entry.status === 'complete'
-    ? `<script type="application/ld+json" nonce="__CSP_NONCE__">${jsonLd}</script>` +
-      (itemListLd ? `<script type="application/ld+json" nonce="__CSP_NONCE__">${itemListLd}</script>` : '') +
-      `<script type="application/ld+json" nonce="__CSP_NONCE__">${breadcrumbLd}</script>`
+    ? jsonLdScript(jsonLd) +
+      (itemListLd ? jsonLdScript(itemListLd) : '') +
+      jsonLdScript(breadcrumbLd)
     : '';
 
   const layoutMeta = {
@@ -753,20 +653,6 @@ ${searchBar('compact', env.TURNSTILE_SITE_KEY)}
   const activityFeedScript = `<noscript><meta http-equiv="refresh" content="10"></noscript>
 <script nonce="__CSP_NONCE__">
 document.addEventListener('DOMContentLoaded',function(){
-  // Notify button wiring (replaces the old inline onclick=).
-  var nb=document.getElementById('notify-btn');
-  if(nb){
-    nb.addEventListener('click',function(){
-      var e=document.getElementById('notify-email');
-      if(!e||!e.value||!e.value.includes('@'))return;
-      nb.disabled=true;nb.textContent='...';
-      fetch('/api/subscribe',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:e.value,researchId:nb.dataset.researchId||''})})
-        .then(function(r){return r.json()})
-        .then(function(d){if(d.ok){nb.textContent='Subscribed!';e.disabled=true}else{nb.textContent=d.error||'Error';nb.disabled=false}})
-        .catch(function(){nb.textContent='Error';nb.disabled=false});
-    });
-  }
-
   var feed=document.getElementById('activity-feed');
   var counter=document.getElementById('source-count');
   if(!feed)return;
@@ -837,13 +723,14 @@ document.addEventListener('DOMContentLoaded',function(){
 });
 </script>`;
   const extra = pageBehaviorScript + (isProcessing ? activityFeedScript : '');
-  const canonical = `<link rel="canonical" href="https://chrisputer.tech/research/${escapeHtml(slug)}">`;
+  // Canonical is emitted by layout() from layoutMeta.canonical — don't add a
+  // second hand-built <link rel="canonical"> here.
   // Keep thin (zero-product) and failed pages out of the index. Direct links still work.
   const isThin = entry.status === 'complete' && products.length === 0;
   const noindex = (isThin || isFailed || isProcessing) ? '<meta name="robots" content="noindex, follow">' : '';
   // Every product carries an Amazon buy-link. dns-prefetch is cheap (DNS-only,
   // no TLS handshake) and shaves ~50-200ms off the first affiliate click.
   const amazonHint = products.length > 0 ? '<link rel="dns-prefetch" href="//www.amazon.com">' : '';
-  const htmlOut = layout(displayTitle, entry.summary ?? 'AI-powered product research', body, canonical + amazonHint + noindex + structuredData + turnstileScript + extra, layoutMeta);
+  const htmlOut = layout(displayTitle, entry.summary ?? 'AI-powered product research', body, amazonHint + noindex + structuredData + turnstileScript + extra, layoutMeta);
   return { html: htmlOut, lastModified: lastModifiedTs };
 }

@@ -1,0 +1,19 @@
+{
+  "name": "TrueRank by Chrisputer Labs",
+  "short_name": "TrueRank",
+  "id": "/",
+  "scope": "/",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#020617",
+  "theme_color": "#2563eb",
+  "description": "Honest product research that filters out fake reviews and affiliate bait. Every claim is sourced.",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any",
+      "purpose": "any"
+    }
+  ]
+}

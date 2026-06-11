@@ -30,9 +30,12 @@ export async function insertResearch(db, { id, slug, query, canonicalQuery, tier
 export async function findResearchByCanonicalQuery(db, canonicalQuery, maxAgeDays = 14) {
     if (!canonicalQuery) return null;
     const cutoff = nowEpoch() - maxAgeDays * 86400;
+    // Require at least one product: a 'complete' row with zero products is a
+    // degenerate run and must never absorb new queries into its cluster.
     return db.prepare(
         `SELECT * FROM research
          WHERE canonical_query = ? AND status = 'complete' AND created_at > ?
+           AND EXISTS (SELECT 1 FROM products p WHERE p.research_id = research.id)
          ORDER BY created_at DESC LIMIT 1`
     ).bind(canonicalQuery, cutoff).first();
 }

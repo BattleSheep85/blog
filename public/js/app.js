@@ -1,7 +1,7 @@
 /**
  * TrueRank frontend - theme toggle, example queries, and the live research
- * flow (submit -> queue -> SSE progress -> render). Report rendering itself
- * lives in render.js (window.TrueRank), shared with the permalink page.
+ * flow (submit -> queue -> SSE progress -> redirect). Reports are rendered
+ * server-side at /research/:slug; on completion we always navigate there.
  */
 (function () {
     'use strict';
@@ -123,8 +123,7 @@
                     addProgress('Done. Opening your report…');
                     window.location.href = '/research/' + dest;
                 } else {
-                    addProgress('Done. Building your ranking…');
-                    renderReport(data.report, reportId, data.sourceCount, data.filteredCount);
+                    showError('Something went wrong — try again');
                 }
             } else if (data.type === 'error') {
                 done = true;
@@ -152,8 +151,7 @@
                 if (data.status === 'completed') {
                     var dest = data.slug || slug;
                     if (dest) { window.location.href = '/research/' + dest; return; }
-                    if (data.report) { renderReport(data.report, reportId, data.sourceCount, data.filteredCount); return; }
-                    showError('Research finished but the result could not be loaded.');
+                    showError('Something went wrong — try again');
                 } else if (data.status === 'error') {
                     showError(data.error || 'Research failed');
                 } else {
@@ -177,7 +175,7 @@
     }
 
     function showSection(name) {
-        ['progress', 'report', 'error'].forEach(function (s) {
+        ['progress', 'error'].forEach(function (s) {
             var el = document.getElementById(s + '-section');
             if (el) el.classList.toggle('hidden', s !== name);
         });
@@ -209,24 +207,6 @@
         setFormsBusy(false);
     }
 
-    // -- Report (delegates to shared renderer) ----------------------------
-
-    function renderReport(report, reportId, sourceCount, filteredCount) {
-        showSection('report');
-        setFormsBusy(false);
-        var container = document.getElementById('report-section');
-        if (!container || !window.TrueRank) return;
-        window.TrueRank.mountReport(container, report || {}, {
-            reportId: reportId,
-            sourceCount: sourceCount,
-            filteredCount: filteredCount,
-            withFeedback: true,
-            withPermalink: true,
-        });
-        scrollToEl(container);
-        if (container.focus) container.focus({ preventScroll: true });
-    }
-
     // Expose reset for the "Try again" button.
     window.resetUI = function () {
         showSection('none');
@@ -235,8 +215,6 @@
             if (el) el.classList.remove('hidden');
         });
         setFormsBusy(false);
-        var container = document.getElementById('report-section');
-        if (container) container.innerHTML = '';
         scrollToEl(document.getElementById('hero'));
     };
 })();

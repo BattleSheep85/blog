@@ -1,7 +1,3 @@
-export function generateId() {
-  return crypto.randomUUID();
-}
-
 export function slugify(text) {
   const slug = text
     .toLowerCase()
@@ -11,10 +7,11 @@ export function slugify(text) {
   return slug || 'research';
 }
 
-export function generateSlug(query) {
-  const base = slugify(query);
-  const suffix = generateId().slice(0, 8);
-  return `${base}-${suffix}`;
+// Permanent-page slug: slugify(query) + first 8 chars of the research id.
+// The id comes from db.js generateId() — the single id generator — so the
+// slug suffix always matches the row id prefix.
+export function generateSlug(query, id) {
+  return `${slugify(query)}-${id.slice(0, 8)}`;
 }
 
 // https-only URL validator. Callers render these as <a href>, <img src>, or

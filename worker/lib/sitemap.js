@@ -36,7 +36,50 @@ export async function getLatestResearchLastmod(env, cacheVersion) {
   return lm;
 }
 
+// Cache-version namespace for the rendered XML blobs and the shared lastmod
+// key. Matches CACHE_VERSION in index.js so they share `lastmod:tr1` and a
+// template bump invalidates feeds along with pages.
+const XML_CACHE_VERSION = 'tr1';
+const XML_CACHE_TTL = 3600;
+
+function isNotModified(ifModifiedSince, lastmodSec) {
+  if (!ifModifiedSince || !lastmodSec) return false;
+  const since = Date.parse(ifModifiedSince);
+  return !isNaN(since) && Math.floor(since / 1000) >= lastmodSec;
+}
+
+function notModifiedResponse(lastmodSec) {
+  return new Response(null, {
+    status: 304,
+    headers: {
+      'Last-Modified': new Date(lastmodSec * 1000).toUTCString(),
+      'Cache-Control': 'public, max-age=3600',
+    },
+  });
+}
+
+function xmlResponse(xml, contentType, lastmodSec) {
+  const headers = { 'Content-Type': contentType, 'Cache-Control': 'public, max-age=3600' };
+  if (lastmodSec) headers['Last-Modified'] = new Date(lastmodSec * 1000).toUTCString();
+  return new Response(xml, { headers });
+}
+
 export async function generateSitemap(origin, env, ifModifiedSince, guidesLastmod) {
+  // Conditional requests resolve from the KV-cached lastmod (60s TTL) — no
+  // need to run the windowed query just to answer a 304.
+  const latestLastmod = await getLatestResearchLastmod(env, XML_CACHE_VERSION);
+  if (isNotModified(ifModifiedSince, latestLastmod)) {
+    return notModifiedResponse(latestLastmod);
+  }
+
+  // Rendered XML is KV-cached with the lastmod signals baked into the key, so
+  // a new research completion (or guide edit) naturally produces a fresh key.
+  const cacheKey = `xml:${XML_CACHE_VERSION}:sitemap:${latestLastmod || 0}:${guidesLastmod}`;
+  const cachedXml = await env.KV.get(cacheKey);
+  if (cachedXml) {
+    return xmlResponse(cachedXml, 'application/xml', latestLastmod);
+  }
+
   // Only expose research pages with actual product cards. Honest-no-data results
   // (garbage queries, insufficient source data) are thin content and will hurt
   // ranking if Google crawls them.
@@ -53,15 +96,7 @@ export async function generateSitemap(origin, env, ifModifiedSince, guidesLastmo
   ).all();
 
   const results = rows.results ?? [];
-  const newestLastmod = results[0]?.lastmod ?? 0;
-  const lastModifiedHttp = new Date(newestLastmod * 1000).toUTCString();
-
-  if (ifModifiedSince && newestLastmod > 0) {
-    const since = Date.parse(ifModifiedSince);
-    if (!isNaN(since) && Math.floor(since / 1000) >= newestLastmod) {
-      return new Response(null, { status: 304, headers: { 'Last-Modified': lastModifiedHttp, 'Cache-Control': 'public, max-age=3600' } });
-    }
-  }
+  const newestLastmod = latestLastmod || results[0]?.lastmod || 0;
 
   const entries = results.map((r) => {
     const date = new Date(r.lastmod * 1000).toISOString().split('T')[0];
@@ -84,12 +119,28 @@ export async function generateSitemap(origin, env, ifModifiedSince, guidesLastmo
 ${entries}
 </urlset>`;
 
-  const headers = { 'Content-Type': 'application/xml', 'Cache-Control': 'public, max-age=3600' };
-  if (newestLastmod > 0) headers['Last-Modified'] = lastModifiedHttp;
-  return new Response(xml, { headers });
+  // Cache the rendered XML under the lastmod-keyed key so the next request
+  // short-circuits the windowed query; a new completion changes the key.
+  await env.KV.put(cacheKey, xml, { expirationTtl: XML_CACHE_TTL });
+  return xmlResponse(xml, 'application/xml', newestLastmod > 0 ? newestLastmod : null);
 }
 
 export async function generateAtomFeed(origin, env, ifModifiedSince) {
+  // Conditional requests resolve from the KV-cached lastmod (60s TTL) — answer
+  // a 304 before running the windowed query.
+  const latestLastmod = await getLatestResearchLastmod(env, XML_CACHE_VERSION);
+  if (isNotModified(ifModifiedSince, latestLastmod)) {
+    return notModifiedResponse(latestLastmod);
+  }
+
+  // Rendered XML is KV-cached with the lastmod baked into the key, so a new
+  // research completion naturally produces a fresh key.
+  const cacheKey = `xml:${XML_CACHE_VERSION}:feed:${latestLastmod || 0}`;
+  const cachedXml = await env.KV.get(cacheKey);
+  if (cachedXml) {
+    return xmlResponse(cachedXml, 'application/atom+xml;charset=utf-8', latestLastmod);
+  }
+
   const rows = await env.DB.prepare(
     `WITH ranked AS (
        SELECT r.slug, r.query, r.summary, r.category, r.created_at, COALESCE(r.completed_at, r.created_at) AS updated,
@@ -103,15 +154,8 @@ export async function generateAtomFeed(origin, env, ifModifiedSince) {
   ).all();
 
   const results = rows.results ?? [];
-  const latestUpdated = results[0]?.updated ?? Math.floor(Date.now() / 1000);
+  const latestUpdated = latestLastmod || results[0]?.updated || Math.floor(Date.now() / 1000);
   const feedUpdated = new Date(latestUpdated * 1000).toISOString();
-  const lastModifiedHttp = new Date(latestUpdated * 1000).toUTCString();
-  if (ifModifiedSince) {
-    const since = Date.parse(ifModifiedSince);
-    if (!isNaN(since) && Math.floor(since / 1000) >= latestUpdated) {
-      return new Response(null, { status: 304, headers: { 'Last-Modified': lastModifiedHttp, 'Cache-Control': 'public, max-age=3600' } });
-    }
-  }
 
   const entries = results.map((r) => {
     const published = new Date(r.created_at * 1000).toISOString();
@@ -141,19 +185,16 @@ export async function generateAtomFeed(origin, env, ifModifiedSince) {
 <author><name>Chrisputer Labs</name><uri>${origin}/</uri></author>
 <subtitle>Latest AI-powered product research</subtitle>
 <icon>${origin}/favicon.svg</icon>
-<logo>${origin}/og-image.svg</logo>
+<logo>${origin}/og.png</logo>
 <rights>© ${currentYear} Chrisputer Labs. All rights reserved.</rights>
 <generator uri="${origin}/">Chrisputer Labs</generator>
 ${entries}
 </feed>`;
 
-  return new Response(xml, {
-    headers: {
-      'Content-Type': 'application/atom+xml;charset=utf-8',
-      'Cache-Control': 'public, max-age=3600',
-      'Last-Modified': lastModifiedHttp,
-    },
-  });
+  // Cache the rendered XML under the lastmod-keyed key; a new completion
+  // changes the key and produces fresh XML.
+  await env.KV.put(cacheKey, xml, { expirationTtl: XML_CACHE_TTL });
+  return xmlResponse(xml, 'application/atom+xml;charset=utf-8', latestUpdated);
 }
 
 // Per-research OG SVG generator. Reuses the default OG image when slug has no

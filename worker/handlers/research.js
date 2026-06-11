@@ -11,7 +11,7 @@ import {
     generateId, insertResearch, findResearchByCanonicalQuery,
     getResearchById, getResearchBySlug,
 } from '../lib/db.js';
-import { slugify, canonicalizeQuery, parseJsonSafe } from '../lib/utils.js';
+import { generateSlug, canonicalizeQuery, parseJsonSafe } from '../lib/utils.js';
 
 /**
  * Handle POST /api/research
@@ -34,19 +34,24 @@ export async function handleStartResearch(request, env) {
     }
 
     const normalizedQuery = query.toLowerCase();
+    // Optional 'fresh' flag bypasses clustering (re-run buttons); rate
+    // limiting below still applies.
+    const fresh = !!body.fresh;
 
     // Clustering: a completed run with the same canonical query within 14 days
     // is the same research — send the client to its permanent page.
     const canonical = canonicalizeQuery(normalizedQuery);
-    const existing = await findResearchByCanonicalQuery(env.DB, canonical, 14);
-    if (existing) {
-        return jsonResponse({
-            id: existing.id,
-            slug: existing.slug,
-            status: 'completed',
-            cached: true,
-            clustered: true,
-        });
+    if (!fresh) {
+        const existing = await findResearchByCanonicalQuery(env.DB, canonical, 14);
+        if (existing) {
+            return jsonResponse({
+                id: existing.id,
+                slug: existing.slug,
+                status: 'completed',
+                cached: true,
+                clustered: true,
+            });
+        }
     }
 
     // Rate limit check
@@ -66,7 +71,7 @@ export async function handleStartResearch(request, env) {
     // Create the permanent research row. Slug mirrors Exhaustive's shape:
     // slugify(query) + '-' + first 8 chars of the id.
     const id = generateId();
-    const slug = `${slugify(normalizedQuery)}-${id.slice(0, 8)}`;
+    const slug = generateSlug(normalizedQuery, id);
     await insertResearch(env.DB, {
         id,
         slug,
@@ -155,9 +160,12 @@ export async function handleResearchStream(reportId, env, request) {
                 controller.enqueue(encoder.encode(`id: ${id}\ndata: ${JSON.stringify(data)}\n\n`));
             };
 
-            // Check for final report first
-            const finalReport = await env.KV.get(`report:${reportId}`, 'json');
-            if (finalReport && !finalReport.error) {
+            const dbRow = await getResearchById(env.DB, reportId);
+
+            // Completion comes from D1 (permanent), not the KV report: key
+            // (TTL'd) — mirrors handleResearchStatus.
+            if (dbRow?.status === 'complete') {
+                const report = parseJsonSafe(dbRow.result, null);
                 const log = await env.KV.get(`progress_log:${reportId}`, 'json') || [];
                 for (const entry of log) {
                     if (entry.step > lastEventId) {
@@ -165,20 +173,18 @@ export async function handleResearchStream(reportId, env, request) {
                     }
                 }
 
-                const dbRow = await getResearchById(env.DB, reportId);
                 send(9999, {
                     type: 'complete',
-                    slug: dbRow?.slug || null,
-                    report: finalReport,
-                    sourceCount: finalReport.source_count || 0,
-                    filteredCount: finalReport.filtered_count || 0,
+                    slug: dbRow.slug || null,
+                    report,
+                    sourceCount: report?.source_count ?? parseJsonSafe(dbRow.sources, []).length,
+                    filteredCount: report?.filtered_count ?? 0,
                 });
                 controller.close();
                 return;
             }
 
             // Check for error
-            const dbRow = await getResearchById(env.DB, reportId);
             if (dbRow?.status === 'failed') {
                 const errMsg = parseJsonSafe(dbRow.result, {}).error || 'Unknown error';
                 send(9998, { type: 'error', error: errMsg });

@@ -93,8 +93,16 @@ export async function runResearchPipeline(env, reportId, query) {
             filtered_count: filteredOutCount,
         };
 
-        // Store products in D1 (v2 columns). affiliate_url is the tagged Amazon
-        // search link for now — phase 2 upgrades to /dp/ product links.
+        // Store products in D1 (v2 columns). affiliate_url stays null in
+        // phase 1: synthesis has no real /dp/ product URLs, and the renderer
+        // rejects fabricated Amazon search links (buildAffiliateUrl) and
+        // builds its own tagged search fallback. Phase 2 upgrades to real
+        // /dp/ product links.
+        //
+        // Retry-safety: a queue redelivery after a partial batch must not
+        // duplicate product rows — clear any stale products for this research
+        // before inserting fresh ones.
+        await env.DB.prepare('DELETE FROM products WHERE research_id = ?1').bind(reportId).run();
         await Promise.all(productsWithIds.map((product) => insertProductV2(env.DB, {
             id: product.id,
             researchId: reportId,
@@ -103,8 +111,9 @@ export async function runResearchPipeline(env, reportId, query) {
             pros: JSON.stringify(product.pros || []),
             cons: JSON.stringify(product.cons || []),
             specs: JSON.stringify(product.specs || {}),
+            verdict: product.verdict || null,
             bestFor: product.best_for || null,
-            affiliateUrl: product.affiliate_links?.amazon || null,
+            affiliateUrl: null,
             metadata: JSON.stringify(buildProductMetadata(product)),
         })));
 
@@ -140,9 +149,9 @@ export async function runResearchPipeline(env, reportId, query) {
  * contract (engine-validate.ts): a flat Record<string, string> with camelCase
  * keys, non-string/empty values dropped. labelForMetadataKey on the research
  * page prettifies camelCase, so keys MUST be camelCase ("priceRange", not
- * "price_range"). affiliate_links is intentionally excluded — the Amazon link
- * lives in the affiliate_url column and the full object persists in the
- * report JSON (result column + KV).
+ * "price_range"). affiliate_links is intentionally excluded — the renderer
+ * builds its own affiliate fallback, and the full object persists in the
+ * report JSON (result column + KV) for the legacy /api/report consumers.
  */
 function buildProductMetadata(product) {
     const metadata = {};
@@ -157,9 +166,15 @@ function buildProductMetadata(product) {
 
 /**
  * Create a progress updater that writes to KV for SSE streaming.
+ *
+ * The pipeline is the single writer for a run, so the log array lives in this
+ * closure: each step is an in-memory append plus two KV puts — `progress:`
+ * (latest entry, read by the status poll) and `progress_log:` (full log, read
+ * by the status poll, SSE stream, and events feed). No KV read-modify-write.
  */
 function createProgressUpdater(kv, reportId) {
     let stepIndex = 0;
+    let log = [];
     return async function progress(message) {
         stepIndex++;
         const progressData = {
@@ -167,11 +182,11 @@ function createProgressUpdater(kv, reportId) {
             message,
             timestamp: Date.now(),
         };
-        await kv.put(`progress:${reportId}`, JSON.stringify(progressData), { expirationTtl: 3600 });
-        const logKey = `progress_log:${reportId}`;
-        const existing = await kv.get(logKey, 'json') || [];
-        const updated = [...existing, progressData];
-        await kv.put(logKey, JSON.stringify(updated), { expirationTtl: 3600 });
+        log = [...log, progressData];
+        await Promise.all([
+            kv.put(`progress:${reportId}`, JSON.stringify(progressData), { expirationTtl: 3600 }),
+            kv.put(`progress_log:${reportId}`, JSON.stringify(log), { expirationTtl: 3600 }),
+        ]);
     };
 }
 

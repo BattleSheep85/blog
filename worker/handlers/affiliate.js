@@ -64,7 +64,7 @@ export async function handleAffiliateSearch(request, env) {
     const ref = (url.searchParams.get('ref') || '').slice(0, 64);
     const network = (url.searchParams.get('network') || 'amazon').slice(0, 32);
 
-    const amazonTag = env.AMAZON_ASSOCIATE_TAG || '';
+    const amazonTag = env.AMAZON_ASSOCIATE_TAG || env.AMAZON_AFFILIATE_TAG || '';
     const tagSuffix = amazonTag ? `&tag=${encodeURIComponent(amazonTag)}` : '';
     // Only ever build an amazon.com URL server-side. No user-controlled host,
     // so there is no open-redirect surface.
