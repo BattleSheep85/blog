@@ -55,7 +55,7 @@ export function layout(title, description, body, extra_head = '', meta) {
   const ogImageType = ogImage.endsWith('.svg') ? 'image/svg+xml' : 'image/png';
   const twitterCard = meta?.twitterCard ?? 'summary_large_image';
   return `<!doctype html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -91,7 +91,8 @@ export function layout(title, description, body, extra_head = '', meta) {
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="apple-touch-icon" href="/favicon.svg">
 <link rel="manifest" href="/manifest.webmanifest">
-<meta name="theme-color" content="#2563eb">
+<meta name="theme-color" content="#0B0C0E" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#FBFBF9" media="(prefers-color-scheme: light)">
 <link rel="alternate" type="application/atom+xml" title="Chrisputer Labs — Research Feed" href="/feed.xml">
 <link rel="search" type="application/opensearchdescription+xml" title="Chrisputer Labs" href="/opensearch.xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">

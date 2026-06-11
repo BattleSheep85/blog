@@ -3,10 +3,20 @@
 //   ./tailwindcss -c tailwind.config.cjs -i build/input.css -o public/css/tailwind.css --minify
 // Colors alias CSS variables (defined in public/css/app.css) via color-mix so a
 // single `.dark` class flips every token and alpha modifiers (e.g. /60) work.
-const alpha = (name) => ({ opacityValue }) =>
-  (opacityValue === undefined || opacityValue === 1)
-    ? `var(${name})`
-    : `color-mix(in srgb, var(${name}) ${opacityValue * 100}%, transparent)`;
+// Tailwind calls this with `opacityValue` set to:
+//   - undefined            → base utility, no /alpha modifier
+//   - a number in (0,1]    → an explicit /NN modifier (e.g. bg-bg/60)
+//   - a CSS var string      → the `--tw-bg-opacity` placeholder Tailwind injects
+//     for base color utilities. Multiplying that string by 100 yields `NaN%`,
+//     which makes the whole color-mix() invalid and silently drops the color —
+//     the bug that left every token-backed utility unstyled (white in dark mode).
+// Only emit color-mix() for a real numeric alpha < 1; otherwise use the var as-is.
+const alpha = (name) => ({ opacityValue }) => {
+  const n = Number(opacityValue);
+  return Number.isFinite(n) && n < 1
+    ? `color-mix(in srgb, var(${name}) ${n * 100}%, transparent)`
+    : `var(${name})`;
+};
 
 module.exports = {
   darkMode: 'class',
