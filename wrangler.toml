@@ -2,6 +2,11 @@ name = "truerank"
 main = "worker/index.js"
 compatibility_date = "2025-01-01"
 compatibility_flags = ["nodejs_compat"]
+routes = [
+  { pattern = "chrisputer.tech/*", zone_name = "chrisputer.tech" },
+  { pattern = "www.chrisputer.tech/*", zone_name = "chrisputer.tech" },
+  { pattern = "research.chrisputer.tech/*", zone_name = "chrisputer.tech" },
+]
 
 [assets]
 directory = "./public"

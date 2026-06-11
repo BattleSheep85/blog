@@ -1,0 +1,19 @@
+{
+  "domain": "cloudflare-workers",
+  "description": "Cloudflare Workers platform limits and runtime gotchas",
+  "file_patterns": [
+    "worker/**/*.js"
+  ],
+  "entries": [
+    {
+      "id": "d1-like-pattern-50-byte-limit",
+      "bad_pattern": "Binding user/data-derived strings into SQL LIKE patterns (`%token%`) without capping their length",
+      "good_pattern": "Cap LIKE pattern bind values to <=48 bytes (50-byte D1 limit minus the two % wildcards) before binding",
+      "regex": null,
+      "description": "Remote Cloudflare D1 enforces a 50-byte maximum LIKE/GLOB pattern length and throws \"D1_ERROR: LIKE or GLOB pattern too complex: SQLITE_ERROR\" beyond it. Local wrangler dev (miniflare) uses stock SQLite with a ~50KB limit, so the bug ONLY appears in production. Hit 2026-06-11: a related-research query bound a 70-byte canonical-query token (clarification metadata like \"use_case:equalmix.-some-of-my-kids-art...\") and one migrated page 500'd remotely while rendering fine locally with identical data.",
+      "context": "Any D1 query using LIKE with bound patterns derived from queries/slugs/tokens",
+      "discovered": "2026-06-11",
+      "severity": "HIGH"
+    }
+  ]
+}

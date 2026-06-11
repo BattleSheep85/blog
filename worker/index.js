@@ -59,17 +59,17 @@ export default {
                 return handleResearchEvents(eventsMatch[1], url, env);
             }
 
-            const streamMatch = path.match(/^\/api\/research\/([a-z0-9]+)\/stream$/);
+            const streamMatch = path.match(/^\/api\/research\/([a-z0-9-]+)\/stream$/);
             if (streamMatch && method === 'GET') {
                 return handleResearchStream(streamMatch[1], env, request);
             }
 
-            const researchMatch = path.match(/^\/api\/research\/([a-z0-9]+)$/);
+            const researchMatch = path.match(/^\/api\/research\/([a-z0-9-]+)$/);
             if (researchMatch && method === 'GET') {
                 return handleResearchStatus(researchMatch[1], env);
             }
 
-            const reportMatch = path.match(/^\/api\/report\/([a-z0-9]+)$/);
+            const reportMatch = path.match(/^\/api\/report\/([a-z0-9-]+)$/);
             if (reportMatch && method === 'GET') {
                 return handleGetReport(reportMatch[1], env);
             }
@@ -100,7 +100,7 @@ export default {
                 return handleAffiliateSearch(request, env);
             }
 
-            const affiliateMatch = path.match(/^\/api\/go\/([a-z0-9]+)$/);
+            const affiliateMatch = path.match(/^\/api\/go\/([a-z0-9-]+)$/);
             if (affiliateMatch && method === 'GET') {
                 return handleAffiliateClick(affiliateMatch[1], request, env);
             }
