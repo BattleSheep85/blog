@@ -22,12 +22,12 @@ function renderQuestion(q, idx) {
 <span>${escaped}</span>
 </label>`;
     }).join('');
-    return `<fieldset class="clarify-field" style="border:none;padding:0;margin:0 0 1.5rem">
-<legend style="font-weight:600;color:var(--text);margin-bottom:.65rem">${escapeHtml(q.question)}</legend>
-<div class="chip-row" style="display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:.5rem">
+    return `<fieldset class="clarify-field mb-6 border-0 p-0">
+<legend class="mb-2.5 font-sans text-body font-semibold text-ink">${escapeHtml(q.question)}</legend>
+<div class="chip-row mb-2 flex flex-wrap gap-2">
 ${chips}
 </div>
-<input type="text" name="${inputName}_custom" placeholder="Or type your own answer" maxlength="80" data-custom aria-label="${escapeHtml(q.question)} — custom answer" style="width:100%;padding:.55rem .75rem;border-radius:8px;border:1px solid var(--surface2);background:var(--surface);color:var(--text);font-size:.9rem;font-family:var(--font);outline:none">
+<input type="text" name="${inputName}_custom" placeholder="Or type your own answer" maxlength="80" data-custom aria-label="${escapeHtml(q.question)} — custom answer" class="w-full rounded-lg border border-line bg-surface-1 px-3 py-2 font-sans text-body-sm text-ink placeholder:text-ink-3 focus:border-line-strong focus:outline-none focus:ring-2 focus:ring-accent/25">
 </fieldset>`;
 }
 
@@ -40,35 +40,34 @@ export function renderClarifyPage(query, tier, questions, env) {
     const tierLabel = tier === 'exhaustive' ? 'Deep Dive' : tier === 'unbound' ? 'Unbound' : tier === 'instant' ? 'Instant' : 'Full';
     const tierTime = tier === 'exhaustive' ? 'about 7 minutes' : tier === 'unbound' ? 'up to 30 minutes' : 'about 3 minutes';
 
-    const body = `<div class="container" style="max-width:42rem;padding:3rem 1.5rem">
-<nav aria-label="Breadcrumb" class="breadcrumb" style="font-size:.85rem;color:var(--text2);margin-bottom:1rem">
-<a href="/" style="color:var(--text2)">Home</a>
-<span aria-hidden="true" style="margin:0 .4rem;color:var(--text3)">/</span>
-<span style="color:var(--text)">Quick questions</span>
+    const body = `<div class="mx-auto max-w-2xl px-6 py-12 md:py-16">
+<nav aria-label="Breadcrumb" class="mb-6 text-caption text-ink-3">
+<a href="/" class="hover:text-ink">Home</a>
+<span aria-hidden="true" class="mx-1.5">/</span>
+<span class="text-ink-2">Quick questions</span>
 </nav>
 
-<h1 style="font-size:1.6rem;font-weight:800;margin-bottom:.6rem">A couple of questions first</h1>
-<p style="color:var(--text2);margin-bottom:.35rem">Researching <strong style="color:var(--text)">&ldquo;${escapeHtml(prettyQuery)}&rdquo;</strong> as <strong style="color:var(--text)">${tierLabel}</strong> (${tierTime}).</p>
-<p style="color:var(--text3);font-size:.88rem;margin-bottom:2rem">Your answers steer the pick. Skip any question to let the research engine choose defaults.</p>
+<h1 class="mb-2 font-serif text-h1 font-semibold text-ink">A couple of questions first</h1>
+<p class="mb-1 text-body text-ink-2">Researching <strong class="font-serif italic text-accent">&ldquo;${escapeHtml(prettyQuery)}&rdquo;</strong> as <strong class="text-ink">${tierLabel}</strong> (${tierTime}).</p>
+<p class="mb-8 text-body-sm text-ink-3">Your answers steer the pick. Skip any question to let the research engine choose defaults.</p>
 
 <form action="/research/new" method="GET" class="clarify-form" id="clarify-form">
 <input type="hidden" name="q" value="${escapeHtml(query)}">
 <input type="hidden" name="tier" value="${escapeHtml(tier)}">
 ${questions.map(renderQuestion).join('')}
 
-<div style="display:flex;gap:.5rem;margin-top:1rem;flex-wrap:wrap">
-<button type="submit" class="btn" style="flex:1;min-width:10rem">Run ${escapeHtml(tierLabel)} research</button>
-<button type="submit" name="skip_clarify" value="1" class="btn btn-ghost">Skip — research as-is</button>
+<div class="mt-4 flex flex-wrap gap-2">
+<button type="submit" class="inline-flex flex-1 items-center justify-center gap-2 rounded-lg bg-accent-strong px-4 py-2 text-body-sm font-semibold text-white transition-colors hover:bg-accent-hover" style="min-width:10rem">Run ${escapeHtml(tierLabel)} research</button>
+<button type="submit" name="skip_clarify" value="1" class="inline-flex items-center gap-2 rounded-lg border border-line bg-surface-1 px-4 py-2 text-body-sm font-semibold text-ink transition-colors hover:bg-surface-2">Skip — research as-is</button>
 </div>
 </form>
 </div>
 
 <style>
-.clarify-form .chip{display:inline-flex;align-items:center;padding:.45rem .85rem;border:1px solid var(--surface2);border-radius:999px;background:var(--surface);color:var(--text2);cursor:pointer;font-size:.85rem;font-weight:500;user-select:none;transition:border-color .15s,background .15s,color .15s}
-.clarify-form .chip:hover{border-color:var(--surface3);color:var(--text)}
+.clarify-form .chip{display:inline-flex;align-items:center;padding:.45rem .85rem;border:1px solid var(--line);border-radius:999px;background:var(--surface-1);color:var(--ink-2);cursor:pointer;font-size:.85rem;font-weight:500;user-select:none;transition:border-color .15s,background .15s,color .15s}
+.clarify-form .chip:hover{border-color:var(--line-strong);color:var(--ink)}
 .clarify-form .chip input{position:absolute;opacity:0;pointer-events:none}
-.clarify-form .chip:has(input:checked){border-color:var(--primary);background:var(--primary-dim);color:var(--primary-light)}
-.clarify-form fieldset legend{font-size:.95rem}
+.clarify-form .chip:has(input:checked){border-color:var(--accent);background:var(--accent-quiet);color:var(--accent)}
 </style>
 
 <script nonce="__CSP_NONCE__">

@@ -17,8 +17,8 @@ if(window.__loadInit)return;window.__loadInit=true;
 document.querySelectorAll('form.search-form').forEach(function(f){
 f.addEventListener('submit',function(){
 var o=document.createElement('div');
-o.style.cssText='position:fixed;inset:0;background:rgba(12,17,25,0.94);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;color:#fff;gap:1.25rem;padding:1rem;text-align:center';
-o.innerHTML='<div class="spinner"></div><div style="font-size:1.1rem;font-weight:600">Running research…</div><div style="font-size:0.95rem;color:rgba(255,255,255,0.75);max-width:440px">Takes about 90 seconds. Please keep this tab open — we’ll redirect you automatically when it’s ready.</div>';
+o.style.cssText='position:fixed;inset:0;background:color-mix(in srgb,var(--bg) 92%,transparent);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;color:var(--ink);gap:1.25rem;padding:1rem;text-align:center';
+o.innerHTML='<div class="spinner"></div><div style="font-size:1.1rem;font-weight:600;color:var(--ink)">Running research…</div><div style="font-size:0.95rem;color:var(--ink-2);max-width:440px">Takes about 90 seconds. Please keep this tab open — we’ll redirect you automatically when it’s ready.</div>';
 document.body.appendChild(o);
 var btn=f.querySelector('button[type="submit"]');
 if(btn){btn.disabled=true;btn.textContent='Researching…'}
@@ -62,12 +62,11 @@ input.addEventListener('focus',function(){if(dd.innerHTML&&input.value.trim().le
 })();
 </script>`;
 
-  return `<form action="/research/new" method="GET" class="search-form">
-<div class="search-glow"></div>
-<div class="search-box">
-<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-<input type="text" name="q" placeholder="${ph}" required aria-label="Search query" autocomplete="off">
-<button type="submit">Research</button>
+  return `<form action="/research/new" method="GET" class="search-form group mx-auto flex w-full max-w-2xl items-center gap-2 rounded-xl border border-line bg-surface-1 p-2 shadow-card transition-colors focus-within:border-line-strong focus-within:ring-2 focus-within:ring-accent/25">
+<div class="search-box relative flex w-full items-center gap-2">
+<svg class="ml-2 h-5 w-5 shrink-0 text-ink-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+<input type="text" name="q" placeholder="${ph}" required aria-label="Search query" autocomplete="off" class="w-full bg-transparent px-1 py-2 font-sans text-body text-ink placeholder:text-ink-3 focus:outline-none">
+<button type="submit" class="shrink-0 rounded-lg bg-accent-strong px-4 py-2 font-sans text-body-sm font-semibold text-white transition-colors hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-1 disabled:opacity-60">Research</button>
 </div>
 ${autocompleteScript}
 ${loadingScript}

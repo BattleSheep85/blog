@@ -16,7 +16,7 @@ export function adSlot(env, key, label) {
   // while the ad loads. "Advertisement" label is an AdSense policy requirement
   // adjacent to ad units on content sites.
   return `<aside class="ad-slot ad-slot-${key}" aria-label="Advertisement" style="margin:2rem 0;min-height:100px">
-<div style="font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:.35rem;text-align:center">${escapeHtml(label)}</div>
+<div style="font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-3);margin-bottom:.35rem;text-align:center">${escapeHtml(label)}</div>
 <ins class="adsbygoogle" style="display:block" data-ad-client="ca-${escapeHtml(pub)}" data-ad-slot="${escapeHtml(slotId)}" data-ad-format="auto" data-full-width-responsive="true"></ins>
 <script nonce="__CSP_NONCE__">(adsbygoogle=window.adsbygoogle||[]).push({})</script>
 </aside>`;

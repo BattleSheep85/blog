@@ -67,16 +67,16 @@ function renderMetadataPairs(metadata) {
     .map(([k, v]) => [k, typeof v === 'number' ? String(v) : v])
     .filter(([, v]) => typeof v === 'string' && v.trim().length > 0);
   if (entries.length === 0) return '';
-  return `<dl class="item-metadata" style="display:grid;grid-template-columns:max-content 1fr;gap:.3rem .6rem;font-size:.85rem;margin:.65rem 0;color:var(--text2)">
+  return `<dl class="item-metadata" style="display:grid;grid-template-columns:max-content 1fr;gap:.3rem .6rem;font-size:.85rem;margin:.65rem 0;color:var(--ink-2)">
 ${entries.map(([k, v]) => {
     const icon = METADATA_ICONS[k] ?? '&#9679;';
     const label = escapeHtml(labelForMetadataKey(k));
     // Render mapsUrl / URL-ish values as links when they look like URLs
     const isUrl = /^https?:\/\//i.test(v) && isValidHttpsUrl(v);
     const value = isUrl
-      ? `<a href="${escapeHtml(v)}" target="_blank" rel="noopener noreferrer nofollow" style="color:var(--link)">${escapeHtml(new URL(v).hostname.replace(/^www\./, ''))}</a>`
+      ? `<a href="${escapeHtml(v)}" target="_blank" rel="noopener noreferrer nofollow" style="color:var(--accent)">${escapeHtml(new URL(v).hostname.replace(/^www\./, ''))}</a>`
       : escapeHtml(v);
-    return `<dt style="color:var(--text3);white-space:nowrap"><span aria-hidden="true" style="margin-right:.3rem">${icon}</span>${label}</dt><dd style="margin:0">${value}</dd>`;
+    return `<dt style="color:var(--ink-3);white-space:nowrap"><span aria-hidden="true" style="margin-right:.3rem">${icon}</span>${label}</dt><dd style="margin:0">${value}</dd>`;
   }).join('')}
 </dl>`;
 }
@@ -102,7 +102,7 @@ function renderItemImage(imageUrl, name) {
   // level script swaps them on 'error'. Replaces the old inline onerror= that
   // was incompatible with nonce-based CSP.
   const hiddenFallback = fallback.replace('class="item-image-fallback"', 'class="item-image-fallback" hidden');
-  return `<img class="item-image-photo" src="${escapeHtml(imageUrl)}" alt="${safeName}" loading="lazy" referrerpolicy="no-referrer" style="width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:8px;margin-bottom:.75rem;background:var(--surface)">
+  return `<img class="item-image-photo" src="${escapeHtml(imageUrl)}" alt="${safeName}" loading="lazy" referrerpolicy="no-referrer" style="width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:8px;margin-bottom:.75rem;background:var(--surface-1)">
 ${hiddenFallback}`;
 }
 
@@ -257,7 +257,7 @@ function renderProduct(p, index, ids, isService, slug, cleanLinks) {
 
   const prosHtml = pros.map((pr) => html`<li>${pr}</li>`).join('');
   const consHtml = cons.map((c) => html`<li>${c}</li>`).join('');
-  const specsHtml = Object.entries(specs).map(([k, v]) => html`<dt style="color:var(--text3)">${k}</dt><dd>${v}</dd>`).join('');
+  const specsHtml = Object.entries(specs).map(([k, v]) => html`<dt style="color:var(--ink-3)">${k}</dt><dd>${v}</dd>`).join('');
 
   // Secondary links row: manufacturer page + non-Amazon retailers (Walmart, etc.).
   const links = [];
@@ -292,8 +292,8 @@ ${imageBlock}
 <div class="product-header">
 <div>
 ${p.rank != null ? `<span class="product-rank ${rankClass}">#${p.rank}</span>` : ''}
-<h3 style="font-size:1.15rem;font-weight:700;color:var(--text);margin-top:.3rem">${escapeHtml(p.name)}</h3>
-${p.brand ? `<p style="color:var(--text2);font-size:.85rem">${escapeHtml(p.brand)}</p>` : ''}
+<h3 style="font-size:1.15rem;font-weight:700;color:var(--ink);margin-top:.3rem">${escapeHtml(p.name)}</h3>
+${p.brand ? `<p style="color:var(--ink-2);font-size:.85rem">${escapeHtml(p.brand)}</p>` : ''}
 </div>
 <div style="text-align:right;flex-shrink:0">
 ${p.price != null ? `<p class="product-price">$${p.price.toLocaleString()}</p>` : ''}
@@ -307,8 +307,8 @@ ${(pros.length > 0 || cons.length > 0) ? `<div class="pros-cons">
 ${pros.length > 0 ? `<div><h4 class="pro">Pros</h4><ul class="pro-list">${prosHtml}</ul></div>` : ''}
 ${cons.length > 0 ? `<div><h4 class="con">Cons</h4><ul class="con-list">${consHtml}</ul></div>` : ''}
 </div>` : ''}
-${specsHtml ? `<details><summary style="cursor:pointer;font-size:.85rem;color:var(--text3);font-weight:500">Specifications</summary>
-<dl style="display:grid;grid-template-columns:1fr 1fr;gap:.3rem .75rem;font-size:.85rem;margin-top:.75rem;background:rgba(30,41,59,.5);padding:.75rem;border-radius:8px">${specsHtml}</dl></details>` : ''}
+${specsHtml ? `<details><summary style="cursor:pointer;font-size:.85rem;color:var(--ink-3);font-weight:500">Specifications</summary>
+<dl style="display:grid;grid-template-columns:1fr 1fr;gap:.3rem .75rem;font-size:.85rem;margin-top:.75rem;background:var(--surface-2);padding:.75rem;border-radius:8px">${specsHtml}</dl></details>` : ''}
 ${links.length > 0 ? `<div class="product-links">${links.join('')}</div>` : ''}
 ${amazonCtaBlock}
 </article>`;
@@ -384,12 +384,12 @@ export async function renderResearchResult(slug, env, fromQuery = null, cleanLin
   const shareUrl = encodeURIComponent(pageUrl);
 
   const body = `<div class="container" style="max-width:64rem;padding:3rem 1.5rem">
-<nav aria-label="Breadcrumb" class="breadcrumb" style="font-size:.85rem;color:var(--text2);margin-bottom:1rem">
-<a href="/" style="color:var(--text2)">Home</a>
-<span aria-hidden="true" style="margin:0 .4rem;color:var(--text3)">/</span>
-<a href="/research" style="color:var(--text2)">Research</a>
-<span aria-hidden="true" style="margin:0 .4rem;color:var(--text3)">/</span>
-<span style="color:var(--text)">${escapeHtml(displayTitle)}</span>
+<nav aria-label="Breadcrumb" class="breadcrumb" style="font-size:.85rem;color:var(--ink-2);margin-bottom:1rem">
+<a href="/" style="color:var(--ink-2)">Home</a>
+<span aria-hidden="true" style="margin:0 .4rem;color:var(--ink-3)">/</span>
+<a href="/research" style="color:var(--ink-2)">Research</a>
+<span aria-hidden="true" style="margin:0 .4rem;color:var(--ink-3)">/</span>
+<span style="color:var(--ink)">${escapeHtml(displayTitle)}</span>
 </nav>
 <div class="page-header">
 <h1>${escapeHtml(displayTitle)}</h1>
@@ -409,46 +409,46 @@ ${entry.status === 'complete' ? `<div class="share-bar">
 </div>` : ''}
 </div>
 
-${fromQuery && fromQuery !== entry.query ? `<div class="cluster-banner" style="padding:.9rem 1.15rem;background:rgba(37,99,235,.08);border:1px solid rgba(37,99,235,.3);border-radius:12px;margin:1.25rem 0;display:flex;flex-wrap:wrap;gap:.75rem;align-items:center;justify-content:space-between">
-<div style="font-size:.88rem;color:var(--text2);flex:1;min-width:0">
-<strong style="color:var(--text)">Matched to existing research.</strong> You asked &ldquo;${escapeHtml(fromQuery)}&rdquo; — we already researched a very similar question (${date}).
+${fromQuery && fromQuery !== entry.query ? `<div class="cluster-banner" style="padding:.9rem 1.15rem;background:color-mix(in srgb,var(--accent) 8%,transparent);border:1px solid color-mix(in srgb,var(--accent) 30%,transparent);border-radius:12px;margin:1.25rem 0;display:flex;flex-wrap:wrap;gap:.75rem;align-items:center;justify-content:space-between">
+<div style="font-size:.88rem;color:var(--ink-2);flex:1;min-width:0">
+<strong style="color:var(--ink)">Matched to existing research.</strong> You asked &ldquo;${escapeHtml(fromQuery)}&rdquo; — we already researched a very similar question (${date}).
 </div>
 <form action="/research/new" method="POST" style="margin:0"><input type="hidden" name="q" value="${escapeHtml(fromQuery)}"><input type="hidden" name="fresh" value="1"><button type="submit" class="btn" style="font-size:.82rem;padding:.5rem .85rem;white-space:nowrap">Re-research with fresh data</button></form>
 </div>` : ''}
 
-${Object.keys(clarifications).length > 0 ? `<div class="clarifications-bar" style="margin:1.25rem 0;padding:.75rem 1rem;background:var(--surface);border:1px solid var(--surface2);border-radius:10px">
-<div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);font-weight:600;margin-bottom:.4rem">Researched for</div>
+${Object.keys(clarifications).length > 0 ? `<div class="clarifications-bar" style="margin:1.25rem 0;padding:.75rem 1rem;background:var(--surface-1);border:1px solid var(--line);border-radius:10px">
+<div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-3);font-weight:600;margin-bottom:.4rem">Researched for</div>
 <div style="display:flex;flex-wrap:wrap;gap:.4rem">
-${Object.entries(clarifications).map(([k, v]) => `<span class="card-badge" style="font-size:.78rem"><strong style="color:var(--text)">${escapeHtml(k.replace(/_/g, ' '))}:</strong> ${escapeHtml(v)}</span>`).join('')}
+${Object.entries(clarifications).map(([k, v]) => `<span class="card-badge" style="font-size:.78rem"><strong style="color:var(--ink)">${escapeHtml(k.replace(/_/g, ' '))}:</strong> ${escapeHtml(v)}</span>`).join('')}
 </div>
 </div>` : ''}
 
-${isProcessing ? `<div id="processing" style="padding:1.5rem;background:var(--surface);border:1px solid rgba(37,99,235,.3);border-radius:var(--radius);margin:2rem 0">
+${isProcessing ? `<div id="processing" style="padding:1.5rem;background:var(--surface-1);border:1px solid color-mix(in srgb,var(--accent) 30%,transparent);border-radius:0.875rem;margin:2rem 0">
 <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1rem">
 <div class="spinner" style="width:1.5rem;height:1.5rem;border-width:2px;margin:0;flex-shrink:0"></div>
 <div>
 <h2 style="font-size:1.1rem;font-weight:600;margin-bottom:.15rem">Researching</h2>
-<p style="color:var(--text3);font-size:.8rem" id="source-count">Starting...</p>
+<p style="color:var(--ink-3);font-size:.8rem" id="source-count">Starting...</p>
 </div>
 </div>
-<div id="preview-box" style="display:none;padding:1rem 1.15rem;margin-bottom:1rem;background:linear-gradient(135deg,rgba(37,99,235,.08),rgba(167,139,250,.08));border:1px solid rgba(37,99,235,.25);border-radius:10px">
-<div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);font-weight:600;margin-bottom:.5rem">Quick answer &middot; from prior knowledge</div>
-<div id="preview-text" style="font-size:.92rem;line-height:1.55;color:var(--text2);white-space:pre-wrap"></div>
+<div id="preview-box" style="display:none;padding:1rem 1.15rem;margin-bottom:1rem;background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 8%,transparent),color-mix(in srgb,var(--accent) 8%,transparent));border:1px solid color-mix(in srgb,var(--accent) 25%,transparent);border-radius:10px">
+<div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-3);font-weight:600;margin-bottom:.5rem">Quick answer &middot; from prior knowledge</div>
+<div id="preview-text" style="font-size:.92rem;line-height:1.55;color:var(--ink-2);white-space:pre-wrap"></div>
 </div>
 <div id="activity-feed" class="activity-feed"></div>
-<div class="notify-box" style="margin-top:1.25rem;padding:.9rem 1.05rem;background:rgba(167,139,250,.06);border:1px solid rgba(167,139,250,.25);border-radius:10px">
-<label for="notify-email" style="display:block;font-size:.82rem;color:var(--text2);margin-bottom:.5rem">This can take a minute. Want an email when it&rsquo;s ready?</label>
+<div class="notify-box" style="margin-top:1.25rem;padding:.9rem 1.05rem;background:color-mix(in srgb,var(--accent) 6%,transparent);border:1px solid color-mix(in srgb,var(--accent) 25%,transparent);border-radius:10px">
+<label for="notify-email" style="display:block;font-size:.82rem;color:var(--ink-2);margin-bottom:.5rem">This can take a minute. Want an email when it&rsquo;s ready?</label>
 <form id="notify-form" style="display:flex;gap:.5rem;flex-wrap:wrap;margin:0">
-<input id="notify-email" type="email" name="email" required placeholder="you@example.com" autocomplete="email" maxlength="254" style="flex:1;min-width:12rem;padding:.55rem .7rem;background:var(--bg);border:1px solid var(--surface2);border-radius:8px;color:var(--text);font-size:.88rem">
+<input id="notify-email" type="email" name="email" required placeholder="you@example.com" autocomplete="email" maxlength="254" style="flex:1;min-width:12rem;padding:.55rem .7rem;background:var(--bg);border:1px solid var(--line);border-radius:8px;color:var(--ink);font-size:.88rem">
 <button type="submit" class="btn" style="font-size:.85rem;padding:.55rem 1rem;white-space:nowrap">Notify me</button>
 </form>
-<p id="notify-msg" role="status" aria-live="polite" style="font-size:.8rem;color:var(--text3);margin-top:.5rem;min-height:1em"></p>
+<p id="notify-msg" role="status" aria-live="polite" style="font-size:.8rem;color:var(--ink-3);margin-top:.5rem;min-height:1em"></p>
 </div>
 </div>` : ''}
 
-${isFailed ? `<div style="padding:1.5rem;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:var(--radius);margin:2rem 0">
-<h2 style="color:var(--danger);font-size:1.1rem;font-weight:600;margin-bottom:.5rem">Research failed</h2>
-<p style="color:var(--text2)">Something went wrong during analysis. This could be due to insufficient source data.</p>
+${isFailed ? `<div style="padding:1.5rem;background:var(--trust-low-bg);border:1px solid color-mix(in srgb,var(--trust-low) 40%,transparent);border-radius:0.875rem;margin:2rem 0">
+<h2 style="color:var(--trust-low);font-size:1.1rem;font-weight:600;margin-bottom:.5rem">Research failed</h2>
+<p style="color:var(--ink-2)">Something went wrong during analysis. This could be due to insufficient source data.</p>
 <form method="POST" action="/research/new" style="margin-top:1rem"><input type="hidden" name="q" value="${escapeHtml(entry.query)}"><input type="hidden" name="fresh" value="1"><button type="submit" class="btn">Try again</button></form>
 </div>` : ''}
 
@@ -461,9 +461,9 @@ ${entry.status === 'complete' ? (() => {
   if (sourceList.length > 0) tocItems.push({ id: 'sources', label: `Sources (${sourceList.length})` });
   if (related.length > 0) tocItems.push({ id: 'related', label: 'Related research' });
   if (tocItems.length < 3) return '';
-  return `<nav class="toc" aria-label="Table of contents" style="margin:1.5rem 0;padding:.85rem 1rem;background:var(--surface);border:1px solid var(--surface2);border-radius:10px">
-<div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);font-weight:600;margin-bottom:.5rem">On this page</div>
-<ul style="list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:.5rem .9rem;font-size:.88rem">${tocItems.map((t) => `<li><a href="#${t.id}" style="color:var(--text2);text-decoration:none;border-bottom:1px dotted var(--text3)">${escapeHtml(t.label)}</a></li>`).join('')}</ul>
+  return `<nav class="toc" aria-label="Table of contents" style="margin:1.5rem 0;padding:.85rem 1rem;background:var(--surface-1);border:1px solid var(--line);border-radius:10px">
+<div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-3);font-weight:600;margin-bottom:.5rem">On this page</div>
+<ul style="list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:.5rem .9rem;font-size:.88rem">${tocItems.map((t) => `<li><a href="#${t.id}" style="color:var(--ink-2);text-decoration:none;border-bottom:1px dotted var(--ink-3)">${escapeHtml(t.label)}</a></li>`).join('')}</ul>
 </nav>`;
 })() : ''}
 
@@ -471,14 +471,14 @@ ${entry.summary ? `<div class="summary-box"><h2 id="summary">Summary</h2><p>${es
 
 ${entry.status === 'complete' ? adSlot(env, 'top', 'Advertisement') : ''}
 
-${hasBuyersGuide && buyersGuide ? `<section class="buyers-guide" style="background:var(--surface);border:1px solid var(--surface2);border-radius:var(--radius);padding:1.5rem;margin-bottom:2rem">
+${hasBuyersGuide && buyersGuide ? `<section class="buyers-guide" style="background:var(--surface-1);border:1px solid var(--line);border-radius:0.875rem;padding:1.5rem;margin-bottom:2rem">
 <h2 id="buyers-guide" style="font-size:1.1rem;font-weight:600;margin-bottom:1rem">Buyer's guide</h2>
-${buyersGuide.howToChoose ? `<h3 style="font-size:.85rem;font-weight:600;color:var(--text);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.5rem">How to choose</h3>
-<p style="color:var(--text2);font-size:.92rem;line-height:1.65;margin-bottom:1.25rem">${escapeHtml(buyersGuide.howToChoose)}</p>` : ''}
-${(buyersGuide.pitfalls?.length ?? 0) > 0 ? `<h3 style="font-size:.85rem;font-weight:600;color:var(--warning);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.5rem">Common pitfalls</h3>
-<ul style="color:var(--text2);font-size:.92rem;line-height:1.65;margin-bottom:1.25rem;padding-left:1.1rem">${buyersGuide.pitfalls.map((p) => `<li style="margin-bottom:.35rem">${escapeHtml(p)}</li>`).join('')}</ul>` : ''}
-${(buyersGuide.marketingToIgnore?.length ?? 0) > 0 ? `<h3 style="font-size:.85rem;font-weight:600;color:var(--danger);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.5rem">Marketing to ignore</h3>
-<ul style="color:var(--text2);font-size:.92rem;line-height:1.65;padding-left:1.1rem">${buyersGuide.marketingToIgnore.map((p) => `<li style="margin-bottom:.35rem">${escapeHtml(p)}</li>`).join('')}</ul>` : ''}
+${buyersGuide.howToChoose ? `<h3 style="font-size:.85rem;font-weight:600;color:var(--ink);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.5rem">How to choose</h3>
+<p style="color:var(--ink-2);font-size:.92rem;line-height:1.65;margin-bottom:1.25rem">${escapeHtml(buyersGuide.howToChoose)}</p>` : ''}
+${(buyersGuide.pitfalls?.length ?? 0) > 0 ? `<h3 style="font-size:.85rem;font-weight:600;color:var(--trust-medium);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.5rem">Common pitfalls</h3>
+<ul style="color:var(--ink-2);font-size:.92rem;line-height:1.65;margin-bottom:1.25rem;padding-left:1.1rem">${buyersGuide.pitfalls.map((p) => `<li style="margin-bottom:.35rem">${escapeHtml(p)}</li>`).join('')}</ul>` : ''}
+${(buyersGuide.marketingToIgnore?.length ?? 0) > 0 ? `<h3 style="font-size:.85rem;font-weight:600;color:var(--trust-low);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.5rem">Marketing to ignore</h3>
+<ul style="color:var(--ink-2);font-size:.92rem;line-height:1.65;padding-left:1.1rem">${buyersGuide.marketingToIgnore.map((p) => `<li style="margin-bottom:.35rem">${escapeHtml(p)}</li>`).join('')}</ul>` : ''}
 </section>` : ''}
 
 ${products.length > 0 ? `<h2 id="products" style="font-size:1.25rem;font-weight:700;margin-bottom:1.5rem">${isService ? 'Recommendations' : 'Products compared'}</h2>
@@ -492,11 +492,11 @@ ${products.length > 0 ? `<h2 id="products" style="font-size:1.25rem;font-weight:
 ${adSlot(env, 'bottom', 'Advertisement')}` : ''}
 
 ${(resultData.methodology || sourceList.length > 0) ? `<div class="sources" style="margin-top:2rem">
-${resultData.methodology ? `<h2 id="methodology" style="font-size:1.1rem;font-weight:600;margin-bottom:.5rem">Methodology</h2><p style="font-size:.85rem;color:var(--text2);margin-bottom:1rem">${escapeHtml(resultData.methodology)}</p>` : ''}
+${resultData.methodology ? `<h2 id="methodology" style="font-size:1.1rem;font-weight:600;margin-bottom:.5rem">Methodology</h2><p style="font-size:.85rem;color:var(--ink-2);margin-bottom:1rem">${escapeHtml(resultData.methodology)}</p>` : ''}
 ${sourceList.length > 0 ? `<h2 id="sources" style="font-size:1.1rem;font-weight:600;margin-bottom:.5rem">Sources (${sourceList.length})</h2>${sourceList.map((u) => `<a href="${escapeHtml(u)}" target="_blank" rel="${sourceRel(u)}">${escapeHtml(sourceLabel(u))}</a>`).join('')}` : ''}
 </div>` : ''}
 
-${related.length > 0 ? `<section class="related-research" style="margin-top:3rem;padding-top:2rem;border-top:1px solid var(--surface2)">
+${related.length > 0 ? `<section class="related-research" style="margin-top:3rem;padding-top:2rem;border-top:1px solid var(--line)">
 <h2 id="related" style="font-size:1.1rem;font-weight:600;margin-bottom:1rem">Related research</h2>
 <div class="grid">${related.map((r) => `<a class="card" href="/research/${escapeHtml(r.slug)}">
 ${r.category ? `<div class="card-top"><span class="card-badge">${escapeHtml(r.category)}</span><span class="card-time">${timeAgo(r.created_at * 1000)}</span></div>` : `<div class="card-top"><span class="card-time">${timeAgo(r.created_at * 1000)}</span></div>`}
@@ -504,17 +504,17 @@ ${r.category ? `<div class="card-top"><span class="card-badge">${escapeHtml(r.ca
 </a>`).join('')}</div>
 </section>` : ''}
 
-<div style="margin-top:3rem;padding-top:2rem;border-top:1px solid var(--surface2)">
+<div style="margin-top:3rem;padding-top:2rem;border-top:1px solid var(--line)">
 <h2 style="font-size:1.1rem;font-weight:600;margin-bottom:1rem">Research something else</h2>
 ${searchBar('compact')}
 </div>
-${entry.status === 'complete' ? `<div class="notify-footer" style="margin-top:2rem;padding-top:1.5rem;border-top:1px solid var(--surface2)">
+${entry.status === 'complete' ? `<div class="notify-footer" style="margin-top:2rem;padding-top:1.5rem;border-top:1px solid var(--line)">
 <form id="notify-form" style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin:0">
-<label for="notify-email" style="font-size:.88rem;color:var(--text2);flex:1;min-width:14rem">Get notified when we re-research this category</label>
-<input id="notify-email" type="email" name="email" required placeholder="you@example.com" autocomplete="email" maxlength="254" style="flex:1;min-width:12rem;padding:.55rem .7rem;background:var(--bg);border:1px solid var(--surface2);border-radius:8px;color:var(--text);font-size:.88rem">
+<label for="notify-email" style="font-size:.88rem;color:var(--ink-2);flex:1;min-width:14rem">Get notified when we re-research this category</label>
+<input id="notify-email" type="email" name="email" required placeholder="you@example.com" autocomplete="email" maxlength="254" style="flex:1;min-width:12rem;padding:.55rem .7rem;background:var(--bg);border:1px solid var(--line);border-radius:8px;color:var(--ink);font-size:.88rem">
 <button type="submit" class="btn" style="font-size:.85rem;padding:.55rem 1rem;white-space:nowrap">Notify me</button>
 </form>
-<p id="notify-msg" role="status" aria-live="polite" style="font-size:.8rem;color:var(--text3);margin-top:.5rem;min-height:1em"></p>
+<p id="notify-msg" role="status" aria-live="polite" style="font-size:.8rem;color:var(--ink-3);margin-top:.5rem;min-height:1em"></p>
 </div>` : ''}
 </div>`;
 

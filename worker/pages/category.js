@@ -54,29 +54,29 @@ export async function renderCategoryHub(category, env) {
     const categoryName = rows[0].category;
     const canonicalUrl = `${SITE}/best/${wantSlug}`;
 
-    const cards = rows.map((r) => `<a href="/research/${escapeHtml(r.slug)}" class="card">
-<div class="card-top">
-<span class="card-badge">${escapeHtml(r.category)}</span>
-<span class="card-time">${timeAgo(r.created_at * 1000)}</span>
+    const cards = rows.map((r) => `<a href="/research/${escapeHtml(r.slug)}" class="flex flex-col rounded-xl border border-line bg-surface-1 p-5 shadow-card transition-all hover:-translate-y-0.5 hover:border-line-strong hover:shadow-lift">
+<div class="mb-2 flex items-center justify-between gap-3">
+<span class="inline-flex items-center rounded-full bg-accent-quiet px-2.5 py-1 text-caption font-medium text-accent">${escapeHtml(r.category)}</span>
+<span class="text-caption text-ink-3">${timeAgo(r.created_at * 1000)}</span>
 </div>
-<h3>${escapeHtml(displayQuery(r.query))}</h3>
-${r.summary ? `<p>${escapeHtml(r.summary)}</p>` : ''}
-<div class="card-meta"><span>${r.product_count} products</span><span>${r.view_count} views</span></div>
+<h3 class="font-serif text-h3 font-semibold text-ink">${escapeHtml(displayQuery(r.query))}</h3>
+${r.summary ? `<p class="mt-2 line-clamp-2 text-body-sm text-ink-2">${escapeHtml(r.summary)}</p>` : ''}
+<div class="mt-4 flex gap-4 font-mono text-caption text-ink-3 num"><span>${r.product_count} products</span><span>${r.view_count} views</span></div>
 </a>`).join('');
 
-    const body = `<div class="container" style="padding:3rem 1.5rem">
-<nav aria-label="Breadcrumb" class="breadcrumb" style="font-size:.85rem;color:var(--text2);margin-bottom:1rem">
-<a href="/" style="color:var(--text2)">Home</a>
-<span aria-hidden="true" style="margin:0 .4rem;color:var(--text3)">/</span>
-<a href="/research" style="color:var(--text2)">Research</a>
-<span aria-hidden="true" style="margin:0 .4rem;color:var(--text3)">/</span>
-<span style="color:var(--text)">${escapeHtml(categoryName)}</span>
+    const body = `<div class="mx-auto max-w-5xl px-6 py-12 md:py-16">
+<nav aria-label="Breadcrumb" class="mb-6 text-caption text-ink-3">
+<a href="/" class="hover:text-ink">Home</a>
+<span aria-hidden="true" class="mx-1.5">/</span>
+<a href="/research" class="hover:text-ink">Research</a>
+<span aria-hidden="true" class="mx-1.5">/</span>
+<span class="text-ink-2">${escapeHtml(categoryName)}</span>
 </nav>
-<div class="page-header" style="margin-bottom:2rem">
-<h1>Best ${escapeHtml(categoryName)}</h1>
-<p style="color:var(--text2)">Honest, source-backed ${escapeHtml(categoryName.toLowerCase())} research — ${rows.length} guide${rows.length === 1 ? '' : 's'} compiled from real reviews.</p>
+<div class="mb-8">
+<h1 class="font-serif text-h1 font-semibold text-ink">Best ${escapeHtml(categoryName)}</h1>
+<p class="mt-2 text-lead text-ink-2">Honest, source-backed ${escapeHtml(categoryName.toLowerCase())} research — ${rows.length} guide${rows.length === 1 ? '' : 's'} compiled from real reviews.</p>
 </div>
-<div class="grid">${cards}</div>
+<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">${cards}</div>
 </div>`;
 
     const breadcrumbLd = {

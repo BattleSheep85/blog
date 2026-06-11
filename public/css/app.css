@@ -107,6 +107,313 @@ body {
 }
 
 /* ----------------------------------------------------------------------------
+   Server-rendered (Worker) page components.
+   These class names live inside JS template strings and JS-injected DOM
+   (search autocomplete dropdown, the submit spinner, the live activity feed),
+   so Tailwind's content scanner can't reliably see them. Defined here against
+   the design tokens so they theme correctly in both light and dark.
+---------------------------------------------------------------------------- */
+
+/* Loading spinner (search submit overlay + processing card) */
+.spinner {
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 3px solid var(--accent);
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .spinner { animation: none; } }
+
+/* Search autocomplete dropdown (built in search-bar.js) */
+.ac-dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 60;
+    margin-top: 0.5rem;
+    max-height: 20rem;
+    overflow-y: auto;
+    background: var(--surface-1);
+    border: 1px solid var(--line);
+    border-radius: 0.875rem;
+    box-shadow: var(--lift);
+}
+.ac-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.65rem 1rem;
+    color: var(--ink);
+    font-size: 0.9375rem;
+    border-bottom: 1px solid var(--line);
+    cursor: pointer;
+    text-decoration: none;
+}
+.ac-item:last-child { border-bottom: none; }
+.ac-item:hover, .ac-item:focus { background: var(--surface-2); color: var(--ink); }
+.ac-item .ac-cat {
+    flex-shrink: 0;
+    margin-left: 0.5rem;
+    padding: 0.1rem 0.5rem;
+    font-size: 0.75rem;
+    border-radius: 999px;
+    background: var(--accent-quiet);
+    color: var(--accent);
+}
+
+/* Live "reading reviews" activity feed (research processing page) */
+.activity-feed {
+    max-height: 20rem;
+    overflow-y: auto;
+    padding: 0.75rem;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 0.8125rem;
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: 0.625rem;
+}
+.activity-item {
+    padding: 0.25rem 0;
+    color: var(--ink-2);
+    border-bottom: 1px solid var(--line);
+    line-height: 1.5;
+    word-break: break-word;
+}
+.activity-item:last-child { border-bottom: none; }
+.activity-search { color: var(--accent); }
+.activity-fetch { color: var(--trust-high); }
+.activity-note { color: var(--trust-medium); }
+.activity-synthesize { color: var(--ink); }
+.activity-status { color: var(--ink-3); }
+.activity-error { color: var(--trust-low); }
+
+/* Buttons used inside SSR templates (research/browse/clarify/category) */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 0.625rem;
+    background: var(--accent-strong);
+    color: #fff;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.15s;
+}
+.btn:hover { background: var(--accent-hover); color: #fff; }
+.btn-ghost { background: var(--surface-1); color: var(--ink); border: 1px solid var(--line); }
+.btn-ghost:hover { background: var(--surface-2); color: var(--ink); }
+
+/* Pros / cons two-column block (research report product cards) */
+.pros-cons { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+@media (max-width: 600px) { .pros-cons { grid-template-columns: 1fr; } }
+.pros-cons h4 {
+    margin-bottom: 0.5rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+.pros-cons h4.pro { color: var(--trust-high); }
+.pros-cons h4.con { color: var(--trust-low); }
+.pros-cons li {
+    position: relative;
+    margin-bottom: 0.25rem;
+    padding-left: 1.2rem;
+    list-style: none;
+    font-size: 0.85rem;
+    color: var(--ink-2);
+}
+.pros-cons li::before { position: absolute; left: 0; font-weight: 700; }
+.pros-cons .pro-list li::before { content: '✓'; color: var(--trust-high); }
+.pros-cons .con-list li::before { content: '✕'; color: var(--trust-low); }
+
+/* Secondary retailer / manufacturer link pills */
+.product-links { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem; }
+.product-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.5rem 1rem;
+    border-radius: 0.625rem;
+    border: none;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+}
+.product-link-mfr { background: var(--surface-2); color: var(--ink-2); }
+.product-link-mfr:hover { background: var(--surface-3); color: var(--ink); }
+.product-link-buy { background: var(--accent-strong); color: #fff; }
+.product-link-buy:hover { background: var(--accent-hover); color: #fff; }
+
+/* Full-width Amazon CTA — Amazon's familiar yellow for instant recognition.
+   Intentionally brand-colored (not themed) so it reads as a buy button. */
+.product-cta-amazon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    margin-top: 1rem;
+    padding: 0.95rem 1rem;
+    background: #FFD814;
+    color: #0F1111;
+    font-weight: 700;
+    font-size: 1rem;
+    border: 1px solid #FCD200;
+    border-radius: 10px;
+    text-decoration: none;
+    box-shadow: 0 1px 2px rgb(15 17 17 / 0.15);
+    transition: background 0.15s, transform 0.05s;
+}
+.product-cta-amazon:hover { background: #F7CA00; color: #0F1111; }
+.product-cta-amazon:active { transform: translateY(1px); }
+
+/* Share buttons on completed research reports */
+.share-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; margin-top: 1rem; }
+.share-bar > span { font-size: 0.85rem; font-weight: 500; color: var(--ink-3); }
+.share-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.35rem 0.75rem;
+    border: 1px solid var(--line);
+    border-radius: 0.625rem;
+    background: var(--surface-1);
+    color: var(--ink-2);
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    transition: border-color 0.15s, color 0.15s;
+}
+.share-btn:hover { border-color: var(--line-strong); color: var(--ink); }
+.share-btn svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+/* Centered page wrapper used by the research report shell. The activity-feed
+   in-place swap targets `.container`, so the class name must be preserved. */
+.container { max-width: 64rem; margin: 0 auto; }
+
+/* Research report layout containers + cards (server-rendered) */
+.summary-box,
+.sources,
+.buyers-guide {
+    background: var(--surface-1);
+    border: 1px solid var(--line);
+    border-radius: 0.875rem;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--card);
+}
+.summary-box h2 { font-family: 'Newsreader', Georgia, serif; font-size: 1.375rem; font-weight: 600; color: var(--ink); margin-bottom: 0.75rem; }
+.summary-box p { color: var(--ink-2); }
+.sources h2 { font-family: 'Newsreader', Georgia, serif; color: var(--ink); }
+.sources a { display: block; margin-bottom: 0.3rem; font-size: 0.85rem; color: var(--accent); word-break: break-all; }
+.sources a:hover { color: var(--accent-hover); }
+
+.page-header h1 { font-family: 'Newsreader', Georgia, serif; font-size: clamp(1.75rem, 4vw, 2.5rem); font-weight: 600; letter-spacing: -0.02em; color: var(--ink); margin-bottom: 0.5rem; }
+.page-meta { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1rem; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 0.8125rem; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+
+.card-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.625rem;
+    border-radius: 999px;
+    background: var(--accent-quiet);
+    color: var(--accent);
+    font-size: 0.8125rem;
+    font-weight: 500;
+}
+.card-time { font-size: 0.8125rem; color: var(--ink-3); }
+
+/* Listing card (related research, browse fallbacks rendered server-side) */
+.card {
+    display: block;
+    padding: 1.25rem;
+    background: var(--surface-1);
+    border: 1px solid var(--line);
+    border-radius: 0.875rem;
+    box-shadow: var(--card);
+    color: inherit;
+    text-decoration: none;
+    transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+}
+.card:hover { border-color: var(--line-strong); transform: translateY(-2px); box-shadow: var(--lift); }
+.card-top { display: flex; justify-content: space-between; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem; }
+.card h3 { font-family: 'Newsreader', Georgia, serif; font-size: 1.375rem; font-weight: 600; color: var(--ink); }
+.card p { margin-top: 0.4rem; font-size: 0.9375rem; color: var(--ink-2); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.card-meta { display: flex; gap: 1rem; margin-top: 0.75rem; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 0.8125rem; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr)); gap: 1rem; }
+.product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 24rem), 1fr)); gap: 1rem; }
+@media (max-width: 600px) { .product-grid { grid-template-columns: 1fr; } }
+
+/* Individual product card on a research report */
+.product {
+    background: var(--surface-1);
+    border: 1px solid var(--line);
+    border-radius: 0.875rem;
+    padding: 1.5rem;
+    box-shadow: var(--card);
+    transition: border-color 0.2s;
+}
+.product:hover { border-color: var(--line-strong); }
+.product-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; margin-bottom: 1rem; }
+.product-rank { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 999px; border: 1px solid; font-size: 0.75rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.rank-1 { background: var(--trust-medium-bg); color: var(--trust-medium); border-color: color-mix(in srgb, var(--trust-medium) 40%, transparent); }
+.rank-2 { background: var(--surface-2); color: var(--ink-2); border-color: var(--line-strong); }
+.rank-3 { background: var(--trust-medium-bg); color: var(--trust-medium); border-color: color-mix(in srgb, var(--trust-medium) 30%, transparent); }
+.rank-n { background: var(--surface-2); color: var(--ink-3); border-color: var(--line); }
+.product-price { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 1.5rem; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; }
+.product-rating { margin-top: 0.25rem; font-size: 0.85rem; color: var(--trust-medium); }
+.product-bestfor {
+    display: inline-block;
+    margin-bottom: 1rem;
+    padding: 0.3rem 0.75rem;
+    border-radius: 0.5rem;
+    background: var(--accent-quiet);
+    border: 1px solid color-mix(in srgb, var(--accent) 20%, transparent);
+    color: var(--accent);
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+.product-verdict {
+    margin-bottom: 1rem;
+    padding-left: 0.75rem;
+    border-left: 2px solid var(--accent);
+    color: var(--ink-2);
+    font-family: 'Newsreader', Georgia, serif;
+    font-style: italic;
+    font-size: 1rem;
+}
+
+/* Breadcrumb + TOC chrome on report/listing pages */
+.breadcrumb a { color: var(--ink-2); }
+.breadcrumb a:hover { color: var(--ink); }
+.toc a:hover { color: var(--ink); }
+
+/* Anchor scroll + target highlight for deep-linked product cards */
+:target { scroll-margin-top: 5rem; }
+[id] { scroll-margin-top: 5rem; }
+article[id]:target {
+    outline: 2px solid var(--accent);
+    outline-offset: 4px;
+    border-radius: 0.875rem;
+}
+
+/* ----------------------------------------------------------------------------
    Print: force the light token set (dark is the default theme) so a printed
    report is readable on white paper, then strip chrome. Interactive chrome is
    also tagged with Tailwind's `print:hidden` in markup.

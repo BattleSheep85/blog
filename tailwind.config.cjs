@@ -10,7 +10,7 @@ const alpha = (name) => ({ opacityValue }) =>
 
 module.exports = {
   darkMode: 'class',
-  content: ['./public/**/*.html', './public/**/*.js'],
+  content: ['./public/**/*.html', './public/**/*.js', './worker/**/*.js'],
   theme: {
     extend: {
       colors: {
