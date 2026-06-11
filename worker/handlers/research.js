@@ -12,6 +12,8 @@ import {
     getResearchById, getResearchBySlug,
 } from '../lib/db.js';
 import { generateSlug, canonicalizeQuery, parseJsonSafe } from '../lib/utils.js';
+import { PUBLIC_TIERS } from '../lib/tiers.js';
+import { monthKey, monthlyBudgetUsd } from '../pipeline/orchestrator.js';
 
 /**
  * Handle POST /api/research
@@ -37,6 +39,11 @@ export async function handleStartResearch(request, env) {
     // Optional 'fresh' flag bypasses clustering (re-run buttons); rate
     // limiting below still applies.
     const fresh = !!body.fresh;
+
+    // Tier: accept from body, validate against the public allowlist, default
+    // 'full'. exhaustive/unbound stay gated (Turnstile/subscription) and are
+    // not selectable here.
+    const tier = PUBLIC_TIERS.includes(body.tier) ? body.tier : 'full';
 
     // Clustering: a completed run with the same canonical query within 14 days
     // is the same research — send the client to its permanent page.
@@ -68,6 +75,14 @@ export async function handleStartResearch(request, env) {
         }, 429);
     }
 
+    // Monthly budget governor: each completed run increments cost:YYYY-MM in KV.
+    // If this month's spend has already hit the cap, refuse new work (503) so a
+    // runaway month can't keep burning the LLM budget.
+    const spent = Number(await env.KV.get(`cost:${monthKey()}`)) || 0;
+    if (spent >= monthlyBudgetUsd(env)) {
+        return jsonResponse({ error: 'Monthly research budget exhausted — try tomorrow' }, 503);
+    }
+
     // Create the permanent research row. Slug mirrors Exhaustive's shape:
     // slugify(query) + '-' + first 8 chars of the id.
     const id = generateId();
@@ -77,13 +92,14 @@ export async function handleStartResearch(request, env) {
         slug,
         query: normalizedQuery,
         canonicalQuery: canonical,
-        tier: 'full',
+        tier,
     });
 
     // Enqueue research job (message shape unchanged — queue consumer keys on it)
     await env.RESEARCH_QUEUE.send({
         reportId: id,
         query: normalizedQuery,
+        tier,
     });
 
     return jsonResponse({

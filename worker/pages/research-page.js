@@ -335,7 +335,11 @@ export async function renderResearchResult(slug, env, fromQuery = null, cleanLin
   const buyersGuide = resultData.buyersGuide;
   const hasBuyersGuide = !!(buyersGuide && (buyersGuide.howToChoose || (buyersGuide.pitfalls?.length ?? 0) > 0 || (buyersGuide.marketingToIgnore?.length ?? 0) > 0));
   const isService = isNonProductCategory(entry.category);
-  const sourceList = parseJsonSafe(entry.sources, []).filter(isValidHttpsUrl);
+  // sources persist as either plain URL strings (legacy) or {url, credibility}
+  // objects (engine port). Normalize to the URL string for rendering.
+  const sourceList = parseJsonSafe(entry.sources, [])
+    .map((s) => (typeof s === 'string' ? s : s && typeof s.url === 'string' ? s.url : ''))
+    .filter(isValidHttpsUrl);
   const clarifications = parseJsonSafe(entry.clarifications, {});
 
   const date = new Date(entry.created_at * 1000).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });

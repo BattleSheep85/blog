@@ -9,9 +9,16 @@ and produces honest comparison reports. Monetized via affiliate links (Amazon As
 - **API**: Cloudflare Workers (plain JS, no npm)
 - **Database**: Cloudflare D1 (SQLite)
 - **Cache**: Cloudflare KV
-- **Background jobs**: Cloudflare Queues
-- **AI**: OpenRouter free models via fetch() (DeepSeek R1 for analysis, Qwen 3.6 Plus for writing)
-- **Search**: Reddit JSON API (free), HN Algolia (free), Serper.dev (2500 free)
+- **Background jobs**: Cloudflare Queues (consumer + cron `scheduled` reaper)
+- **AI** (bench-derived paid stack via OpenRouter, all over `fetch()`):
+  - **Classifier**: `google/gemini-2.5-flash-lite` (facets + topical category + reject)
+  - **Planner / agent loop**: `google/gemini-2.5-flash`
+  - **Synthesis**: `anthropic/claude-haiku-4.5` (instant tier), `anthropic/claude-sonnet-4.6` (full tier)
+  - Tier configs live in `worker/lib/tiers.js`; public tiers are `instant` + `full`.
+- **Search**: Serper.dev Google Search (web + news), HN Algolia (free), DuckDuckGo, RSS expert feeds
+- **Cost governor**: `MONTHLY_BUDGET_USD` (default 60) — each run increments a
+  KV `cost:YYYY-MM` counter; `POST /api/research` returns 503 once the month's
+  spend hits the cap. Per-run cost persists to `research.cost_usd`.
 - **Deployment**: GitHub (private) → Cloudflare Pages + Workers
 
 ## Key Constraint
@@ -26,12 +33,21 @@ Supply chain security is a hard requirement.
 ## Architecture
 - `/public/` — Static frontend files (served by Cloudflare Pages)
 - `/worker/` — Cloudflare Worker source (plain JS)
-- `/worker/lib/` — Shared utilities (llm.js, search.js, db.js, rate-limit.js)
-- `/worker/pipeline/` — Research pipeline (search, analyze, synthesize, affiliate, orchestrator)
+- `/worker/engine/` — Ported research engine: `engine.js` (agent loop + synthesis
+  orchestration), `llm.js` (OpenRouter streaming/non-streaming + context pruning),
+  `tools.js` (web_search/read_page/note; Serper + HN + DDG + RSS providers),
+  `prompts.js` (agent + synthesis prompts), `validate.js` (result sanitization)
+- `/worker/lib/` — Shared utilities (`db.js`, `tiers.js`, `classifier.js`,
+  `affiliate-links.js`, `credibility.js`, `duckduckgo.js`, `rss.js`, `jina.js`,
+  `rate-limit.js`, `utils.js`). NOTE: the old `lib/llm.js` and `lib/search.js`
+  were removed — the engine owns its LLM + Serper layers now.
+- `/worker/pipeline/` — `orchestrator.js` only: classify → runEngine → validate →
+  persist. The old `search.js`/`analyze.js`/`synthesize.js`/`affiliate.js`
+  stages were deleted (the engine subsumes them).
 - `/worker/handlers/` — HTTP route handlers (research, report, affiliate)
 - `/schema/` — D1 database migrations
 
 ## Secrets (set via wrangler secret put)
-- OPENROUTER_API_KEY — free tier, no credit card needed
-- SERPER_API_KEY — optional, 2500 free Google searches
-- AMAZON_ASSOCIATE_TAG — affiliate tracking tag
+- OPENROUTER_API_KEY — paid OpenRouter key (classifier/planner/synth models)
+- SERPER_API_KEY — Serper.dev Google Search (web + news search providers)
+- AMAZON_ASSOCIATE_TAG — optional; `AMAZON_AFFILIATE_TAG` ([vars]) is the default tag

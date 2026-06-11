@@ -31,6 +31,22 @@ regression-verified on a local dev server.
 - [x] Duplicate canonical tag; double JSON.parse of product columns; sequential D1 queries on render path (now Promise.all); orchestrator progress KV read-modify-write (now in-memory append); sitemap/feed query-before-304 (now early 304 + KV-cached XML); dead affiliate_url search links no longer persisted.
 - [x] Notify-me email box removed (discarded input); /api/subscribe stub removed — returns in Phase 4 with a real subscribers table.
 
+## Phase 2: Research engine port (2026-06-11)
+
+Engine stack ported from Exhaustive (agent loop, Serper/HN/DDG/RSS providers, credibility
+scoring + ASIN extraction, classifier, tiers, budget governor, cron reaper). Build green,
+55/55 credibility tests pass, prompt fidelity audited, budget governor and tier gating
+verified live. One real instant-tier run executed (cost $0.0102, correctly recorded).
+
+- [ ] HIGH (BLOCKER for quality): Real runs produce 0 products without SERPER_API_KEY.
+      DuckDuckGo's html.duckduckgo.com endpoint returns 0 parseable results (anti-bot /
+      markup change, confirmed via live curl), so without Serper only RSS+HN work
+      (~1 source) and synthesis honestly fails the run. NEEDS: the user's Serper.dev API
+      key (2500 free searches) added to .dev.vars locally and `wrangler secret put
+      SERPER_API_KEY` for deploys. Captured as HIGH learning in search-providers domain.
+- [x] Engine port verified: idempotent queue claim, processing-row reaper cron, KV cost
+      counter + 503 budget stop, tier validation (PUBLIC_TIERS), old pipeline deleted.
+
 ### Deferred (tracked, not bugs)
 - [ ] LOW: Status-vocabulary translation (complete/completed, failed/error) spread across research.js apiStatus(), report.js literals, and inline page JS — consolidate into one map module during Phase 2 rewire.
 - [ ] LOW: Canonical-dedup ROW_NUMBER CTE repeated across suggest/browse/sitemap — extract SQL-fragment helper.

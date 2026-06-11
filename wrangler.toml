@@ -9,11 +9,18 @@ binding = "ASSETS"
 # Run the Worker first so it can inject a per-request CSP nonce into HTML.
 run_worker_first = true
 
+[triggers]
+crons = ["*/10 * * * *"]
+
+[limits]
+cpu_ms = 300000
+
 [vars]
 ENVIRONMENT = "production"
 RATE_LIMIT_MAX = "5"
 RATE_LIMIT_WINDOW_SECONDS = "3600"
 CACHE_TTL_SECONDS = "86400"
+MONTHLY_BUDGET_USD = "60"
 ADSENSE_PUBLISHER_ID = "pub-6952672558994325"
 ADSENSE_SLOT_TOP = "2568816027"
 ADSENSE_SLOT_MID = "8942652687"
@@ -45,6 +52,6 @@ max_retries = 2
 dead_letter_queue = "truerank-dlq"
 
 # Secrets (set via wrangler secret put):
-# OPENROUTER_API_KEY  — free tier, no credit card needed
-# SERPER_API_KEY      — optional, 2500 free Google searches
-# AMAZON_ASSOCIATE_TAG
+# OPENROUTER_API_KEY  — paid OpenRouter key (planner/synth/classifier models)
+# SERPER_API_KEY      — Serper.dev Google Search (web + news providers)
+# AMAZON_ASSOCIATE_TAG — optional; AMAZON_AFFILIATE_TAG in [vars] is the default

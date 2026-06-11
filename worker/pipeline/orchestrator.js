@@ -1,167 +1,244 @@
 /**
- * Pipeline Orchestrator: Runs the full research pipeline.
- * search → analyze → filter → synthesize → enrich
- * Writes results into the permanent `research` + `products` tables (v2 schema)
- * and updates KV with progress at each step for SSE streaming.
+ * Pipeline Orchestrator: runs the ported research engine end-to-end.
+ *
+ * classify (if needed) → runEngine (agent loop + synthesis) → validate →
+ * persist products + research row. Progress is streamed to KV for the SSE
+ * activity feed (progress:{id} + progress_log:{id}); the engine's onEvent
+ * callback feeds that same updater so the agent-loop beats surface live.
+ *
+ * Honest-failure rule: a run that yields zero valid products is marked
+ * 'failed', NOT 'complete', so it never absorbs new queries into its cluster.
  */
 
-import { searchForReviews } from './search.js';
-import { analyzeSources, filterSources } from './analyze.js';
-import { synthesizeReport } from './synthesize.js';
-import { enrichWithAffiliateLinks } from './affiliate.js';
-import { updateResearchStatus, completeResearch, insertProductV2, generateId } from '../lib/db.js';
+import { runEngine } from '../engine/engine.js';
+import { classifyQuery } from '../lib/classifier.js';
+import { getTierConfig } from '../lib/tiers.js';
+import { buildAffiliateUrl } from '../lib/affiliate-links.js';
+import { getResearchById, generateId } from '../lib/db.js';
+import { sanitizeUrl } from '../lib/utils.js';
+
+const DEFAULT_AFFILIATE_TAG = 'battlesheep0a-20';
+// Monthly spend ceiling default; overridden by env.MONTHLY_BUDGET_USD.
+const DEFAULT_MONTHLY_BUDGET_USD = 60;
 
 /**
- * Run the full research pipeline for a query.
- * Called by the Queue consumer. reportId is the research.id.
+ * Run the full research pipeline for a query. Called by the Queue consumer.
+ * reportId is the research.id. The idempotency claim (pending→processing) lives
+ * in the queue consumer (worker/index.js); by the time we get here the row is
+ * already 'processing'.
  */
 export async function runResearchPipeline(env, reportId, query) {
-    const llmKey = env.OPENROUTER_API_KEY;
-    const amazonTag = env.AMAZON_ASSOCIATE_TAG || env.AMAZON_AFFILIATE_TAG || '';
-
     const progress = createProgressUpdater(env.KV, reportId);
 
     try {
-        await progress('Starting research pipeline...');
-        // The research.status CHECK constraint only allows pending/processing/
-        // complete/failed — intermediate phases all map to 'processing'.
-        await updateResearchStatus(env.DB, reportId, 'processing');
-
-        // Step 1: Search (Reddit free, HN free, Serper free tier)
-        await progress('Phase 1/4: Searching free sources for real reviews...');
-        const searchResults = await searchForReviews(env, query, progress);
-
-        if (searchResults.parse_error || !searchResults.sources?.length) {
-            await progress('Could not find enough sources. Generating report with limited data...');
-            const limitedReport = {
-                query,
-                executive_summary: `Limited results for "${query}". Not enough verified sources were found for a comprehensive comparison. Try being more specific, e.g. "best budget mechanical keyboard under $100 for gaming".`,
-                products: [],
-                methodology: 'Search returned insufficient results for reliable analysis.',
-                sources_summary: [],
-                category_insights: '',
-                source_count: 0,
-                filtered_count: 0,
-            };
-            await completeResearch(env.DB, {
-                id: reportId,
-                status: 'complete',
-                summary: limitedReport.executive_summary,
-                category: null,
-                result: JSON.stringify(limitedReport),
-                sources: '[]',
-            });
-            await progress('Research complete (limited results)');
-            await setFinalReport(env.KV, reportId, limitedReport);
+        // Load the research row for tier + cached classifier facets.
+        const row = await getResearchById(env.DB, reportId);
+        if (!row) {
+            console.error(`[orchestrator] research row ${reportId} not found`);
             return;
         }
 
-        const totalSources = searchResults.sources.length;
-        await progress(`Found ${totalSources} sources. Starting authenticity analysis...`);
+        const tier = row.tier || 'full';
+        const config = getTierConfig(tier) || getTierConfig('full');
 
-        // Step 2: Analyze (DeepSeek R1, free via OpenRouter)
-        const analysisResults = await analyzeSources(llmKey, searchResults.sources, progress);
+        // Classifier facets/topical_category: reuse the row's stored values when
+        // present (set by a future interstitial), otherwise classify now and
+        // persist them so the report page + clustering have category context.
+        let facets = parseJsonSafe(row.facets, null);
+        let topicalCategory = row.topical_category || null;
+        const clarifications = parseJsonSafe(row.clarifications, {}) || {};
 
-        // Step 3: Filter
-        const filtered = filterSources(analysisResults.analyzed_sources);
-        const filteredOutCount = totalSources - filtered.length;
-        await progress(`Filtered to ${filtered.length} genuine sources (removed ${filteredOutCount} fake/low-quality)`);
+        if (!facets) {
+            await progress('Classifying query...');
+            const classification = await classifyQuery(env, query, row.canonical_query || null);
+            facets = classification.facets;
+            topicalCategory = classification.topical_category;
+            await env.DB.prepare(
+                'UPDATE research SET facets = ?1, topical_category = ?2 WHERE id = ?3'
+            ).bind(
+                JSON.stringify(facets),
+                topicalCategory,
+                reportId,
+            ).run();
+        }
 
-        // Sources persist as a JSON array of https URLs on the research row
-        // (the v2 schema has no sources table; the page renders these links).
-        const sourceUrls = filtered
-            .map((s) => s.url)
-            .filter((u) => typeof u === 'string' && u.startsWith('https://'));
-
-        // Step 4: Synthesize (free via OpenRouter)
-        const report = await synthesizeReport(
-            llmKey, query, filtered, totalSources, filteredOutCount, progress
-        );
-
-        // Step 5: Enrich with affiliate links + stamp stable ids/ranks
-        const enriched = enrichWithAffiliateLinks(report, amazonTag);
-        const productsWithIds = (enriched.products || []).map((p, i) => ({
-            ...p,
-            id: p.id || generateId(),
-            rank: p.rank || i + 1,
-        }));
-        const finalReport = {
-            ...enriched,
-            query,
-            products: productsWithIds,
-            source_count: totalSources,
-            filtered_count: filteredOutCount,
+        // onEvent bridges the engine's typed events to the KV progress updater
+        // so the live activity feed keeps working. Engine emits status/search/
+        // fetch/note/synthesize/error; we surface them all as progress entries.
+        const onEvent = async (_type, message, _detail) => {
+            await progress(message);
         };
 
-        // Store products in D1 (v2 columns). affiliate_url stays null in
-        // phase 1: synthesis has no real /dp/ product URLs, and the renderer
-        // rejects fabricated Amazon search links (buildAffiliateUrl) and
-        // builds its own tagged search fallback. Phase 2 upgrades to real
-        // /dp/ product links.
-        //
-        // Retry-safety: a queue redelivery after a partial batch must not
-        // duplicate product rows — clear any stale products for this research
-        // before inserting fresh ones.
-        await env.DB.prepare('DELETE FROM products WHERE research_id = ?1').bind(reportId).run();
-        await Promise.all(productsWithIds.map((product) => insertProductV2(env.DB, {
-            id: product.id,
-            researchId: reportId,
-            name: product.name,
-            rank: product.rank,
-            pros: JSON.stringify(product.pros || []),
-            cons: JSON.stringify(product.cons || []),
-            specs: JSON.stringify(product.specs || {}),
-            verdict: product.verdict || null,
-            bestFor: product.best_for || null,
-            affiliateUrl: null,
-            metadata: JSON.stringify(buildProductMetadata(product)),
-        })));
+        await progress(`Starting ${tier} research...`);
 
-        // Finalize
-        await completeResearch(env.DB, {
-            id: reportId,
-            status: 'complete',
-            summary: finalReport.executive_summary || '',
-            category: null,
-            result: JSON.stringify(finalReport),
-            sources: JSON.stringify(sourceUrls),
+        const engine = await runEngine(
+            query,
+            config,
+            env.OPENROUTER_API_KEY,
+            env,
+            onEvent,
+            facets,
+            topicalCategory,
+            clarifications,
+        );
+
+        const { result, sources, totalCostUsd, synthModel } = engine;
+
+        // Honest-failure: zero valid products → mark failed so clustering and
+        // the report page treat it as a non-result instead of an empty page.
+        if (!result || !Array.isArray(result.products) || result.products.length < 1) {
+            await progress('No reliable products found — marking research failed.');
+            await env.DB.prepare(
+                `UPDATE research SET status = 'failed', result = ?1, cost_usd = ?2,
+                    synth_model = ?3, completed_at = ?4 WHERE id = ?5`
+            ).bind(
+                JSON.stringify({ error: 'No reliable products found for this query.' }),
+                Number.isFinite(totalCostUsd) && totalCostUsd > 0 ? totalCostUsd : null,
+                synthModel || null,
+                nowEpoch(),
+                reportId,
+            ).run();
+            await incrementMonthlyCost(env, totalCostUsd);
+            return;
+        }
+
+        const affiliateIds = {
+            amazonTag: env.AMAZON_AFFILIATE_TAG || env.AMAZON_ASSOCIATE_TAG || DEFAULT_AFFILIATE_TAG,
+            walmartImpact: env.WALMART_IMPACT_ID || undefined,
+            targetImpact: env.IMPACT_TARGET_ID || undefined,
+            bestbuyImpact: env.IMPACT_BESTBUY_ID || undefined,
+            neweggImpact: env.IMPACT_NEWEGG_ID || undefined,
+            bhphoto: env.BHPHOTO_AFFILIATE_ID || undefined,
+        };
+
+        // Persist products. Retry-safety: DELETE-then-insert in one batch so a
+        // queue redelivery never duplicates rows. affiliate_url stores the
+        // TAGGED url — buildAffiliateUrl rejects fabricated /s? search links and
+        // returns '' for unknown hosts, so only real retailer/dp URLs get tagged.
+        const deleteStale = env.DB.prepare('DELETE FROM products WHERE research_id = ?1').bind(reportId);
+
+        const insertStmts = result.products.map((p) => {
+            const productUrl = sanitizeUrl(p.productUrl);
+            const affiliateUrl = productUrl ? buildAffiliateUrl(productUrl, affiliateIds) : '';
+            const metadataJson = p.metadata && Object.keys(p.metadata).length > 0
+                ? JSON.stringify(p.metadata) : null;
+            const imageUrl = p.imageUrl ? sanitizeUrl(p.imageUrl) : null;
+            return env.DB.prepare(
+                `INSERT INTO products (id, research_id, name, brand, price, currency, rating,
+                    image_url, product_url, manufacturer_url, affiliate_url,
+                    pros, cons, specs, verdict, rank, best_for, metadata)
+                 VALUES (?1, ?2, ?3, ?4, ?5, 'USD', ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17)`
+            ).bind(
+                generateId(),
+                reportId,
+                p.name,
+                p.brand || null,
+                typeof p.price === 'number' ? p.price : null,
+                typeof p.rating === 'number' ? p.rating : null,
+                imageUrl,
+                productUrl || null,
+                sanitizeUrl(p.manufacturerUrl) || null,
+                affiliateUrl || null,
+                JSON.stringify(p.pros || []),
+                JSON.stringify(p.cons || []),
+                JSON.stringify(p.specs || {}),
+                p.verdict || null,
+                typeof p.rank === 'number' ? p.rank : null,
+                p.bestFor || null,
+                metadataJson,
+            );
         });
-        await setFinalReport(env.KV, reportId, finalReport);
-        await progress('Research complete!');
+
+        // result is the canonical engine shape; keep legacy source_count/
+        // filtered_count keys so report.js + status handlers keep working.
+        const resultJson = {
+            ...result,
+            query,
+            source_count: sources.length,
+            filtered_count: 0,
+        };
+
+        // sources column: url + credibility tags + score per source. The render
+        // path extracts .url from each entry (objects) or treats plain strings.
+        const sourcesJson = sources.map((s) => ({ url: s.url, credibility: s.credibility }));
+
+        const updateStmt = env.DB.prepare(
+            `UPDATE research SET status = 'complete', summary = ?1, category = ?2,
+                result = ?3, sources = ?4, completed_at = ?5, cost_usd = ?6, synth_model = ?7
+             WHERE id = ?8`
+        ).bind(
+            result.summary || '',
+            result.category || topicalCategory || null,
+            JSON.stringify(resultJson),
+            JSON.stringify(sourcesJson),
+            nowEpoch(),
+            Number.isFinite(totalCostUsd) && totalCostUsd > 0 ? totalCostUsd : null,
+            synthModel || null,
+            reportId,
+        );
+
+        await env.DB.batch([deleteStale, ...insertStmts, updateStmt]);
+        await incrementMonthlyCost(env, totalCostUsd);
+        await setFinalReport(env.KV, reportId, resultJson);
+        await progress(`Research complete: ${result.products.length} products ranked.`);
 
     } catch (err) {
         console.error('Pipeline error:', err);
         await progress(`Error: ${err.message}`);
-        await completeResearch(env.DB, {
-            id: reportId,
-            status: 'failed',
-            summary: null,
-            category: null,
-            result: JSON.stringify({ error: err.message }),
-            sources: null,
-        });
+        try {
+            await env.DB.prepare(
+                `UPDATE research SET status = 'failed', result = ?1, completed_at = ?2 WHERE id = ?3`
+            ).bind(JSON.stringify({ error: err.message }), nowEpoch(), reportId).run();
+        } catch (e) {
+            console.error('Failed to mark research failed:', e);
+        }
         await setFinalReport(env.KV, reportId, { error: err.message });
     }
 }
 
+function nowEpoch() {
+    return Math.floor(Date.now() / 1000);
+}
+
+function parseJsonSafe(json, fallback) {
+    if (json == null) return fallback;
+    if (typeof json !== 'string') return json;
+    try { return JSON.parse(json); } catch { return fallback; }
+}
+
 /**
- * Build the product card metadata map. Mirrors the original sanitizeMetadata
- * contract (engine-validate.ts): a flat Record<string, string> with camelCase
- * keys, non-string/empty values dropped. labelForMetadataKey on the research
- * page prettifies camelCase, so keys MUST be camelCase ("priceRange", not
- * "price_range"). affiliate_links is intentionally excluded — the renderer
- * builds its own affiliate fallback, and the full object persists in the
- * report JSON (result column + KV) for the legacy /api/report consumers.
+ * Increment the month-keyed KV spend counter by this run's cost. Read-add-put
+ * is fine at this volume (one writer per run, low concurrency). 30-day TTL so
+ * old months age out on their own. NaN/zero costs are no-ops.
  */
-function buildProductMetadata(product) {
-    const metadata = {};
-    if (typeof product.price_range === 'string' && product.price_range.trim()) {
-        metadata.priceRange = product.price_range.trim().slice(0, 240);
+async function incrementMonthlyCost(env, cost) {
+    if (!Number.isFinite(cost) || cost <= 0) return;
+    try {
+        const key = `cost:${monthKey()}`;
+        const current = Number(await env.KV.get(key)) || 0;
+        await env.KV.put(key, String(current + cost), { expirationTtl: 30 * 86400 });
+    } catch (err) {
+        console.error('[orchestrator] monthly cost update failed:', err instanceof Error ? err.message : String(err));
     }
-    if (typeof product.trust_score === 'number' && product.trust_score > 0) {
-        metadata.trustScore = `${Math.round(product.trust_score)}/100`;
+}
+
+// Current month as 'YYYY-MM', derived from request-time clock.
+export function monthKey(d = new Date()) {
+    const y = d.getUTCFullYear();
+    const m = String(d.getUTCMonth() + 1).padStart(2, '0');
+    return `${y}-${m}`;
+}
+
+export function monthlyBudgetUsd(env) {
+    // An explicit MONTHLY_BUDGET_USD=0 is a kill switch: with spend always >= 0,
+    // the governor's `spent >= budget` check refuses every new run (503). Only an
+    // unset, empty, negative, or non-numeric value falls back to the default.
+    const raw = env.MONTHLY_BUDGET_USD;
+    if (raw === undefined || raw === null || String(raw).trim() === '') {
+        return DEFAULT_MONTHLY_BUDGET_USD;
     }
-    return metadata;
+    const v = Number(raw);
+    return Number.isFinite(v) && v >= 0 ? v : DEFAULT_MONTHLY_BUDGET_USD;
 }
 
 /**
@@ -169,8 +246,7 @@ function buildProductMetadata(product) {
  *
  * The pipeline is the single writer for a run, so the log array lives in this
  * closure: each step is an in-memory append plus two KV puts — `progress:`
- * (latest entry, read by the status poll) and `progress_log:` (full log, read
- * by the status poll, SSE stream, and events feed). No KV read-modify-write.
+ * (latest entry) and `progress_log:` (full log). No KV read-modify-write.
  */
 function createProgressUpdater(kv, reportId) {
     let stepIndex = 0;
@@ -191,7 +267,7 @@ function createProgressUpdater(kv, reportId) {
 }
 
 /**
- * Store the final report in KV for quick SSE retrieval (page itself renders
+ * Store the final report in KV for quick SSE retrieval (the page itself renders
  * from D1; this KV copy only short-circuits the in-flight SSE stream).
  */
 async function setFinalReport(kv, reportId, report) {

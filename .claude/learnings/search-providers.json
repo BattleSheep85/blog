@@ -1,0 +1,21 @@
+{
+  "domain": "search-providers",
+  "description": "Free and paid search providers used by the research engine (Serper, DuckDuckGo, RSS, HackerNews) and their reliability characteristics.",
+  "file_patterns": [
+    "worker/engine/tools.js",
+    "worker/lib/duckduckgo.js",
+    "worker/lib/search*.js"
+  ],
+  "entries": [
+    {
+      "id": "duckduckgo-html-fallback-returns-zero",
+      "bad_pattern": "Relying on the DuckDuckGo HTML scraper (html.duckduckgo.com/html) as the key-less fallback for the web/news search providers and assuming it yields real product sources",
+      "good_pattern": "Treat SERPER_API_KEY as effectively required for real runs; the DDG fallback currently returns 0 parseable results (anti-bot block / changed page markup), so without Serper the pipeline gathers ~1 source and synth fails with 'No reliable products found'",
+      "regex": null,
+      "description": "Verified 2026-06-11 on a real instant-tier run ('best budget mechanical keyboard under 100'): with OPENROUTER_API_KEY set but no SERPER_API_KEY, every web/news/duckduckgo search logged '[ddg] q parsed -> 0 results'. A live curl of html.duckduckgo.com/html returned no result__a / uddg= markers at all, confirming DDG no longer returns parseable results to the scraper. Only RSS and HackerNews remained functional, yielding 1 source, so the engine completed but synth correctly threw 'No reliable products found for this query.' The pipeline itself is wired correctly (LLM calls fire, cost_usd and synth_model are recorded even on failure, budget governor + rate limiter + tier defaulting all work). The structural gap is search coverage: provide a SERPER_API_KEY for real product runs, or replace/repair the free fallback (DDG parser or an alternative free SERP).",
+      "context": "worker/engine/tools.js executeSearch web/news provider fallback; worker/lib/duckduckgo.js parseResults",
+      "discovered": "2026-06-11",
+      "severity": "HIGH"
+    }
+  ]
+}

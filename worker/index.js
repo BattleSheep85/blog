@@ -170,12 +170,44 @@ export default {
         for (const message of batch.messages) {
             const { reportId, query } = message.body;
             try {
+                // Idempotency guard: claim the row by flipping pending→processing
+                // atomically. If 0 rows changed, the row is already processing or
+                // complete/failed — a queue redelivery after success. Skip it so
+                // we never double-insert products or re-spend the LLM budget.
+                const claim = await env.DB.prepare(
+                    "UPDATE research SET status = 'processing' WHERE id = ?1 AND status = 'pending'"
+                ).bind(reportId).run();
+                if ((claim.meta?.changes ?? 0) === 0) {
+                    console.log(`[queue] skip ${reportId} — not in pending state (redelivery)`);
+                    message.ack();
+                    continue;
+                }
+
                 await runResearchPipeline(env, reportId, query);
                 message.ack();
             } catch (err) {
                 console.error(`Queue processing error for ${reportId}:`, err);
                 message.retry();
             }
+        }
+    },
+
+    /**
+     * Scheduled handler (cron every 10 min) — reap research rows stuck in
+     * 'processing' longer than ~20 min. Covers the edge case where the queue
+     * consumer crashed mid-pipeline after the status flip but before the final
+     * UPDATE, leaving the public page spinning forever.
+     */
+    async scheduled(_event, env, _ctx) {
+        const cutoff = Math.floor(Date.now() / 1000) - 20 * 60;
+        try {
+            const result = await env.DB.prepare(
+                "UPDATE research SET status = 'failed' WHERE status = 'processing' AND created_at < ?1"
+            ).bind(cutoff).run();
+            const reaped = result.meta?.changes ?? 0;
+            if (reaped > 0) console.log(JSON.stringify({ where: 'scheduled-reap', reaped, cutoff }));
+        } catch (err) {
+            console.error(JSON.stringify({ where: 'scheduled-reap', error: err instanceof Error ? err.message : String(err) }));
         }
     },
 };
