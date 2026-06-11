@@ -198,7 +198,7 @@ async function getRelatedResearch(db, currentSlug, canonical, category) {
 
 // `p` arrives with pros/cons/specs/metadata already parsed (see
 // renderResearchResult — the JSON columns are parsed exactly once after fetch).
-function renderProduct(p, index, ids, isService) {
+function renderProduct(p, index, ids, isService, slug, cleanLinks) {
   const { pros, cons, specs, metadata } = p;
   const rankClass = p.rank === 1 ? 'rank-1' : p.rank === 2 ? 'rank-2' : p.rank === 3 ? 'rank-3' : 'rank-n';
 
@@ -263,8 +263,18 @@ function renderProduct(p, index, ids, isService) {
   }
 
   // Primary Amazon CTA: full-width button at the very bottom of the card.
+  // Route clicks through /api/go/:productId so every click lands in
+  // affiliate_clicks (the redirect resolves the real tagged Amazon URL or a
+  // rebuilt tagged search server-side). Exceptions:
+  //   - cleanLinks renders: the redirect always tags the URL, which we must NOT
+  //     do for affiliate-prohibited communities — link the plain URL directly.
+  //   - missing product id: fall back to the direct URL so the CTA still works.
+  let amazonCtaHref = amazonCtaUrl;
+  if (amazonCtaUrl && !cleanLinks && p.id && slug) {
+    amazonCtaHref = `/api/go/${encodeURIComponent(p.id)}?ref=${encodeURIComponent(slug)}&network=amazon`;
+  }
   const amazonCtaBlock = amazonCtaUrl && isValidHttpsUrl(amazonCtaUrl)
-    ? `<a href="${escapeHtml(amazonCtaUrl)}" target="_blank" rel="noopener noreferrer nofollow sponsored" class="product-cta-amazon">${escapeHtml(amazonCtaLabel)} <span aria-hidden="true">&#8599;</span></a>`
+    ? `<a href="${escapeHtml(amazonCtaHref)}" target="_blank" rel="noopener noreferrer nofollow sponsored" class="product-cta-amazon">${escapeHtml(amazonCtaLabel)} <span aria-hidden="true">&#8599;</span></a>`
     : '';
 
   const imageBlock = renderItemImage(p.image_url, p.name);
@@ -419,6 +429,14 @@ ${isProcessing ? `<div id="processing" style="padding:1.5rem;background:var(--su
 <div id="preview-text" style="font-size:.92rem;line-height:1.55;color:var(--text2);white-space:pre-wrap"></div>
 </div>
 <div id="activity-feed" class="activity-feed"></div>
+<div class="notify-box" style="margin-top:1.25rem;padding:.9rem 1.05rem;background:rgba(167,139,250,.06);border:1px solid rgba(167,139,250,.25);border-radius:10px">
+<label for="notify-email" style="display:block;font-size:.82rem;color:var(--text2);margin-bottom:.5rem">This can take a minute. Want an email when it&rsquo;s ready?</label>
+<form id="notify-form" style="display:flex;gap:.5rem;flex-wrap:wrap;margin:0">
+<input id="notify-email" type="email" name="email" required placeholder="you@example.com" autocomplete="email" maxlength="254" style="flex:1;min-width:12rem;padding:.55rem .7rem;background:var(--bg);border:1px solid var(--surface2);border-radius:8px;color:var(--text);font-size:.88rem">
+<button type="submit" class="btn" style="font-size:.85rem;padding:.55rem 1rem;white-space:nowrap">Notify me</button>
+</form>
+<p id="notify-msg" role="status" aria-live="polite" style="font-size:.8rem;color:var(--text3);margin-top:.5rem;min-height:1em"></p>
+</div>
 </div>` : ''}
 
 ${isFailed ? `<div style="padding:1.5rem;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:var(--radius);margin:2rem 0">
@@ -458,7 +476,7 @@ ${(buyersGuide.marketingToIgnore?.length ?? 0) > 0 ? `<h3 style="font-size:.85re
 
 ${products.length > 0 ? `<h2 id="products" style="font-size:1.25rem;font-weight:700;margin-bottom:1.5rem">${isService ? 'Recommendations' : 'Products compared'}</h2>
 <div class="product-grid">${products.map((p, i) => {
-  const card = renderProduct(p, i, affiliateIds, isService);
+  const card = renderProduct(p, i, affiliateIds, isService, slug, cleanLinks);
   // Mid-list ad after rank 3 when there are 5+ items — keeps the ad out of
   // the above-fold view on short comparisons but catches mid-scroll engagement.
   const midAd = (i === 2 && products.length >= 5) ? adSlot(env, 'mid', 'Advertisement') : '';
@@ -483,6 +501,14 @@ ${r.category ? `<div class="card-top"><span class="card-badge">${escapeHtml(r.ca
 <h2 style="font-size:1.1rem;font-weight:600;margin-bottom:1rem">Research something else</h2>
 ${searchBar('compact')}
 </div>
+${entry.status === 'complete' ? `<div class="notify-footer" style="margin-top:2rem;padding-top:1.5rem;border-top:1px solid var(--surface2)">
+<form id="notify-form" style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin:0">
+<label for="notify-email" style="font-size:.88rem;color:var(--text2);flex:1;min-width:14rem">Get notified when we re-research this category</label>
+<input id="notify-email" type="email" name="email" required placeholder="you@example.com" autocomplete="email" maxlength="254" style="flex:1;min-width:12rem;padding:.55rem .7rem;background:var(--bg);border:1px solid var(--surface2);border-radius:8px;color:var(--text);font-size:.88rem">
+<button type="submit" class="btn" style="font-size:.85rem;padding:.55rem 1rem;white-space:nowrap">Notify me</button>
+</form>
+<p id="notify-msg" role="status" aria-live="polite" style="font-size:.8rem;color:var(--text3);margin-top:.5rem;min-height:1em"></p>
+</div>` : ''}
 </div>`;
 
   // JSON-LD structured data for SEO
@@ -726,7 +752,46 @@ document.addEventListener('DOMContentLoaded',function(){
   poll();
 });
 </script>`;
-  const extra = pageBehaviorScript + (isProcessing ? activityFeedScript : '');
+  // Email capture: wires whichever #notify-form is on the page (the compact box
+  // on processing pages, or the footer form on completed pages) to POST
+  // /api/subscribe. researchId is the report id so we can notify on re-research.
+  const subscribeScript = `<script nonce="__CSP_NONCE__">
+(function(){
+  function wire(){
+    var form=document.getElementById('notify-form');
+    if(!form||form.__wired)return;form.__wired=true;
+    var input=document.getElementById('notify-email');
+    var msg=document.getElementById('notify-msg');
+    var researchId='${escapeHtml(entry.id)}';
+    form.addEventListener('submit',function(ev){
+      ev.preventDefault();
+      var email=(input&&input.value||'').trim();
+      if(!email)return;
+      if(msg)msg.textContent='Saving...';
+      fetch('/api/subscribe',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({email:email,researchId:researchId})
+      }).then(function(r){return r.json()}).then(function(d){
+        if(d&&d.ok){
+          if(msg)msg.textContent="Thanks! We'll email you.";
+          form.style.display='none';
+        }else{
+          if(msg)msg.textContent='That email looks off. Try again?';
+        }
+      }).catch(function(){
+        if(msg)msg.textContent='Something went wrong. Try again later.';
+      });
+    });
+  }
+  if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',wire)}else{wire()}
+  // Re-wire the footer form that appears after the processing->complete in-place
+  // swap (window.__rewire is defined by the page behavior script above).
+  var prev=window.__rewire;
+  window.__rewire=function(){if(typeof prev==='function')prev();wire()};
+})();
+</script>`;
+  const extra = pageBehaviorScript + subscribeScript + (isProcessing ? activityFeedScript : '');
   // Canonical is emitted by layout() from layoutMeta.canonical — don't add a
   // second hand-built <link rel="canonical"> here.
   // Keep thin (zero-product) and failed pages out of the index. Direct links still work.

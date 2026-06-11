@@ -1,6 +1,7 @@
 import { layout, jsonLdScript } from '../lib/html.js';
 import { timeAgo, escapeHtml, escapeLikeWildcards, displayQuery, publicResearchFilter } from '../lib/utils.js';
 import { searchBar } from '../lib/search-bar.js';
+import { listCategories } from '../pages/category.js';
 
 export async function renderBrowse(url, env) {
   const searchQuery = url.searchParams.get('q') ?? '';
@@ -40,6 +41,24 @@ export async function renderBrowse(url, env) {
   const hasMore = rows.length > perPage;
   const results = rows.slice(0, perPage);
 
+  // "Browse by category" strip — links to the /best/:slug hubs. Only shown on
+  // the un-filtered first page so search-result and paginated views stay lean.
+  // Degrades to empty if the query fails (never break the listing for a strip).
+  let categoryStrip = '';
+  if (!searchQuery && page === 1) {
+    const categories = await listCategories(env).catch(() => []);
+    const top = categories.slice(0, 12);
+    if (top.length > 0) {
+      const chips = top.map((c) =>
+        `<a href="/best/${escapeHtml(c.slug)}" class="card-badge" style="text-decoration:none">${escapeHtml(c.category)} <span style="color:var(--text3)">${c.count}</span></a>`
+      ).join('');
+      categoryStrip = `<div style="margin-bottom:2rem">
+<h2 style="font-size:.95rem;color:var(--text2);margin-bottom:.75rem;font-weight:600">Browse by category</h2>
+<div style="display:flex;flex-wrap:wrap;gap:.5rem">${chips}</div>
+</div>`;
+    }
+  }
+
   const cards = results.map((r) => `<a href="/research/${escapeHtml(r.slug)}" class="card">
 <div class="card-top">
 ${r.category ? `<span class="card-badge">${escapeHtml(r.category)}</span>` : '<span></span>'}
@@ -63,6 +82,8 @@ ${r.summary ? `<p>${escapeHtml(r.summary)}</p>` : ''}
 <p style="color:var(--text2);margin-bottom:1.5rem">Explore past product research or start your own.</p>
 ${searchBar('compact')}
 </div>
+
+${categoryStrip}
 
 ${searchQuery ? `<div style="margin-bottom:1.5rem;display:flex;align-items:center;gap:.5rem;font-size:.85rem">
 <span style="color:var(--text2)">Results for:</span>

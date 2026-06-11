@@ -1,4 +1,16 @@
 import { displayQuery, escapeXml, publicResearchFilter } from './utils.js';
+import { listCategories } from '../pages/category.js';
+
+// Slugs of the four static /best/ guide pages already emitted explicitly below.
+// Dynamic category hubs that collide with these are skipped to avoid duplicate
+// <loc> entries (a static guide URL carries a trailing slash; the hub does not,
+// but Google treats them as the same path, so we dedupe by slug).
+const STATIC_GUIDE_SLUGS = new Set([
+  'nas-for-home-media-server',
+  'mechanical-keyboards-under-100',
+  'wireless-earbuds-under-100',
+  'synology-vs-qnap',
+]);
 
 // inlined from src/lib/static-assets.ts for phase 1
 const OG_IMAGE_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
@@ -103,6 +115,17 @@ export async function generateSitemap(origin, env, ifModifiedSince, guidesLastmo
     return `<url><loc>${origin}/research/${r.slug}</loc><lastmod>${date}</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>`;
   }).join('\n');
 
+  // Dynamic /best/:categorySlug hub URLs, deduped against the static guides.
+  // Failure here must never break the sitemap, so degrade to no hub entries.
+  const categories = await listCategories(env).catch(() => []);
+  const hubLastmod = newestLastmod ? new Date(newestLastmod * 1000).toISOString().split('T')[0] : null;
+  const hubEntries = categories
+    .filter((c) => c.slug && !STATIC_GUIDE_SLUGS.has(c.slug))
+    .map((c) => {
+      const lm = hubLastmod ? `<lastmod>${hubLastmod}</lastmod>` : '';
+      return `<url><loc>${origin}/best/${c.slug}</loc>${lm}<changefreq>weekly</changefreq><priority>0.7</priority></url>`;
+    }).join('\n');
+
   // Home and /research are dynamic indexes — their lastmod is the newest
   // research completion. Signals freshness to crawlers for recrawl scheduling.
   const dynamicLastmod = newestLastmod ? `<lastmod>${new Date(newestLastmod * 1000).toISOString().split('T')[0]}</lastmod>` : '';
@@ -116,6 +139,7 @@ export async function generateSitemap(origin, env, ifModifiedSince, guidesLastmo
 <url><loc>${origin}/best/mechanical-keyboards-under-100/</loc><lastmod>${guidesLastmod}</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
 <url><loc>${origin}/best/wireless-earbuds-under-100/</loc><lastmod>${guidesLastmod}</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
 <url><loc>${origin}/best/synology-vs-qnap/</loc><lastmod>${guidesLastmod}</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+${hubEntries}
 ${entries}
 </urlset>`;
 

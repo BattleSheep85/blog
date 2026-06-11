@@ -21,6 +21,11 @@ RATE_LIMIT_MAX = "5"
 RATE_LIMIT_WINDOW_SECONDS = "3600"
 CACHE_TTL_SECONDS = "86400"
 MONTHLY_BUDGET_USD = "60"
+# Programmatic-SEO flywheel: max keyword research runs the cron will start per
+# UTC day. The flywheel also stays dormant until SERPER_API_KEY is set.
+FLYWHEEL_DAILY_MAX = "6"
+# METRICS_TOKEN is intentionally NOT in [vars] — it is a secret, set via
+# `npx wrangler secret put METRICS_TOKEN`. /metrics returns 503 until it exists.
 ADSENSE_PUBLISHER_ID = "pub-6952672558994325"
 ADSENSE_SLOT_TOP = "2568816027"
 ADSENSE_SLOT_MID = "8942652687"

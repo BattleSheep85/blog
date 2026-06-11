@@ -13,6 +13,10 @@ import { handleAffiliateClick, handleAffiliateSearch } from './handlers/affiliat
 import { runResearchPipeline } from './pipeline/orchestrator.js';
 import { renderResearchResult } from './pages/research-page.js';
 import { renderBrowse } from './pages/browse.js';
+import { renderCategoryHub } from './pages/category.js';
+import { handleSubscribe } from './handlers/subscribe.js';
+import { handleMetrics } from './pages/metrics.js';
+import { runFlywheelTick } from './lib/keywords.js';
 import { getLatestResearchLastmod, generateSitemap, generateAtomFeed, generateOgImage } from './lib/sitemap.js';
 import { getResearchById } from './lib/db.js';
 import { displayQuery, escapeLikeWildcards, publicResearchFilter } from './lib/utils.js';
@@ -72,6 +76,16 @@ export default {
 
             if (path === '/api/feedback' && method === 'POST') {
                 return handleFeedback(request, env);
+            }
+
+            // Email capture for "notify me when research completes / re-runs".
+            if (path === '/api/subscribe' && method === 'POST') {
+                return handleSubscribe(request, env);
+            }
+
+            // Pull-based metrics snapshot (Bearer-token auth via METRICS_TOKEN).
+            if (path === '/metrics' && method === 'GET') {
+                return handleMetrics(request, env);
             }
 
             // Autocomplete for the server-rendered search bars. LIKE-based in
@@ -145,6 +159,16 @@ export default {
                     const row = await getResearchById(env.DB, legacyMatch[1]).catch(() => null);
                     return redirect301(new URL(row ? `/research/${row.slug}` : '/research', url.origin));
                 }
+
+                // Category hubs: /best/:slug. Static guide assets (e.g.
+                // /best/mechanical-keyboards-under-100/) must keep winning, so
+                // we probe ASSETS first and only fall back to the dynamic hub
+                // when the asset genuinely 404s. The bare /best/ index is a
+                // static asset and is left to serveAsset below.
+                const bestMatch = path.match(/^\/best\/([a-z0-9-]+)\/?$/);
+                if (bestMatch) {
+                    return handleBestHub(bestMatch[1], request, env);
+                }
             }
 
             // Static assets (home, guides, css/js). HTML gets a fresh
@@ -187,7 +211,26 @@ export default {
                 message.ack();
             } catch (err) {
                 console.error(`Queue processing error for ${reportId}:`, err);
-                message.retry();
+                // Fast-fail the row instead of leaving it 'processing' until the
+                // ~20-min scheduled reaper. runResearchPipeline already marks
+                // 'failed' for errors it catches internally; this covers the
+                // narrower case where an error escapes it (e.g. thrown before its
+                // own try, or during the claim/redelivery path) so the public page
+                // stops spinning promptly. Guarded by AND status = 'processing' so
+                // we never clobber a row another worker has since completed.
+                try {
+                    await env.DB.prepare(
+                        `UPDATE research SET status = 'failed', result = ?1, completed_at = ?2
+                           WHERE id = ?3 AND status = 'processing'`,
+                    ).bind(
+                        JSON.stringify({ error: err instanceof Error ? err.message : String(err) }),
+                        Math.floor(Date.now() / 1000),
+                        reportId,
+                    ).run();
+                } catch (markErr) {
+                    console.error(`Failed to fast-fail ${reportId}:`, markErr);
+                }
+                message.ack();
             }
         }
     },
@@ -198,8 +241,9 @@ export default {
      * consumer crashed mid-pipeline after the status flip but before the final
      * UPDATE, leaving the public page spinning forever.
      */
-    async scheduled(_event, env, _ctx) {
-        const cutoff = Math.floor(Date.now() / 1000) - 20 * 60;
+    async scheduled(event, env, _ctx) {
+        const now = event?.scheduledTime ?? Date.now();
+        const cutoff = Math.floor(now / 1000) - 20 * 60;
         try {
             const result = await env.DB.prepare(
                 "UPDATE research SET status = 'failed' WHERE status = 'processing' AND created_at < ?1"
@@ -208,6 +252,18 @@ export default {
             if (reaped > 0) console.log(JSON.stringify({ where: 'scheduled-reap', reaped, cutoff }));
         } catch (err) {
             console.error(JSON.stringify({ where: 'scheduled-reap', error: err instanceof Error ? err.message : String(err) }));
+        }
+
+        // Programmatic-SEO flywheel: drain one keyword per tick into a research
+        // run, behind its own budget/rate gates. Isolated in its own try/catch
+        // so a flywheel failure can never break or mask the reaper above.
+        try {
+            const tick = await runFlywheelTick(env, now);
+            if (tick && tick.status !== 'skipped') {
+                console.log(JSON.stringify({ where: 'scheduled-flywheel', ...tick }));
+            }
+        } catch (err) {
+            console.error(JSON.stringify({ where: 'scheduled-flywheel', error: err instanceof Error ? err.message : String(err) }));
         }
     },
 };
@@ -258,6 +314,31 @@ async function handleResearchPage(slug, url, request, env, ctx) {
     const notModified = maybe304(ifModifiedSince, result.lastModified);
     if (notModified) return notModified;
     return htmlPageResponse(result.html, env, { lastModifiedSec: result.lastModified });
+}
+
+// GET /best/:slug — static guide asset wins; dynamic category hub is the
+// fallback. We probe ASSETS directly (not serveAsset, whose 404 path returns a
+// styled page) so a real asset hit — including a redirect to a trailing-slash
+// directory index — is detected and served through the nonce/security path. A
+// genuine 404 means no static guide exists, so we render the category hub
+// (renderCategoryHub returns null → 404 when no research matches the slug).
+async function handleBestHub(slug, request, env) {
+    const asset = await env.ASSETS.fetch(request);
+    if (asset.status !== 404) {
+        const contentType = asset.headers.get('Content-Type') || '';
+        if (contentType.includes('text/html')) {
+            const nonce = makeNonce();
+            const html = (await asset.text()).replaceAll('__CSP_NONCE__', nonce);
+            return withSecurityHeaders(asset, nonce, html);
+        }
+        return withSecurityHeaders(asset, null);
+    }
+
+    const html = await renderCategoryHub(slug, env);
+    if (!html) return notFound();
+    return htmlPageResponse(html, env, {
+        cacheControl: 'public, max-age=300, s-maxage=300, stale-while-revalidate=3600',
+    });
 }
 
 // GET|POST /research/new — target of the server-rendered search forms (GET)
