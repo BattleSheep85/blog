@@ -19,8 +19,10 @@
 
 import { buildAffiliateUrl } from './affiliate-links.js';
 
-// Cap on how many products we spend a Serper query on per run (≤5 fetches).
-const MAX_RESOLVE = 5;
+// Cap on how many products we spend a Serper query on per run. Reports carry
+// 4-8 products; 8 covers every card so each quoted product links to its exact
+// Amazon page whenever one exists (Serper ≈ $0.0003/query — negligible).
+const MAX_RESOLVE = 8;
 const TIMEOUT_MS = 8000;
 const SERPER_ENDPOINT = 'https://google.serper.dev/search';
 

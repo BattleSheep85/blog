@@ -207,11 +207,18 @@ async function getRelatedResearch(db, currentSlug, canonical, category) {
 // the "Our pick" box stay in lockstep (same labels, same rel, same redirect
 // vs. clean-link behavior). Returns:
 //   retailer — small non-Amazon pill { url, label, rel, isSponsored }
-//   amazon   — the primary Amazon button { url, label, href } where href is the
-//              click-tracked /api/go/:id redirect (or the plain url for
+//   amazon   — the primary Amazon button { url, label, href, exact } where href
+//              is the click-tracked /api/go/:id redirect (or the plain url for
 //              cleanLinks / missing id). url stays the raw https target used for
-//              the isValidHttpsUrl guard.
-function resolveProductCtas(p, ids, isService, slug, cleanLinks) {
+//              the isValidHttpsUrl guard. exact=true only for a real /dp/ page;
+//              false means it's an explicit "Search Amazon" fallback.
+//   google   — internal /find hand-off for categories Amazon doesn't sell
+//              (lumber, vehicles, services). Never rendered alongside amazon.
+//
+// webOnly: the classifier flagged this category as not-sold-on-Amazon. NO
+// Amazon link of any kind renders for these — the primary CTA hands off to
+// Google via /find (monetized with AdSense-for-Search when configured).
+function resolveProductCtas(p, ids, isService, slug, cleanLinks, webOnly = false) {
   const mfrUrl = p.manufacturer_url && isValidHttpsUrl(p.manufacturer_url) ? p.manufacturer_url : '';
   const buyRaw = p.affiliate_url || p.product_url || '';
 
@@ -221,8 +228,18 @@ function resolveProductCtas(p, ids, isService, slug, cleanLinks) {
   let retailerCtaIsSponsored = true;
   let amazonCtaUrl = '';
   let amazonCtaLabel = '';
+  let amazonExact = false;
+  let googleCtaUrl = '';
+  let googleCtaLabel = '';
 
-  if (isService) {
+  const googleQuery = () => {
+    const name = (p.name || '').trim();
+    if (name.length < 3) return '';
+    const b = (p.brand || '').trim();
+    return b && !name.toLowerCase().startsWith(b.toLowerCase()) ? `${b} ${name}` : name;
+  };
+
+  if (isService || webOnly) {
     const serviceUrl = (mfrUrl || (buyRaw && isValidHttpsUrl(buyRaw) ? buyRaw : ''));
     if (serviceUrl) {
       retailerCtaUrl = serviceUrl;
@@ -230,12 +247,18 @@ function resolveProductCtas(p, ids, isService, slug, cleanLinks) {
     }
     retailerCtaRel = 'noopener noreferrer nofollow';
     retailerCtaIsSponsored = false;
+    const gq = googleQuery();
+    if (gq) {
+      googleCtaUrl = `/find?q=${encodeURIComponent(gq)}${slug ? `&ref=${encodeURIComponent(slug)}` : ''}`;
+      googleCtaLabel = isService ? 'Find on Google' : 'Find sellers on Google';
+    }
   } else {
     const affiliate = buildAffiliateUrl(buyRaw, ids);
     const isAmazonBuy = affiliate && /^https?:\/\/(www\.)?amazon\.com\//i.test(affiliate);
     if (isAmazonBuy) {
       amazonCtaUrl = affiliate;
       amazonCtaLabel = 'Buy on Amazon';
+      amazonExact = true;
     } else {
       if (affiliate) {
         retailerCtaUrl = affiliate;
@@ -244,7 +267,7 @@ function resolveProductCtas(p, ids, isService, slug, cleanLinks) {
       const searchFallback = buildAmazonSearchFallback(p.name, p.brand || '', ids.amazonTag);
       if (searchFallback) {
         amazonCtaUrl = searchFallback;
-        amazonCtaLabel = 'Find on Amazon';
+        amazonCtaLabel = 'Search Amazon';
       }
     }
   }
@@ -261,24 +284,26 @@ function resolveProductCtas(p, ids, isService, slug, cleanLinks) {
   return {
     mfrUrl,
     retailer: { url: retailerCtaUrl, label: retailerCtaLabel, rel: retailerCtaRel, isSponsored: retailerCtaIsSponsored },
-    amazon: { url: amazonCtaUrl, label: amazonCtaLabel, href: amazonCtaHref },
+    amazon: { url: amazonCtaUrl, label: amazonCtaLabel, href: amazonCtaHref, exact: amazonExact },
+    google: { url: googleCtaUrl, label: googleCtaLabel },
   };
 }
 
 // `p` arrives with pros/cons/specs/metadata already parsed (see
 // renderResearchResult — the JSON columns are parsed exactly once after fetch).
-function renderProduct(p, index, ids, isService, slug, cleanLinks) {
+function renderProduct(p, index, ids, isService, slug, cleanLinks, webOnly) {
   const { pros, cons, specs, metadata } = p;
   const rankClass = p.rank === 1 ? 'rank-1' : p.rank === 2 ? 'rank-2' : p.rank === 3 ? 'rank-3' : 'rank-n';
 
-  // Two CTAs per product:
-  //   1. amazonCta — BIG full-width button at the card bottom. Always Amazon:
-  //      exact /dp/ URL when we have one, else a "Find on Amazon" search URL.
-  //      Hidden for services, and for clean-link renders (no tag → search
-  //      fallback returns '').
-  //   2. retailerCta — small pill in the links row. Non-Amazon retailers only
+  // CTAs per product:
+  //   1. amazonCta — BIG full-width button at the card bottom. Exact /dp/ URL
+  //      → "Buy on Amazon"; no exact match → explicit "Search Amazon". Hidden
+  //      for services/web-only categories and clean-link renders.
+  //   2. googleCta — replaces the Amazon button for categories Amazon doesn't
+  //      sell; internal /find hand-off (monetized via AdSense-for-Search).
+  //   3. retailerCta — small pill in the links row. Non-Amazon retailers only
   //      (Walmart, Best Buy, etc.) so we don't duplicate the Amazon button.
-  const ctas = resolveProductCtas(p, ids, isService, slug, cleanLinks);
+  const ctas = resolveProductCtas(p, ids, isService, slug, cleanLinks, webOnly);
   const mfrUrl = ctas.mfrUrl;
   const retailerCtaUrl = ctas.retailer.url;
   const retailerCtaLabel = ctas.retailer.label;
@@ -302,11 +327,16 @@ function renderProduct(p, index, ids, isService, slug, cleanLinks) {
     links.push(`<a href="${escapeHtml(retailerCtaUrl)}" target="_blank" rel="${retailerCtaRel}" class="${cls}">${escapeHtml(retailerCtaLabel)} <span aria-hidden="true">&#8599;</span></a>`);
   }
 
-  // Primary Amazon CTA: full-width button at the very bottom of the card. The
-  // click-tracked href is resolved in resolveProductCtas (shared with Our pick).
-  const amazonCtaBlock = amazonCtaUrl && isValidHttpsUrl(amazonCtaUrl)
-    ? `<a href="${escapeHtml(amazonCtaHref)}" target="_blank" rel="noopener noreferrer nofollow sponsored" class="product-cta-amazon">${escapeHtml(amazonCtaLabel)} <span aria-hidden="true">&#8599;</span></a>`
-    : '';
+  // Primary CTA: full-width button at the very bottom of the card. Amazon when
+  // the category is Amazon-viable (click-tracked href resolved in
+  // resolveProductCtas, shared with Our pick); the /find Google hand-off when
+  // it isn't. Never both.
+  let amazonCtaBlock = '';
+  if (amazonCtaUrl && isValidHttpsUrl(amazonCtaUrl)) {
+    amazonCtaBlock = `<a href="${escapeHtml(amazonCtaHref)}" target="_blank" rel="noopener noreferrer nofollow sponsored" class="product-cta-amazon">${escapeHtml(amazonCtaLabel)} <span aria-hidden="true">&#8599;</span></a>`;
+  } else if (ctas.google.url) {
+    amazonCtaBlock = `<a href="${escapeHtml(ctas.google.url)}" class="product-cta-amazon">${escapeHtml(ctas.google.label)} <span aria-hidden="true">&#8599;</span></a>`;
+  }
 
   const imageBlock = renderItemImage(p.image_url, p.name);
   const metadataBlock = renderMetadataPairs(metadata);
@@ -341,9 +371,9 @@ ${amazonCtaBlock}
 // "Our pick" box: a high-visibility card for the rank-1 product, shown above the
 // fold (right after the summary, before the top ad) so the answer beats the ad.
 // Reuses resolveProductCtas so the CTA is byte-identical to the product card's.
-function renderOurPick(p, ids, isService, slug, cleanLinks) {
+function renderOurPick(p, ids, isService, slug, cleanLinks, webOnly) {
   if (!p) return '';
-  const ctas = resolveProductCtas(p, ids, isService, slug, cleanLinks);
+  const ctas = resolveProductCtas(p, ids, isService, slug, cleanLinks, webOnly);
   const ratingHtml = p.rating != null
     ? `<span class="ourpick-rating"><span aria-hidden="true">${'★'.repeat(Math.floor(p.rating))}${'☆'.repeat(5 - Math.floor(p.rating))}</span> <span>${p.rating}/5</span></span>`
     : '';
@@ -357,6 +387,8 @@ function renderOurPick(p, ids, isService, slug, cleanLinks) {
     ctaHtml = `<a href="${escapeHtml(a.href)}" target="_blank" rel="noopener noreferrer nofollow sponsored" class="product-cta-amazon ourpick-cta">${escapeHtml(a.label)} <span aria-hidden="true">&#8599;</span></a>`;
   } else if (r.url && isValidHttpsUrl(r.url)) {
     ctaHtml = `<a href="${escapeHtml(r.url)}" target="_blank" rel="${r.rel}" class="product-cta-amazon ourpick-cta">${escapeHtml(r.label)} <span aria-hidden="true">&#8599;</span></a>`;
+  } else if (ctas.google.url) {
+    ctaHtml = `<a href="${escapeHtml(ctas.google.url)}" class="product-cta-amazon ourpick-cta">${escapeHtml(ctas.google.label)} <span aria-hidden="true">&#8599;</span></a>`;
   }
   return `<div class="ourpick-box" id="our-pick">
 <div class="ourpick-eyebrow">Our pick</div>
@@ -456,7 +488,17 @@ export async function renderResearchResult(slug, env, fromQuery = null, cleanLin
   const resultData = parseJsonSafe(entry.result, {});
   const buyersGuide = resultData.buyersGuide;
   const hasBuyersGuide = !!(buyersGuide && (buyersGuide.howToChoose || (buyersGuide.pitfalls?.length ?? 0) > 0 || (buyersGuide.marketingToIgnore?.length ?? 0) > 0));
-  const isService = isNonProductCategory(entry.category);
+  // Classifier verdict: this category isn't sold on Amazon (lumber, vehicles,
+  // local venues, ...). Suppresses every Amazon link on the page; CTAs hand
+  // off to Google via /find instead. Legacy rows without the facet default to
+  // Amazon-viable.
+  const rowFacets = parseJsonSafe(entry.facets, {}) || {};
+  const webOnly = rowFacets.sold_on_amazon === false;
+  // Service detection must mirror the orchestrator's ASIN-resolution gate
+  // (is_service facet) — the category-string heuristic alone misses services
+  // whose category label isn't in the hints list (e.g. "wedding photographer"),
+  // which would render Amazon CTAs for a hire-a-professional page.
+  const isService = isNonProductCategory(entry.category) || rowFacets.is_service === true;
   // sources persist as either plain URL strings (legacy) or {url, credibility}
   // objects (engine port). Normalize to the URL string for rendering.
   const sourceList = parseJsonSafe(entry.sources, [])
@@ -574,7 +616,7 @@ ${entry.status === 'complete' ? (() => {
 
 ${entry.summary ? `<div class="summary-box"><h2 id="summary">Summary</h2><p>${escapeHtml(entry.summary)}</p></div>` : ''}
 
-${entry.status === 'complete' && products.length > 0 ? renderOurPick(products.find((p) => p.rank === 1) || products[0], affiliateIds, isService, slug, cleanLinks) : ''}
+${entry.status === 'complete' && products.length > 0 ? renderOurPick(products.find((p) => p.rank === 1) || products[0], affiliateIds, isService, slug, cleanLinks, webOnly) : ''}
 
 ${entry.status === 'complete' ? renderTrustPanel(entry.sources, entry.completed_at) : ''}
 
@@ -592,7 +634,7 @@ ${(buyersGuide.marketingToIgnore?.length ?? 0) > 0 ? `<h3 style="font-size:.85re
 
 ${products.length > 0 ? `<h2 id="products" style="font-size:1.25rem;font-weight:700;margin-bottom:1.5rem">${isService ? 'Recommendations' : 'Products compared'}</h2>
 <div class="product-grid">${products.map((p, i) => {
-  const card = renderProduct(p, i, affiliateIds, isService, slug, cleanLinks);
+  const card = renderProduct(p, i, affiliateIds, isService, slug, cleanLinks, webOnly);
   // Mid-list ad after rank 3 when there are 5+ items — keeps the ad out of
   // the above-fold view on short comparisons but catches mid-scroll engagement.
   const midAd = (i === 2 && products.length >= 5) ? adSlot(env, 'mid', 'Advertisement') : '';
@@ -611,6 +653,20 @@ ${related.length > 0 ? `<section class="related-research" style="margin-top:3rem
 ${r.category ? `<div class="card-top"><span class="card-badge">${escapeHtml(r.category)}</span><span class="card-time">${timeAgo(r.created_at * 1000)}</span></div>` : `<div class="card-top"><span class="card-time">${timeAgo(r.created_at * 1000)}</span></div>`}
 <h3>${escapeHtml(displayQuery(r.query))}</h3>
 </a>`).join('')}</div>
+</section>` : ''}
+
+${entry.status === 'complete' ? `<section id="talk-about-it" style="margin-top:3rem;padding-top:2rem;border-top:1px solid var(--line)">
+<h2 style="font-size:1.1rem;font-weight:600;margin-bottom:.35rem">Talk about it</h2>
+<p style="font-size:.88rem;color:var(--ink-2);margin-bottom:1rem">Ask anything about this comparison — why one ranked above another, which fits your situation, what to watch out for.</p>
+<div class="chat-panel" style="background:var(--surface-1);border:1px solid var(--line);border-radius:0.875rem;padding:1rem">
+<div id="chat-messages" style="display:flex;flex-direction:column;gap:.6rem;max-height:22rem;overflow-y:auto;margin-bottom:.75rem" aria-live="polite"></div>
+<form id="chat-form" style="display:flex;gap:.5rem;margin:0">
+<label for="chat-input" class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Your question</label>
+<input id="chat-input" type="text" maxlength="2000" autocomplete="off" placeholder="e.g. Which one is best for a small apartment?" style="flex:1;min-width:0;padding:.6rem .75rem;background:var(--bg);border:1px solid var(--line);border-radius:8px;color:var(--ink);font-size:.9rem">
+<button type="submit" class="btn" style="font-size:.85rem;padding:.6rem 1rem;white-space:nowrap">Ask</button>
+</form>
+<p id="chat-status" role="status" aria-live="polite" style="font-size:.78rem;color:var(--ink-3);margin-top:.5rem;min-height:1em"></p>
+</div>
 </section>` : ''}
 
 <div style="margin-top:3rem;padding-top:2rem;border-top:1px solid var(--line)">
@@ -907,15 +963,83 @@ document.addEventListener('DOMContentLoaded',function(){
   window.__rewire=function(){if(typeof prev==='function')prev();wire()};
 })();
 </script>`;
-  const extra = pageBehaviorScript + subscribeScript + (isProcessing ? activityFeedScript : '');
+  // "Talk about it": grounded follow-up chat against this report via /api/chat.
+  // Transcript lives client-side (max 16 turns, matching the API cap); when the
+  // model suggests a fresh research query, render a one-click run button.
+  const chatScript = `<script nonce="__CSP_NONCE__">
+(function(){
+  function wire(){
+    var form=document.getElementById('chat-form');
+    if(!form||form.__wired)return;form.__wired=true;
+    var input=document.getElementById('chat-input');
+    var box=document.getElementById('chat-messages');
+    var status=document.getElementById('chat-status');
+    var slug='${escapeHtml(slug)}';
+    var transcript=[];
+    function bubble(role,text){
+      var div=document.createElement('div');
+      div.style.cssText='max-width:85%;padding:.55rem .8rem;border-radius:10px;font-size:.9rem;line-height:1.5;white-space:pre-wrap;'+(role==='user'
+        ?'align-self:flex-end;background:color-mix(in srgb,var(--accent) 14%,transparent);color:var(--ink)'
+        :'align-self:flex-start;background:var(--surface-2);color:var(--ink-2)');
+      div.textContent=text;
+      box.appendChild(div);
+      box.scrollTop=box.scrollHeight;
+      return div;
+    }
+    function suggestBtn(q){
+      var f=document.createElement('form');
+      f.method='POST';f.action='/research/new';
+      f.style.cssText='align-self:flex-start;margin:0';
+      var h=document.createElement('input');h.type='hidden';h.name='q';h.value=q;f.appendChild(h);
+      var b=document.createElement('button');b.type='submit';b.className='btn';
+      b.style.cssText='font-size:.82rem;padding:.5rem .85rem';
+      b.textContent='Research: '+q;
+      f.appendChild(b);box.appendChild(f);box.scrollTop=box.scrollHeight;
+    }
+    form.addEventListener('submit',function(ev){
+      ev.preventDefault();
+      var text=(input.value||'').trim();
+      if(!text||form.__busy)return;
+      form.__busy=true;input.value='';
+      if(transcript.length>=14)transcript=transcript.slice(transcript.length-13);
+      transcript.push({role:'user',content:text});
+      bubble('user',text);
+      var thinking=bubble('assistant','\\u2026');
+      if(status)status.textContent='';
+      fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({slug:slug,messages:transcript})})
+        .then(function(r){return r.json().then(function(d){return{ok:r.ok,d:d}})})
+        .then(function(res){
+          form.__busy=false;
+          if(res.ok&&res.d&&res.d.reply){
+            thinking.textContent=res.d.reply;
+            transcript.push({role:'assistant',content:res.d.reply});
+            if(res.d.suggestedQuery)suggestBtn(res.d.suggestedQuery);
+          }else{
+            thinking.remove();transcript.pop();
+            if(status)status.textContent=(res.d&&res.d.error)||'Something went wrong. Try again.';
+          }
+        })
+        .catch(function(){
+          form.__busy=false;thinking.remove();transcript.pop();
+          if(status)status.textContent='Network error. Try again.';
+        });
+    });
+  }
+  if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',wire)}else{wire()}
+  var prev=window.__rewire;
+  window.__rewire=function(){if(typeof prev==='function')prev();wire()};
+})();
+</script>`;
+  const extra = pageBehaviorScript + subscribeScript + (entry.status === 'complete' ? chatScript : '') + (isProcessing ? activityFeedScript : '');
   // Canonical is emitted by layout() from layoutMeta.canonical — don't add a
   // second hand-built <link rel="canonical"> here.
   // Keep thin (zero-product) and failed pages out of the index. Direct links still work.
   const isThin = entry.status === 'complete' && products.length === 0;
   const noindex = (isThin || isFailed || isProcessing) ? '<meta name="robots" content="noindex, follow">' : '';
-  // Every product carries an Amazon buy-link. dns-prefetch is cheap (DNS-only,
-  // no TLS handshake) and shaves ~50-200ms off the first affiliate click.
-  const amazonHint = products.length > 0 ? '<link rel="dns-prefetch" href="//www.amazon.com">' : '';
+  // Amazon-viable pages carry Amazon buy-links on every card. dns-prefetch is
+  // cheap (DNS-only, no TLS handshake) and shaves ~50-200ms off the first
+  // affiliate click. Web-only/service pages have no Amazon links to warm.
+  const amazonHint = products.length > 0 && !webOnly && !isService ? '<link rel="dns-prefetch" href="//www.amazon.com">' : '';
   const htmlOut = layout(displayTitle, entry.summary ?? 'AI-powered product research', body, amazonHint + noindex + structuredData + turnstileScript + extra, layoutMeta);
   return { html: htmlOut, lastModified: lastModifiedTs };
 }

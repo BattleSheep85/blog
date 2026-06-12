@@ -97,6 +97,7 @@
                 <a href="#how-it-works" class="hidden text-body-sm text-ink-2 transition-colors hover:text-ink sm:inline">How it works</a>
                 <a href="#method" class="hidden text-body-sm text-ink-2 transition-colors hover:text-ink sm:inline">Method</a>
                 <a href="/best/" class="hidden text-body-sm text-ink-2 transition-colors hover:text-ink sm:inline">Guides</a>
+                <a href="/account" class="text-body-sm text-ink-2 transition-colors hover:text-ink" title="Your past searches">Account</a>
                 <button id="theme-toggle" class="rounded-lg p-2 text-ink-3 transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60" aria-label="Toggle light and dark theme">
                     <svg id="icon-moon" class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
                     <svg id="icon-sun" class="hidden h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
@@ -117,7 +118,7 @@
                 <svg class="ml-2 h-5 w-5 shrink-0 text-ink-3" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M11 18a7 7 0 110-14 7 7 0 010 14z"/></svg>
                 <label for="query-input" class="sr-only">What are you trying to buy?</label>
                 <input id="query-input" name="query" type="text" autocomplete="off" required minlength="3" maxlength="500"
-                    placeholder="What are you trying to buy? e.g. quiet mechanical keyboard under $120"
+                    placeholder="What are you trying to buy? e.g. best air fryer under $150"
                     class="w-full bg-transparent px-1 py-2 font-sans text-body text-ink placeholder:text-ink-3 focus:outline-none">
                 <button type="submit" class="shrink-0 rounded-lg bg-accent-strong px-4 py-2 font-sans text-body-sm font-semibold text-white transition-colors hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-1 disabled:opacity-60">
                     <span data-btn-label>Research it</span>
@@ -126,13 +127,33 @@
 
             <div class="mt-4 flex flex-wrap items-center justify-center gap-x-3 gap-y-2">
                 <span class="text-caption text-ink-3">Try</span>
-                <button class="example-query text-caption font-medium text-accent transition-colors hover:text-accent-hover" data-query="best NAS for home media server">NAS for media server</button>
+                <button class="example-query text-caption font-medium text-accent transition-colors hover:text-accent-hover" data-query="best air fryer for a family of four">air fryer</button>
                 <span class="text-ink-3">·</span>
-                <button class="example-query text-caption font-medium text-accent transition-colors hover:text-accent-hover" data-query="best budget mechanical keyboard for programming">mechanical keyboard</button>
+                <button class="example-query text-caption font-medium text-accent transition-colors hover:text-accent-hover" data-query="best running shoes for flat feet">running shoes</button>
                 <span class="text-ink-3">·</span>
-                <button class="example-query text-caption font-medium text-accent transition-colors hover:text-accent-hover" data-query="best wireless earbuds under $100 2026">wireless earbuds</button>
+                <button class="example-query text-caption font-medium text-accent transition-colors hover:text-accent-hover" data-query="best cordless drill for home projects">cordless drill</button>
                 <span class="text-ink-3">·</span>
-                <button class="example-query text-caption font-medium text-accent transition-colors hover:text-accent-hover" data-query="Synology vs QNAP for home lab">Synology vs QNAP</button>
+                <button class="example-query text-caption font-medium text-accent transition-colors hover:text-accent-hover" data-query="best wireless earbuds under $100">wireless earbuds</button>
+                <span class="text-ink-3">·</span>
+                <button class="example-query text-caption font-medium text-accent transition-colors hover:text-accent-hover" data-query="best dog food for puppies">dog food</button>
+            </div>
+
+            <!-- Talk it out: chat-to-refine before running a research -->
+            <div class="mt-6">
+                <button id="talk-toggle" type="button" class="text-body-sm font-medium text-accent transition-colors hover:text-accent-hover">💬 Not sure what to search? Talk it out</button>
+            </div>
+            <div id="talk-section" class="hidden mx-auto mt-4 w-full max-w-2xl text-left">
+                <div class="rounded-xl border border-line bg-surface-1 p-4 shadow-card">
+                    <div id="talk-messages" class="mb-3 flex max-h-80 flex-col gap-2 overflow-y-auto" aria-live="polite"></div>
+                    <form id="talk-form" class="flex gap-2">
+                        <label for="talk-input" class="sr-only">Describe what you need</label>
+                        <input id="talk-input" type="text" maxlength="2000" autocomplete="off"
+                            placeholder="e.g. I need something to keep my garage cool in summer"
+                            class="w-full rounded-lg border border-line bg-bg px-3 py-2 font-sans text-body-sm text-ink placeholder:text-ink-3 focus:border-line-strong focus:outline-none focus:ring-2 focus:ring-accent/25">
+                        <button type="submit" class="shrink-0 rounded-lg bg-accent-strong px-4 py-2 font-sans text-body-sm font-semibold text-white transition-colors hover:bg-accent-hover">Send</button>
+                    </form>
+                    <p id="talk-status" role="status" aria-live="polite" class="mt-2 min-h-[1em] text-caption text-ink-3"></p>
+                </div>
             </div>
 
             <div class="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-caption text-ink-3">

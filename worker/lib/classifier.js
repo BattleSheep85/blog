@@ -4,10 +4,9 @@
 
 const CLASSIFIER_MODEL = 'google/gemini-2.5-flash-lite';
 const CLASSIFIER_TIMEOUT_MS = 8_000;
-// v4: classifier swap Haiku-4.5 → gemini-2.5-flash-lite per R110 bench. Bump
-// version so cached classifications from the prior model get re-run — facet
-// shape is identical but model-specific biases (and ambiguity handling) differ.
-const CACHE_VERSION = 'v4';
+// v5: added the sold_on_amazon facet (routes Amazon vs Google CTAs on report
+// pages). Bump so cached v4 classifications — which lack the key — get re-run.
+const CACHE_VERSION = 'v5';
 const CACHE_TTL_SECONDS = 7 * 24 * 3600; // 7 days
 
 const REJECTION_CATEGORIES = [
@@ -51,6 +50,7 @@ For accepted queries, set facets (multiple can be true simultaneously):
 - is_content: media, apps, websites, shows, podcasts, courses, how-to information
 - is_service: hiring a professional (plumber, lawyer, tutor, agency, contractor)
 - is_comparative: phrased as "X vs Y" rather than "best of" — compare two named things
+- sold_on_amazon: true when items of this kind are commonly sold and shipped via amazon.com — the report's buy buttons depend on it. TRUE for most consumer goods (kitchen gear, electronics, tools, apparel, pet supplies, books, toys). FALSE for: vehicles, real estate, bulk building materials (lumber, drywall, concrete), live animals, restaurants/venues, local services and professionals, prescription medication, firearms, travel/experiences, houses/apartments, B2B/industrial equipment, and anything primarily bought from specialty or local suppliers. When genuinely unsure, prefer TRUE.
 - recency_sensitive: true when the subject rapidly evolves and older sources are likely wrong. TRUE for: consumer tech, software, apps, current media, smart-home gear, laptops, phones, monitors, routers, streaming services, video games, any "what's the best X right now" query. FALSE for: restaurants, hiking trails, classical books, historical topics, cooking basics, evergreen skills, named experiences that don't change year over year. When unsure, prefer TRUE — stale tech recommendations cause more harm than losing one old-but-still-good evergreen source.
 
 topical_category: a short freeform label describing what's being researched (e.g. "mechanical keyboards", "Italian restaurants", "hiking trails", "podcast apps", "tax preparation services", "4K monitors vs OLED TVs"). 2-5 words.
@@ -73,7 +73,7 @@ Examples:
 - "best fire stick" → [{"key":"interpretation","question":"Which fire stick?","suggested_answers":["Amazon Fire TV Stick","Fire-starting tool / ferro rod"]}]
 
 Output ONLY this JSON shape, no prose:
-{"accept": true|false, "reject_reason": "jailbreak|illegal|medical|legal|adult|nonsense|self-harm|harassment|financial-picks" | null, "topical_category": string | null, "facets": {"needs_location": bool, "is_buyable": bool, "is_experience": bool, "is_content": bool, "is_service": bool, "is_comparative": bool, "recency_sensitive": bool}, "suggested_refinement": string | null, "clarifying_questions": [{"key": string, "question": string, "suggested_answers": [string, ...]}]}`;
+{"accept": true|false, "reject_reason": "jailbreak|illegal|medical|legal|adult|nonsense|self-harm|harassment|financial-picks" | null, "topical_category": string | null, "facets": {"needs_location": bool, "is_buyable": bool, "is_experience": bool, "is_content": bool, "is_service": bool, "is_comparative": bool, "sold_on_amazon": bool, "recency_sensitive": bool}, "suggested_refinement": string | null, "clarifying_questions": [{"key": string, "question": string, "suggested_answers": [string, ...]}]}`;
 
 const DEFAULT_FACETS = {
   needs_location: false,
@@ -82,6 +82,9 @@ const DEFAULT_FACETS = {
   is_content: false,
   is_service: false,
   is_comparative: false,
+  // Default true — most queries are consumer goods, and a wrong TRUE just shows
+  // an Amazon search button; a wrong FALSE hides revenue.
+  sold_on_amazon: true,
   // Default true — most site traffic is tech-heavy; stale data is the bigger risk.
   recency_sensitive: true,
 };
@@ -121,16 +124,21 @@ function validate(raw) {
     is_content: facetsRaw.is_content === true,
     is_service: facetsRaw.is_service === true,
     is_comparative: facetsRaw.is_comparative === true,
+    // Missing key → default true; only an explicit false suppresses Amazon CTAs.
+    sold_on_amazon: facetsRaw.sold_on_amazon !== false,
     // Missing key → default true (tech-heavy traffic; stale data worse than
     // over-filtering). Explicit false only honored when the classifier returns
     // boolean false.
     recency_sensitive: facetsRaw.recency_sensitive !== false,
   };
 
-  // If rejected, trust the reject_reason. If accepted, ensure at least one facet is true
-  // (fall back to is_buyable = true since that's our established happy path).
+  // If rejected, trust the reject_reason. If accepted, ensure at least one
+  // PRIMARY facet is true (fall back to is_buyable = true, the established
+  // happy path). sold_on_amazon/recency_sensitive are excluded — they default
+  // true, which would make a whole-object check vacuously pass.
   if (accept) {
-    const anyFacet = Object.values(facets).some((v) => v);
+    const anyFacet = facets.needs_location || facets.is_buyable || facets.is_experience
+      || facets.is_content || facets.is_service || facets.is_comparative;
     if (!anyFacet) facets.is_buyable = true;
     return { accept: true, reject_reason: null, topical_category, facets, suggested_refinement, clarifying_questions };
   }

@@ -207,6 +207,95 @@
         setFormsBusy(false);
     }
 
+    // -- "Talk it out": chat-to-refine before running a research -----------
+    (function () {
+        var toggle = document.getElementById('talk-toggle');
+        var section = document.getElementById('talk-section');
+        var form = document.getElementById('talk-form');
+        var input = document.getElementById('talk-input');
+        var box = document.getElementById('talk-messages');
+        var status = document.getElementById('talk-status');
+        if (!toggle || !section || !form || !input || !box) return;
+
+        var transcript = [];
+        var busy = false;
+
+        toggle.addEventListener('click', function () {
+            var opening = section.classList.contains('hidden');
+            section.classList.toggle('hidden');
+            if (opening) {
+                if (box.children.length === 0) {
+                    bubble('assistant', "Tell me what you're trying to solve or buy — even vaguely — and I'll help you turn it into a researchable question.");
+                }
+                input.focus();
+            }
+        });
+
+        function bubble(role, text) {
+            var div = document.createElement('div');
+            div.className = role === 'user'
+                ? 'self-end max-w-[85%] rounded-lg bg-accent/15 px-3 py-2 text-body-sm text-ink whitespace-pre-wrap'
+                : 'self-start max-w-[85%] rounded-lg bg-surface-2 px-3 py-2 text-body-sm text-ink-2 whitespace-pre-wrap';
+            div.textContent = text;
+            box.appendChild(div);
+            box.scrollTop = box.scrollHeight;
+            return div;
+        }
+
+        function suggestButton(query) {
+            var btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'self-start rounded-lg bg-accent-strong px-3 py-2 text-body-sm font-semibold text-white transition-colors hover:bg-accent-hover';
+            btn.textContent = 'Research: ' + query;
+            btn.addEventListener('click', function () {
+                var qi = document.getElementById('query-input');
+                if (qi) qi.value = query;
+                section.classList.add('hidden');
+                startResearch(query);
+            });
+            box.appendChild(btn);
+            box.scrollTop = box.scrollHeight;
+        }
+
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            var text = (input.value || '').trim();
+            if (!text || busy) return;
+            busy = true;
+            input.value = '';
+            if (transcript.length >= 14) transcript = transcript.slice(transcript.length - 13);
+            transcript.push({ role: 'user', content: text });
+            bubble('user', text);
+            var thinking = bubble('assistant', '…');
+            if (status) status.textContent = '';
+
+            fetch('/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ messages: transcript }),
+            })
+                .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); })
+                .then(function (res) {
+                    busy = false;
+                    if (res.ok && res.d && res.d.reply) {
+                        thinking.textContent = res.d.reply;
+                        transcript.push({ role: 'assistant', content: res.d.reply });
+                        if (res.d.suggestedQuery) suggestButton(res.d.suggestedQuery);
+                    } else {
+                        thinking.remove();
+                        transcript.pop();
+                        if (status) status.textContent = (res.d && res.d.error) || 'Something went wrong. Try again.';
+                    }
+                })
+                .catch(function () {
+                    busy = false;
+                    thinking.remove();
+                    transcript.pop();
+                    if (status) status.textContent = 'Network error. Try again.';
+                });
+        });
+    })();
+
     // Expose reset for the "Try again" button.
     window.resetUI = function () {
         showSection('none');

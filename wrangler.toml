@@ -40,6 +40,10 @@ CF_ANALYTICS_TOKEN = "ea97bb136135401584c3547bd0d73b66"
 # IndexNow verification key. Intentionally public — the protocol requires it to
 # be hosted at https://chrisputer.tech/<key>.txt (served by the worker route).
 INDEXNOW_KEY = "2b049a04674b366dc9b485b792ad823e"
+# GOOGLE_CSE_ID — set after creating a Programmable Search Engine
+# (programmablesearchengine.google.com → "search the entire web" → link the
+# AdSense account). Until set, /find degrades to a plain Google redirect.
+# GOOGLE_CSE_ID = "xxxxxxxxxxxxxxxxx"
 
 # D1 Database
 [[d1_databases]]

@@ -106,11 +106,16 @@ export async function runResearchPipeline(env, reportId, query) {
 
         // Recover direct Amazon /dp/ product links for products that only got a
         // redirect-hidden or missing URL from synthesis. One Serper query per
-        // missing product, capped at 5 → ≤5 extra subrequests. Never throws;
-        // unresolved products pass through unchanged and fall back to tagged
-        // search links at render time.
-        await progress('Resolving Amazon product links...');
-        result.products = await resolveAsins(env, result.products, progress);
+        // missing product, capped → a handful of extra subrequests. Never
+        // throws; unresolved products pass through unchanged and fall back to
+        // explicit "Search Amazon" links at render time. Skipped entirely when
+        // the classifier says this category isn't sold on Amazon (lumber,
+        // vehicles, services, ...) — those pages render Google CTAs instead.
+        const amazonViable = facets?.sold_on_amazon !== false && facets?.is_service !== true;
+        if (amazonViable) {
+            await progress('Resolving Amazon product links...');
+            result.products = await resolveAsins(env, result.products, progress);
+        }
 
         const affiliateIds = {
             amazonTag: env.AMAZON_AFFILIATE_TAG || env.AMAZON_ASSOCIATE_TAG || DEFAULT_AFFILIATE_TAG,
@@ -228,7 +233,7 @@ function parseJsonSafe(json, fallback) {
  * is fine at this volume (one writer per run, low concurrency). 30-day TTL so
  * old months age out on their own. NaN/zero costs are no-ops.
  */
-async function incrementMonthlyCost(env, cost) {
+export async function incrementMonthlyCost(env, cost) {
     if (!Number.isFinite(cost) || cost <= 0) return;
     try {
         const key = `cost:${monthKey()}`;

@@ -14,6 +14,7 @@ import {
 import { generateSlug, canonicalizeQuery, parseJsonSafe } from '../lib/utils.js';
 import { PUBLIC_TIERS } from '../lib/tiers.js';
 import { monthKey, monthlyBudgetUsd } from '../pipeline/orchestrator.js';
+import { getSessionUser, recordUserSearch } from '../lib/auth.js';
 
 /**
  * Handle POST /api/research
@@ -66,10 +67,17 @@ export async function handleStartResearch(request, env) {
     // is the same research — send the client to its permanent page. Clarifications
     // shift the canonical form so differently-clarified runs cluster separately
     // ("best mesh wifi $200" vs "$500").
+    // Signed-in users get every submission saved to their /account history —
+    // including clustered hits, which never create a new research row.
+    const sessionUser = await getSessionUser(request, env);
+
     const canonical = canonicalizeQuery(normalizedQuery, clarifications);
     if (!fresh) {
         const existing = await findResearchByCanonicalQuery(env.DB, canonical, 14);
         if (existing) {
+            if (sessionUser) {
+                await recordUserSearch(env.DB, sessionUser.id, existing.id, normalizedQuery);
+            }
             return jsonResponse({
                 id: existing.id,
                 slug: existing.slug,
@@ -114,6 +122,10 @@ export async function handleStartResearch(request, env) {
         tier,
         clarifications: clarificationsJson,
     });
+
+    if (sessionUser) {
+        await recordUserSearch(env.DB, sessionUser.id, id, normalizedQuery);
+    }
 
     // Enqueue research job (message shape unchanged — queue consumer keys on it)
     await env.RESEARCH_QUEUE.send({
