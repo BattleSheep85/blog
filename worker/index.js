@@ -30,7 +30,7 @@ import { displayQuery, escapeLikeWildcards, publicResearchFilter, canonicalizeQu
 
 // Bump when the page template/schema shape changes in a way that should
 // invalidate every KV-cached HTML blob. Old keys age out on their own TTL.
-const CACHE_VERSION = 'tr7';
+const CACHE_VERSION = 'tr8';
 // Lastmod advertised for the static /best/ guide pages in the sitemap.
 const GUIDES_LASTMOD = '2026-06-09';
 

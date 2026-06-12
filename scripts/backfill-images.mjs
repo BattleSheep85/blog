@@ -27,6 +27,12 @@ function readEnvFile(path) {
   return out;
 }
 
+// Image servers sometimes kill HTTP/2 sockets in ways undici surfaces as
+// async 'error' events outside any await — without these guards one rude
+// CDN aborts the whole run.
+process.on('uncaughtException', (e) => console.error('uncaught:', e?.message || e));
+process.on('unhandledRejection', (e) => console.error('unhandled:', e?.message || e));
+
 const cfToken = readEnvFile('.cf-token').CLOUDFLARE_API_TOKEN || process.env.CLOUDFLARE_API_TOKEN;
 const serperKey = readEnvFile('.dev.vars').SERPER_API_KEY || process.env.SERPER_API_KEY;
 if (!cfToken || !serperKey) {
