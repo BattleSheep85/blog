@@ -1,10 +1,10 @@
-// Self-executing assertions for credibility. Runs via the
-// /__test/credibility dev route (gated by ADMIN_KEY). The Python
-// suite (tests/test_credibility.py) hits that route and asserts
-// pass === total. Keeping tests in-process means they run against
-// the actual bundled code, not a mock.
+// Assertions for the credibility rubric (the PRD §2 trust-weight table,
+// encoded as ~55 concrete cases). Run with:
 //
-// No test framework — pure functions, pure assertions, zero deps.
+//   node scripts/run-tests.mjs
+//
+// No test framework — pure functions, pure assertions, zero deps. Tests
+// import the real module, so they exercise the actual shipped code.
 
 import {
   isAffiliateUrl,

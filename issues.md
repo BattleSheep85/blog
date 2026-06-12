@@ -2,6 +2,34 @@
 
 Last updated: 2026-06-12
 
+## Debate-verdict remediation (2026-06-12, adversarial debate: 64/100 on-track)
+
+Source: 5-stance repo-grounded debate + judge. Full prescription executed same day.
+
+- [x] HIGH: Docs claimed unbuilt "fake review detection" (PRD §3, README:134, chat
+      prompt, home/about copy) — rewrote all surfaces to describe the shipped
+      source-genre credibility engine; fake-review detection scoped as future (PRD §3b);
+      accounts non-goal amended (graduated 2026-06-12).
+- [x] HIGH: Re-research loop was conversion-keyed only (converting-but-wrong pages
+      invisible) — added staleness trigger: oldest complete page > STALE_REFRESH_DAYS
+      (default 120) refreshes at full tier when no zero-click candidate exists
+      (worker/lib/keywords.js).
+- [x] MEDIUM: Credibility test suite was dead code (header referenced a route that
+      never existed) — now runs via `node scripts/run-tests.mjs`, 55/55 green.
+- [x] MEDIUM: No output-level honesty measurement — golden-query eval shipped
+      (eval/golden-queries.json + scripts/run-eval.mjs): pick correctness, disclosure
+      presence, depth, freshness against the live site. First run: 4/5 picks correct
+      (5th was a label gap, fixed), 5/5 disclosure.
+- [x] MEDIUM: Scaled-content risk — thin-page gate in publicResearchFilter
+      (≥3 products, ≥2 for comparative) now excludes thin pages from sitemap/browse/
+      hubs/suggest, and research pages < threshold render noindex.
+- [ ] LOW: BullshitBench numbers (opus-4.8 94%, planner 15%) exist only as code
+      comments — harness was external (petergpt.github.io); not reproducible from this
+      repo. Accept as provenance-noted, or rebuild a local trap-question eval later.
+- [ ] NOTE: Funnel-feature freeze in effect until first real traffic data (judge
+      recommendation): no new accounts-tier features, /find iterations, or chat
+      expansion before GSC shows impressions.
+
 ## Engine quality round (2026-06-12)
 
 Verified end-to-end locally (full-tier webcam run: 3/4 products with direct tagged /dp/

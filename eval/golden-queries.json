@@ -1,0 +1,22 @@
+{
+  "comment": "Output-level honesty eval (PRD Success Metrics). Each query has a stable real-world consensus: the top pick on the live page must match one of accepted_winners (case-insensitive substring against the rank-1 product name). Winners chosen for category stability — if one of these drifts, update it WITH a source, don't delete the query. Run: node scripts/run-eval.mjs",
+  "checks": {
+    "top_pick_in_accepted_set": "rank-1 product name contains an accepted winner substring",
+    "disclosure_present": "page HTML contains the commission disclosure",
+    "min_products": 3,
+    "min_sources": 5,
+    "max_age_days": 120
+  },
+  "queries": [
+    { "query": "best ereader", "accepted_winners": ["kindle", "kobo"] },
+    { "query": "best budget mechanical keyboard", "accepted_winners": ["keychron", "royal kludge", "redragon", "akko", "nuphy", "gmmk", "epomaker", "aula"] },
+    { "query": "best wireless mouse for productivity", "accepted_winners": ["mx master", "logitech mx"] },
+    { "query": "best noise cancelling headphones", "accepted_winners": ["sony wh-1000", "bose quietcomfort", "bose qc", "airpods max"] },
+    { "query": "best air fryer", "accepted_winners": ["ninja", "cosori", "instant", "philips", "typhur"] },
+    { "query": "best electric pressure cooker", "accepted_winners": ["instant pot", "ninja foodi"] },
+    { "query": "best password manager", "accepted_winners": ["1password", "bitwarden", "proton pass", "keepass"] },
+    { "query": "best cast iron skillet", "accepted_winners": ["lodge", "field company", "stargazer", "smithey"] },
+    { "query": "best robot vacuum for pet hair", "accepted_winners": ["roborock", "roomba", "irobot", "eufy", "shark", "dreame", "deebot", "ecovacs"] },
+    { "query": "best portable bluetooth speaker", "accepted_winners": ["jbl", "bose soundlink", "sonos roam", "ue boom", "ultimate ears", "anker soundcore", "tribit"] }
+  ]
+}

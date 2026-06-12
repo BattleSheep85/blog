@@ -110,8 +110,21 @@ function stripFiller(token) {
 // correlated EXISTS subquery always qualifies the outer id to avoid ambiguity.
 // Alias is never user-provided; callers pass a literal string.
 export function publicResearchFilter(alias) {
+  // Thin-page gate (scaled-content defense): a public comparison needs >= 3
+  // ranked products to be worth a crawler's time — except comparative
+  // "X vs Y" queries, where 2 is the natural count. Thin pages stay reachable
+  // by direct link (and render noindex — see research-page.js) but are kept
+  // out of the sitemap, browse, category hubs, and autocomplete.
   return `${alias}.status = 'complete'
-    AND EXISTS (SELECT 1 FROM products p WHERE p.research_id = ${alias}.id)
+    AND (
+      (SELECT COUNT(*) FROM products p WHERE p.research_id = ${alias}.id) >= 3
+      OR (
+        (SELECT COUNT(*) FROM products p WHERE p.research_id = ${alias}.id) >= 2
+        AND (${alias}.query LIKE '% vs %' OR ${alias}.query LIKE '% vs. %'
+             OR ${alias}.query LIKE '%versus%'
+             OR ${alias}.facets LIKE '%"is_comparative":true%')
+      )
+    )
     AND LENGTH(${alias}.query) >= 10 AND ${alias}.query LIKE '% %'
     AND ${alias}.query NOT LIKE 'test %' AND ${alias}.query NOT LIKE 'verify %'`;
 }

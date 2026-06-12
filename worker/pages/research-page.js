@@ -1033,8 +1033,12 @@ document.addEventListener('DOMContentLoaded',function(){
   const extra = pageBehaviorScript + subscribeScript + (entry.status === 'complete' ? chatScript : '') + (isProcessing ? activityFeedScript : '');
   // Canonical is emitted by layout() from layoutMeta.canonical — don't add a
   // second hand-built <link rel="canonical"> here.
-  // Keep thin (zero-product) and failed pages out of the index. Direct links still work.
-  const isThin = entry.status === 'complete' && products.length === 0;
+  // Keep thin and failed pages out of the index (mirrors publicResearchFilter:
+  // >= 3 products, or >= 2 for comparative "X vs Y" queries). Direct links
+  // still work — only crawlers are turned away.
+  const isComparative = rowFacets.is_comparative === true || /\bvs\.?\b|versus/i.test(entry.query);
+  const minIndexableProducts = isComparative ? 2 : 3;
+  const isThin = entry.status === 'complete' && products.length < minIndexableProducts;
   const noindex = (isThin || isFailed || isProcessing) ? '<meta name="robots" content="noindex, follow">' : '';
   // Amazon-viable pages carry Amazon buy-links on every card. dns-prefetch is
   // cheap (DNS-only, no TLS handshake) and shaves ~50-200ms off the first

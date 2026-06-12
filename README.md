@@ -129,13 +129,21 @@ schema/              D1 database migrations
 
 ```
 User query
-  → Search Reddit, HN, Google for real reviews
-  → AI extracts products and review content from raw results
-  → AI scores each source for authenticity (fake detection)
-  → Filter out fakes and low-trust sources
-  → AI synthesizes surviving sources into ranked comparison
-  → Inject affiliate links
-  → Cache and deliver report
+  → Classifier: facets, rejection, clarifying questions, Amazon-viability
+  → Agent loop: planner fans out searches (Serper/HN/DDG/RSS/video),
+    reads pages, takes notes
+  → Deterministic credibility scoring on every source (twice: URL+title at
+    snippet time, full text after fetch): +25 hands-on / +15 expert-domain /
+    +5 community / −15 manufacturer / −30 listicle / −45 affiliate-conflict.
+    Discounts, not exclusions — conflicted sources need corroboration and
+    the conflict is disclosed in the verdict. Marketplace star reviews are
+    never ingested at all.
+    (NOTE: this is source-GENRE credibility, not per-review fake detection —
+    see PRD §3b. No surface should claim "fake review detection".)
+  → Synthesis (tiered: haiku-4.5 / sonnet-4.6 / opus-4.8) ranks products,
+    subordinating LLM sentiment to the deterministic credibility tags
+  → ASIN resolver attaches exact Amazon /dp/ links; affiliate tagging
+  → Permanent SSR page at /research/:slug with sources + JSON-LD
 ```
 
 ## Buying guides (SEO + affiliate)

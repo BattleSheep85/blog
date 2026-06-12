@@ -24,6 +24,12 @@ import { generateSlug, canonicalizeQuery } from './utils.js';
 const DEFAULT_DAILY_MAX = 6;
 const DEFAULT_RERESEARCH_DAILY_MAX = 2;
 const THIRTY_DAYS_SECS = 30 * 86400;
+// Staleness horizon for the accuracy-keyed re-research trigger: any complete
+// page older than this is eligible for a full-tier refresh even if it
+// converts — stale facts are a defect independent of revenue. Override with
+// env.STALE_REFRESH_DAYS. At 2 refreshes/day, ~190 pages cycle in ~95 days,
+// which keeps steady state below the horizon.
+const DEFAULT_STALE_REFRESH_DAYS = 120;
 
 // 'YYYY-MM' and 'YYYY-MM-DD' from a caller-supplied epoch-ms clock. The caller
 // (scheduled handler) passes `now` explicitly so ticks are testable and the
@@ -179,10 +185,18 @@ export async function runFlywheelTick(env, now = Date.now()) {
 /**
  * Metrics-driven re-research sweep (the flywheel's optimization loop).
  *
- * Upgrades proven-traffic "money pages" that have stopped converting: a page
- * with real views but ZERO affiliate clicks in the last 30 days is leaving
- * revenue on the table, so we re-run it at the exhaustive tier (opus-4.8 synth,
- * ~$0.19/run — justified precisely because the traffic is already proven).
+ * TWO triggers, in priority order, sharing one daily cap:
+ *
+ * 1. Conversion-keyed (exhaustive tier): a page with real views but ZERO
+ *    affiliate clicks in the last 30 days is leaving revenue on the table,
+ *    so it gets the deepest re-run (opus-4.8 synth, ~$0.19 — justified
+ *    because the traffic is already proven).
+ * 2. Staleness-keyed (full tier): when no conversion candidate exists, the
+ *    OLDEST complete page past STALE_REFRESH_DAYS is refreshed regardless of
+ *    views or clicks. This encodes "stale" as a defect in its own right —
+ *    a page whose facts have aged out is dishonest even if it converts —
+ *    and cycles the whole catalog over time. Cheaper tier because it is
+ *    routine maintenance, not money-page rescue.
  *
  * Critically, we REUSE the existing research row (same id/slug/URL) so the
  * page's accumulated SEO equity and inbound links survive the refresh. The
@@ -236,7 +250,27 @@ async function runReresearchSweep(env, now) {
              LIMIT 1`
         ).bind(clickCutoff, cutoffSecs).first();
 
-        if (!row) {
+        // Staleness fallback: no conversion-rescue candidate → refresh the
+        // oldest complete page past the staleness horizon, regardless of
+        // views/clicks. Oldest-first guarantees the whole catalog rotates.
+        let trigger = 'zero-clicks';
+        let tier = 'exhaustive';
+        let candidate = row;
+        if (!candidate) {
+            const staleDays = Number(env.STALE_REFRESH_DAYS || DEFAULT_STALE_REFRESH_DAYS);
+            const staleCutoff = Math.floor(now / 1000) - staleDays * 86400;
+            candidate = await env.DB.prepare(
+                `SELECT id, query, view_count FROM research
+                 WHERE status = 'complete' AND completed_at IS NOT NULL
+                   AND completed_at < ?1
+                 ORDER BY completed_at ASC
+                 LIMIT 1`
+            ).bind(staleCutoff).first();
+            trigger = 'stale';
+            tier = 'full';
+        }
+
+        if (!candidate) {
             return { status: 'skipped', reason: 'no-candidate' };
         }
 
@@ -246,23 +280,23 @@ async function runReresearchSweep(env, now) {
         // queue message) can't double-enqueue the same page — only the first
         // UPDATE matches (meta.changes === 1).
         const claim = await env.DB.prepare(
-            `UPDATE research SET status = 'pending', tier = 'exhaustive'
-             WHERE id = ?1 AND status = 'complete'`
-        ).bind(row.id).run();
+            `UPDATE research SET status = 'pending', tier = ?1
+             WHERE id = ?2 AND status = 'complete'`
+        ).bind(tier, candidate.id).run();
 
         if (!claim.meta || claim.meta.changes !== 1) {
-            return { status: 'skipped', reason: 'claim-lost', researchId: row.id };
+            return { status: 'skipped', reason: 'claim-lost', researchId: candidate.id };
         }
 
-        // Enqueue at the exhaustive tier. The orchestrator reads tier from the
-        // row, but we pass it in the message too to match the keyword path's
-        // shape. DELETE-then-insert product persistence replaces products in
-        // place and the completed_at refresh updates the sitemap lastmod, so the
-        // page is re-indexed fresher at the SAME indexed URL (equity preserved).
+        // Enqueue the re-run. The orchestrator reads tier from the row, but we
+        // pass it in the message too to match the keyword path's shape.
+        // DELETE-then-insert product persistence replaces products in place and
+        // the completed_at refresh updates the sitemap lastmod, so the page is
+        // re-indexed fresher at the SAME indexed URL (equity preserved).
         await env.RESEARCH_QUEUE.send({
-            reportId: row.id,
-            query: row.query,
-            tier: 'exhaustive',
+            reportId: candidate.id,
+            query: candidate.query,
+            tier,
         });
 
         // Bump the separate daily counter (2-day TTL so stale keys self-evict).
@@ -270,9 +304,11 @@ async function runReresearchSweep(env, now) {
 
         return {
             status: 'reresearched',
-            researchId: row.id,
-            query: row.query,
-            viewCount: row.view_count,
+            trigger,
+            tier,
+            researchId: candidate.id,
+            query: candidate.query,
+            viewCount: candidate.view_count,
         };
     } catch (err) {
         console.error('[flywheel] re-research sweep failed:', JSON.stringify({
