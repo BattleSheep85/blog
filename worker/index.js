@@ -20,6 +20,7 @@ import { handleSubscribe } from './handlers/subscribe.js';
 import { handleChat } from './handlers/chat.js';
 import { handleSignup, handleLogin, handleLogout, renderLoginPage, renderAccountPage } from './handlers/auth.js';
 import { handleFind } from './pages/find.js';
+import { renderReviewsPage } from './pages/reviews.js';
 import { handleMetrics } from './pages/metrics.js';
 import { runFlywheelTick } from './lib/keywords.js';
 import { getLatestResearchLastmod, generateSitemap, generateAtomFeed, generateOgImage } from './lib/sitemap.js';
@@ -162,6 +163,15 @@ export default {
                 const ogMatch = path.match(/^\/research\/([a-z0-9-]+)\/og\.svg$/);
                 if (ogMatch) {
                     return withSecurityHeaders(await generateOgImage(ogMatch[1], env), null);
+                }
+
+                // Sitewide product-review directory.
+                if (path === '/reviews' || path === '/reviews/') {
+                    const html = await renderReviewsPage(url, env);
+                    if (!html) return notFound();
+                    return htmlPageResponse(html, env, {
+                        cacheControl: 'public, max-age=300, s-maxage=300, stale-while-revalidate=3600',
+                    });
                 }
 
                 if (path === '/research' || path === '/research/') {

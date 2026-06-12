@@ -134,6 +134,11 @@ export async function generateSitemap(origin, env, ifModifiedSince, guidesLastmo
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url><loc>${origin}/</loc>${dynamicLastmod}<changefreq>daily</changefreq><priority>1.0</priority></url>
 <url><loc>${origin}/research</loc>${dynamicLastmod}<changefreq>daily</changefreq><priority>0.8</priority></url>
+<url><loc>${origin}/reviews</loc>${dynamicLastmod}<changefreq>daily</changefreq><priority>0.8</priority></url>
+<url><loc>${origin}/about</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>${origin}/contact</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+<url><loc>${origin}/privacy</loc><changefreq>yearly</changefreq><priority>0.2</priority></url>
+<url><loc>${origin}/terms</loc><changefreq>yearly</changefreq><priority>0.2</priority></url>
 <url><loc>${origin}/best/</loc><lastmod>${guidesLastmod}</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
 <url><loc>${origin}/best/nas-for-home-media-server/</loc><lastmod>${guidesLastmod}</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
 <url><loc>${origin}/best/mechanical-keyboards-under-100/</loc><lastmod>${guidesLastmod}</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>

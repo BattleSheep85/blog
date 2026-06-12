@@ -84,7 +84,7 @@ ${entries.map(([k, v]) => {
 // Soft gradient fallback when imageUrl is missing or fails to load. Keyed by
 // first letter so different items get distinct visual treatments without
 // needing a real image pipeline.
-function renderItemImage(imageUrl, name) {
+export function renderItemImage(imageUrl, name) {
   const safeName = escapeHtml(name.slice(0, 60));
   const letter = escapeHtml((name.trim().charAt(0) || '?').toUpperCase());
   const colorIndex = name.charCodeAt(0) % 6;
@@ -123,7 +123,7 @@ const NON_PRODUCT_CATEGORY_HINTS = [
   'consultant', 'consulting', 'agency',
 ];
 
-function isNonProductCategory(category) {
+export function isNonProductCategory(category) {
   if (!category) return false;
   const c = category.toLowerCase();
   return NON_PRODUCT_CATEGORY_HINTS.some((h) => c.includes(h));
@@ -218,7 +218,7 @@ async function getRelatedResearch(db, currentSlug, canonical, category) {
 // webOnly: the classifier flagged this category as not-sold-on-Amazon. NO
 // Amazon link of any kind renders for these — the primary CTA hands off to
 // Google via /find (monetized with AdSense-for-Search when configured).
-function resolveProductCtas(p, ids, isService, slug, cleanLinks, webOnly = false) {
+export function resolveProductCtas(p, ids, isService, slug, cleanLinks, webOnly = false) {
   const mfrUrl = p.manufacturer_url && isValidHttpsUrl(p.manufacturer_url) ? p.manufacturer_url : '';
   const buyRaw = p.affiliate_url || p.product_url || '';
 

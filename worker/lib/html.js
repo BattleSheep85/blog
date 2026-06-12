@@ -119,6 +119,7 @@ ${extra_head}
 <nav class="flex items-center gap-6" aria-label="Main navigation">
 <a href="/" class="hidden text-body-sm text-ink-2 transition-colors hover:text-ink sm:inline">Home</a>
 <a href="/research" class="hidden text-body-sm text-ink-2 transition-colors hover:text-ink sm:inline">Browse</a>
+<a href="/reviews" class="hidden text-body-sm text-ink-2 transition-colors hover:text-ink sm:inline">Reviews</a>
 <a href="/best/" class="hidden text-body-sm text-ink-2 transition-colors hover:text-ink sm:inline">Guides</a>
 <a href="/about" class="hidden text-body-sm text-ink-2 transition-colors hover:text-ink sm:inline">About</a>
 <a href="/account" class="text-body-sm text-ink-2 transition-colors hover:text-ink" title="Your past searches">Account</a>
@@ -160,6 +161,7 @@ sync(isDark);
 <span class="text-overline uppercase text-ink-3">Explore</span>
 <a href="/best/" class="text-body-sm text-ink-2 hover:text-ink">Guides</a>
 <a href="/research" class="text-body-sm text-ink-2 hover:text-ink">Browse</a>
+<a href="/reviews" class="text-body-sm text-ink-2 hover:text-ink">Reviews</a>
 <a href="/about" class="text-body-sm text-ink-2 hover:text-ink">About</a>
 </div>
 <div class="flex flex-col gap-2">
