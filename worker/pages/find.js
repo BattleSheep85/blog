@@ -15,6 +15,7 @@ import { layout } from '../lib/html.js';
 import { escapeHtml } from '../lib/utils.js';
 import { logGuideClick } from '../lib/db.js';
 import { checkRateLimit } from '../lib/rate-limit.js';
+import { adSlot } from '../lib/ads.js';
 
 export async function handleFind(request, url, env) {
     const q = (url.searchParams.get('q') || '').trim().slice(0, 200);
@@ -55,9 +56,11 @@ export async function handleFind(request, url, env) {
 </nav>
 <h1 class="font-serif text-h2 font-semibold text-ink">${escapeHtml(q ? `Where to find: ${q}` : 'Search the web')}</h1>
 <p class="mt-2 text-body-sm text-ink-2">This category isn't sold on Amazon, so here's where to find it across the wider web${ref ? ` — sent from <a href="/research/${escapeHtml(ref)}" style="color:var(--accent)">your research report</a>` : ''}.</p>
+${adSlot(env, 'top', 'Advertisement')}
 <div class="mt-6 rounded-xl border border-line bg-surface-1 p-4 shadow-card" style="min-height:24rem">
 <div class="gcse-searchresults-only" data-queryParameterName="q"></div>
 </div>
+${adSlot(env, 'bottom', 'Advertisement')}
 </div>`;
 
     const cseScript = `<script async nonce="__CSP_NONCE__" src="https://cse.google.com/cse.js?cx=${encodeURIComponent(env.GOOGLE_CSE_ID)}"></script>`;
