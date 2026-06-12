@@ -84,7 +84,7 @@ ${entries.map(([k, v]) => {
 // Soft gradient fallback when imageUrl is missing or fails to load. Keyed by
 // first letter so different items get distinct visual treatments without
 // needing a real image pipeline.
-export function renderItemImage(imageUrl, name) {
+export function renderItemImage(imageUrl, name, productId) {
   const safeName = escapeHtml(name.slice(0, 60));
   const letter = escapeHtml((name.trim().charAt(0) || '?').toUpperCase());
   const colorIndex = name.charCodeAt(0) % 6;
@@ -98,11 +98,15 @@ export function renderItemImage(imageUrl, name) {
   ];
   const fallback = `<div class="item-image-fallback" aria-hidden="true" style="width:100%;aspect-ratio:16/9;background:${gradients[colorIndex]};display:flex;align-items:center;justify-content:center;border-radius:8px;margin-bottom:.75rem"><span style="font-size:2.5rem;font-weight:800;color:rgba(255,255,255,.85);letter-spacing:-.02em">${letter}</span></div>`;
   if (!imageUrl || !isValidHttpsUrl(imageUrl)) return fallback;
-  // Broken hotlinks degrade gracefully: emit img + sibling fallback; a page-
+  // Serve through the same-origin /api/img proxy when we know the product id:
+  // the worker-side fetch carries no Referer (defeating hotlink blocks) and
+  // edge-caches the bytes. Direct URL only as a legacy fallback.
+  const src = productId ? `/api/img/${encodeURIComponent(productId)}` : imageUrl;
+  // Broken images degrade gracefully: emit img + sibling fallback; a page-
   // level script swaps them on 'error'. Replaces the old inline onerror= that
   // was incompatible with nonce-based CSP.
   const hiddenFallback = fallback.replace('class="item-image-fallback"', 'class="item-image-fallback" hidden');
-  return `<img class="item-image-photo" src="${escapeHtml(imageUrl)}" alt="${safeName}" loading="lazy" referrerpolicy="no-referrer" style="width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:8px;margin-bottom:.75rem;background:var(--surface-1)">
+  return `<img class="item-image-photo" src="${escapeHtml(src)}" alt="${safeName}" loading="lazy" referrerpolicy="no-referrer" style="width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:8px;margin-bottom:.75rem;background:var(--surface-1)">
 ${hiddenFallback}`;
 }
 
@@ -338,7 +342,7 @@ function renderProduct(p, index, ids, isService, slug, cleanLinks, webOnly) {
     amazonCtaBlock = `<a href="${escapeHtml(ctas.google.url)}" class="product-cta-amazon">${escapeHtml(ctas.google.label)} <span aria-hidden="true">&#8599;</span></a>`;
   }
 
-  const imageBlock = renderItemImage(p.image_url, p.name);
+  const imageBlock = renderItemImage(p.image_url, p.name, p.id);
   const metadataBlock = renderMetadataPairs(metadata);
 
   return `<article class="product" id="product-${index + 1}">

@@ -15,6 +15,7 @@ import { classifyQuery } from '../lib/classifier.js';
 import { getTierConfig } from '../lib/tiers.js';
 import { buildAffiliateUrl } from '../lib/affiliate-links.js';
 import { resolveAsins } from '../lib/asin-resolver.js';
+import { resolveImages } from '../lib/image-resolver.js';
 import { getResearchById, generateId } from '../lib/db.js';
 import { sanitizeUrl } from '../lib/utils.js';
 import { submitToIndexNow } from '../lib/indexnow.js';
@@ -116,6 +117,12 @@ export async function runResearchPipeline(env, reportId, query) {
             await progress('Resolving Amazon product links...');
             result.products = await resolveAsins(env, result.products, progress);
         }
+
+        // Fill in product photos for items synthesis didn't attach an image to
+        // (one Serper Images query each, capped). Runs for every channel —
+        // service/web-only pages want photos too. The /api/img proxy makes
+        // hotlink-hostile hosts render fine.
+        result.products = await resolveImages(env, result.products, progress);
 
         const affiliateIds = {
             amazonTag: env.AMAZON_AFFILIATE_TAG || env.AMAZON_ASSOCIATE_TAG || DEFAULT_AFFILIATE_TAG,

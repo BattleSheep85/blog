@@ -10,6 +10,7 @@ import {
 } from './handlers/research.js';
 import { handleGetReport, handleFeedback } from './handlers/report.js';
 import { handleAffiliateClick, handleAffiliateSearch } from './handlers/affiliate.js';
+import { handleProductImage } from './handlers/image.js';
 import { runResearchPipeline } from './pipeline/orchestrator.js';
 import { renderResearchResult } from './pages/research-page.js';
 import { renderClarifyPage, extractClarifications } from './pages/clarify.js';
@@ -29,7 +30,7 @@ import { displayQuery, escapeLikeWildcards, publicResearchFilter, canonicalizeQu
 
 // Bump when the page template/schema shape changes in a way that should
 // invalidate every KV-cached HTML blob. Old keys age out on their own TTL.
-const CACHE_VERSION = 'tr6';
+const CACHE_VERSION = 'tr7';
 // Lastmod advertised for the static /best/ guide pages in the sitemap.
 const GUIDES_LASTMOD = '2026-06-09';
 
@@ -120,6 +121,12 @@ export default {
             const affiliateMatch = path.match(/^\/api\/go\/([a-z0-9-]+)$/);
             if (affiliateMatch && method === 'GET') {
                 return handleAffiliateClick(affiliateMatch[1], request, env);
+            }
+
+            // Product image proxy (defeats hotlink/Referer blocks; edge-cached).
+            const imgMatch = path.match(/^\/api\/img\/([a-z0-9-]+)$/);
+            if (imgMatch && method === 'GET') {
+                return handleProductImage(imgMatch[1], env);
             }
 
             // ── Feeds (replace the old static public/sitemap.xml) ───────────
