@@ -42,7 +42,9 @@ CF_ANALYTICS_TOKEN = "ea97bb136135401584c3547bd0d73b66"
 INDEXNOW_KEY = "2b049a04674b366dc9b485b792ad823e"
 # Programmable Search Engine for the /find page (entire-web search with
 # AdSense-for-Search ads). Intentionally public — it ships in the page HTML.
-GOOGLE_CSE_ID = "63bdf77ead11c47f5"
+# Grandfathered whole-web engine (entire-web search works until 2027-01-01;
+# fallback plan after that: the retailer-scoped engine 63bdf77ead11c47f5).
+GOOGLE_CSE_ID = "b61e928e6cd32475a"
 
 # D1 Database
 [[d1_databases]]

@@ -54,7 +54,7 @@ export async function handleFind(request, url, env) {
 <span style="color:var(--ink)">Find</span>
 </nav>
 <h1 class="font-serif text-h2 font-semibold text-ink">${escapeHtml(q ? `Where to find: ${q}` : 'Search the web')}</h1>
-<p class="mt-2 text-body-sm text-ink-2">This category isn't sold on Amazon, so we searched major retailers, marketplaces, and suppliers instead${ref ? ` — sent from <a href="/research/${escapeHtml(ref)}" style="color:var(--accent)">your research report</a>` : ''}.</p>
+<p class="mt-2 text-body-sm text-ink-2">This category isn't sold on Amazon, so here's where to find it across the wider web${ref ? ` — sent from <a href="/research/${escapeHtml(ref)}" style="color:var(--accent)">your research report</a>` : ''}.</p>
 <div class="mt-6 rounded-xl border border-line bg-surface-1 p-4 shadow-card" style="min-height:24rem">
 <div class="gcse-searchresults-only" data-queryParameterName="q"></div>
 </div>
