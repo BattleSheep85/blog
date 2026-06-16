@@ -255,6 +255,31 @@ export function buildAgentTools() {
   return AGENT_TOOLS;
 }
 
+// ─── Direct (no-agent-loop) wrappers for the parallel engine ─────────────────
+// These reuse executeTool with a throwaway high-budget state so the parallel
+// engine can fire searches/reads concurrently without an LLM in the loop.
+
+// Run one search; returns its scored sources (does not mutate shared state).
+export async function runSearch(query, provider, env, recencySensitive) {
+  const state = { searchCount: 0, fetchCount: 0, sources: [], notes: [] };
+  const tc = { function: { name: 'web_search', arguments: JSON.stringify({ query, provider: provider || 'web' }) } };
+  try {
+    await executeTool(tc, state, { maxSearches: 99999, maxFetches: 99999 }, { env, recencySensitive });
+  } catch { /* a single bad provider call never aborts the burst */ }
+  return state.sources;
+}
+
+// Read one page IN PLACE — enriches `source.content` with the full body (and
+// re-scores credibility). Safe to call concurrently on distinct source objects.
+export async function readPageInto(source, env) {
+  const state = { searchCount: 0, fetchCount: 0, sources: [source], notes: [] };
+  const tc = { function: { name: 'read_page', arguments: JSON.stringify({ url: source.url }) } };
+  try {
+    await executeTool(tc, state, { maxSearches: 99999, maxFetches: 99999 }, { env, recencySensitive: true });
+  } catch { /* read failures leave the snippet content untouched */ }
+  return source;
+}
+
 // ─── Tool execution ──────────────────────────────────────────────────────────
 
 // ToolContext shape (runtime — types erased):

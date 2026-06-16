@@ -43,6 +43,7 @@ services:
       - MAX_CONCURRENCY=${MAX_CONCURRENCY:-16}
       - POLL_INTERVAL=${POLL_INTERVAL:-15}
       - MAX_SEARCHES=${MAX_SEARCHES:-0}
+      - JOB_CONCURRENCY=${JOB_CONCURRENCY:-3}
     logging:
       driver: json-file
       options: { max-size: "10m", max-file: "3" }

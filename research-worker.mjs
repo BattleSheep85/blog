@@ -24,6 +24,7 @@ const SERPER_API_KEY = process.env.SERPER_API_KEY;
 const POLL_MS = (Number(process.env.POLL_INTERVAL) || 15) * 1000;
 const MAX_CONCURRENCY = Number(process.env.MAX_CONCURRENCY) || 16;
 const MAX_SEARCHES = Number(process.env.MAX_SEARCHES) || 0;
+const JOB_CONCURRENCY = Number(process.env.JOB_CONCURRENCY) || 3;
 
 if (!SECRET || !OPENROUTER_API_KEY) {
   console.error('FATAL: WORKER_SECRET and OPENROUTER_API_KEY are required');
@@ -80,12 +81,19 @@ async function processJob(job) {
   }
 }
 
-log(`[truerank-worker] polling ${CF_BASE} every ${POLL_MS / 1000}s · concurrency ${MAX_CONCURRENCY}`);
-// Run forever: claim and process one job at a time (each job is internally
-// parallel). Idle-sleep only when the queue is empty so a backlog drains fast.
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+log(`[truerank-worker] polling ${CF_BASE} every ${POLL_MS / 1000}s · ${JOB_CONCURRENCY} jobs in parallel × ${MAX_CONCURRENCY} sub-researchers`);
+// Process up to JOB_CONCURRENCY jobs at once (each internally parallel). Keep the
+// pool full so a flywheel backlog drains fast; idle-sleep when the queue's empty.
+const inflight = new Set();
 for (;;) {
-  let job = null;
-  try { job = await nextJob(); } catch (err) { console.error(`poll error: ${err?.message || err}`); }
-  if (job) await processJob(job);
-  else await new Promise((r) => setTimeout(r, POLL_MS));
+  while (inflight.size < JOB_CONCURRENCY) {
+    let job = null;
+    try { job = await nextJob(); } catch (err) { console.error(`poll error: ${err?.message || err}`); break; }
+    if (!job) break;
+    const p = processJob(job).catch((e) => console.error(`job crashed: ${e?.message || e}`)).finally(() => inflight.delete(p));
+    inflight.add(p);
+  }
+  if (inflight.size === 0) await sleep(POLL_MS);
+  else await Promise.race([...inflight, sleep(POLL_MS)]);
 }
