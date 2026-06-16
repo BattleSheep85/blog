@@ -3,5 +3,6 @@ Allow: /
 Allow: /research/
 Disallow: /api/
 Disallow: /research/new
+Disallow: /find
 
 Sitemap: https://chrisputer.tech/sitemap.xml

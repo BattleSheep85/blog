@@ -44,11 +44,9 @@ CF_ANALYTICS_TOKEN = "ea97bb136135401584c3547bd0d73b66"
 # IndexNow verification key. Intentionally public — the protocol requires it to
 # be hosted at https://chrisputer.tech/<key>.txt (served by the worker route).
 INDEXNOW_KEY = "2b049a04674b366dc9b485b792ad823e"
-# Programmable Search Engine for the /find page (entire-web search with
-# AdSense-for-Search ads). Intentionally public — it ships in the page HTML.
-# Grandfathered whole-web engine (entire-web search works until 2027-01-01;
-# fallback plan after that: the retailer-scoped engine 63bdf77ead11c47f5).
-GOOGLE_CSE_ID = "b61e928e6cd32475a"
+# (GOOGLE_CSE_ID removed 2026-06-16: the /find Programmable Search Engine widget
+# was retired — /find now 302-redirects to a plain Google search, so the CSE id
+# is dead config. No code reads env.GOOGLE_CSE_ID.)
 
 # D1 Database
 [[d1_databases]]

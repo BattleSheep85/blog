@@ -24,11 +24,12 @@ IndexNow, /find). State is mature; the two real defects (both monetization):
       tpc.googlesyndication.com, ep1/ep2.adtrafficquality.google, www.google.com.
       script-src already nonce+strict-dynamic (Google's recommendation); img-src
       already https:. No wildcards, no 'unsafe-eval'. [godmode R2]
-- [ ] LOW (SEO crawl hygiene): robots.txt allows /find (a 302→Google redirect,
-      pointless to crawl); doesn't declare /feed.xml. Could tighten. (/login +
-      /account are noindex,follow — leave crawlable so Google honors noindex.)
-- [ ] LOW (cleanup): GOOGLE_CSE_ID env var (wrangler.toml) is dead since the /find
-      CSE widget was removed (now a plain redirect). Remove the var + the comment.
+- [x] LOW (SEO crawl hygiene): added `Disallow: /find` to robots.txt — /find is an
+      exact-path 302→Google redirect, no crawl value (longest-match beats Allow: /).
+      Left /login + /account crawlable on purpose (noindex,follow needs crawl to be
+      honored); /feed.xml deliberately not in robots (Sitemap directive is the standard). [godmode R3]
+- [x] LOW (cleanup): removed dead GOOGLE_CSE_ID from wrangler.toml (no code reads
+      env.GOOGLE_CSE_ID; the /find CSE widget was retired for a plain redirect). [godmode R3]
 - [ ] WATCH: if AdSense console shows an 'unsafe-eval' or fenced-frame CSP error
       under real traffic, add `'unsafe-eval'` to script-src and/or a
       `fenced-frame-src` directive. Deferred (security cost; add only on real error).
