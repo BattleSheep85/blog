@@ -64,8 +64,11 @@ export async function runResearchPipeline(env, reportId, query) {
         await progress(`Error: ${err.message}`);
         try {
             await env.DB.prepare(
-                `UPDATE research SET status = 'failed', result = ?1, completed_at = ?2 WHERE id = ?3`
+                `UPDATE research SET status = 'failed', result = ?1, completed_at = ?2 WHERE id = ?3 AND status = 'processing'`
             ).bind(JSON.stringify({ error: err.message }), nowEpoch(), reportId).run();
+            // Record any LLM spend the run accrued before throwing so the monthly
+            // governor doesn't under-count (engine attaches it to the error).
+            await incrementMonthlyCost(env, Number(err?.totalCostUsd) || 0);
         } catch (e) {
             console.error('Failed to mark research failed:', e);
         }
@@ -110,9 +113,9 @@ export async function persistEngineResult(env, reportId, query, facets, topicalC
     // report page treat it as a non-result instead of an empty page.
     if (!result || !Array.isArray(result.products) || result.products.length < 1) {
         await report('No reliable products found — marking research failed.');
-        await env.DB.prepare(
+        const failRes = await env.DB.prepare(
             `UPDATE research SET status = 'failed', result = ?1, cost_usd = ?2,
-                synth_model = ?3, completed_at = ?4 WHERE id = ?5`
+                synth_model = ?3, completed_at = ?4 WHERE id = ?5 AND status = 'processing'`
         ).bind(
             JSON.stringify({ error: 'No reliable products found for this query.' }),
             Number.isFinite(totalCostUsd) && totalCostUsd > 0 ? totalCostUsd : null,
@@ -120,8 +123,10 @@ export async function persistEngineResult(env, reportId, query, facets, topicalC
             nowEpoch(),
             reportId,
         ).run();
-        await incrementMonthlyCost(env, totalCostUsd);
-        return { status: 'failed' };
+        // Idempotency latch: only count spend if THIS call transitioned the row
+        // (a replayed /complete changes 0 rows and must not double-count).
+        if ((failRes.meta?.changes ?? 0) === 1) await incrementMonthlyCost(env, totalCostUsd);
+        return { status: (failRes.meta?.changes ?? 0) === 1 ? 'failed' : 'noop' };
     }
 
     // Recover direct Amazon /dp/ links for products missing/redirect-hidden URLs.
@@ -173,7 +178,7 @@ export async function persistEngineResult(env, reportId, query, facets, topicalC
     const updateStmt = env.DB.prepare(
         `UPDATE research SET status = 'complete', summary = ?1, category = ?2,
             result = ?3, sources = ?4, completed_at = ?5, cost_usd = ?6, synth_model = ?7
-         WHERE id = ?8`
+         WHERE id = ?8 AND status = 'processing'`
     ).bind(
         result.summary || '', result.category || topicalCategory || null,
         JSON.stringify(resultJson), JSON.stringify(sourcesJson), nowEpoch(),
@@ -181,11 +186,15 @@ export async function persistEngineResult(env, reportId, query, facets, topicalC
         synthModel || null, reportId,
     );
 
-    await env.DB.batch([deleteStale, ...insertStmts, updateStmt]);
+    const batchRes = await env.DB.batch([deleteStale, ...insertStmts, updateStmt]);
+    // The guarded updateStmt (AND status='processing') is the idempotency latch:
+    // a replayed /complete changes 0 rows here, so skip cost/KV/IndexNow (the
+    // DELETE-then-insert keeps products correct either way).
+    const won = (batchRes[batchRes.length - 1]?.meta?.changes ?? 0) === 1;
+    if (!won) { await report('Already finalized — skipping duplicate completion.'); return { status: 'noop' }; }
     await incrementMonthlyCost(env, totalCostUsd);
     await setFinalReport(env.KV, reportId, resultJson);
     await report(`Research complete: ${result.products.length} products ranked.`);
-
     if (slug) {
         await submitToIndexNow(env, [`https://chrisputer.tech/research/${slug}`]);
     }
@@ -199,6 +208,10 @@ export async function persistEngineResult(env, reportId, query, facets, topicalC
  * so two pollers (or the legacy queue consumer) can't grab the same row.
  */
 export async function claimNextPendingJob(env) {
+    // Respect the monthly budget on the off-CF path too: don't claim new work
+    // once the month's recorded spend hits the cap. Uses D1 SUM(cost_usd) —
+    // immutable per row, so no lost-update race like the KV counter.
+    if (await monthlySpendUsd(env) >= monthlyBudgetUsd(env)) return null;
     const claimed = await env.DB.prepare(
         `UPDATE research SET status = 'processing'
          WHERE id = (SELECT id FROM research WHERE status = 'pending' ORDER BY created_at ASC LIMIT 1)
@@ -235,6 +248,20 @@ export async function incrementMonthlyCost(env, cost) {
     } catch (err) {
         console.error('[orchestrator] monthly cost update failed:', err instanceof Error ? err.message : String(err));
     }
+}
+
+// Month-to-date research spend from D1 (SUM of per-row cost_usd). cost_usd is
+// immutable once written, so SUM has no lost-update race under concurrent off-CF
+// completions — the accurate budget source (the KV counter is a soft cache).
+export async function monthlySpendUsd(env) {
+    try {
+        const d = new Date();
+        const start = Math.floor(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), 1) / 1000);
+        const row = await env.DB.prepare(
+            'SELECT COALESCE(SUM(cost_usd), 0) AS total FROM research WHERE completed_at >= ?1'
+        ).bind(start).first();
+        return Number(row?.total) || 0;
+    } catch { return 0; }
 }
 
 // Current month as 'YYYY-MM', derived from request-time clock.

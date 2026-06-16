@@ -274,7 +274,7 @@ export async function runEngine(
   }
 
   if (!synthContent) {
-    throw new Error('No synthesis response from LLM');
+    throw Object.assign(new Error('No synthesis response from LLM'), { totalCostUsd: state.totalCostUsd });
   }
 
   // Extract JSON — first pass on streamed content.
@@ -310,7 +310,7 @@ export async function runEngine(
     const retryContent = retryResponse.choices?.[0]?.message?.content ?? '';
     parsed = extractJson(retryContent);
     if (parsed === null) {
-      throw new Error(`Invalid JSON from synthesis: ${retryContent.slice(0, 200)}`);
+      throw Object.assign(new Error(`Invalid JSON from synthesis: ${retryContent.slice(0, 200)}`), { totalCostUsd: state.totalCostUsd });
     }
   }
 

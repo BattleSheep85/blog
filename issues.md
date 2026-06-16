@@ -28,6 +28,25 @@ Reconciled stale opens: SERPER "0 products" HIGH, "no /dp/ links" MEDIUM, CF-tok
 user-action, and the Phase-2 result-shape / source-evidence LOWs are now resolved (below).
 Funnel-freeze NOTE: GSC is now verified; still awaiting impressions before new funnel work.
 
+### Code review of the new engine code (godmode R2, adversarial workflow)
+
+7 files reviewed in parallel + findings adversarially verified (1 HIGH, 7 MEDIUM, refuted 1). Fixed:
+- [x] HIGH: off-CF /api/internal/complete had no idempotency latch — a replayed POST
+      double-counted the monthly budget + re-ran paid Serper resolvers + could clobber a
+      complete row. Added `AND status='processing'` guards to all terminal writes and gated
+      cost/KV/IndexNow on the row actually transitioning.
+- [x] MEDIUM: failed runs never recorded LLM spend — engine attaches accrued totalCostUsd to
+      thrown errors; worker forwards it; internal.js + orchestrator catch increment on failure.
+- [x] MEDIUM: KV cost counter races + off-CF claim skipped the cap — added monthlySpendUsd
+      (D1 SUM(cost_usd), no lost-update) + budget gate in claimNextPendingJob + cron fallback.
+- [x] MEDIUM: /complete persisted worker payload without validateResearchResult — now
+      re-validates on the CF trust boundary (20-product cap, image-URL allowlist).
+- [x] MEDIUM: WORKER_SECRET compared non-constant-time — SHA-256 timingSafeEqual.
+- [x] LOW: zero-source burst could synthesize hallucinated products — short-circuit to an
+      honest non-result; worker poll-loop sleep-timer churn cleared; cron fallback → ctx.waitUntil + 6-min cap.
+- [ ] LOW (deferred): metrics.js token compare non-constant-time (read-only); synthesis can
+      double-charge on malformed-but-successful streamed JSON (add cost telemetry / JSON-repair).
+
 ## Debate-verdict remediation (2026-06-12, adversarial debate: 64/100 on-track)
 
 Source: 5-stance repo-grounded debate + judge. Full prescription executed same day.

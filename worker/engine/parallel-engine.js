@@ -120,6 +120,13 @@ export async function runParallelEngine(query, config, openrouterKey, env, onEve
   const byUrl = new Map();
   for (const arr of searchResults) for (const s of (arr || [])) if (s?.url && !byUrl.has(s.url)) byUrl.set(s.url, s);
   const sources = [...byUrl.values()];
+  if (sources.length === 0) {
+    // Honest non-result: never synthesize products from zero evidence. Empty
+    // products → persistEngineResult marks the run 'failed' (no published guess),
+    // and we skip a wasted synthesis call.
+    await emit(onEvent, 'status', 'No sources found — recording an honest non-result.');
+    return { result: { summary: '', category: topicalCategory || '', products: [], methodology: 'No sources found for this query.' }, sources, notes: [], totalCostUsd, synthModel: config.synthModel };
+  }
   await emit(onEvent, 'status', `Gathered ${sources.length} sources. Reading the most credible pages...`);
 
   // 3. Parallel read of the top credible sources (full text → better notes + scoring).
@@ -161,7 +168,7 @@ export async function runParallelEngine(query, config, openrouterKey, env, onEve
     if (Number.isFinite(retry.usage?.cost)) totalCostUsd += retry.usage.cost;
     synthContent = retry.choices?.[0]?.message?.content ?? '';
   }
-  if (!synthContent) throw new Error('No synthesis response from LLM');
+  if (!synthContent) throw Object.assign(new Error('No synthesis response from LLM'), { totalCostUsd });
 
   const extractJson = (raw) => { let s = raw.trim(); const m = s.match(/```(?:json)?\s*([\s\S]*?)```/); if (m) s = m[1].trim(); try { return JSON.parse(s); } catch { return null; } };
   let parsed = extractJson(synthContent);
@@ -170,10 +177,12 @@ export async function runParallelEngine(query, config, openrouterKey, env, onEve
     const retry = await callLLM(openrouterKey, config.synthModel, synthMessages, undefined, config.synthReasoning, config.synthMaxTokens);
     if (Number.isFinite(retry.usage?.cost)) totalCostUsd += retry.usage.cost;
     parsed = extractJson(retry.choices?.[0]?.message?.content ?? '');
-    if (parsed === null) throw new Error('Invalid JSON from synthesis');
+    if (parsed === null) throw Object.assign(new Error('Invalid JSON from synthesis'), { totalCostUsd });
   }
 
-  const result = validateResearchResult(parsed);
+  let result;
+  try { result = validateResearchResult(parsed); }
+  catch (e) { throw Object.assign(e, { totalCostUsd }); }
   await emit(onEvent, 'status', `Report complete: ${result.products.length} products ranked.`);
   return { result, sources, notes, totalCostUsd, synthModel: config.synthModel };
 }

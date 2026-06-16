@@ -77,7 +77,7 @@ async function processJob(job) {
     });
   } catch (err) {
     console.error(`  engine FAILED: ${err?.message || err}`);
-    await complete({ reportId: job.reportId, query: job.query, error: String(err?.message || err).slice(0, 300) });
+    await complete({ reportId: job.reportId, query: job.query, error: String(err?.message || err).slice(0, 300), totalCostUsd: Number(err?.totalCostUsd) || 0 });
   }
 }
 
@@ -95,5 +95,9 @@ for (;;) {
     inflight.add(p);
   }
   if (inflight.size === 0) await sleep(POLL_MS);
-  else await Promise.race([...inflight, sleep(POLL_MS)]);
+  else {
+    let t;
+    await Promise.race([...inflight, new Promise((r) => { t = setTimeout(r, POLL_MS); })]);
+    clearTimeout(t);
+  }
 }

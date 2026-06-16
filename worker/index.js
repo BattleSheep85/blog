@@ -11,7 +11,7 @@ import {
 import { handleGetReport, handleFeedback } from './handlers/report.js';
 import { handleAffiliateClick, handleAffiliateSearch } from './handlers/affiliate.js';
 import { handleProductImage } from './handlers/image.js';
-import { runResearchPipeline } from './pipeline/orchestrator.js';
+import { runResearchPipeline, monthlySpendUsd, monthlyBudgetUsd } from './pipeline/orchestrator.js';
 import { renderResearchResult } from './pages/research-page.js';
 import { renderClarifyPage, extractClarifications } from './pages/clarify.js';
 import { classifyQuery } from './lib/classifier.js';
@@ -320,7 +320,7 @@ export default {
      * consumer crashed mid-pipeline after the status flip but before the final
      * UPDATE, leaving the public page spinning forever.
      */
-    async scheduled(event, env, _ctx) {
+    async scheduled(event, env, ctx) {
         const now = event?.scheduledTime ?? Date.now();
         const cutoff = Math.floor(now / 1000) - 20 * 60;
         try {
@@ -350,20 +350,27 @@ export default {
         // (sequential, capped, but functional) so research never stalls. One per
         // tick keeps the cron within its CPU/time budget.
         if (externalWorkerEnabled(env)) {
-            try {
-                const staleCut = Math.floor(now / 1000) - 5 * 60;
-                const claimed = await env.DB.prepare(
-                    `UPDATE research SET status = 'processing'
-                     WHERE id = (SELECT id FROM research WHERE status = 'pending' AND created_at < ?1 ORDER BY created_at ASC LIMIT 1)
-                     RETURNING id, query`
-                ).bind(staleCut).first();
-                if (claimed) {
-                    console.log(JSON.stringify({ where: 'scheduled-fallback', reportId: claimed.id }));
-                    await runResearchPipeline(env, claimed.id, claimed.query);
+            // Under ctx.waitUntil + a hard cap so a slow CF fallback run can't
+            // block this handler or overlap the next tick; budget-gated like
+            // every other entry path.
+            ctx.waitUntil((async () => {
+                try {
+                    if (await monthlySpendUsd(env) >= monthlyBudgetUsd(env)) return;
+                    const staleCut = Math.floor(now / 1000) - 5 * 60;
+                    const claimed = await env.DB.prepare(
+                        `UPDATE research SET status = 'processing'
+                         WHERE id = (SELECT id FROM research WHERE status = 'pending' AND created_at < ?1 ORDER BY created_at ASC LIMIT 1)
+                         RETURNING id, query`
+                    ).bind(staleCut).first();
+                    if (claimed) {
+                        console.log(JSON.stringify({ where: 'scheduled-fallback', reportId: claimed.id }));
+                        const cap = new Promise((_, rej) => setTimeout(() => rej(new Error('fallback-cap')), 6 * 60_000));
+                        await Promise.race([runResearchPipeline(env, claimed.id, claimed.query), cap]);
+                    }
+                } catch (err) {
+                    console.error(JSON.stringify({ where: 'scheduled-fallback', error: err instanceof Error ? err.message : String(err) }));
                 }
-            } catch (err) {
-                console.error(JSON.stringify({ where: 'scheduled-fallback', error: err instanceof Error ? err.message : String(err) }));
-            }
+            })());
         }
     },
 };
