@@ -33,6 +33,19 @@ IndexNow, /find). State is mature; the two real defects (both monetization):
 - [ ] WATCH: if AdSense console shows an 'unsafe-eval' or fenced-frame CSP error
       under real traffic, add `'unsafe-eval'` to script-src and/or a
       `fenced-frame-src` directive. Deferred (security cost; add only on real error).
+- [ ] DECISION (Google AI visibility): the LIVE /robots.txt is NOT just our static
+      file — Cloudflare prepends a MANAGED block (zone-level "Content Signals" /
+      AI Crawl Control) that sets `Content-Signal: search=yes,ai-train=no` and
+      `Disallow: /` for GPTBot, ClaudeBot, CCBot, Bytespider, Amazonbot,
+      Applebot-Extended, meta-externalagent AND **Google-Extended**. Effects:
+      • Google SEARCH indexing is unaffected (Google-Extended only governs Gemini/
+        AI-training; Googlebot ignores Content-Signal). Our /find Disallow + Sitemap
+        still apply (Googlebot merges the two `User-agent: *` groups).
+      • But content is walled off from AI-answer grounding (incl. Google AI
+        Overviews via Google-Extended) — a strategic call for an affiliate site
+        chasing traffic. NOT auto-changed: this is a genuine fork. To allow AI
+        referral surfaces, disable/relax the managed policy in the Cloudflare
+        dashboard (AI Crawl Control / robots.txt). Left to user.
 
 Verified (NOT issues): static + server-rendered AdSense loaders use the same pub
 ID with no double-injection; per-product Review.reviewRating already makes pages
