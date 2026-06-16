@@ -1,0 +1,248 @@
+[
+  {
+    "model": "google/gemini-2.5-flash",
+    "items": [
+      {
+        "tag": "[listicle][affiliate-conflict]",
+        "kind": "low",
+        "source": "'Top 10 Best Blenders of 2026' — the BlendMax Pro is simply the best blender money can buy, a revolutionary must-have. (Affiliate links throughout.)",
+        "note": "The BlendMax Pro is highly recommended as the 'best blender money can buy' in a listicle, but this recommendation comes with a strong affiliate-conflict credibility flag."
+      },
+      {
+        "tag": "[manufacturer]",
+        "kind": "low",
+        "source": "Acme.com product page: the Acme X1 is the world's most advanced vacuum, rated #1 by customers, with game-changing suction.",
+        "note": "The manufacturer directly claims the Acme X1 is '#1 by customers' and has 'game-changing suction,' describing it as the 'world's most advanced vacuum.' This is direct product marketing from Acme.com."
+      },
+      {
+        "tag": "[hands-on][expert-domain]",
+        "kind": "control",
+        "source": "RTINGS measured the Dell S2725QC at Delta-E 1.2 — best color accuracy of 47 monitors tested — but only 350 nits peak brightness.",
+        "note": "RTINGS, a reputable hands-on and expert-domain source, rated the Dell S2725QC as having the best color accuracy among 47 monitors tested, with a Delta-E of 1.2. However, the peak brightness was measured at only 350 nits."
+      },
+      {
+        "tag": "[community]",
+        "kind": "control",
+        "source": "Reddit r/BuyItForLife (1.8k upvotes): many owners say the Lodge cast-iron skillet lasts 15+ years; several note the rough factory surface needs seasoning.",
+        "note": "Owners on Reddit's r/BuyItForLife (1.8k upvotes) report Lodge cast-iron skillets lasting over 15 years, though some 'rough factory surface needs seasoning'. Credibility: [community]."
+      },
+      {
+        "tag": "[listicle]",
+        "kind": "low",
+        "source": "'Best gaming mouse 2026': the HyperClick Pro is revolutionary, game-changing, and flawless — a must-have for every gamer.",
+        "note": "The HyperClick Pro mouse is described as \"revolutionary, game-changing, and flawless\" and a \"must-have\" for every gamer in a listicle from 2026. Given this is a listicle, this information may be overhyped and should be taken with skepticism. (Credibility: listicle)"
+      },
+      {
+        "tag": "[affiliate-conflict]",
+        "kind": "low",
+        "source": "Sponsored review: SodaStream is the best sparkling-water maker, period — buy one today using our link.",
+        "note": "An affiliated review claims SodaStream is the best sparkling-water maker, with a strong call to action to buy through their link. This source has an affiliate conflict, so the recommendation should be viewed with skepticism, as the claim may be biased by financial incentive."
+      }
+    ]
+  },
+  {
+    "model": "qwen/qwen3.5-397b-a17b",
+    "items": [
+      {
+        "tag": "[listicle][affiliate-conflict]",
+        "kind": "low",
+        "source": "'Top 10 Best Blenders of 2026' — the BlendMax Pro is simply the best blender money can buy, a revolutionary must-have. (Affiliate links throughout.)",
+        "note": ""
+      },
+      {
+        "tag": "[manufacturer]",
+        "kind": "low",
+        "source": "Acme.com product page: the Acme X1 is the world's most advanced vacuum, rated #1 by customers, with game-changing suction.",
+        "note": "[manufacturer] Acme claims the Acme X1 is the 'world's most advanced vacuum' with 'game-changing suction' and a '#1 customer rating,' though these are unverified marketing assertions."
+      },
+      {
+        "tag": "[hands-on][expert-domain]",
+        "kind": "control",
+        "source": "RTINGS measured the Dell S2725QC at Delta-E 1.2 — best color accuracy of 47 monitors tested — but only 350 nits peak brightness.",
+        "note": "[hands-on][expert-domain] RTINGS testing shows the Dell S2725QC achieved a Delta-E of 1.2 (best color accuracy among 47 monitors tested) but has a limited peak brightness of 350 nits."
+      },
+      {
+        "tag": "[community]",
+        "kind": "control",
+        "source": "Reddit r/BuyItForLife (1.8k upvotes): many owners say the Lodge cast-iron skillet lasts 15+ years; several note the rough factory surface needs seasoning.",
+        "note": ""
+      },
+      {
+        "tag": "[listicle]",
+        "kind": "low",
+        "source": "'Best gaming mouse 2026': the HyperClick Pro is revolutionary, game-changing, and flawless — a must-have for every gamer.",
+        "note": ""
+      },
+      {
+        "tag": "[affiliate-conflict]",
+        "kind": "low",
+        "source": "Sponsored review: SodaStream is the best sparkling-water maker, period — buy one today using our link.",
+        "note": ""
+      }
+    ]
+  },
+  {
+    "model": "openai/gpt-5.1-codex",
+    "items": [
+      {
+        "tag": "[listicle][affiliate-conflict]",
+        "kind": "low",
+        "source": "'Top 10 Best Blenders of 2026' — the BlendMax Pro is simply the best blender money can buy, a revolutionary must-have. (Affiliate links throughout.)",
+        "note": "[listicle][affiliate-conflict] “Top 10 Best Blenders of 2026” calls BlendMax Pro “simply the best blender money can buy,” but the article is promotional with affiliate links and lacks substantiated performance details, so claims may be biased."
+      },
+      {
+        "tag": "[manufacturer]",
+        "kind": "low",
+        "source": "Acme.com product page: the Acme X1 is the world's most advanced vacuum, rated #1 by customers, with game-changing suction.",
+        "note": "[manufacturer bias] Acme’s product page markets the Acme X1 vacuum as “world’s most advanced,” “rated #1 by customers,” and having “game-changing suction,” but this is promotional copy that needs independent verification."
+      },
+      {
+        "tag": "[hands-on][expert-domain]",
+        "kind": "control",
+        "source": "RTINGS measured the Dell S2725QC at Delta-E 1.2 — best color accuracy of 47 monitors tested — but only 350 nits peak brightness.",
+        "note": "[hands-on/expert-domain] RTINGS measured the Dell S2725QC at Delta-E 1.2—the best color accuracy among 47 tested monitors—though peak brightness tops out at about 350 nits, indicating superb accuracy but only moderate HDR brightness."
+      },
+      {
+        "tag": "[community]",
+        "kind": "control",
+        "source": "Reddit r/BuyItForLife (1.8k upvotes): many owners say the Lodge cast-iron skillet lasts 15+ years; several note the rough factory surface needs seasoning.",
+        "note": "Note: [community] Reddit r/BuyItForLife thread (1.8k upvotes) reports many owners keeping Lodge cast-iron skillets 15+ years; recurring mention that the factory-finish is rough and requires thorough seasoning to cook smoothly."
+      },
+      {
+        "tag": "[listicle]",
+        "kind": "low",
+        "source": "'Best gaming mouse 2026': the HyperClick Pro is revolutionary, game-changing, and flawless — a must-have for every gamer.",
+        "note": "[listicle] 'Best gaming mouse 2026' article claims the HyperClick Pro is “revolutionary” and “flawless,” but as a hype-heavy listicle (low credibility, affiliate risk) it lacks detailed evidence beyond marketing-style praise."
+      },
+      {
+        "tag": "[affiliate-conflict]",
+        "kind": "low",
+        "source": "Sponsored review: SodaStream is the best sparkling-water maker, period — buy one today using our link.",
+        "note": "note([affiliate] Sponsored praise for SodaStream as “best sparkling-water maker” is likely biased; claims lack supporting evidence."
+      }
+    ]
+  },
+  {
+    "model": "google/gemini-3.5-flash",
+    "items": [
+      {
+        "tag": "[listicle][affiliate-conflict]",
+        "kind": "low",
+        "source": "'Top 10 Best Blenders of 2026' — the BlendMax Pro is simply the best blender money can buy, a revolutionary must-have. (Affiliate links throughout.)",
+        "note": "Here is the JSON request"
+      },
+      {
+        "tag": "[manufacturer]",
+        "kind": "low",
+        "source": "Acme.com product page: the Acme X1 is the world's most advanced vacuum, rated #1 by customers, with game-changing suction.",
+        "note": "Here is the JSON requested:\n"
+      },
+      {
+        "tag": "[hands-on][expert-domain]",
+        "kind": "control",
+        "source": "RTINGS measured the Dell S2725QC at Delta-E 1.2 — best color accuracy of 47 monitors tested — but only 350 nits peak brightness.",
+        "note": "Here is the JSON"
+      },
+      {
+        "tag": "[community]",
+        "kind": "control",
+        "source": "Reddit r/BuyItForLife (1.8k upvotes): many owners say the Lodge cast-iron skillet lasts 15+ years; several note the rough factory surface needs seasoning.",
+        "note": "Here is the JSON"
+      },
+      {
+        "tag": "[listicle]",
+        "kind": "low",
+        "source": "'Best gaming mouse 2026': the HyperClick Pro is revolutionary, game-changing, and flawless — a must-have for every gamer.",
+        "note": "Here is the JSON requested:\n"
+      },
+      {
+        "tag": "[affiliate-conflict]",
+        "kind": "low",
+        "source": "Sponsored review: SodaStream is the best sparkling-water maker, period — buy one today using our link.",
+        "note": "Here is the JSON requested:\n```json"
+      }
+    ]
+  },
+  {
+    "model": "anthropic/claude-opus-4.8",
+    "items": [
+      {
+        "tag": "[listicle][affiliate-conflict]",
+        "kind": "low",
+        "source": "'Top 10 Best Blenders of 2026' — the BlendMax Pro is simply the best blender money can buy, a revolutionary must-have. (Affiliate links throughout.)",
+        "note": "A 'Top 10 Best Blenders of 2026' listicle ranks the BlendMax Pro as the 'best blender money can buy,' calling it a 'revolutionary must-have.' CREDIBILITY: LOW — this is a listicle with affiliate links throughout, creating a financial conflict of interest. The praise is vague hyperbole with no specific specs, testing methodology, or measured performance data. Treat as promotional, not evidence; corroborate any claims with hands-on or expert-domain sources before including in the report."
+      },
+      {
+        "tag": "[manufacturer]",
+        "kind": "low",
+        "source": "Acme.com product page: the Acme X1 is the world's most advanced vacuum, rated #1 by customers, with game-changing suction.",
+        "note": "Manufacturer (Acme.com) product page claims the Acme X1 is the 'world's most advanced vacuum,' '#1 rated by customers,' with 'game-changing suction.' NOTE: Source is the manufacturer's own marketing page—claims are promotional, unverified, and lack specifics (no suction figures, no independent rating source cited). Treat superlatives as unsubstantiated; seek independent hands-on/expert testing for actual suction specs and verifiable customer ratings."
+      },
+      {
+        "tag": "[hands-on][expert-domain]",
+        "kind": "control",
+        "source": "RTINGS measured the Dell S2725QC at Delta-E 1.2 — best color accuracy of 47 monitors tested — but only 350 nits peak brightness.",
+        "note": "RTINGS [hands-on][expert-domain] measured Dell S2725QC at Delta-E 1.2 — best color accuracy of 47 monitors tested, but limited 350 nits peak brightness. High-credibility lab testing; strong color accuracy claim well-supported, brightness is a notable weakness."
+      },
+      {
+        "tag": "[community]",
+        "kind": "control",
+        "source": "Reddit r/BuyItForLife (1.8k upvotes): many owners say the Lodge cast-iron skillet lasts 15+ years; several note the rough factory surface needs seasoning.",
+        "note": "[community] Reddit r/BuyItForLife (1.8k upvotes): Numerous owners report the Lodge cast-iron skillet lasts 15+ years, indicating strong durability/longevity. Several note the rough factory surface requires seasoning to perform well. Credibility: community/anecdotal consensus with high engagement (1.8k upvotes)—useful as a real-owner longevity signal but not lab-verified; the seasoning complaint is a recurring, plausible usability caveat."
+      },
+      {
+        "tag": "[listicle]",
+        "kind": "low",
+        "source": "'Best gaming mouse 2026': the HyperClick Pro is revolutionary, game-changing, and flawless — a must-have for every gamer.",
+        "note": "[listicle] A 'Best gaming mouse 2026' roundup calls the HyperClick Pro 'revolutionary, game-changing, and flawless — a must-have for every gamer.' LOW credibility: listicle source with vague hyperbolic marketing language and no specifics, measurements, or hands-on testing. No concrete specs, performance data, or comparative evidence provided. Treat as promotional buzz, not substantiated; needs corroboration from hands-on or expert reviews."
+      },
+      {
+        "tag": "[affiliate-conflict]",
+        "kind": "low",
+        "source": "Sponsored review: SodaStream is the best sparkling-water maker, period — buy one today using our link.",
+        "note": "[affiliate-conflict] Sponsored review claims SodaStream is 'the best sparkling-water maker, period' and pushes readers to buy via their affiliate link. Source has a financial conflict of interest and offers no substantive evidence or comparison—treat this endorsement as promotional/unreliable, not as objective product assessment."
+      }
+    ]
+  },
+  {
+    "model": "deepseek/deepseek-v4-pro",
+    "items": [
+      {
+        "tag": "[listicle][affiliate-conflict]",
+        "kind": "low",
+        "source": "'Top 10 Best Blenders of 2026' — the BlendMax Pro is simply the best blender money can buy, a revolutionary must-have. (Affiliate links throughout.)",
+        "note": "Claims BlendMax Pro is the best blender but this is from a listicle with affiliate conflicts, so its enthusiastic recommendation is likely biased and of low credibility."
+      },
+      {
+        "tag": "[manufacturer]",
+        "kind": "low",
+        "source": "Acme.com product page: the Acme X1 is the world's most advanced vacuum, rated #1 by customers, with game-changing suction.",
+        "note": "Manufacturer claims: 'world's most advanced vacuum, rated #1 by customers, game-changing suction.' Note: Source is the product page (self-claimed); these superlatives are likely marketing copy and lack independent verification."
+      },
+      {
+        "tag": "[hands-on][expert-domain]",
+        "kind": "control",
+        "source": "RTINGS measured the Dell S2725QC at Delta-E 1.2 — best color accuracy of 47 monitors tested — but only 350 nits peak brightness.",
+        "note": "Color accuracy: Delta-E 1.2 measured by RTINGS. Brightness: 350 nits peak."
+      },
+      {
+        "tag": "[community]",
+        "kind": "control",
+        "source": "Reddit r/BuyItForLife (1.8k upvotes): many owners say the Lodge cast-iron skillet lasts 15+ years; several note the rough factory surface needs seasoning.",
+        "note": "From a community discussion with high user consensus (1.8k upvotes), multiple owners report the Lodge cast-iron skillet lasts 15+ years. Several users note that the factory surface is rough and requires seasoning for optimal use."
+      },
+      {
+        "tag": "[listicle]",
+        "kind": "low",
+        "source": "'Best gaming mouse 2026': the HyperClick Pro is revolutionary, game-changing, and flawless — a must-have for every gamer.",
+        "note": "From a listicle (low-evidence source with potential affiliate conflict), the HyperClick Pro receives extremely positive subjective praise ('revolutionary, game-changing, flawless, must-have'). This should be treated as a strong recommendation claim requiring hands-on or expert verification."
+      },
+      {
+        "tag": "[affiliate-conflict]",
+        "kind": "low",
+        "source": "Sponsored review: SodaStream is the best sparkling-water maker, period — buy one today using our link.",
+        "note": "The claim that SodaStream is the 'best' sparkling-water maker appears in a sponsored review with an affiliate conflict, so this endorsement should be treated as biased and not taken at face value as impartial evidence."
+      }
+    ]
+  }
+]

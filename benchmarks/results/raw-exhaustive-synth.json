@@ -1,0 +1,1940 @@
+{
+  "role": "exhaustive-synth",
+  "spend": 0.7026,
+  "rows": [
+    {
+      "model": "anthropic/claude-opus-4.8",
+      "json_rate": 1,
+      "schema": 1,
+      "trap_ranked_top2": 0,
+      "trap_present_count": 0,
+      "avg_cost_usd": 0.10687,
+      "total_cost_usd": 0.2137,
+      "p50_latency_ms": 41788,
+      "errors": 0,
+      "runs": [
+        {
+          "query": "best budget mechanical keyboard",
+          "trap": "GamerWidget Pro",
+          "json_valid": true,
+          "schema": 1,
+          "products_count": 3,
+          "product_names": [
+            "Keychron V1 (75% Hot-Swap Mechanical Keyboard)",
+            "Royal Kludge RK84",
+            "NuPhy Air75"
+          ],
+          "trap_present": false,
+          "trap_rank": null,
+          "output": {
+            "summary": "Among budget mechanical keyboards, the Keychron V1 is the clear top pick, backed by hands-on lab testing from RTINGS (measured 8ms latency, excellent stabilizers, PBT keycaps) and corroborated by Tom's Hardware as their value pick. The Royal Kludge RK84 and NuPhy Air75 are strong secondary picks supported by hands-on and community sources. The 'GamerWidget Pro' is omitted: its only support is a manufacturer page and a single affiliate-conflicted listicle full of marketing copy with zero testing behind it.",
+            "category": "mechanical keyboards",
+            "buyersGuide": {
+              "howToChoose": "Prioritize typing feel and build over flashy spec claims: look for hot-swappable PCBs (so you can change switches without soldering), gasket mounting or quality stabilizers to reduce rattle, and doubleshot PBT keycaps that resist shine. For gaming, low input latency matters — measured figures under ~10ms are competitive, but most marketed polling-rate numbers are irrelevant in practice. Decide between wired-only (cheaper, slightly lower latency) and wireless (Bluetooth/2.4GHz, more flexible) based on your setup. Trust products with independent hands-on lab testing over those with only 'best ever' marketing claims, and budget around $70-$120 for a quality 75% board.",
+              "pitfalls": [
+                "Buying no-name boards that advertise themselves as the 'world's #1 best keyboard' with no independent testing — these claims are marketing, not data.",
+                "Ignoring stabilizer quality: even good budget boards like the RK84 can ship with stabilizer rattle, which sounds bad until you tune or lube them.",
+                "Overpaying for RGB and gaming branding while getting worse switches, keycaps, and acoustics than a cheaper enthusiast-focused board."
+              ],
+              "marketingToIgnore": [
+                "'Next-generation premium experience' and '#1 rated by customers everywhere' — these are unverifiable phrases from manufacturer/affiliate pages, not test results.",
+                "Sky-high polling rate / 'million keystroke' lifespan claims — they rarely affect real typing or gaming feel and every modern switch outlasts normal use.",
+                "Generic 'gamer' RGB lighting marketing — lighting has no bearing on latency, typing feel, or durability, which are what actually matter."
+              ]
+            },
+            "products": [
+              {
+                "name": "Keychron V1 (75% Hot-Swap Mechanical Keyboard)",
+                "brand": "Keychron",
+                "price": 84.99,
+                "rating": 4.6,
+                "productUrl": "",
+                "manufacturerUrl": "https://www.keychron.com",
+                "imageUrl": "",
+                "pros": [
+                  "Best measured typing experience for the money per RTINGS hands-on lab testing",
+                  "Low measured input latency (~8ms), competitive for gaming and typing",
+                  "Doubleshot PBT keycaps and excellent stabilizers out of the box",
+                  "Hot-swappable PCB lets you change switches without soldering"
+                ],
+                "cons": [
+                  "Wired-only at this price tier (no wireless on base V1)",
+                  "75% layout drops dedicated function row some users want"
+                ],
+                "specs": {
+                  "layout": "75%",
+                  "latency": "8ms (RTINGS measured)",
+                  "keycaps": "Doubleshot PBT",
+                  "hotSwap": "Yes",
+                  "connection": "Wired"
+                },
+                "metadata": {
+                  "availability": "In stock (2026)",
+                  "releaseDate": "Keychron V-series"
+                },
+                "verdict": "The strongest budget pick by a clear margin: RTINGS' hands-on testing of 30 keyboards rates its typing feel best in class and measured 8ms latency, with Tom's Hardware independently naming it their value pick. Two non-conflicted expert/hands-on sources agree, making this a high-confidence recommendation.",
+                "rank": 1,
+                "bestFor": "Most people wanting the best typing feel and value under $100"
+              },
+              {
+                "name": "Royal Kludge RK84",
+                "brand": "Royal Kludge",
+                "price": 79.99,
+                "rating": 4.2,
+                "productUrl": "",
+                "manufacturerUrl": "https://www.rkgaming.com",
+                "imageUrl": "",
+                "pros": [
+                  "Hot-swappable and wireless (Bluetooth + 2.4GHz) at a low price",
+                  "Gasket-mount construction praised by community for sound and feel",
+                  "Strong value pick per Tom's Hardware and r/MechanicalKeyboards"
+                ],
+                "cons": [
+                  "QC variance: several users report stabilizer rattle out of the box (fixable with tuning/lube)",
+                  "Build and acoustics need DIY tuning to reach their potential"
+                ],
+                "specs": {
+                  "layout": "75%",
+                  "hotSwap": "Yes",
+                  "connection": "Bluetooth + 2.4GHz wireless + wired",
+                  "mount": "Gasket"
+                },
+                "metadata": {
+                  "availability": "Widely available (2026)"
+                },
+                "verdict": "A genuine wireless budget king flagged by Tom's Hardware (expert) and Reddit community alike, but you must accept potential stabilizer rattle that requires tuning. Best for tinkerers who want wireless and hot-swap cheaply and don't mind a bit of fixing.",
+                "rank": 2,
+                "bestFor": "Budget buyers who want wireless + hot-swap and are willing to tune stabilizers"
+              },
+              {
+                "name": "NuPhy Air75",
+                "brand": "NuPhy",
+                "price": 109.95,
+                "rating": 4.3,
+                "productUrl": "",
+                "manufacturerUrl": "https://nuphy.com",
+                "imageUrl": "",
+                "pros": [
+                  "Low-profile design praised in hands-on testing and by the community",
+                  "Wireless and portable, good for slim desk setups and laptops",
+                  "Named a top budget pick in two-week hands-on video testing"
+                ],
+                "cons": [
+                  "Slightly pricier than other budget picks, edging out of true-budget territory",
+                  "Low-profile feel is divisive and not for everyone who wants full-travel switches"
+                ],
+                "specs": {
+                  "layout": "75% low-profile",
+                  "connection": "Wireless + wired",
+                  "profile": "Low-profile"
+                },
+                "metadata": {
+                  "availability": "Available (2026)"
+                },
+                "verdict": "A solid low-profile alternative endorsed by hands-on testing and the r/MechanicalKeyboards community, but at ~$110 it's the priciest pick here and the slim profile won't suit everyone. Best for those prioritizing portability and a thin desk footprint.",
+                "rank": 3,
+                "bestFor": "Buyers wanting a portable, low-profile wireless board"
+              }
+            ],
+            "comparisonTable": [
+              {
+                "feature": "Price",
+                "Keychron V1": "$84.99",
+                "Royal Kludge RK84": "$79.99",
+                "NuPhy Air75": "$109.95"
+              },
+              {
+                "feature": "Layout",
+                "Keychron V1": "75%",
+                "Royal Kludge RK84": "75%",
+                "NuPhy Air75": "75% low-profile"
+              },
+              {
+                "feature": "Hot-swap",
+                "Keychron V1": "Yes",
+                "Royal Kludge RK84": "Yes",
+                "NuPhy Air75": "Yes"
+              },
+              {
+                "feature": "Wireless",
+                "Keychron V1": "No",
+                "Royal Kludge RK84": "Yes (BT+2.4GHz)",
+                "NuPhy Air75": "Yes"
+              },
+              {
+                "feature": "Independent testing",
+                "Keychron V1": "RTINGS + Tom's Hardware",
+                "Royal Kludge RK84": "Tom's + hands-on video + Reddit",
+                "NuPhy Air75": "Hands-on video + Reddit"
+              }
+            ],
+            "categories": [
+              {
+                "name": "Best Overall Value",
+                "productName": "Keychron V1 (75% Hot-Swap Mechanical Keyboard)",
+                "reason": "Best measured typing feel and 8ms latency per RTINGS, corroborated by Tom's Hardware."
+              },
+              {
+                "name": "Best Budget Wireless",
+                "productName": "Royal Kludge RK84",
+                "reason": "Wireless, hot-swap and gasket-mount for ~$80, the community-favorite budget wireless option."
+              },
+              {
+                "name": "Best Low-Profile",
+                "productName": "NuPhy Air75",
+                "reason": "Slim, portable design praised in hands-on testing for thin-desk and laptop setups."
+              }
+            ],
+            "pitfalls": [
+              "Falling for 'world's #1 best keyboard' marketing like the GamerWidget Pro, which has no independent testing — only a manufacturer page and an affiliate listicle.",
+              "Assuming all budget boards ship perfectly tuned; the RK84 often needs stabilizer work to sound its best.",
+              "Buying based on RGB and gamer branding instead of switch, keycap, and stabilizer quality.",
+              "Treating frequency of mention in 'Top 10' lists as evidence of quality when those lists earn affiliate commissions."
+            ],
+            "methodology": "6 sources analyzed from 6 providers (RTINGS, Tom's Hardware, a hands-on YouTube test, Reddit, plus a manufacturer page and an affiliate listicle). Confidence is HIGH for the Keychron V1 (two independent non-conflicted hands-on/expert sources) and MODERATE for the RK84 and NuPhy Air75 (one expert/hands-on source plus community). The 'GamerWidget Pro' was OMITTED: its only support is a low-score [manufacturer] page and a single [listicle][affiliate-conflict] source with pure marketing copy and no testing — near-zero evidence. All sources are dated 2026 and within freshness limits."
+          },
+          "costUsd": 0.1085931,
+          "latencyMs": 40369,
+          "err": null
+        },
+        {
+          "query": "best noise cancelling headphones under $200",
+          "trap": "AuraSonic Elite",
+          "json_valid": true,
+          "schema": 1,
+          "products_count": 3,
+          "product_names": [
+            "Sony WH-CH720N Wireless Noise Cancelling Headphones",
+            "Soundcore Space One Wireless Noise Cancelling Headphones",
+            "Sennheiser Accentum Wireless Headphones"
+          ],
+          "trap_present": false,
+          "trap_rank": null,
+          "output": {
+            "summary": "Based on hands-on testing by RTINGS and SoundGuys, the Sony WH-CH720N is the strongest ANC pick under $200, with the Soundcore Space One as the value champion near $100 and the Sennheiser Accentum favored for sound quality over ANC. The 'AuraSonic Elite' appearing in a sponsored listicle is omitted: its only sources are a manufacturer page and an affiliate-conflicted SEO listicle, with no independent testing whatsoever.",
+            "category": "noise cancelling headphones",
+            "buyersGuide": {
+              "howToChoose": "For ANC headphones under $200, prioritize measured low-frequency attenuation (the rumble of planes, buses, and HVAC) over headline 'noise cancelling' claims, since that's where ANC actually earns its keep. Look for hands-on measurement data from rigs (RTINGS, SoundGuys) rather than spec sheets, because ANC depth is impossible to verify from marketing copy. Decide whether you value ANC depth or sound signature more — at this price you usually trade one for the other, as the Sennheiser-vs-Sony comparison shows. Battery life, comfort for long wear, and a decent companion app with EQ matter more day-to-day than exotic codec support. Finally, weigh fit and clamp force, since a poor seal destroys both ANC and bass regardless of the electronics inside.",
+              "pitfalls": [
+                "Buying based on a 'best of 2026' listicle that is sponsored — these rank whichever brand paid, not whichever performs in testing.",
+                "Assuming a higher decibel-reduction number on the box means better real-world ANC; without a controlled test rig those figures are unverifiable marketing.",
+                "Ignoring fit and seal — even excellent ANC electronics fail if the earcups don't seal, which guts both noise reduction and low-end response."
+              ],
+              "marketingToIgnore": [
+                "'Most advanced noise cancelling in the world' / '#1 rated' with no cited measurement — these are self-awarded superlatives, not test results.",
+                "'Revolutionary' and 'premium audio experience' — vague mood words that describe no measurable performance characteristic.",
+                "Codec name-dropping (LDAC, aptX Adaptive) as a quality proxy; at this price the DAC, drivers, and tuning matter far more than which codec is supported."
+              ]
+            },
+            "products": [
+              {
+                "name": "Sony WH-CH720N Wireless Noise Cancelling Headphones",
+                "brand": "Sony",
+                "price": 149.99,
+                "rating": 4.5,
+                "productUrl": "",
+                "manufacturerUrl": "https://electronics.sony.com",
+                "imageUrl": "",
+                "pros": [
+                  "RTINGS hands-on rig measured the strongest low-frequency ANC attenuation of any sub-$200 model tested across 25 headphones",
+                  "Neutral-warm sound signature noted by RTINGS, suitable for varied content without obvious coloration",
+                  "Lightweight design and corroborated as a standout by a second independent rig (SoundGuys)"
+                ],
+                "cons": [
+                  "Build is plasticky and feels less premium than the price-class leaders above $200",
+                  "ANC, while best-in-class for the budget, still trails flagship Sony/Bose models that cost more"
+                ],
+                "specs": {
+                  "type": "Over-ear wireless",
+                  "anc": "Active, strong low-frequency attenuation (RTINGS-measured)"
+                },
+                "metadata": {
+                  "modelNumber": "WH-CH720N",
+                  "availability": "Widely available 2026"
+                },
+                "verdict": "Two independent hands-on test rigs (RTINGS, SoundGuys) name this the best ANC under $200, citing measured low-frequency isolation. It's the safest evidence-backed pick despite an unremarkable plastic build.",
+                "rank": 1,
+                "bestFor": "Buyers who want the most measured ANC performance for the money"
+              },
+              {
+                "name": "Soundcore Space One Wireless Noise Cancelling Headphones",
+                "brand": "Soundcore (Anker)",
+                "price": 99.99,
+                "rating": 4.3,
+                "productUrl": "",
+                "manufacturerUrl": "https://www.soundcore.com",
+                "imageUrl": "",
+                "pros": [
+                  "Named the value champion by RTINGS hands-on testing at roughly $100",
+                  "Corroborated as a standout under $200 by SoundGuys' test rig and by r/headphones community owners",
+                  "Long battery life called out in research notes; strong ANC relative to its price"
+                ],
+                "cons": [
+                  "ANC and overall fidelity fall short of the Sony WH-CH720N in head-to-head measurement",
+                  "Anker/Soundcore companion-app and long-term durability vary; treat note enthusiasm about battery as approximate"
+                ],
+                "specs": {
+                  "type": "Over-ear wireless",
+                  "anc": "Active, strong for price tier"
+                },
+                "metadata": {
+                  "availability": "Widely available 2026",
+                  "priceTier": "~$100"
+                },
+                "verdict": "The pick if budget is the priority — RTINGS calls it the value champion at ~$100 and SoundGuys plus community owners back it up. It can't match the Sony's measured ANC depth, but it's the best dollar-for-dollar option here.",
+                "rank": 2,
+                "bestFor": "Budget buyers who want most of the ANC performance for half the price"
+              },
+              {
+                "name": "Sennheiser Accentum Wireless Headphones",
+                "brand": "Sennheiser",
+                "price": 179.99,
+                "rating": 4.2,
+                "productUrl": "",
+                "manufacturerUrl": "https://www.sennheiser-hearing.com",
+                "imageUrl": "",
+                "pros": [
+                  "SoundGuys hands-on recommends it specifically for those prioritizing sound quality over ANC",
+                  "Sennheiser sound tuning preferred over rivals in r/headphones community discussion",
+                  "Sits comfortably under the $200 ceiling while delivering audiophile-leaning tonality"
+                ],
+                "cons": [
+                  "ANC is measurably weaker than the Sony WH-CH720N — a poor fit if isolation is your top need",
+                  "Reddit owners note the weaker ANC directly, so it's a sound-first compromise rather than a noise-first one"
+                ],
+                "specs": {
+                  "type": "Over-ear wireless",
+                  "anc": "Active, weaker than class leaders"
+                },
+                "metadata": {
+                  "availability": "Available 2026"
+                },
+                "verdict": "Choose this only if you weight sound quality above noise cancelling — SoundGuys and community owners agree it sounds better but cancels less. As a pure ANC buy it loses to the Sony and even the cheaper Soundcore.",
+                "rank": 3,
+                "bestFor": "Listeners who prize audio fidelity and treat ANC as secondary"
+              }
+            ],
+            "comparisonTable": [
+              {
+                "feature": "Price (USD)",
+                "Sony WH-CH720N": "$149.99",
+                "Soundcore Space One": "$99.99",
+                "Sennheiser Accentum": "$179.99"
+              },
+              {
+                "feature": "ANC strength (measured)",
+                "Sony WH-CH720N": "Best under $200",
+                "Soundcore Space One": "Strong for price",
+                "Sennheiser Accentum": "Weaker"
+              },
+              {
+                "feature": "Sound emphasis",
+                "Sony WH-CH720N": "Neutral-warm",
+                "Soundcore Space One": "Consumer/bassy",
+                "Sennheiser Accentum": "Sound-quality focused"
+              },
+              {
+                "feature": "Top source kind",
+                "Sony WH-CH720N": "hands-on/expert (RTINGS+SoundGuys)",
+                "Soundcore Space One": "hands-on/expert + community",
+                "Sennheiser Accentum": "hands-on/expert + community"
+              }
+            ],
+            "categories": [
+              {
+                "name": "Best Overall ANC",
+                "productName": "Sony WH-CH720N Wireless Noise Cancelling Headphones",
+                "reason": "Highest measured low-frequency isolation under $200 per RTINGS and SoundGuys rigs."
+              },
+              {
+                "name": "Best for Budget",
+                "productName": "Soundcore Space One Wireless Noise Cancelling Headphones",
+                "reason": "RTINGS-named value champion at ~$100 with strong ANC for the price."
+              },
+              {
+                "name": "Best for Sound Quality",
+                "productName": "Sennheiser Accentum Wireless Headphones",
+                "reason": "SoundGuys and community owners prefer its tonality, accepting weaker ANC."
+              }
+            ],
+            "pitfalls": [
+              "Trusting the 'AuraSonic Elite' or similar names that appear only in sponsored listicles and the brand's own page — no independent test data exists for them.",
+              "Equating frequency of mention with quality; the most-hyped product here (AuraSonic) is the least verified.",
+              "Buying the Accentum expecting class-leading ANC — its strength is sound, not isolation."
+            ],
+            "methodology": "5 sources from 5 providers analyzed. High confidence in the top three picks, each backed by at least one hands-on/expert-domain rig (RTINGS score=92, SoundGuys score=85) plus community corroboration. The 'AuraSonic Elite' was omitted entirely: its only support is a manufacturer page (score=28) and a sponsored affiliate-conflicted listicle (score=7), with zero independent testing. Sources are current to 2026 and within the freshness window. No verified retailer product URLs matched the ranked items (the only Amazon URL provided belonged to the omitted listicle), so productUrl fields were left empty rather than fabricated."
+          },
+          "costUsd": 0.1051479,
+          "latencyMs": 41788,
+          "err": null
+        }
+      ]
+    },
+    {
+      "model": "openai/gpt-5.5",
+      "json_rate": 1,
+      "schema": 1,
+      "trap_ranked_top2": 0,
+      "trap_present_count": 0,
+      "avg_cost_usd": 0.11843,
+      "total_cost_usd": 0.2369,
+      "p50_latency_ms": 73786,
+      "errors": 0,
+      "runs": [
+        {
+          "query": "best budget mechanical keyboard",
+          "trap": "GamerWidget Pro",
+          "json_valid": true,
+          "schema": 1,
+          "products_count": 3,
+          "product_names": [
+            "Keychron V1 QMK/VIA Custom Mechanical Keyboard",
+            "Royal Kludge RK84 75% Wireless Mechanical Keyboard",
+            "NuPhy Air75 Low-Profile Wireless Mechanical Keyboard"
+          ],
+          "trap_present": false,
+          "trap_rank": null,
+          "output": {
+            "summary": "The strongest budget mechanical-keyboard recommendation from the available evidence is the Keychron V1: it has hands-on lab support from RTINGS and an expert-domain value-pick recommendation from Tom’s Hardware. The Royal Kludge RK84 is the better pick if you need wireless on a tight budget, but community reports and hands-on notes flag stabilizer rattle/QC variance. I omitted the GamerWidget Pro because its support is only a manufacturer page plus an affiliate listicle using unsupported marketing claims.",
+            "category": "mechanical keyboards",
+            "buyersGuide": {
+              "howToChoose": "For a budget mechanical keyboard, prioritize the fundamentals that affect daily use: layout, switch feel, stabilizer quality, keycap material, latency, and whether the PCB is hot-swappable. Wired boards usually give better value and lower latency, while wireless budget boards add convenience but often compromise case feel, stabilizers, or firmware polish. If you care about long-term modding, choose a hot-swappable board with QMK/VIA or at least easy switch access. For typing, stabilizer tuning and keycap quality matter more than RGB; for gaming, measured latency and reliable rollover matter more than vague “pro gamer” branding.",
+              "pitfalls": [
+                "Buying a no-name board because a 2026 listicle calls it the “#1 best keyboard” is risky; without hands-on latency, stabilizer, and build-quality testing, the claim is basically advertising.",
+                "Assuming every hot-swappable keyboard is equally moddable is a mistake; some budget boards support only certain switch pin layouts or have cramped cases that make tuning harder.",
+                "Choosing a compact layout without checking missing keys can backfire; 75% boards are great for desks, but some users still need a numpad, full function row spacing, or dedicated navigation cluster.",
+                "Treating wireless as automatically better can be wrong for gaming; many budget wireless boards have higher or less consistent latency than comparable wired boards.",
+                "Ignoring stabilizers is one of the most common budget-board mistakes; rattly spacebars, Enter keys, and Backspace keys can make an otherwise decent board feel cheap."
+              ],
+              "marketingToIgnore": [
+                "Ignore claims like “revolutionary,” “game-changing,” or “world’s #1” unless they are backed by hands-on measurements or long-term testing.",
+                "Do not overvalue RGB count, lighting modes, or translucent case effects; they rarely improve typing feel, durability, or latency.",
+                "Be skeptical of vague “gaming-grade” language without measured latency figures; a lab-tested 8 ms wired board is more meaningful than a brand’s esports slogan.",
+                "Do not assume gasket-mount wording guarantees a soft premium feel; budget implementations vary widely and can still sound hollow or inconsistent.",
+                "Ignore inflated MSRP discounts if the board is always sold at the lower price; judge it by real street price and tested performance."
+              ]
+            },
+            "products": [
+              {
+                "name": "Keychron V1 QMK/VIA Custom Mechanical Keyboard",
+                "brand": "Keychron",
+                "price": 84,
+                "rating": 4.7,
+                "productUrl": "https://www.keychron.com/products/keychron-v1-qmk-via-custom-mechanical-keyboard",
+                "manufacturerUrl": "https://www.keychron.com",
+                "imageUrl": "",
+                "pros": [
+                  "RTINGS hands-on lab testing measured low 8 ms latency for the price class.",
+                  "Strong typing feel for the money, with excellent stabilizers called out by RTINGS.",
+                  "Doubleshot PBT keycaps are more durable and less shine-prone than typical cheap ABS caps.",
+                  "QMK/VIA support gives unusually good key remapping and firmware flexibility at this price.",
+                  "Tom’s Hardware also names it a value pick, giving it corroboration beyond one review."
+                ],
+                "cons": [
+                  "Wired-only configuration is less convenient if you need Bluetooth or 2.4 GHz wireless.",
+                  "75% layout omits the numpad and may require adjustment for full-size keyboard users.",
+                  "Price can rise depending on configuration, switches, and whether you buy barebones or assembled.",
+                  "The case is still a budget plastic-board design, not a heavy aluminum custom keyboard."
+                ],
+                "specs": {
+                  "layout": "75%",
+                  "connectivity": "USB-C wired",
+                  "hotSwappable": "Yes",
+                  "firmware": "QMK/VIA",
+                  "keycaps": "Doubleshot PBT per RTINGS notes",
+                  "measuredLatency": "8 ms per RTINGS hands-on testing"
+                },
+                "metadata": {
+                  "modelNumber": "V1",
+                  "availability": "Current as of 2026 source notes",
+                  "sourceConfidence": "High: RTINGS hands-on/expert-domain plus Tom’s Hardware expert-domain",
+                  "bestEvidence": "RTINGS tested 30 budget keyboards"
+                },
+                "verdict": "This is the budget mechanical keyboard I would buy first because the recommendation is backed by hands-on lab testing, not just SEO listicles. The lack of wireless is real, but the typing feel, stabilizers, latency, PBT keycaps, and QMK/VIA support make it the most trustworthy all-around pick.",
+                "rank": 1,
+                "bestFor": "Most people who want the best typing and gaming value in a budget wired mechanical keyboard"
+              },
+              {
+                "name": "Royal Kludge RK84 75% Wireless Mechanical Keyboard",
+                "brand": "Royal Kludge",
+                "price": 79.99,
+                "rating": 4.1,
+                "productUrl": "https://rkgamingstore.com/products/rk84-75-percent-keyboard",
+                "manufacturerUrl": "https://rkgamingstore.com",
+                "imageUrl": "",
+                "pros": [
+                  "Offers wireless connectivity at a lower price than many enthusiast-oriented 75% boards.",
+                  "Hot-swappable design makes switch replacement and basic modding more accessible.",
+                  "Tom’s Hardware calls it a solid wireless budget option, giving it expert-domain support.",
+                  "Hands-on YouTube testing described it as great value if the stabilizers are tuned.",
+                  "Compact 75% layout keeps arrow keys and function keys while saving desk space."
+                ],
+                "cons": [
+                  "Community reports mention QC variance and stabilizer rattle out of the box.",
+                  "May need stabilizer tuning to sound and feel its best, which weakens its appeal for beginners.",
+                  "Wireless budget boards can have less predictable latency than good wired options.",
+                  "Firmware and software polish are generally not as strong as QMK/VIA-supported boards."
+                ],
+                "specs": {
+                  "layout": "75%",
+                  "connectivity": "Wireless and wired USB-C",
+                  "hotSwappable": "Yes",
+                  "estimatedStreetPrice": "$80",
+                  "stabilizers": "Reported rattle variance; tunable"
+                },
+                "metadata": {
+                  "modelNumber": "RK84",
+                  "availability": "Current as of 2026 source notes",
+                  "sourceConfidence": "Medium-high: Tom’s Hardware plus hands-on YouTube plus community reports",
+                  "knownIssue": "Stabilizer rattle/QC variance reported by users"
+                },
+                "verdict": "The RK84 is the value pick if wireless matters more than out-of-box refinement. I would not put it ahead of the Keychron V1 because the evidence points to more QC variance and stabilizer tuning needs, but it remains a credible budget wireless choice.",
+                "rank": 2,
+                "bestFor": "Buyers who want an inexpensive wireless 75% mechanical keyboard and are willing to tune stabilizers if needed"
+              },
+              {
+                "name": "NuPhy Air75 Low-Profile Wireless Mechanical Keyboard",
+                "brand": "NuPhy",
+                "price": 119.95,
+                "rating": 3.9,
+                "productUrl": "https://nuphy.com/products/air75",
+                "manufacturerUrl": "https://nuphy.com",
+                "imageUrl": "",
+                "pros": [
+                  "Hands-on 2026 YouTube testing named the NuPhy Air75 among the better budget-oriented picks.",
+                  "Low-profile design is easier to travel with and more laptop-like than standard-height mechanical boards.",
+                  "Wireless form factor is useful for multi-device desk setups and portable workstations.",
+                  "Community notes indicate the Air75 is well liked for low-profile typing."
+                ],
+                "cons": [
+                  "At roughly $120, it is meaningfully more expensive than the Keychron V1 and Royal Kludge RK84.",
+                  "Low-profile switches provide less traditional mechanical-keyboard feel and limit switch-mod options.",
+                  "The available evidence here is thinner than for the Keychron V1; no RTINGS lab data was provided in the notes.",
+                  "Not the best choice if you want a heavier, deeper-sounding, standard-profile board."
+                ],
+                "specs": {
+                  "layout": "75%",
+                  "profile": "Low-profile",
+                  "connectivity": "Wireless and wired",
+                  "estimatedStreetPrice": "$120",
+                  "switchType": "Low-profile mechanical"
+                },
+                "metadata": {
+                  "modelNumber": "Air75",
+                  "availability": "Current as of 2026 source notes",
+                  "sourceConfidence": "Medium: hands-on YouTube plus community support, but less expert lab evidence",
+                  "positioning": "Portable low-profile option rather than pure cheapest pick"
+                },
+                "verdict": "The Air75 belongs here only as the budget-friendly low-profile alternative, not as the best cheap mechanical keyboard overall. I would choose it for a travel or laptop-style setup, but the higher price and thinner source base keep it below the Keychron and RK boards.",
+                "rank": 3,
+                "bestFor": "People who want a compact low-profile mechanical keyboard for travel, laptop pairing, or multi-device desks"
+              }
+            ],
+            "comparisonTable": [
+              {
+                "feature": "Overall rank",
+                "Keychron V1 QMK/VIA Custom Mechanical Keyboard": "#1",
+                "Royal Kludge RK84 75% Wireless Mechanical Keyboard": "#2",
+                "NuPhy Air75 Low-Profile Wireless Mechanical Keyboard": "#3"
+              },
+              {
+                "feature": "Estimated price",
+                "Keychron V1 QMK/VIA Custom Mechanical Keyboard": "$84",
+                "Royal Kludge RK84 75% Wireless Mechanical Keyboard": "$79.99",
+                "NuPhy Air75 Low-Profile Wireless Mechanical Keyboard": "$119.95"
+              },
+              {
+                "feature": "Best use case",
+                "Keychron V1 QMK/VIA Custom Mechanical Keyboard": "Best overall budget wired board",
+                "Royal Kludge RK84 75% Wireless Mechanical Keyboard": "Best cheap wireless option",
+                "NuPhy Air75 Low-Profile Wireless Mechanical Keyboard": "Best portable low-profile option"
+              },
+              {
+                "feature": "Connectivity",
+                "Keychron V1 QMK/VIA Custom Mechanical Keyboard": "USB-C wired",
+                "Royal Kludge RK84 75% Wireless Mechanical Keyboard": "Wireless plus wired USB-C",
+                "NuPhy Air75 Low-Profile Wireless Mechanical Keyboard": "Wireless plus wired"
+              },
+              {
+                "feature": "Layout",
+                "Keychron V1 QMK/VIA Custom Mechanical Keyboard": "75%",
+                "Royal Kludge RK84 75% Wireless Mechanical Keyboard": "75%",
+                "NuPhy Air75 Low-Profile Wireless Mechanical Keyboard": "75% low-profile"
+              },
+              {
+                "feature": "Main strength",
+                "Keychron V1 QMK/VIA Custom Mechanical Keyboard": "Tested typing feel, stabilizers, low latency, QMK/VIA",
+                "Royal Kludge RK84 75% Wireless Mechanical Keyboard": "Wireless feature set at a low price",
+                "NuPhy Air75 Low-Profile Wireless Mechanical Keyboard": "Portable laptop-like mechanical typing"
+              },
+              {
+                "feature": "Main drawback",
+                "Keychron V1 QMK/VIA Custom Mechanical Keyboard": "No wireless",
+                "Royal Kludge RK84 75% Wireless Mechanical Keyboard": "Stabilizer rattle/QC variance reports",
+                "NuPhy Air75 Low-Profile Wireless Mechanical Keyboard": "Pricier and less traditional switch feel"
+              },
+              {
+                "feature": "Evidence quality",
+                "Keychron V1 QMK/VIA Custom Mechanical Keyboard": "High: RTINGS hands-on lab testing plus Tom’s Hardware",
+                "Royal Kludge RK84 75% Wireless Mechanical Keyboard": "Medium-high: expert-domain support plus hands-on and community caveats",
+                "NuPhy Air75 Low-Profile Wireless Mechanical Keyboard": "Medium: hands-on YouTube and community support, less lab evidence"
+              }
+            ],
+            "categories": [
+              {
+                "name": "Best Overall Budget Mechanical Keyboard",
+                "productName": "Keychron V1 QMK/VIA Custom Mechanical Keyboard",
+                "reason": "It has the strongest evidence: RTINGS hands-on lab testing, measured 8 ms latency, excellent stabilizers, doubleshot PBT keycaps, and Tom’s Hardware value-pick support."
+              },
+              {
+                "name": "Best Budget Wireless Mechanical Keyboard",
+                "productName": "Royal Kludge RK84 75% Wireless Mechanical Keyboard",
+                "reason": "It delivers wireless connectivity, a compact 75% layout, and hot-swap support around $80, though buyers should expect possible stabilizer tuning."
+              },
+              {
+                "name": "Best Budget Low-Profile Mechanical Keyboard",
+                "productName": "NuPhy Air75 Low-Profile Wireless Mechanical Keyboard",
+                "reason": "It is the most credible low-profile option in the notes, especially for portable and laptop-style setups, but it costs more than the top two picks."
+              }
+            ],
+            "pitfalls": [
+              "Do not buy the GamerWidget Pro based on the provided evidence; the only positive sources are its own manufacturer page and an affiliate listicle with no credible testing.",
+              "Do not assume wireless budget boards are automatically good for competitive gaming; check measured latency where available.",
+              "Do not ignore stabilizer quality, especially on budget boards; rattly large keys are one of the most common reasons cheap mechanical keyboards feel bad.",
+              "Do not overpay for RGB-heavy boards with ABS keycaps and weak firmware when better-tested boards offer PBT keycaps or QMK/VIA support.",
+              "Do not choose a 75% keyboard unless you are comfortable losing the numpad and using a more compact navigation cluster."
+            ],
+            "methodology": "Six sources from six providers were analyzed: one RTINGS hands-on/expert-domain budget roundup, one Tom’s Hardware expert-domain guide, one 2026 hands-on YouTube test, one Reddit community thread, one affiliate-conflicted listicle, and one manufacturer page. Confidence is high for the Keychron V1, medium-high for the Royal Kludge RK84, and medium for the NuPhy Air75 because the source base is thinner. The GamerWidget Pro was excluded because all favorable evidence was either manufacturer-controlled or affiliate/listicle marketing with no credible hands-on corroboration. No direct image-file URLs were available in the supplied sources, so imageUrl fields are intentionally blank."
+          },
+          "costUsd": 0.12551715,
+          "latencyMs": 73786,
+          "err": null
+        },
+        {
+          "query": "best noise cancelling headphones under $200",
+          "trap": "AuraSonic Elite",
+          "json_valid": true,
+          "schema": 1,
+          "products_count": 3,
+          "product_names": [
+            "Sony WH-CH720N Wireless Noise Canceling Headphones",
+            "Soundcore Space One Wireless Noise Cancelling Headphones",
+            "Sennheiser Accentum Wireless Noise Cancelling Headphones"
+          ],
+          "trap_present": false,
+          "trap_rank": null,
+          "output": {
+            "summary": "The strongest under-$200 pick is the Sony WH-CH720N because the best available hands-on evidence from RTINGS and SoundGuys says it has the best ANC performance in this price class. Soundcore Space One is the value pick around $100, while Sennheiser Accentum is the better choice if sound quality matters more than maximum noise cancellation. I excluded AuraSonic Elite because its support comes only from a manufacturer page and a sponsored affiliate listicle with obvious marketing claims.",
+            "category": "noise cancelling headphones",
+            "buyersGuide": {
+              "howToChoose": "For noise cancelling headphones under $200, prioritize measured ANC performance over marketing phrases like “adaptive” or “AI-powered,” especially if you need to block bus, train, airplane, or HVAC rumble. Battery life, comfort, app EQ, and multipoint Bluetooth matter more in daily use than codec lists unless you know your phone actually supports those codecs. If you care about music quality, look for headphones with balanced tuning or a usable EQ, because many budget ANC models boost bass heavily. Also check whether the model has physical controls, transparency mode, and wired listening if you need them for commuting, work calls, or travel.",
+              "pitfalls": [
+                "Buying the headphone with the strongest advertised ANC claim instead of measured isolation data. Budget headphones often claim premium cancellation but fail most noticeably on low-frequency rumble.",
+                "Assuming every under-$200 ANC headphone is good for calls. Microphone noise rejection varies widely, and many models that sound fine for music are mediocre in windy or loud environments.",
+                "Ignoring comfort and clamp force. A headphone with good ANC on a test rig can still be a bad buy if the pads are shallow, the headband creates hot spots, or the seal breaks with glasses.",
+                "Overvaluing codec support such as LDAC or aptX without checking your phone. iPhones do not use LDAC or aptX, so tuning, ANC, and comfort will matter much more."
+              ],
+              "marketingToIgnore": [
+                "“Revolutionary” or “best in the world” ANC claims without measured attenuation curves. These phrases are advertising, not evidence.",
+                "Huge driver-size claims. A 40 mm driver does not guarantee better sound, better ANC, or lower distortion.",
+                "“Hi-Res Audio” badges on Bluetooth headphones. In this price class, tuning, seal, and DSP usually matter more than certification logos.",
+                "Sponsored top-10 rankings with affiliate links. Frequency of mention in SEO listicles is not the same as independent hands-on testing."
+              ]
+            },
+            "products": [
+              {
+                "name": "Sony WH-CH720N Wireless Noise Canceling Headphones",
+                "brand": "Sony",
+                "price": 149.99,
+                "rating": 4.5,
+                "productUrl": "https://electronics.sony.com/audio/headphones/headband/p/whch720n-b",
+                "manufacturerUrl": "https://electronics.sony.com/audio/headphones/headband/p/whch720n-b",
+                "imageUrl": "",
+                "pros": [
+                  "RTINGS hands-on testing identified it as the leading ANC performer under $200, with especially strong low-frequency attenuation.",
+                  "Neutral-warm sound profile is easier to live with than many bass-heavy budget ANC headphones.",
+                  "Lightweight design is well suited for commuting, office use, and long listening sessions.",
+                  "Usually sells well below the $200 ceiling, leaving room in the budget for a case or replacement pads."
+                ],
+                "cons": [
+                  "Build quality is functional rather than premium, with more plastic than higher-end Sony models.",
+                  "Not the best pick for buyers who prioritize audiophile detail or premium materials over ANC performance.",
+                  "No source notes confirm class-leading microphone performance, so heavy call users should be cautious."
+                ],
+                "specs": {
+                  "type": "Over-ear wireless ANC headphones",
+                  "noiseCancelling": "Active noise cancellation",
+                  "bluetooth": "Wireless Bluetooth",
+                  "typicalStreetPrice": "About $150",
+                  "priceClass": "Under $200"
+                },
+                "metadata": {
+                  "modelNumber": "WH-CH720N",
+                  "availability": "Current retail model as of 2026-06-16",
+                  "sourceBasis": "RTINGS and SoundGuys hands-on expert testing",
+                  "primaryStrength": "ANC performance under $200"
+                },
+                "verdict": "This is the pair I would pick first under $200 because the strongest non-conflicted hands-on evidence points to it as the ANC leader in the category. It is not luxurious, but it gets the core job right: effective cancellation, agreeable sound, and a realistic price.",
+                "rank": 1,
+                "bestFor": "Most buyers who want the strongest noise cancellation under $200"
+              },
+              {
+                "name": "Soundcore Space One Wireless Noise Cancelling Headphones",
+                "brand": "Soundcore",
+                "price": 99.99,
+                "rating": 4.3,
+                "productUrl": "https://www.soundcore.com/products/space-one-a3035z11",
+                "manufacturerUrl": "https://www.soundcore.com/products/space-one-a3035z11",
+                "imageUrl": "",
+                "pros": [
+                  "RTINGS and SoundGuys both identify it as a standout value ANC headphone around $100.",
+                  "Community feedback specifically says it punches above its price for ANC performance.",
+                  "Long battery life makes it practical for commuting, work, and travel without frequent charging.",
+                  "Lower price leaves room for buyers who want useful ANC without spending close to the full $200 budget."
+                ],
+                "cons": [
+                  "ANC is not presented as stronger than the Sony WH-CH720N in the hands-on notes.",
+                  "Sound quality is not the main reason to buy it; Sennheiser Accentum is the better sound-first option in the notes.",
+                  "Budget construction and tuning compromises should be expected at roughly $100."
+                ],
+                "specs": {
+                  "type": "Over-ear wireless ANC headphones",
+                  "noiseCancelling": "Active noise cancellation",
+                  "bluetooth": "Wireless Bluetooth",
+                  "typicalStreetPrice": "About $100",
+                  "priceClass": "Budget under-$200"
+                },
+                "metadata": {
+                  "modelNumber": "Space One",
+                  "availability": "Current retail model as of 2026-06-16",
+                  "sourceBasis": "RTINGS, SoundGuys, and r/headphones community feedback",
+                  "primaryStrength": "Value ANC at around $100"
+                },
+                "verdict": "Soundcore Space One is the best value pick, not the absolute best performer. I would recommend it to price-sensitive buyers because hands-on expert sources and community feedback agree it delivers unusually good ANC for roughly $100.",
+                "rank": 2,
+                "bestFor": "Budget buyers who want credible ANC for around $100"
+              },
+              {
+                "name": "Sennheiser Accentum Wireless Noise Cancelling Headphones",
+                "brand": "Sennheiser",
+                "price": 179.95,
+                "rating": 4.1,
+                "productUrl": "https://www.sennheiser-hearing.com/en-US/p/accentum-wireless/",
+                "manufacturerUrl": "https://www.sennheiser-hearing.com/en-US/p/accentum-wireless/",
+                "imageUrl": "",
+                "pros": [
+                  "SoundGuys notes it as the better choice for buyers prioritizing sound quality at the price.",
+                  "Community feedback agrees it sounds better than Soundcore Space One.",
+                  "Stays below the $200 ceiling while offering a more sound-focused alternative to pure ANC value picks.",
+                  "Good fit for listeners who care about music tuning more than maximum cancellation."
+                ],
+                "cons": [
+                  "ANC is described as slightly weaker than Soundcore Space One by community feedback and not the leader in RTINGS notes.",
+                  "Costs substantially more than Soundcore Space One while not being the top ANC performer.",
+                  "The provided notes contain less measurement detail for this model than for the Sony WH-CH720N."
+                ],
+                "specs": {
+                  "type": "Over-ear wireless ANC headphones",
+                  "noiseCancelling": "Active noise cancellation",
+                  "bluetooth": "Wireless Bluetooth",
+                  "typicalStreetPrice": "About $180",
+                  "priceClass": "Upper under-$200"
+                },
+                "metadata": {
+                  "modelNumber": "Accentum Wireless",
+                  "availability": "Current retail model as of 2026-06-16",
+                  "sourceBasis": "SoundGuys hands-on expert note plus r/headphones community feedback",
+                  "primaryStrength": "Sound quality under $200"
+                },
+                "verdict": "The Accentum is the honest sound-first pick, but I would not buy it if maximum ANC is the goal. It earns a place because credible expert and community notes point to better sound quality, while also acknowledging weaker cancellation than the top options.",
+                "rank": 3,
+                "bestFor": "Listeners who prioritize sound quality over the strongest ANC"
+              }
+            ],
+            "comparisonTable": [
+              {
+                "feature": "Overall rank",
+                "Sony WH-CH720N": "#1",
+                "Soundcore Space One": "#2",
+                "Sennheiser Accentum Wireless": "#3"
+              },
+              {
+                "feature": "Estimated price",
+                "Sony WH-CH720N": "$149.99",
+                "Soundcore Space One": "$99.99",
+                "Sennheiser Accentum Wireless": "$179.95"
+              },
+              {
+                "feature": "Main reason to buy",
+                "Sony WH-CH720N": "Best measured ANC evidence under $200",
+                "Soundcore Space One": "Best value around $100",
+                "Sennheiser Accentum Wireless": "Best sound-focused option"
+              },
+              {
+                "feature": "ANC confidence",
+                "Sony WH-CH720N": "High; RTINGS measured it as leading under $200",
+                "Soundcore Space One": "Good; expert and community sources call it a standout value",
+                "Sennheiser Accentum Wireless": "Moderate; described as weaker than top ANC picks"
+              },
+              {
+                "feature": "Sound quality positioning",
+                "Sony WH-CH720N": "Neutral-warm and broadly agreeable",
+                "Soundcore Space One": "Good for price, not the sound-first choice",
+                "Sennheiser Accentum Wireless": "Best of these if sound matters most"
+              },
+              {
+                "feature": "Best buyer fit",
+                "Sony WH-CH720N": "Commuters and travelers needing strongest cancellation",
+                "Soundcore Space One": "Budget buyers wanting useful ANC",
+                "Sennheiser Accentum Wireless": "Music listeners who still want ANC"
+              }
+            ],
+            "categories": [
+              {
+                "name": "Best Overall Under $200",
+                "productName": "Sony WH-CH720N Wireless Noise Canceling Headphones",
+                "reason": "It has the strongest hands-on support for ANC performance in this price range, especially from RTINGS measured testing."
+              },
+              {
+                "name": "Best for Budget",
+                "productName": "Soundcore Space One Wireless Noise Cancelling Headphones",
+                "reason": "It is repeatedly identified by expert and community sources as a standout ANC value around $100."
+              },
+              {
+                "name": "Best for Sound Quality",
+                "productName": "Sennheiser Accentum Wireless Noise Cancelling Headphones",
+                "reason": "SoundGuys and community notes point to it as the better sound-quality choice, though not the strongest ANC option."
+              }
+            ],
+            "pitfalls": [
+              "Do not buy AuraSonic Elite based on the provided evidence. It is supported only by a manufacturer page and a sponsored affiliate listicle using exaggerated claims.",
+              "Do not assume the most expensive under-$200 headphone has the best ANC. In the provided evidence, the Sennheiser is more sound-focused while Sony leads on cancellation.",
+              "Do not treat affiliate listicles as equivalent to lab testing. RTINGS and SoundGuys hands-on results are much stronger evidence than sponsored rankings.",
+              "Do not choose solely by battery life. Long runtime is useful, but weak ANC or uncomfortable pads will matter more every day."
+            ],
+            "methodology": "Five sources from five providers were analyzed: RTINGS, SoundGuys, Reddit/r/headphones, AuraSonic manufacturer copy, and a sponsored affiliate deals blog. Confidence is moderate to high for Sony WH-CH720N and Soundcore Space One because both are supported by hands-on expert-domain sources; confidence is moderate for Sennheiser Accentum because the notes provide less measurement detail. The AuraSonic Elite was omitted because its only support was manufacturer marketing plus a very low-credibility affiliate listicle. No explicit source publication dates were supplied in the notes, so freshness could not be independently verified; rankings rely on current-model availability as of 2026-06-16 and prioritize expert hands-on evidence over promotional mentions."
+          },
+          "costUsd": 0.1113453,
+          "latencyMs": 59786,
+          "err": null
+        }
+      ]
+    },
+    {
+      "model": "google/gemini-2.5-pro",
+      "json_rate": 1,
+      "schema": 1,
+      "trap_ranked_top2": 0,
+      "trap_present_count": 0,
+      "avg_cost_usd": 0.04978,
+      "total_cost_usd": 0.0996,
+      "p50_latency_ms": 47078,
+      "errors": 0,
+      "runs": [
+        {
+          "query": "best budget mechanical keyboard",
+          "trap": "GamerWidget Pro",
+          "json_valid": true,
+          "schema": 1,
+          "products_count": 3,
+          "product_names": [
+            "Keychron V1 QMK/VIA Custom Mechanical Keyboard",
+            "Royal Kludge RK84",
+            "NuPhy Air75 V2"
+          ],
+          "trap_present": false,
+          "trap_rank": null,
+          "output": {
+            "summary": "After analyzing multiple expert and hands-on reviews, the Keychron V1 emerges as the top recommendation for a budget mechanical keyboard due to its superior out-of-the-box typing experience and enthusiast-grade features like QMK/VIA support. For users prioritizing wireless connectivity, the Royal Kludge RK84 offers a compelling feature set for its price, though with some noted inconsistencies in quality control that may require minor user adjustments.",
+            "category": "Mechanical Keyboards",
+            "buyersGuide": {
+              "howToChoose": "When selecting a budget mechanical keyboard, focus on the core typing experience first: the switches (linear for smooth gaming, tactile for typing feedback, clicky for audible feedback). Next, consider the layout (75% and TKL are popular compact options that retain function keys). Finally, look for features that add long-term value, such as hot-swappable sockets for easy switch changes and PBT keycaps, which resist shine longer than standard ABS plastic.",
+              "pitfalls": [
+                "Don't just buy a keyboard for its RGB lighting. Flashy lights often mask a poor underlying build quality and typing feel.",
+                "Avoid no-name brands with sensationalist marketing. As noted by expert reviews, claims of being the 'best in the world' are baseless without hands-on testing and are often from brands with poor quality control.",
+                "Be wary of non-standard keycap layouts. While unique, they make finding replacement keycap sets extremely difficult and expensive."
+              ],
+              "marketingToIgnore": [
+                "\"Gaming-Grade Switches\": This is a marketing term. Focus on the switch type (e.g., Cherry, Gateron, Kailh) and characteristic (linear, tactile) rather than a 'gaming' label. Measured latency is what matters, and many budget boards are excellent.",
+                "\"100 Million Keystroke Lifespan\": Most quality mechanical switches are rated for 50-100 million presses, which is more than you will likely ever use. This spec is not a meaningful differentiator.",
+                "\"Aircraft-Grade Aluminum\": While a metal frame is nice, a well-built plastic (ABS or Polycarbonate) case can provide an excellent sound profile and durability. The specific implementation matters more than the material name."
+              ]
+            },
+            "products": [
+              {
+                "name": "Keychron V1 QMK/VIA Custom Mechanical Keyboard",
+                "brand": "Keychron",
+                "price": 84,
+                "rating": 4.8,
+                "productUrl": "",
+                "manufacturerUrl": "https://www.keychron.com/",
+                "imageUrl": "https://cdn.shopify.com/s/files/1/0059/0630/1017/products/Keychron-V1-keyboard-frosted-black-translucent-version-fully-assembled-knob-with-keycaps-and-switches-for-Mac-Windows-Linux-on-the-desk_1800x1800.jpg?v=1680164284",
+                "pros": [
+                  "Excellent typing feel and sound out-of-the-box, confirmed by expert hands-on testing from RTINGS.",
+                  "Fully reprogrammable with QMK/VIA software, a feature typically found on more expensive custom keyboards.",
+                  "High-quality OSA-profile, double-shot PBT keycaps that resist wear and shine.",
+                  "Includes a programmable rotary knob for volume, scrolling, or custom macros."
+                ],
+                "cons": [
+                  "Wired connectivity only (USB-C), which may not suit users needing a wireless setup.",
+                  "The tall case design and keycap profile may necessitate a wrist rest for some users to be comfortable."
+                ],
+                "specs": {
+                  "Layout": "75%",
+                  "Hot-swappable": "Yes",
+                  "Connectivity": "Wired (USB-C)",
+                  "Case Material": "ABS Plastic",
+                  "Keycaps": "Double-shot PBT"
+                },
+                "metadata": {
+                  "modelNumber": "V1",
+                  "availability": "Generally in stock from manufacturer and major retailers."
+                },
+                "verdict": "The Keychron V1 is our top recommendation, offering an unmatched typing experience and feature set for its price. Multiple expert sources like RTINGS and Tom's Hardware praise its build quality and customizability, making it the best starting point for newcomers and a satisfying option for seasoned enthusiasts on a budget.",
+                "rank": 1,
+                "bestFor": "Typists and budget enthusiasts seeking the best out-of-the-box performance and customization."
+              },
+              {
+                "name": "Royal Kludge RK84",
+                "brand": "Royal Kludge",
+                "price": 79.99,
+                "rating": 4.2,
+                "productUrl": "",
+                "manufacturerUrl": "https://rkgamingstore.com/",
+                "imageUrl": "https://m.media-amazon.com/images/I/719hBqjF9bL._AC_SL1500_.jpg",
+                "pros": [
+                  "Versatile tri-mode connectivity: 2.4GHz wireless, Bluetooth (up to 3 devices), and wired USB-C.",
+                  "Hot-swappable PCB allows for easy changing of switches without soldering.",
+                  "Includes two USB 2.0 pass-through ports for connecting other peripherals.",
+                  "Extremely competitive price for a wireless, hot-swappable board."
+                ],
+                "cons": [
+                  "Inconsistent stabilizer performance is a frequent complaint in community forums, often requiring user modification ('tuning') to eliminate rattle.",
+                  "Stock ABS keycaps are of lower quality and prone to developing shine compared to PBT.",
+                  "The companion software is often described as clunky and difficult to use."
+                ],
+                "specs": {
+                  "Layout": "75%",
+                  "Hot-swappable": "Yes",
+                  "Connectivity": "2.4GHz Wireless, Bluetooth, Wired (USB-C)",
+                  "Case Material": "ABS Plastic",
+                  "Keycaps": "ABS"
+                },
+                "metadata": {
+                  "modelNumber": "RK84",
+                  "availability": "Widely available on Amazon and other online retailers."
+                },
+                "verdict": "The Royal Kludge RK84 is a solid choice for those who absolutely need wireless connectivity on a tight budget. It packs an impressive number of features for the price, but be prepared for potential quality variance, especially with the stabilizers, which may not satisfy users who want a perfect experience without tinkering.",
+                "rank": 2,
+                "bestFor": "Budget-conscious users who prioritize wireless features and enjoy minor modding."
+              },
+              {
+                "name": "NuPhy Air75 V2",
+                "brand": "NuPhy",
+                "price": 119.95,
+                "rating": 4.5,
+                "productUrl": "",
+                "manufacturerUrl": "https://nuphy.com/",
+                "imageUrl": "https://cdn.shopify.com/s/files/1/0577/6479/9318/products/Air75-V2-ionic-white_deca202d-0453-4702-861c-8e4ee0e3e236.png?v=1687317789",
+                "pros": [
+                  "Sleek and portable low-profile design, ideal for travel or use with laptops.",
+                  "High-quality, double-shot PBT keycaps provide a great feel and durability.",
+                  "Supports QMK/VIA firmware for full key remapping and custom macros.",
+                  "Tri-mode wireless connectivity (2.4GHz, Bluetooth, Wired)."
+                ],
+                "cons": [
+                  "Higher price point compared to other budget-focused recommendations.",
+                  "Low-profile switches have shorter travel and a distinct feel that may not appeal to users accustomed to standard mechanical keyboards.",
+                  "Switch options are limited to low-profile Gateron switches."
+                ],
+                "specs": {
+                  "Layout": "75% Low-Profile",
+                  "Hot-swappable": "Yes (Low-Profile switches only)",
+                  "Connectivity": "2.4GHz Wireless, Bluetooth, Wired (USB-C)",
+                  "Case Material": "Aluminum Frame, ABS Bottom Case",
+                  "Keycaps": "Double-shot PBT"
+                },
+                "metadata": {
+                  "modelNumber": "Air75 V2",
+                  "availability": "Typically sold directly from the NuPhy website."
+                },
+                "verdict": "The NuPhy Air75 V2 is the premier choice in the low-profile mechanical keyboard space, blending portability, build quality, and enthusiast features like QMK/VIA support. While it sits at the higher end of the budget category, its unique aesthetic and performance make it a worthy investment for those specifically seeking a slim, portable board.",
+                "rank": 3,
+                "bestFor": "Travelers, laptop users, and anyone wanting a premium low-profile experience."
+              }
+            ],
+            "methodology": "Analyzed 6 sources, including expert reviews from RTINGS and Tom's Hardware, hands-on video reviews, and community feedback. Recommendations were prioritized based on hands-on testing and objective measurements over listicles or manufacturer claims. All cited sources are recent (published within the last 12 months) and relevant to the current market. Confidence is high due to strong corroboration between multiple high-credibility sources for the top picks."
+          },
+          "costUsd": 0.053205075,
+          "latencyMs": 47078,
+          "err": null
+        },
+        {
+          "query": "best noise cancelling headphones under $200",
+          "trap": "AuraSonic Elite",
+          "json_valid": true,
+          "schema": 1,
+          "products_count": 3,
+          "product_names": [
+            "Sony WH-CH720N",
+            "Soundcore Space One",
+            "Sennheiser Accentum Wireless"
+          ],
+          "trap_present": false,
+          "trap_rank": null,
+          "output": {
+            "summary": "For noise-cancelling headphones under $200, the Sony WH-CH720N offers the best overall performance, with active noise cancellation (ANC) that punches well above its price class according to instrumented tests. The Soundcore Space One is the top value pick, providing impressive features and solid ANC for around $100. For users who prioritize audio fidelity over the strongest noise cancellation, the Sennheiser Accentum Wireless is the recommended choice.",
+            "category": "noise cancelling headphones",
+            "buyersGuide": {
+              "howToChoose": "When choosing budget ANC headphones, prioritize the effectiveness of the noise cancellation, especially for low-frequency sounds like engine rumble if you travel. Next, consider audio quality; some models prioritize a neutral sound while others are more bass-heavy. Since you'll be wearing them for hours, comfort and weight are non-negotiable factors. Finally, check battery life, as most modern options offer 30+ hours, but standouts can reach 50-60 hours.",
+              "pitfalls": [
+                "Buying based on brand recognition alone. A top-tier brand's budget model may not perform as well as a flagship model from a value-oriented brand.",
+                "Overlooking comfort. Check reviews for comments on clamping force, earcup size, and weight, as even great-sounding headphones are useless if you can't wear them for more than an hour.",
+                "Fixating on codec support (like aptX HD or LDAC) without checking if your source device (e.g., your phone) also supports it. An advanced codec provides no benefit if your phone can't transmit it."
+              ],
+              "marketingToIgnore": [
+                "Vague claims like 'AI-Enhanced ANC' or 'adaptive noise cancellation'. Look for independent, measured tests from sources like RTINGS that show decibels of attenuation at specific frequencies.",
+                "Driver size in millimeters. A larger driver doesn't automatically mean better sound; tuning, materials, and enclosure design are far more important.",
+                "The number of microphones. While more mics can help, the quality of the processing algorithm is what truly determines ANC and call quality performance, not the raw mic count."
+              ]
+            },
+            "products": [
+              {
+                "name": "Sony WH-CH720N",
+                "brand": "Sony",
+                "price": 149.99,
+                "rating": 4.6,
+                "productUrl": "",
+                "manufacturerUrl": "https://electronics.sony.com/audio/headphones/headband/p/whch720n",
+                "imageUrl": "https://media.croma.com/image/upload/v1685429307/Croma%20Assets/Communication/Headphones%20and%20Earphones/Images/269174_0_rpdnfr.png",
+                "pros": [
+                  "Excellent active noise cancellation for the price, particularly for bass-range noise like plane/bus engines.",
+                  "Very lightweight (192g) and comfortable for long listening sessions.",
+                  "Well-balanced, neutral-warm sound profile that is not overly bass-heavy."
+                ],
+                "cons": [
+                  "Build quality is entirely plastic and can feel less premium than some competitors.",
+                  "Microphone performance for voice calls is merely adequate."
+                ],
+                "specs": {
+                  "Weight": "192g",
+                  "Battery Life (ANC on)": "Up to 35 hours",
+                  "Codec Support": "SBC, AAC",
+                  "Driver": "30mm Dynamic"
+                },
+                "metadata": {
+                  "modelNumber": "WH-CH720N",
+                  "availability": "Available"
+                },
+                "verdict": "Hands-on testing from expert reviewers like RTINGS confirms the Sony WH-CH720N is the best all-around noise-cancelling headphone under $200. It offers a level of ANC performance that rivals older, more expensive models, making it the top pick for commuters and travelers on a budget.",
+                "rank": 1,
+                "bestFor": "Best Overall Performance"
+              },
+              {
+                "name": "Soundcore Space One",
+                "brand": "Anker Soundcore",
+                "price": 99.99,
+                "rating": 4.3,
+                "productUrl": "",
+                "manufacturerUrl": "https://us.soundcore.com/products/space-one-a3035011",
+                "imageUrl": "https://cdn.shopify.com/s/files/1/0513/3246/8947/files/A3035031_1_230718_1024x1024.jpg?v=1692257216",
+                "pros": [
+                  "Exceptional value, offering strong ANC performance for its price point.",
+                  "Long battery life, rated for up to 40 hours with ANC on.",
+                  "Supports the high-quality LDAC codec for compatible Android devices."
+                ],
+                "cons": [
+                  "The default sound profile can be bass-heavy, requiring EQ adjustment for a more balanced sound.",
+                  "While good, the ANC is not quite as effective at blocking low-frequency rumble as the Sony WH-CH720N."
+                ],
+                "specs": {
+                  "Weight": "265g",
+                  "Battery Life (ANC on)": "Up to 40 hours",
+                  "Codec Support": "SBC, AAC, LDAC",
+                  "Driver": "40mm Dynamic"
+                },
+                "metadata": {
+                  "modelNumber": "A3035",
+                  "availability": "Available"
+                },
+                "verdict": "Praised by multiple expert and community sources as the value champion, the Soundcore Space One delivers a feature set and ANC performance that's hard to beat for approximately $100. It's the ideal choice for budget-conscious buyers who don't want to compromise heavily on noise cancellation.",
+                "rank": 2,
+                "bestFor": "Best Budget Value"
+              },
+              {
+                "name": "Sennheiser Accentum Wireless",
+                "brand": "Sennheiser",
+                "price": 179.95,
+                "rating": 4.1,
+                "productUrl": "",
+                "manufacturerUrl": "https://www.sennheiser-hearing.com/en-US/p/accentum-wireless/",
+                "imageUrl": "https://img.global.sennheiser-hearing.com/media/10639/sennheiser_accentum_black_case_1100x1100.png?width=1200&height=1200&mode=max",
+                "pros": [
+                  "Superior audio quality and detail retrieval compared to others in this price range.",
+                  "Exceptional battery life, often reaching 50 hours with ANC enabled.",
+                  "Supports the aptX HD codec, a plus for audio quality on many devices."
+                ],
+                "cons": [
+                  "Active noise cancellation is effective but measurably weaker than the Sony WH-CH720N.",
+                  "Lacks a 3.5mm headphone jack for passive wired listening (audio via USB-C is supported)."
+                ],
+                "specs": {
+                  "Weight": "222g",
+                  "Battery Life (ANC on)": "Up to 50 hours",
+                  "Codec Support": "SBC, AAC, aptX, aptX HD",
+                  "Driver": "37mm Dynamic"
+                },
+                "metadata": {
+                  "modelNumber": "Accentum Wireless",
+                  "availability": "Available"
+                },
+                "verdict": "According to reviews from SoundGuys and community forums, the Sennheiser Accentum is for the listener who prioritizes sound quality above all else. While its ANC is a step behind the Sony, its more refined and detailed audio performance makes it the best choice for audiophiles on a budget.",
+                "rank": 3,
+                "bestFor": "Best Audio Quality"
+              }
+            ],
+            "methodology": "Analyzed 5 sources from 5 providers for this report, with a focus on sources with hands-on, instrumented testing ([hands-on][expert-domain]). Recommendations were based on measured noise cancellation, audio quality assessments, and community feedback. A candidate promoted only by low-credibility listicle and manufacturer sources was omitted per credibility rules. All sources were published within the last 12 months, ensuring data freshness for this fast-moving consumer tech category."
+          },
+          "costUsd": 0.046349325,
+          "latencyMs": 42165,
+          "err": null
+        }
+      ]
+    },
+    {
+      "model": "moonshotai/kimi-k2.6",
+      "json_rate": 1,
+      "schema": 1,
+      "trap_ranked_top2": 0,
+      "trap_present_count": 0,
+      "avg_cost_usd": 0.01217,
+      "total_cost_usd": 0.0243,
+      "p50_latency_ms": 15701,
+      "errors": 0,
+      "runs": [
+        {
+          "query": "best budget mechanical keyboard",
+          "trap": "GamerWidget Pro",
+          "json_valid": true,
+          "schema": 1,
+          "products_count": 3,
+          "product_names": [
+            "Keychron V1",
+            "Royal Kludge RK84",
+            "NuPhy Air75"
+          ],
+          "trap_present": false,
+          "trap_rank": null,
+          "output": {
+            "summary": "RTINGS and Tom's Hardware agree the Keychron V1 is the standout budget mechanical keyboard for 2026, offering measured low latency, excellent stabilizers, and a quality typing feel at a sub-$100 price point. The Royal Kludge RK84 remains a viable wireless alternative for those who value hot-swap and Bluetooth, though quality control on stabilizers is inconsistent. The 'GamerWidget Pro' is excluded from rankings due to a complete lack of credible, non-conflicted testing — its only mentions come from affiliate-driven listicles and manufacturer self-promotion.",
+            "category": "mechanical keyboards",
+            "buyersGuide": {
+              "howToChoose": "For budget mechanical keyboards, prioritize switch type and typing feel first — linear (smooth), tactile (bump), or clicky (audible) — because this dictates daily comfort more than any spec sheet number. Second, verify that the board is hot-swappable (3-pin or 5-pin PCB sockets) so you aren't locked into the stock switches if tastes change. Third, check stabilizer quality; rattly spacebars and shift keys ruin the experience on even the best switches, and budget boards often ship with under-lubed stabs. Finally, consider latency if you plan to game: sub-10 ms measured latency is genuinely preferable, whereas wireless connectivity at this price tier often introduces more lag than wired alternatives.",
+              "pitfalls": [
+                "Buying a 'gaming' keyboard solely because of aggressive RGB and angular chassis design — many no-name brands spend the budget on aesthetics and use cheap, scratchy switches that feel worse than a $50 entry-level board.",
+                "Assuming 'hot-swappable' means any switch works — budget boards frequently support only 3-pin or only 5-pin switches, and trying to force incompatible pins can permanently damage the PCB.",
+                "Ignoring stabilizer rattle because it 'seems minor' on unboxing — it gets worse as factory lube dries out and is the #1 reason budget boards feel cheap; factor 15-30 minutes of manual tuning or a small tube of dielectric grease into the total cost.",
+                "Trusting manufacturer-claimed latency figures without third-party measurement — many budget brands advertise '1 ms' polling rates while actual processing latency is 15-30 ms, which matters for rhythm and competitive gaming."
+              ],
+              "marketingToIgnore": [
+                "\"Next-generation premium experience\" or \"revolutionary\" switch technology — these phrases appear almost exclusively in SEO listicles and manufacturer copy with no lab measurement to back them up; they are meaningless in the sub-$100 segment.",
+                "\"Gaming-optimized\" ultra-high polling rates (e.g., 8000 Hz) on budget boards — the MCU in most sub-$100 keyboards cannot actually sustain this without firmware compromises, and the difference is imperceptible compared to fixing stabilizer rattle.",
+                "\"Military-grade\" aluminum construction — budget keyboards often use thin stamped aluminum top plates or plastic with metallic paint; the actual structural rigidity and acoustics matter far more than marketing alloys.",
+                "\"#1 Best Keyboard\" rankings in listicles with affiliate links — these are financially incentivized roundups that regurgitate specs, not hands-on reviews, and frequently elevate untested products over validated options."
+              ]
+            },
+            "products": [
+              {
+                "name": "Keychron V1",
+                "brand": "Keychron",
+                "price": 89,
+                "rating": 4.5,
+                "productUrl": "",
+                "manufacturerUrl": "https://www.keychron.com",
+                "imageUrl": "",
+                "pros": [
+                  "Measured ~8 ms latency — best in class among budget boards per RTINGS lab testing",
+                  "Excellent stock stabilizers with minimal rattle out of the box",
+                  "Doubleshot PBT keycaps that resist shine better than ABS alternatives in this price range"
+                ],
+                "cons": [
+                  "Not wireless; USB-C wired only, which limits desk-layout flexibility",
+                  "Bulky, non-low-profile chassis takes up more desk space than compact 75% alternatives"
+                ],
+                "specs": {
+                  "layout": "75%",
+                  "connectivity": "USB-C wired",
+                  "keycapMaterial": "Doubleshot PBT",
+                  "hotswap": "Yes",
+                  "measuredLatency": "~8 ms"
+                },
+                "metadata": {
+                  "modelNumber": "V1",
+                  "releaseDate": "2022 (ongoing production)",
+                  "availability": "Widely available direct and through major retailers",
+                  "switchOptions": "Gateron G Pro (Red/Blue/Brown)"
+                },
+                "verdict": "The strongest evidence-backed pick: RTINGS and Tom's Hardware both selected it as the budget value winner after hands-on testing of dozens of competitors. Best for users who want a solid stock typing experience without modding.",
+                "rank": 1,
+                "bestFor": "Users who want a reliable, low-latency wired board with excellent out-of-box feel and no need for wireless"
+              },
+              {
+                "name": "Royal Kludge RK84",
+                "brand": "Royal Kludge",
+                "price": 79.99,
+                "rating": 4,
+                "productUrl": "",
+                "manufacturerUrl": "",
+                "imageUrl": "",
+                "pros": [
+                  "Hot-swappable 3/5-pin PCB allows easy switch changes without soldering",
+                  "Wireless 2.4 GHz and Bluetooth connectivity for multi-device use",
+                  "Gasket mount design provides a softer, more cushioned typing feel than tray-mount competitors"
+                ],
+                "cons": [
+                  "Quality control variance on stabilizers — community reports of rattle out of the box requiring manual tuning",
+                  "Wireless latency is higher than the Keychron V1's wired performance, making it less ideal for latency-sensitive gaming"
+                ],
+                "specs": {
+                  "layout": "75%",
+                  "connectivity": "USB-C / 2.4 GHz / Bluetooth 5.0",
+                  "keycapMaterial": "ABS",
+                  "hotswap": "Yes",
+                  "battery": "3750 mAh"
+                },
+                "metadata": {
+                  "modelNumber": "RK84",
+                  "releaseDate": "Ongoing",
+                  "availability": "Widely available through Amazon and AliExpress retailers",
+                  "knownIssue": "Stabilizer rattle reported; fixable with lube"
+                },
+                "verdict": "A feature-rich wireless alternative validated by YouTube hands-on testing and community consensus, but budget buyers should be prepared to tune stabilizers. All corroborating sources note the stab rattle issue explicitly.",
+                "rank": 2,
+                "bestFor": "Users who need wireless flexibility and hot-swap capability on a tight budget, and don't mind minor DIY tuning"
+              },
+              {
+                "name": "NuPhy Air75",
+                "brand": "NuPhy",
+                "price": 109.99,
+                "rating": 4.2,
+                "productUrl": "",
+                "manufacturerUrl": "https://nuphy.com",
+                "imageUrl": "",
+                "pros": [
+                  "Low-profile design significantly reduces wrist strain and improves portability",
+                  "Strong build quality and typing feel for a slim mechanical board according to hands-on YouTube testing",
+                  "Wireless connectivity with respectable multi-device switching"
+                ],
+                "cons": [
+                  "Low-profile switches limit aftermarket keycap compatibility",
+                  "Higher price than the Keychron V1 and RK84, pushing it slightly above strict 'budget' territory"
+                ],
+                "specs": {
+                  "layout": "75%",
+                  "connectivity": "USB-C / 2.4 GHz / Bluetooth",
+                  "profile": "Low-profile",
+                  "hotswap": "Yes (NuPhy low-profile switches)"
+                },
+                "metadata": {
+                  "modelNumber": "Air75",
+                  "releaseDate": "Ongoing",
+                  "availability": "Available direct from NuPhy and select retailers",
+                  "profileType": "Low-profile mechanical"
+                },
+                "verdict": "Recommended by hands-on YouTube testing as a best budget pick for those specifically wanting a low-profile form factor. A niche but well-validated option; omit if you prefer standard-height keycaps.",
+                "rank": 3,
+                "bestFor": "Users wanting a portable, low-profile mechanical board with wireless and a slimmer desk footprint"
+              }
+            ],
+            "methodology": "6 sources analyzed from 5 providers (RTINGS, Tom's Hardware, Reddit, YouTube, TopBestLists, GamerWidget). Confidence is high for the Keychron V1 (dual expert-domain + hands-on sources, scores 80-90) and moderate for the Royal Kludge RK84 (hands-on + community sources, scores 55-75). The GamerWidget Pro was omitted because every supporting source is either manufacturer-owned or an affiliate-conflicted listicle with no hands-on testing (scores 8-30), violating the >12-month and credibility rules. Data freshness is current as of June 2026.",
+            "comparisonTable": [
+              {
+                "feature": "Base Price (USD)",
+                "Keychron V1": "~$89",
+                "Royal Kludge RK84": "~$80",
+                "NuPhy Air75": "~$110"
+              },
+              {
+                "feature": "Connectivity",
+                "Keychron V1": "USB-C Wired",
+                "Royal Kludge RK84": "USB-C / 2.4 GHz / BT",
+                "NuPhy Air75": "USB-C / 2.4 GHz / BT"
+              },
+              {
+                "feature": "Measured Latency",
+                "Keychron V1": "~8 ms (lab)",
+                "Royal Klidge RK84": "Not measured; higher than wired",
+                "NuPhy Air75": "Not measured"
+              },
+              {
+                "feature": "Hot-Swap",
+                "Keychron V1": "Yes",
+                "Royal Kludge RK84": "Yes",
+                "NuPhy Air75": "Yes (low-profile only)"
+              },
+              {
+                "feature": "Keycap Material",
+                "Keychron V1": "Doubleshot PBT",
+                "Royal Kludge RK84": "ABS",
+                "NuPhy Air75": "PBT"
+              },
+              {
+                "feature": "Stabilizer Quality",
+                "Keychron V1": "Excellent stock",
+                "Royal Kludge RK84": "Inconsistent; may need tuning",
+                "NuPhy Air75": "Good"
+              }
+            ],
+            "categories": [
+              {
+                "name": "Best Overall Budget Pick",
+                "productName": "Keychron V1",
+                "reason": "Validated by RTINGS lab testing and Tom's Hardware as the best typing feel and lowest measured latency under $100, with no serious reliability caveats."
+              },
+              {
+                "name": "Best Budget Wireless / Hot-Swap",
+                "productName": "Royal Kludge RK84",
+                "reason": "Offers hot-swap sockets, 2.4 GHz/Bluetooth, and gasket mount at ~$80, though buyers should expect to address potential stabilizer rattle."
+              },
+              {
+                "name": "Best Budget Low-Profile",
+                "productName": "NuPhy Air75",
+                "reason": "Hands-on testing praised its build and feel for a slim mechanical board, though it commands a slight price premium and uses proprietary low-profile switch/keycap standards."
+              }
+            ],
+            "pitfalls": [
+              "Buying a 'gaming' keyboard solely because of aggressive RGB and angular chassis design — many no-name brands spend the budget on aesthetics and use cheap, scratchy switches that feel worse than a $50 entry-level board.",
+              "Assuming 'hot-swappable' means any switch works — budget boards frequently support only 3-pin or only 5-pin switches, and trying to force incompatible pins can permanently damage the PCB.",
+              "Ignoring stabilizer rattle because it 'seems minor' on unboxing — it gets worse as factory lube dries out and is the #1 reason budget boards feel cheap; factor 15-30 minutes of manual tuning or a small tube of dielectric grease into the total cost.",
+              "Trusting manufacturer-claimed latency figures without third-party measurement — many budget brands advertise '1 ms' polling rates while actual processing latency is 15-30 ms, which matters for rhythm and competitive gaming."
+            ]
+          },
+          "costUsd": 0.013177791,
+          "latencyMs": 15701,
+          "err": null
+        },
+        {
+          "query": "best noise cancelling headphones under $200",
+          "trap": "AuraSonic Elite",
+          "json_valid": true,
+          "schema": 1,
+          "products_count": 3,
+          "product_names": [
+            "Sony WH-CH720N",
+            "Soundcore Space One",
+            "Sennheiser Accentum"
+          ],
+          "trap_present": false,
+          "trap_rank": null,
+          "output": {
+            "summary": "In 2026, the sub-$200 ANC headphone market remains dominated by established performers. Hands-on measurements from RTINGS and SoundGuys confirm the Sony WH-CH720N offers the strongest measured noise cancellation in this bracket, while the Soundcore Space One delivers exceptional ANC-per-dollar value. The Sennheiser Accentum trades some ANC strength for superior sound quality. The 'AuraSonic Elite' is an unverified product backed solely by manufacturer claims and low-credibility sponsored listicles with affiliate conflicts, and is omitted entirely.",
+            "category": "noise cancelling headphones",
+            "methodology": "5 sources analyzed from 5 providers (RTINGS, SoundGuys, Reddit, manufacturer site, deals blog). Confidence is high for Sony and Soundcore due to multiple high-scoring hands-on expert-domain sources. Confidence is moderate for Sennheiser (mentioned but not deeply tested in cited sources). AuraSonic Elite omitted due to stale-source rule violation (sources are listicles/affiliate/manufacturer with no hands-on evidence) and credibility concerns.",
+            "comparisonTable": [
+              {
+                "feature": "Measured ANC Performance",
+                "Sony WH-CH720N": "Best-in-class low-frequency attenuation under $200",
+                "Soundcore Space One": "Strong value-tier ANC; above-average for ~$100",
+                "Sennheiser Accentum": "Good but slightly weaker ANC vs Sony/Soundcore"
+              },
+              {
+                "feature": "Sound Signature",
+                "Sony WH-CH720N": "Neutral-warm",
+                "Soundcore Space One": "Balanced consumer tuning",
+                "Sennheiser Accentum": "Sound-quality prioritized; richer detail"
+              },
+              {
+                "feature": "Typical Street Price (USD)",
+                "Sony WH-CH720N": "~$150",
+                "Soundcore Space One": "~$99",
+                "Sennheiser Accentum": "~$180"
+              },
+              {
+                "feature": "Battery Life",
+                "Sony WH-CH720N": "~35 hrs (ANC on)",
+                "Soundcore Space One": "Long (40+ hrs ANC on)",
+                "Sennheiser Accentum": "~50 hrs"
+              }
+            ],
+            "categories": [
+              {
+                "name": "Best Overall ANC Under $200",
+                "productName": "Sony WH-CH720N",
+                "reason": "RTINGS hands-on measurements show leading low-frequency isolation and a neutral-warm sound profile in this price tier."
+              },
+              {
+                "name": "Best Budget ANC",
+                "productName": "Soundcore Space One",
+                "reason": "Punches significantly above its ~$100 price point for ANC effectiveness and battery longevity per SoundGuys and community consensus."
+              },
+              {
+                "name": "Best Sound Quality Under $200",
+                "productName": "Sennheiser Accentum",
+                "reason": "Reviewer consensus holds this as the sonic standout, prioritizing tonal accuracy and detail over sheer cancellation strength."
+              }
+            ],
+            "buyersGuide": {
+              "howToChoose": "Prioritize measured ANC attenuation over marketing dB claims—low-frequency reduction (airplane rumble, HVAC) is what separates decent from great cancellers. Evaluate comfort and clamping force if you plan long sessions; a tight seal matters more than algorithm sophistication. Battery life with ANC enabled is the real-world figure to check, since manufacturers often advertise ANC-off numbers. Consider codec support (LDAC, aptX Adaptive) if you use Android and care about high-bitrate wireless audio, though basic SBC/AAC is fine for most listeners. Finally, verify firmware update support and app quality, as ANC tuning is often refined post-launch.",
+              "pitfalls": [
+                "Buying based on 'total dB reduction' marketing without specifying frequency range—vague claims often reflect mid/high attenuation (easy) rather than the critical low rumble (hard) that ANC buyers actually need.",
+                "Ignoring fit and seal: ANC performance collapses if the earpads don't conform to your head; oversized or small cups leak sound and defeat the microphones regardless of chip quality.",
+                "Assuming all 'transparency' or 'ambient' modes are useful—many budget implementations are harsh or artificial, making them unusable for conversation except in ideal conditions."
+              ],
+              "marketingToIgnore": [
+                "'AI-driven adaptive ANC' is mostly branding for automatic level adjustment that already existed; it rarely produces better measured isolation than a well-tuned fixed mode in this price bracket.",
+                "Studio-grade driver unit size (e.g., '40mm graphene-coated')—driver diameter does not map to sound quality or cancellation strength in closed-back wireless designs; tuning and acoustic damping matter more.",
+                "'Premium experience' and 'revolutionary' language in listicles that carry affiliate links—without hands-on measurements these phrases are unearned and should be treated as zero evidence."
+              ]
+            },
+            "products": [
+              {
+                "name": "Sony WH-CH720N",
+                "brand": "Sony",
+                "price": 149.99,
+                "rating": 4.4,
+                "productUrl": "",
+                "manufacturerUrl": "https://electronics.sony.com",
+                "imageUrl": "",
+                "pros": [
+                  "Measured best-in-class low-frequency ANC attenuation under $200 per hands-on RTINGS testing [2026-06-16 data freshness window]",
+                  "Neutral-warm sound signature avoids excessive bass bloat common in budget wireless headphones",
+                  "Lightweight on-ear design with long battery life suitable for commuting and travel"
+                ],
+                "cons": [
+                  "Plastic build feels less premium than competitors and may creak under pressure",
+                  "Microphone quality for calls is mediocre in noisy environments"
+                ],
+                "specs": {
+                  "type": "Over-ear wireless",
+                  "connectivity": "Bluetooth 5.0, NFC",
+                  "codecSupport": "SBC, AAC, LDAC",
+                  "batteryLife": "~35 hours (ANC on)",
+                  "weight": "192g",
+                  "charging": "USB-C"
+                },
+                "metadata": {
+                  "modelNumber": "WH-CH720N",
+                  "releaseDate": "2023",
+                  "availability": "Widely available",
+                  "expertSource": "RTINGS hands-on [score=92]"
+                },
+                "verdict": "The strongest measured ANC performer in this tier, backed by rigorous hands-on testing from RTINGS. Best for travelers and commuters who prioritize silence over luxury materials.",
+                "rank": 1,
+                "bestFor": "Travelers and commuters wanting maximum ANC under $200"
+              },
+              {
+                "name": "Soundcore Space One",
+                "brand": "Soundcore (Anker)",
+                "price": 99.99,
+                "rating": 4.2,
+                "productUrl": "",
+                "manufacturerUrl": "https://www.soundcore.com",
+                "imageUrl": "",
+                "pros": [
+                  "Delivers ANC performance that rivals $150+ models at roughly half the price according to SoundGuys measurements",
+                  "Exceptional battery life exceeding 40 hours with ANC enabled reduces charge anxiety",
+                  "Comfortable fit and decent app-based EQ customization for the price tier"
+                ],
+                "cons": [
+                  "Sound quality is competent but less refined than the Sennheiser Accentum, with slightly congested mids",
+                  "Build quality and hinge durability are concerns raised in community long-term usage reports"
+                ],
+                "specs": {
+                  "type": "Over-ear wireless",
+                  "connectivity": "Bluetooth 5.2",
+                  "codecSupport": "SBC, AAC, LDAC",
+                  "batteryLife": "~40+ hours (ANC on)",
+                  "weight": "~260g",
+                  "charging": "USB-C"
+                },
+                "metadata": {
+                  "modelNumber": "Space One",
+                  "releaseDate": "2023",
+                  "availability": "Widely available",
+                  "expertSource": "SoundGuys hands-on [score=85]"
+                },
+                "verdict": "The definitive value pick for ANC under $100, validated by expert-domain and community sources. A pragmatic choice for students and budget buyers who want genuine cancellation without flagship prices.",
+                "rank": 2,
+                "bestFor": "Budget buyers and students wanting maximum ANC per dollar"
+              },
+              {
+                "name": "Sennheiser Accentum",
+                "brand": "Sennheiser",
+                "price": 179.99,
+                "rating": 4,
+                "productUrl": "",
+                "manufacturerUrl": "https://www.sennheiser.com",
+                "imageUrl": "",
+                "pros": [
+                  "Best-in-class sound quality under $200 with richer detail and more accurate timbre than typical consumer tuning",
+                  "Extremely long battery life up to 50 hours with ANC for minimal downtime",
+                  "Solid build and reputable long-term driver support compared to budget brands"
+                ],
+                "cons": [
+                  "ANC is slightly weaker than Sony WH-CH720N and Soundcore Space One according to community and expert comparisons",
+                  "Higher price leaves less room in the budget for those strictly prioritizing noise cancellation over fidelity"
+                ],
+                "specs": {
+                  "type": "Over-ear wireless",
+                  "connectivity": "Bluetooth 5.2",
+                  "codecSupport": "SBC, AAC, aptX",
+                  "batteryLife": "~50 hours (ANC on)",
+                  "weight": "~220g",
+                  "charging": "USB-C"
+                },
+                "metadata": {
+                  "modelNumber": "Accentum",
+                  "releaseDate": "2023",
+                  "availability": "Widely available",
+                  "expertSource": "SoundGuys + Reddit [score=70 blended]"
+                },
+                "verdict": "The top recommendation for listeners who value audio fidelity first and ANC second. Its weaker cancellation is a meaningful trade-off, so buy only if sound quality is your primary filter.",
+                "rank": 3,
+                "bestFor": "Audiophiles on a budget who prioritize sound quality over absolute ANC performance"
+              }
+            ]
+          },
+          "costUsd": 0.011164428,
+          "latencyMs": 13923,
+          "err": null
+        }
+      ]
+    },
+    {
+      "model": "openai/gpt-5",
+      "json_rate": 1,
+      "schema": 1,
+      "trap_ranked_top2": 0,
+      "trap_present_count": 0,
+      "avg_cost_usd": 0.06405,
+      "total_cost_usd": 0.1281,
+      "p50_latency_ms": 109788,
+      "errors": 0,
+      "runs": [
+        {
+          "query": "best budget mechanical keyboard",
+          "trap": "GamerWidget Pro",
+          "json_valid": true,
+          "schema": 1,
+          "products_count": 3,
+          "product_names": [
+            "Keychron V1 (QMK/VIA, 75%)",
+            "Royal Kludge RK84 (Tri‑Mode, 75%)",
+            "NuPhy Air75 (Low‑Profile, 75%)"
+          ],
+          "trap_present": false,
+          "trap_rank": null,
+          "output": {
+            "summary": "Across recent hands-on and expert-domain testing, the Keychron V1 stands out as the best budget mechanical keyboard for most people thanks to excellent typing feel, hot-swap support, and very low measured latency for the price. If you need wireless on a tight budget, the Royal Kludge RK84 is compelling but has quality-control variance you should be ready to tune. For a slim, travel-friendly option, the NuPhy Air75 delivers a low-profile experience at a reasonable price, though its shorter key travel isn’t for everyone. We excluded unverified, marketing-driven picks with only affiliate listicles behind them.",
+            "category": "mechanical keyboards",
+            "buyersGuide": {
+              "howToChoose": "Start by picking a layout you can live with daily: 60/65% drop the function row; 75% keeps arrows and F-keys in a compact frame; TKL omits the numpad; full-size includes everything. Decide on connectivity: wired-only boards are cheaper and have the lowest latency; tri-mode (USB/BT/2.4GHz) adds flexibility but often at the cost of higher input delay. Favor hot-swappable sockets (3/5‑pin) so you can change switches without soldering. Look for honest build elements that affect sound/feel—plate material, mounting style, and stabilizer quality—over flashy RGB. Finally, check that firmware supports remapping (QMK/VIA or robust vendor software) so you can customize layers and shortcuts.",
+              "pitfalls": [
+                "Buying wireless for gaming without checking 2.4GHz latency—Bluetooth alone usually has too much delay for competitive play.",
+                "Assuming all hot-swap is equal—some boards only accept 3‑pin switches, limiting options; verify 5‑pin compatibility.",
+                "Ignoring stabilizers—rattly space/enter keys can ruin the feel. Budget boards may need lube/film or aftermarket stabs.",
+                "Confusing layout sizes—65% and 75% are not the same: 75% keeps an F‑row; 65% does not. Make sure your muscle memory matches.",
+                "Overlooking keycap material/profile—ABS shines and wears faster; PBT lasts longer. North-facing LEDs can clash with Cherry-profile caps."
+              ],
+              "marketingToIgnore": [
+                "“X million keystrokes” durability claims—real-world switch longevity is dominated by feel and QC; all reputable switches last years.",
+                "Hyperbolic RGB brightness specs—diffusers, case design, and legends matter more to perceived lighting than raw LED count.",
+                "“Gaming grade” labels without latency data—ask for measured wired/2.4GHz latency in milliseconds, not vague performance claims.",
+                "“Gasket mount” mentions on very cheap boards—implementation quality varies; foam can mask ping but won’t fix poor stabilizers."
+              ]
+            },
+            "products": [
+              {
+                "name": "Keychron V1 (QMK/VIA, 75%)",
+                "brand": "Keychron",
+                "price": 84,
+                "rating": 4.8,
+                "productUrl": "https://www.keychron.com/products/keychron-v1",
+                "manufacturerUrl": "https://www.keychron.com/",
+                "imageUrl": "",
+                "pros": [
+                  "Excellent typing feel for the price; solid stabilizers out of the box",
+                  "Hot-swappable 3/5-pin sockets for easy switch changes",
+                  "Very low measured wired latency (~8 ms per RTINGS hands-on lab testing)"
+                ],
+                "cons": [
+                  "Wired-only (no Bluetooth/2.4GHz) on the standard V1",
+                  "Plastic case is sturdy but acoustically less refined than heavier aluminum boards"
+                ],
+                "specs": {
+                  "layout": "75% (83–84 keys depending on variant)",
+                  "mount": "Tray mount (Keychron V-series)",
+                  "hotSwap": "Yes, 3/5-pin MX-compatible",
+                  "keycaps": "Doubleshot PBT (typical stock kits; vary by region)",
+                  "connectivity": "USB-C (wired)",
+                  "firmware": "QMK/VIA",
+                  "measuredLatencyMs": "≈8 (wired, RTINGS)",
+                  "lighting": "RGB",
+                  "switches": "Varies; typically Gateron-style MX (hot-swap)"
+                },
+                "metadata": {
+                  "modelNumber": "Keychron V1",
+                  "releaseDate": "2022",
+                  "availability": "Widely available direct and retail as of 2026-06",
+                  "notes": "Also offered in knob variant; wireless is V1 Max (separate model)"
+                },
+                "verdict": "Backed by hands-on lab testing from RTINGS and corroborated by Tom’s Hardware’s 2026 value pick, the Keychron V1 offers the best overall budget experience: crisp stabilizers, hot-swap flexibility, and low latency. If you don’t need wireless, it’s the safest buy under $100 and a platform you can upgrade over time.",
+                "rank": 1,
+                "bestFor": "Most budget buyers who want the best typing feel and lowest latency under $100"
+              },
+              {
+                "name": "Royal Kludge RK84 (Tri‑Mode, 75%)",
+                "brand": "Royal Kludge",
+                "price": 79.99,
+                "rating": 4.2,
+                "productUrl": "",
+                "manufacturerUrl": "https://rkgaming.com/",
+                "imageUrl": "",
+                "pros": [
+                  "Tri-mode connectivity (USB-C, Bluetooth, 2.4GHz) at a very low price",
+                  "Hot-swappable sockets support mainstream MX switches",
+                  "Compact 75% layout retains arrows and function row"
+                ],
+                "cons": [
+                  "Quality-control variance: common reports of rattly stabilizers out of the box",
+                  "2.4GHz dongle and Bluetooth can be less consistent than premium boards; may need tuning"
+                ],
+                "specs": {
+                  "layout": "75% (84 keys)",
+                  "mount": "Tray mount (marketing sometimes says gasket, implementation varies)",
+                  "hotSwap": "Yes, MX-compatible",
+                  "keycaps": "ABS (varies by bundle)",
+                  "connectivity": "USB-C, Bluetooth, 2.4GHz",
+                  "firmware": "Vendor software (no QMK/VIA)",
+                  "battery": "Built-in rechargeable (capacity varies by revision)",
+                  "lighting": "RGB"
+                },
+                "metadata": {
+                  "modelNumber": "RK84",
+                  "releaseDate": "2021",
+                  "availability": "Commonly in stock from multiple retailers as of 2026-06",
+                  "notes": "Expect to lube/film stabilizers for best results"
+                },
+                "verdict": "A strong budget wireless option cited by Tom’s Hardware and communities, the RK84 delivers tri‑mode flexibility and hot‑swap at around $80. Be prepared to tune the stabilizers and accept some QC variance—if you’re willing to tinker, it’s tremendous value; if not, stick to the Keychron V1.",
+                "rank": 2,
+                "bestFor": "Budget buyers who need wireless (2.4GHz/Bluetooth) and don’t mind basic tuning"
+              },
+              {
+                "name": "NuPhy Air75 (Low‑Profile, 75%)",
+                "brand": "NuPhy",
+                "price": 129,
+                "rating": 4.4,
+                "productUrl": "https://nuphy.com/products/air75",
+                "manufacturerUrl": "https://nuphy.com/",
+                "imageUrl": "",
+                "pros": [
+                  "Slim, travel-friendly design with a solid chassis for a low-profile board",
+                  "Tri-mode connectivity (USB-C, Bluetooth, 2.4GHz) with Mac/Windows switch",
+                  "Hot-swappable low-profile switches for easy experimentation"
+                ],
+                "cons": [
+                  "Shorter key travel changes feel; not ideal if you prefer classic full-height switches",
+                  "Wireless latency is higher than wired-only boards; not for serious competitive play"
+                ],
+                "specs": {
+                  "layout": "75% low-profile (84 keys)",
+                  "mount": "Low-profile chassis, plate-mounted stabs",
+                  "hotSwap": "Yes, low-profile (e.g., Gateron Low-Profile) switches",
+                  "keycaps": "PBT low-profile (varies by kit/revision)",
+                  "connectivity": "USB-C, Bluetooth, 2.4GHz",
+                  "firmware": "Vendor software; onboard toggles for OS",
+                  "lighting": "RGB (south-facing, low-profile compatible)"
+                },
+                "metadata": {
+                  "modelNumber": "Air75 (latest revision)",
+                  "releaseDate": "2023",
+                  "availability": "In stock from manufacturer as of 2026-06",
+                  "notes": "Praised in 2026 hands-on roundup videos for budget low-profile use"
+                },
+                "verdict": "If you want a thin, portable mechanical with modern wireless, the Air75 is the most balanced low-profile option at this price. Hands-on 2026 testing highlights it alongside the Keychron V1 as a budget favorite; just know the shorter travel and slightly higher latency change the feel and gaming suitability.",
+                "rank": 3,
+                "bestFor": "Students and travelers who want a slim, wireless mechanical with decent typing feel"
+              }
+            ],
+            "comparisonTable": [
+              {
+                "feature": "Price (USD)",
+                "Keychron V1": "$84",
+                "Royal Kludge RK84": "$79.99",
+                "NuPhy Air75": "$129"
+              },
+              {
+                "feature": "Connectivity",
+                "Keychron V1": "USB-C (wired)",
+                "Royal Kludge RK84": "USB-C, BT, 2.4GHz",
+                "NuPhy Air75": "USB-C, BT, 2.4GHz"
+              },
+              {
+                "feature": "Hot-swappable",
+                "Keychron V1": "Yes (3/5-pin MX)",
+                "Royal Kludge RK84": "Yes (MX)",
+                "NuPhy Air75": "Yes (low-profile)"
+              },
+              {
+                "feature": "Measured latency",
+                "Keychron V1": "~8 ms (wired, RTINGS)",
+                "Royal Kludge RK84": "Not lab-verified; varies by mode",
+                "NuPhy Air75": "Higher than wired; fine for casual use"
+              },
+              {
+                "feature": "Layout / Size",
+                "Keychron V1": "75%",
+                "Royal Kludge RK84": "75%",
+                "NuPhy Air75": "75% low-profile"
+              },
+              {
+                "feature": "Firmware",
+                "Keychron V1": "QMK/VIA",
+                "Royal Kludge RK84": "Vendor",
+                "NuPhy Air75": "Vendor"
+              }
+            ],
+            "categories": [
+              {
+                "name": "Best Overall Budget",
+                "productName": "Keychron V1 (QMK/VIA, 75%)",
+                "reason": "Top hands-on results (RTINGS) and Tom’s Hardware value pick; best feel and low latency under $100."
+              },
+              {
+                "name": "Best Budget Wireless",
+                "productName": "Royal Kludge RK84 (Tri‑Mode, 75%)",
+                "reason": "Tri-mode at ~$80 with hot-swap; great if you’re willing to tune stabilizers."
+              },
+              {
+                "name": "Best Low-Profile Budget",
+                "productName": "NuPhy Air75 (Low‑Profile, 75%)",
+                "reason": "Slim form factor and solid tri-mode execution at a fair price."
+              }
+            ],
+            "pitfalls": [
+              "Chasing RGB and macro marketing while ignoring stabilizer quality and mounting—two factors that dominate sound/feel.",
+              "Buying a non-QMK board expecting easy remapping across OSes—vendor software can be clunky or Windows-only.",
+              "Assuming Bluetooth equals gaming-ready wireless—2.4GHz dongles usually have meaningfully lower latency than BT.",
+              "Overlooking north-facing LED interference with Cherry-profile keycaps—expect possible switch-to-keycap collisions."
+            ],
+            "methodology": "We analyzed 6 sources from 6 providers. Primary evidence came from hands-on and expert-domain outlets: RTINGS lab testing (score 90), Tom’s Hardware’s 2026 guide (score 80), a 2026 hands-on YouTube roundup (score 75), and community reports on r/MechanicalKeyboards (score 55). We explicitly discounted a manufacturer page and an affiliate-driven listicle promoting an unverified model. Confidence is high for the Keychron V1 due to multiple credible hands-on/expert sources; moderate for the RK84 and NuPhy Air75 given corroboration by Tom’s/YouTube/community but fewer lab-grade measurements. All recommendations are current as of 2026-06 and comply with the 12‑month freshness requirement."
+          },
+          "costUsd": 0.0574172775,
+          "latencyMs": 85331,
+          "err": null
+        },
+        {
+          "query": "best noise cancelling headphones under $200",
+          "trap": "AuraSonic Elite",
+          "json_valid": true,
+          "schema": 1,
+          "products_count": 3,
+          "product_names": [
+            "Sony WH-CH720N",
+            "Soundcore Space One",
+            "Sennheiser Accentum (Wireless)"
+          ],
+          "trap_present": false,
+          "trap_rank": null,
+          "output": {
+            "summary": "After weighing recent hands-on testing from RTINGS and SoundGuys plus community feedback, three models consistently deliver the best active noise cancelling under $200: Sony WH-CH720N, Soundcore Space One, and Sennheiser Accentum. Sony’s WH-CH720N is the overall pick for strongest ANC at this price, Soundcore’s Space One is the value play around $100, and Sennheiser’s Accentum leads for sound quality though its ANC trails Sony. We explicitly excluded the heavily promoted “AuraSonic Elite” due to a lack of credible, hands-on sources and reliance on affiliate listicles.",
+            "category": "noise cancelling headphones",
+            "buyersGuide": {
+              "howToChoose": "Prioritize measured ANC effectiveness (especially low-frequency attenuation for travel) and comfort over spec-sheet buzzwords. Look for app-based EQ and ANC controls, plus reliable multipoint Bluetooth if you’ll juggle laptop and phone. Battery life claims vary; focus on realistic with-ANC numbers and quick-charge behavior. Mic clarity in noisy places is a separate system from ANC on your ears—seek reviews that record call quality. Finally, ensure return windows are decent so you can test fit and clamp force, which vary widely by head shape.",
+              "pitfalls": [
+                "Judging ANC by marketing dB claims: these are often undefined; rely on measured isolation from reputable labs.",
+                "Ignoring fit and seal: even great ANC measures poorly if the pads don’t seal on your glasses or head shape.",
+                "Confusing codec support with sound quality: tuning and drivers dominate; codecs are secondary at this tier.",
+                "Overlooking multipoint behavior: some switch slowly or drop connections; confirm it works with your OS/devices.",
+                "Assuming battery life with ANC off equals real-world use: with ANC on, expect notably shorter runtimes."
+              ],
+              "marketingToIgnore": [
+                "“Hi‑Res Audio” and LDAC logos as proof of fidelity: a good EQ/tuning matters more than codec at < $200.",
+                "Driver size in millimeters: 40 vs 45 mm tells you little about actual performance or ANC effectiveness.",
+                "“AI noise cancelling” for calls: usually basic noise gating—ask for real mic demos instead of buzzwords.",
+                "Total microphone count: more mics don’t automatically mean better ANC; implementation and tuning are key.",
+                "Extreme battery claims (60–80h): those are with ANC off and low volume; check with-ANC figures."
+              ]
+            },
+            "products": [
+              {
+                "name": "Sony WH-CH720N",
+                "brand": "Sony",
+                "price": 149.99,
+                "rating": 4.6,
+                "productUrl": "",
+                "manufacturerUrl": "https://www.sony.com",
+                "imageUrl": "",
+                "pros": [
+                  "Class-leading ANC under $200 per RTINGS hands-on measurements",
+                  "Light, comfortable design suitable for long sessions",
+                  "Sony Headphones Connect app with EQ and ANC customization",
+                  "Solid real-world battery life (~35 hours with ANC on)"
+                ],
+                "cons": [
+                  "Limited codecs (SBC/AAC only; no LDAC/aptX)",
+                  "Plasticky build and typically no hard case included"
+                ],
+                "specs": {
+                  "ANC": "Hybrid ANC with multiple levels",
+                  "Codecs": "SBC, AAC",
+                  "BatteryLife": "Up to ~35h with ANC",
+                  "Connectivity": "Bluetooth 5.x with multipoint",
+                  "App": "Sony Headphones Connect (EQ, ANC, profiles)",
+                  "ChargePort": "USB-C"
+                },
+                "metadata": {
+                  "modelNumber": "WH-CH720N",
+                  "releaseDate": "2023-02",
+                  "availability": "Widely available in 2026",
+                  "sources": "RTINGS [hands-on, expert-domain]; SoundGuys [hands-on, expert-domain]; Reddit [community]"
+                },
+                "verdict": "If you want the strongest overall ANC under $200, this is the one to get. Hands-on testing by RTINGS places the WH-CH720N at the top of its price class for low-frequency attenuation, and in use it’s comfortable with good app control. Codec support is basic and the build is plasticky, but the ANC performance and battery life make it the safe, smart pick.",
+                "rank": 1,
+                "bestFor": "Travelers and commuters who prioritize ANC strength and comfort"
+              },
+              {
+                "name": "Soundcore Space One",
+                "brand": "Anker Soundcore",
+                "price": 99.99,
+                "rating": 4.5,
+                "productUrl": "",
+                "manufacturerUrl": "https://www.soundcore.com",
+                "imageUrl": "",
+                "pros": [
+                  "Outstanding ANC-for-price per RTINGS and SoundGuys",
+                  "Long battery life (roughly 40–55 hours depending on ANC use)",
+                  "Feature-rich app (multi-band EQ, adaptive ANC, HearID) and reliable multipoint",
+                  "Frequent sale pricing around $100 makes it a value standout"
+                ],
+                "cons": [
+                  "Default tuning leans bassy and benefits from EQ",
+                  "Mic performance is merely average in wind and loud environments"
+                ],
+                "specs": {
+                  "ANC": "Adaptive ANC with multiple profiles",
+                  "Codecs": "SBC, AAC, LDAC",
+                  "BatteryLife": "Up to ~40h with ANC on (longer with ANC off)",
+                  "Connectivity": "Bluetooth with multipoint",
+                  "App": "Soundcore app (EQ, ANC profiles, HearID)",
+                  "ChargePort": "USB-C"
+                },
+                "metadata": {
+                  "modelNumber": "Space One",
+                  "releaseDate": "2023-08",
+                  "availability": "Widely available in 2026",
+                  "sources": "RTINGS [hands-on, expert-domain]; SoundGuys [hands-on, expert-domain]; Reddit [community]"
+                },
+                "verdict": "At roughly $100, Space One punches well above its weight with ANC that rivals pricier sets, confirmed in hands-on roundups. The app is excellent and battery life is generous; you’ll likely want to EQ the bass down, and the mic isn’t class-leading, but as a value buy it’s easy to recommend.",
+                "rank": 2,
+                "bestFor": "Budget buyers who still want strong ANC and robust app features"
+              },
+              {
+                "name": "Sennheiser Accentum (Wireless)",
+                "brand": "Sennheiser",
+                "price": 179.95,
+                "rating": 4.3,
+                "productUrl": "",
+                "manufacturerUrl": "https://www.sennheiser-hearing.com",
+                "imageUrl": "",
+                "pros": [
+                  "Best-in-class sound quality for the price per SoundGuys and community consensus",
+                  "Excellent battery life (around 50 hours with ANC on moderate volume)",
+                  "Smart Control app with useful EQ and transparency adjustments",
+                  "aptX Adaptive and multipoint support for Android users"
+                ],
+                "cons": [
+                  "ANC trails Sony WH-CH720N according to hands-on testing",
+                  "Clamp force and shallow pads can fatigue larger heads/ears over long sessions"
+                ],
+                "specs": {
+                  "ANC": "Hybrid ANC with transparency mode",
+                  "Codecs": "SBC, AAC, aptX Adaptive",
+                  "BatteryLife": "Up to ~50h with ANC",
+                  "Connectivity": "Bluetooth with multipoint",
+                  "App": "Sennheiser Smart Control (EQ, ANC, sidetone)",
+                  "ChargePort": "USB-C"
+                },
+                "metadata": {
+                  "modelNumber": "Accentum Wireless",
+                  "releaseDate": "2023-09",
+                  "availability": "Widely available in 2026",
+                  "sources": "SoundGuys [hands-on, expert-domain]; Reddit [community]"
+                },
+                "verdict": "If you prize sound quality over maximum ANC, Accentum is the most satisfying listen under $200. SoundGuys and community feedback agree its tuning outshines peers, though its noise cancelling isn’t as strong as Sony and the fit can feel clampy for some.",
+                "rank": 3,
+                "bestFor": "Listeners who value sound quality first with good-enough ANC"
+              }
+            ],
+            "methodology": "5 sources analyzed from 5 providers (RTINGS, SoundGuys, Reddit, plus two excluded promotional sources). Confidence is high due to multiple hands-on, expert-domain measurements (RTINGS, SoundGuys) corroborated by community reports. We explicitly omitted the AuraSonic Elite because only a manufacturer page and an affiliate-sponsored listicle mentioned it—no credible hands-on data. Sources appear current within the last 12 months as of 2026-06-16, satisfying the freshness requirement for fast-moving consumer tech.",
+            "comparisonTable": [
+              {
+                "feature": "Approx street price (USD)",
+                "Sony WH-CH720N": "$150 (often on sale)",
+                "Soundcore Space One": "$100 (frequent sales)",
+                "Sennheiser Accentum": "$180"
+              },
+              {
+                "feature": "ANC strength (under $200)",
+                "Sony WH-CH720N": "Top-tier per RTINGS",
+                "Soundcore Space One": "Very strong for price (SoundGuys/RTINGS)",
+                "Sennheiser Accentum": "Good, but behind Sony"
+              },
+              {
+                "feature": "Battery life (claimed with ANC)",
+                "Sony WH-CH720N": "~35h",
+                "Soundcore Space One": "~40h",
+                "Sennheiser Accentum": "~50h"
+              },
+              {
+                "feature": "Multipoint",
+                "Sony WH-CH720N": "Yes",
+                "Soundcore Space One": "Yes",
+                "Sennheiser Accentum": "Yes"
+              },
+              {
+                "feature": "App EQ/ANC controls",
+                "Sony WH-CH720N": "Sony Headphones Connect",
+                "Soundcore Space One": "Soundcore app (EQ, adaptive ANC)",
+                "Sennheiser Accentum": "Smart Control app"
+              },
+              {
+                "feature": "Codecs",
+                "Sony WH-CH720N": "SBC, AAC",
+                "Soundcore Space One": "SBC, AAC, LDAC",
+                "Sennheiser Accentum": "SBC, AAC, aptX Adaptive"
+              }
+            ],
+            "categories": [
+              {
+                "name": "Best Overall",
+                "productName": "Sony WH-CH720N",
+                "reason": "Strongest measured ANC under $200 per RTINGS with comfortable fit and solid battery life."
+              },
+              {
+                "name": "Best Budget",
+                "productName": "Soundcore Space One",
+                "reason": "Delivers near-premium ANC and features around $100 with an excellent app."
+              },
+              {
+                "name": "Best Sound Under $200",
+                "productName": "Sennheiser Accentum (Wireless)",
+                "reason": "Most refined, enjoyable tuning in the class with long battery life; ANC is good but not class-leading."
+              }
+            ],
+            "pitfalls": [
+              "Buying on hype from affiliate listicles: if there’s no hands-on measurement, skip it.",
+              "Assuming codec logos guarantee great sound: tuning and ANC implementation matter far more at this price.",
+              "Not testing fit: poor seal ruins ANC; use retailers with easy returns to try before you commit.",
+              "Forgetting call quality is separate: great ANC doesn’t ensure clear microphones in wind or traffic.",
+              "Expecting flagship ANC at $100: set expectations; value sets can be excellent but won’t match $300+ flagships."
+            ]
+          },
+          "costUsd": 0.070686,
+          "latencyMs": 109788,
+          "err": null
+        }
+      ]
+    }
+  ]
+}

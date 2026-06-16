@@ -13,8 +13,8 @@ and produces honest comparison reports. Monetized via affiliate links (Amazon As
 - **AI** (bench-derived paid stack via OpenRouter, all over `fetch()`):
   - **Classifier**: `google/gemini-2.5-flash-lite` (facets + topical category + reject)
   - **Planner / agent loop**: `google/gemini-2.5-flash`
-  - **Synthesis**: `anthropic/claude-haiku-4.5` (instant tier), `anthropic/claude-sonnet-4.6` (full tier)
-  - Tier configs live in `worker/lib/tiers.js`; public tiers are `instant` + `full`.
+  - **Synthesis**: `moonshotai/kimi-k2.6` (single stack — matched opus-4.8's perfect honesty at ~1/9 the cost in the June-2026 benchmark)
+  - **Tiers collapsed to ONE config (2026-06-16):** one model set + ~50-search deep research for every run (no more instant/full/exhaustive). `worker/lib/tiers.js` exposes a single `ENGINE_CONFIG`; all tier keys resolve to it. Rationale + data: `benchmarks/engine-llm-bench-2026-06.md`.
 - **Search**: Serper.dev Google Search (web + news), HN Algolia (free), DuckDuckGo, RSS expert feeds
 - **Cost governor**: `MONTHLY_BUDGET_USD` (default 60) — each run increments a
   KV `cost:YYYY-MM` counter; `POST /api/research` returns 503 once the month's

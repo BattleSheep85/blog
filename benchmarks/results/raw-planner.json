@@ -1,0 +1,1110 @@
+{
+  "role": "planner",
+  "spend": 0.2159,
+  "rows": [
+    {
+      "model": "google/gemini-2.5-flash",
+      "quality": 1,
+      "skep_acc": 1,
+      "green_rate": 1,
+      "ctrl_acc": 1,
+      "json_rate": 1,
+      "toolcall_valid": 1,
+      "avg_cost_usd": 0.000194,
+      "total_cost_usd": 0.00369,
+      "p50_latency_ms": 929,
+      "errors": 0,
+      "skep": [
+        {
+          "correct": true,
+          "got": false,
+          "isBS": true,
+          "jsonValid": true,
+          "costUsd": 0.000179586,
+          "latencyMs": 931,
+          "err": null
+        },
+        {
+          "correct": true,
+          "got": true,
+          "isBS": false,
+          "jsonValid": true,
+          "costUsd": 0.000151767,
+          "latencyMs": 849,
+          "err": null
+        },
+        {
+          "correct": true,
+          "got": false,
+          "isBS": true,
+          "jsonValid": true,
+          "costUsd": 0.000223047,
+          "latencyMs": 842,
+          "err": null
+        },
+        {
+          "correct": true,
+          "got": false,
+          "isBS": true,
+          "jsonValid": true,
+          "costUsd": 0.000209385,
+          "latencyMs": 997,
+          "err": null
+        },
+        {
+          "correct": true,
+          "got": false,
+          "isBS": true,
+          "jsonValid": true,
+          "costUsd": 0.00016236,
+          "latencyMs": 1028,
+          "err": null
+        },
+        {
+          "correct": true,
+          "got": true,
+          "isBS": false,
+          "jsonValid": true,
+          "costUsd": 0.000180081,
+          "latencyMs": 660,
+          "err": null
+        },
+        {
+          "correct": true,
+          "got": false,
+          "isBS": true,
+          "jsonValid": true,
+          "costUsd": 0.00014949,
+          "latencyMs": 653,
+          "err": null
+        },
+        {
+          "correct": true,
+          "got": true,
+          "isBS": false,
+          "jsonValid": true,
+          "costUsd": 0.000168102,
+          "latencyMs": 819,
+          "err": null
+        },
+        {
+          "correct": true,
+          "got": false,
+          "isBS": true,
+          "jsonValid": true,
+          "costUsd": 0.00018414,
+          "latencyMs": 1014,
+          "err": null
+        },
+        {
+          "correct": true,
+          "got": false,
+          "isBS": true,
+          "jsonValid": true,
+          "costUsd": 0.000205029,
+          "latencyMs": 935,
+          "err": null
+        }
+      ],
+      "tc": [
+        {
+          "valid": true,
+          "name": "web_search",
+          "costUsd": 0.00020394,
+          "latencyMs": 1014,
+          "err": null
+        },
+        {
+          "valid": true,
+          "name": "web_search",
+          "costUsd": 0.000171864,
+          "latencyMs": 807,
+          "err": null
+        },
+        {
+          "valid": true,
+          "name": "web_search",
+          "costUsd": 0.000217602,
+          "latencyMs": 5749,
+          "err": null
+        }
+      ],
+      "notes": [
+        {
+          "tag": "[listicle][affiliate-conflict]",
+          "kind": "low",
+          "source": "'Top 10 Best Blenders of 2026' — the BlendMax Pro is simply the best blender money can buy, a revolutionary must-have. (Affiliate links throughout.)",
+          "note": "The BlendMax Pro is highly recommended as the 'best blender money can buy' in a listicle, but this recommendation comes with a strong affiliate-conflict credibility flag.",
+          "costUsd": 0.00017622,
+          "latencyMs": 715,
+          "err": null
+        },
+        {
+          "tag": "[manufacturer]",
+          "kind": "low",
+          "source": "Acme.com product page: the Acme X1 is the world's most advanced vacuum, rated #1 by customers, with game-changing suction.",
+          "note": "The manufacturer directly claims the Acme X1 is '#1 by customers' and has 'game-changing suction,' describing it as the 'world's most advanced vacuum.' This is direct product marketing from Acme.com.",
+          "costUsd": 0.000193743,
+          "latencyMs": 782,
+          "err": null
+        },
+        {
+          "tag": "[hands-on][expert-domain]",
+          "kind": "control",
+          "source": "RTINGS measured the Dell S2725QC at Delta-E 1.2 — best color accuracy of 47 monitors tested — but only 350 nits peak brightness.",
+          "note": "RTINGS, a reputable hands-on and expert-domain source, rated the Dell S2725QC as having the best color accuracy among 47 monitors tested, with a Delta-E of 1.2. However, the peak brightness was measured at only 350 nits.",
+          "costUsd": 0.00024552,
+          "latencyMs": 900,
+          "err": null
+        },
+        {
+          "tag": "[community]",
+          "kind": "control",
+          "source": "Reddit r/BuyItForLife (1.8k upvotes): many owners say the Lodge cast-iron skillet lasts 15+ years; several note the rough factory surface needs seasoning.",
+          "note": "Owners on Reddit's r/BuyItForLife (1.8k upvotes) report Lodge cast-iron skillets lasting over 15 years, though some 'rough factory surface needs seasoning'. Credibility: [community].",
+          "costUsd": 0.000206316,
+          "latencyMs": 929,
+          "err": null
+        },
+        {
+          "tag": "[listicle]",
+          "kind": "low",
+          "source": "'Best gaming mouse 2026': the HyperClick Pro is revolutionary, game-changing, and flawless — a must-have for every gamer.",
+          "note": "The HyperClick Pro mouse is described as \"revolutionary, game-changing, and flawless\" and a \"must-have\" for every gamer in a listicle from 2026. Given this is a listicle, this information may be overhyped and should be taken with skepticism. (Credibility: listicle)",
+          "costUsd": 0.000251262,
+          "latencyMs": 1072,
+          "err": null
+        },
+        {
+          "tag": "[affiliate-conflict]",
+          "kind": "low",
+          "source": "Sponsored review: SodaStream is the best sparkling-water maker, period — buy one today using our link.",
+          "note": "An affiliated review claims SodaStream is the best sparkling-water maker, with a strong call to action to buy through their link. This source has an affiliate conflict, so the recommendation should be viewed with skepticism, as the claim may be biased by financial incentive.",
+          "costUsd": 0.000209286,
+          "latencyMs": 969,
+          "err": null
+        }
+      ]
+    },
+    {
+      "model": "qwen/qwen3.5-397b-a17b",
+      "quality": 0.65,
+      "skep_acc": 0.5,
+      "green_rate": 0.429,
+      "ctrl_acc": 0.667,
+      "json_rate": 0.5,
+      "toolcall_valid": 1,
+      "avg_cost_usd": 0.000827,
+      "total_cost_usd": 0.01571,
+      "p50_latency_ms": 3187,
+      "errors": 0,
+      "skep": [
+        {
+          "correct": false,
+          "got": null,
+          "isBS": true,
+          "jsonValid": false,
+          "costUsd": 0.001189485,
+          "latencyMs": 3728,
+          "err": null
+        },
+        {
+          "correct": true,
+          "got": true,
+          "isBS": false,
+          "jsonValid": true,
+          "costUsd": 0.00022869,
+          "latencyMs": 1677,
+          "err": null
+        },
+        {
+          "correct": true,
+          "got": false,
+          "isBS": true,
+          "jsonValid": true,
+          "costUsd": 0.000177804,
+          "latencyMs": 1802,
+          "err": null
+        },
+        {
+          "correct": false,
+          "got": null,
+          "isBS": true,
+          "jsonValid": false,
+          "costUsd": 0.001186515,
+          "latencyMs": 3720,
+          "err": null
+        },
+        {
+          "correct": true,
+          "got": false,
+          "isBS": true,
+          "jsonValid": true,
+          "costUsd": 0.000240669,
+          "latencyMs": 2286,
+          "err": null
+        },
+        {
+          "correct": false,
+          "got": null,
+          "isBS": false,
+          "jsonValid": false,
+          "costUsd": 0.001193445,
+          "latencyMs": 3707,
+          "err": null
+        },
+        {
+          "correct": true,
+          "got": false,
+          "isBS": true,
+          "jsonValid": true,
+          "costUsd": 0.000216315,
+          "latencyMs": 1808,
+          "err": null
+        },
+        {
+          "correct": true,
+          "got": true,
+          "isBS": false,
+          "jsonValid": true,
+          "costUsd": 0.000254925,
+          "latencyMs": 2003,
+          "err": null
+        },
+        {
+          "correct": false,
+          "got": null,
+          "isBS": true,
+          "jsonValid": false,
+          "costUsd": 0.00118107,
+          "latencyMs": 3704,
+          "err": null
+        },
+        {
+          "correct": false,
+          "got": null,
+          "isBS": true,
+          "jsonValid": false,
+          "costUsd": 0.00118602,
+          "latencyMs": 4363,
+          "err": null
+        }
+      ],
+      "tc": [
+        {
+          "valid": true,
+          "name": "web_search",
+          "costUsd": 0.001606176,
+          "latencyMs": 3867,
+          "err": null
+        },
+        {
+          "valid": true,
+          "name": "web_search",
+          "costUsd": 0.001170576,
+          "latencyMs": 3982,
+          "err": null
+        },
+        {
+          "valid": true,
+          "name": "web_search",
+          "costUsd": 0.001453221,
+          "latencyMs": 4695,
+          "err": null
+        }
+      ],
+      "notes": [
+        {
+          "tag": "[listicle][affiliate-conflict]",
+          "kind": "low",
+          "source": "'Top 10 Best Blenders of 2026' — the BlendMax Pro is simply the best blender money can buy, a revolutionary must-have. (Affiliate links throughout.)",
+          "note": "",
+          "costUsd": 0.000974655,
+          "latencyMs": 3169,
+          "err": null
+        },
+        {
+          "tag": "[manufacturer]",
+          "kind": "low",
+          "source": "Acme.com product page: the Acme X1 is the world's most advanced vacuum, rated #1 by customers, with game-changing suction.",
+          "note": "[manufacturer] Acme claims the Acme X1 is the 'world's most advanced vacuum' with 'game-changing suction' and a '#1 customer rating,' though these are unverified marketing assertions.",
+          "costUsd": 0.000250965,
+          "latencyMs": 1299,
+          "err": null
+        },
+        {
+          "tag": "[hands-on][expert-domain]",
+          "kind": "control",
+          "source": "RTINGS measured the Dell S2725QC at Delta-E 1.2 — best color accuracy of 47 monitors tested — but only 350 nits peak brightness.",
+          "note": "[hands-on][expert-domain] RTINGS testing shows the Dell S2725QC achieved a Delta-E of 1.2 (best color accuracy among 47 monitors tested) but has a limited peak brightness of 350 nits.",
+          "costUsd": 0.000299475,
+          "latencyMs": 1424,
+          "err": null
+        },
+        {
+          "tag": "[community]",
+          "kind": "control",
+          "source": "Reddit r/BuyItForLife (1.8k upvotes): many owners say the Lodge cast-iron skillet lasts 15+ years; several note the rough factory surface needs seasoning.",
+          "note": "",
+          "costUsd": 0.000972675,
+          "latencyMs": 3166,
+          "err": null
+        },
+        {
+          "tag": "[listicle]",
+          "kind": "low",
+          "source": "'Best gaming mouse 2026': the HyperClick Pro is revolutionary, game-changing, and flawless — a must-have for every gamer.",
+          "note": "",
+          "costUsd": 0.000967725,
+          "latencyMs": 3201,
+          "err": null
+        },
+        {
+          "tag": "[affiliate-conflict]",
+          "kind": "low",
+          "source": "Sponsored review: SodaStream is the best sparkling-water maker, period — buy one today using our link.",
+          "note": "",
+          "costUsd": 0.00096426,
+          "latencyMs": 3187,
+          "err": null
+        }
+      ]
+    },
+    {
+      "model": "openai/gpt-5.1-codex",
+      "quality": 1,
+      "skep_acc": 1,
+      "green_rate": 1,
+      "ctrl_acc": 1,
+      "json_rate": 1,
+      "toolcall_valid": 1,
+      "avg_cost_usd": 0.000888,
+      "total_cost_usd": 0.01687,
+      "p50_latency_ms": 1283,
+      "errors": 0,
+      "skep": [
+        {
+          "correct": true,
+          "got": false,
+          "isBS": true,
+          "jsonValid": true,
+          "costUsd": 0.0006521625,
+          "latencyMs": 3373,
+          "err": null
+        },
+        {
+          "correct": true,
+          "got": true,
+          "isBS": false,
+          "jsonValid": true,
+          "costUsd": 0.0008526375,
+          "latencyMs": 1181,
+          "err": null
+        },
+        {
+          "correct": true,
+          "got": false,
+          "isBS": true,
+          "jsonValid": true,
+          "costUsd": 0.0007189875,
+          "latencyMs": 1393,
+          "err": null
+        },
+        {
+          "correct": true,
+          "got": false,
+          "isBS": true,
+          "jsonValid": true,
+          "costUsd": 0.0005841,
+          "latencyMs": 946,
+          "err": null
+        },
+        {
+          "correct": true,
+          "got": false,
+          "isBS": true,
+          "jsonValid": true,
+          "costUsd": 0.0006546375,
+          "latencyMs": 947,
+          "err": null
+        },
+        {
+          "correct": true,
+          "got": true,
+          "isBS": false,
+          "jsonValid": true,
+          "costUsd": 0.0010679625,
+          "latencyMs": 1283,
+          "err": null
+        },
+        {
+          "correct": true,
+          "got": false,
+          "isBS": true,
+          "jsonValid": true,
+          "costUsd": 0.0005742,
+          "latencyMs": 1318,
+          "err": null
+        },
+        {
+          "correct": true,
+          "got": true,
+          "isBS": false,
+          "jsonValid": true,
+          "costUsd": 0.0007363125,
+          "latencyMs": 1186,
+          "err": null
+        },
+        {
+          "correct": true,
+          "got": false,
+          "isBS": true,
+          "jsonValid": true,
+          "costUsd": 0.0006447375,
+          "latencyMs": 1010,
+          "err": null
+        },
+        {
+          "correct": true,
+          "got": false,
+          "isBS": true,
+          "jsonValid": true,
+          "costUsd": 0.0007066125,
+          "latencyMs": 1620,
+          "err": null
+        }
+      ],
+      "tc": [
+        {
+          "valid": true,
+          "name": "web_search",
+          "costUsd": 0.0007957125,
+          "latencyMs": 1238,
+          "err": null
+        },
+        {
+          "valid": true,
+          "name": "web_search",
+          "costUsd": 0.0011372625,
+          "latencyMs": 1367,
+          "err": null
+        },
+        {
+          "valid": true,
+          "name": "web_search",
+          "costUsd": 0.0015481125,
+          "latencyMs": 1079,
+          "err": null
+        }
+      ],
+      "notes": [
+        {
+          "tag": "[listicle][affiliate-conflict]",
+          "kind": "low",
+          "source": "'Top 10 Best Blenders of 2026' — the BlendMax Pro is simply the best blender money can buy, a revolutionary must-have. (Affiliate links throughout.)",
+          "note": "[listicle][affiliate-conflict] “Top 10 Best Blenders of 2026” calls BlendMax Pro “simply the best blender money can buy,” but the article is promotional with affiliate links and lacks substantiated performance details, so claims may be biased.",
+          "costUsd": 0.001089,
+          "latencyMs": 1514,
+          "err": null
+        },
+        {
+          "tag": "[manufacturer]",
+          "kind": "low",
+          "source": "Acme.com product page: the Acme X1 is the world's most advanced vacuum, rated #1 by customers, with game-changing suction.",
+          "note": "[manufacturer bias] Acme’s product page markets the Acme X1 vacuum as “world’s most advanced,” “rated #1 by customers,” and having “game-changing suction,” but this is promotional copy that needs independent verification.",
+          "costUsd": 0.0009268875,
+          "latencyMs": 1237,
+          "err": null
+        },
+        {
+          "tag": "[hands-on][expert-domain]",
+          "kind": "control",
+          "source": "RTINGS measured the Dell S2725QC at Delta-E 1.2 — best color accuracy of 47 monitors tested — but only 350 nits peak brightness.",
+          "note": "[hands-on/expert-domain] RTINGS measured the Dell S2725QC at Delta-E 1.2—the best color accuracy among 47 tested monitors—though peak brightness tops out at about 350 nits, indicating superb accuracy but only moderate HDR brightness.",
+          "costUsd": 0.0011966625,
+          "latencyMs": 1647,
+          "err": null
+        },
+        {
+          "tag": "[community]",
+          "kind": "control",
+          "source": "Reddit r/BuyItForLife (1.8k upvotes): many owners say the Lodge cast-iron skillet lasts 15+ years; several note the rough factory surface needs seasoning.",
+          "note": "Note: [community] Reddit r/BuyItForLife thread (1.8k upvotes) reports many owners keeping Lodge cast-iron skillets 15+ years; recurring mention that the factory-finish is rough and requires thorough seasoning to cook smoothly.",
+          "costUsd": 0.0009986625,
+          "latencyMs": 1356,
+          "err": null
+        },
+        {
+          "tag": "[listicle]",
+          "kind": "low",
+          "source": "'Best gaming mouse 2026': the HyperClick Pro is revolutionary, game-changing, and flawless — a must-have for every gamer.",
+          "note": "[listicle] 'Best gaming mouse 2026' article claims the HyperClick Pro is “revolutionary” and “flawless,” but as a hype-heavy listicle (low credibility, affiliate risk) it lacks detailed evidence beyond marketing-style praise.",
+          "costUsd": 0.00102465,
+          "latencyMs": 1485,
+          "err": null
+        },
+        {
+          "tag": "[affiliate-conflict]",
+          "kind": "low",
+          "source": "Sponsored review: SodaStream is the best sparkling-water maker, period — buy one today using our link.",
+          "note": "note([affiliate] Sponsored praise for SodaStream as “best sparkling-water maker” is likely biased; claims lack supporting evidence.",
+          "costUsd": 0.0009590625,
+          "latencyMs": 1234,
+          "err": null
+        }
+      ]
+    },
+    {
+      "model": "google/gemini-3.5-flash",
+      "quality": 0.86,
+      "skep_acc": 0.8,
+      "green_rate": 0.857,
+      "ctrl_acc": 0.667,
+      "json_rate": 0.8,
+      "toolcall_valid": 1,
+      "avg_cost_usd": 0.00257,
+      "total_cost_usd": 0.04882,
+      "p50_latency_ms": 2153,
+      "errors": 0,
+      "skep": [
+        {
+          "correct": true,
+          "got": false,
+          "isBS": true,
+          "jsonValid": true,
+          "costUsd": 0.00261657,
+          "latencyMs": 2121,
+          "err": null
+        },
+        {
+          "correct": true,
+          "got": true,
+          "isBS": false,
+          "jsonValid": true,
+          "costUsd": 0.002249775,
+          "latencyMs": 1873,
+          "err": null
+        },
+        {
+          "correct": true,
+          "got": false,
+          "isBS": true,
+          "jsonValid": true,
+          "costUsd": 0.00249183,
+          "latencyMs": 2053,
+          "err": null
+        },
+        {
+          "correct": true,
+          "got": false,
+          "isBS": true,
+          "jsonValid": true,
+          "costUsd": 0.0028809,
+          "latencyMs": 2262,
+          "err": null
+        },
+        {
+          "correct": false,
+          "got": null,
+          "isBS": true,
+          "jsonValid": false,
+          "costUsd": 0.0028809,
+          "latencyMs": 2020,
+          "err": null
+        },
+        {
+          "correct": true,
+          "got": true,
+          "isBS": false,
+          "jsonValid": true,
+          "costUsd": 0.00289872,
+          "latencyMs": 2313,
+          "err": null
+        },
+        {
+          "correct": true,
+          "got": false,
+          "isBS": true,
+          "jsonValid": true,
+          "costUsd": 0.00250074,
+          "latencyMs": 1833,
+          "err": null
+        },
+        {
+          "correct": false,
+          "got": null,
+          "isBS": false,
+          "jsonValid": false,
+          "costUsd": 0.002995245,
+          "latencyMs": 2643,
+          "err": null
+        },
+        {
+          "correct": true,
+          "got": false,
+          "isBS": true,
+          "jsonValid": true,
+          "costUsd": 0.00216216,
+          "latencyMs": 1832,
+          "err": null
+        },
+        {
+          "correct": true,
+          "got": false,
+          "isBS": true,
+          "jsonValid": true,
+          "costUsd": 0.00286605,
+          "latencyMs": 2414,
+          "err": null
+        }
+      ],
+      "tc": [
+        {
+          "valid": true,
+          "name": "web_search",
+          "costUsd": 0.001715175,
+          "latencyMs": 1347,
+          "err": null
+        },
+        {
+          "valid": true,
+          "name": "web_search",
+          "costUsd": 0.003191265,
+          "latencyMs": 2512,
+          "err": null
+        },
+        {
+          "valid": true,
+          "name": "web_search",
+          "costUsd": 0.002885355,
+          "latencyMs": 2085,
+          "err": null
+        }
+      ],
+      "notes": [
+        {
+          "tag": "[listicle][affiliate-conflict]",
+          "kind": "low",
+          "source": "'Top 10 Best Blenders of 2026' — the BlendMax Pro is simply the best blender money can buy, a revolutionary must-have. (Affiliate links throughout.)",
+          "note": "Here is the JSON request",
+          "costUsd": 0.00242946,
+          "latencyMs": 2239,
+          "err": null
+        },
+        {
+          "tag": "[manufacturer]",
+          "kind": "low",
+          "source": "Acme.com product page: the Acme X1 is the world's most advanced vacuum, rated #1 by customers, with game-changing suction.",
+          "note": "Here is the JSON requested:\n",
+          "costUsd": 0.0024057,
+          "latencyMs": 2242,
+          "err": null
+        },
+        {
+          "tag": "[hands-on][expert-domain]",
+          "kind": "control",
+          "source": "RTINGS measured the Dell S2725QC at Delta-E 1.2 — best color accuracy of 47 monitors tested — but only 350 nits peak brightness.",
+          "note": "Here is the JSON",
+          "costUsd": 0.00242946,
+          "latencyMs": 2153,
+          "err": null
+        },
+        {
+          "tag": "[community]",
+          "kind": "control",
+          "source": "Reddit r/BuyItForLife (1.8k upvotes): many owners say the Lodge cast-iron skillet lasts 15+ years; several note the rough factory surface needs seasoning.",
+          "note": "Here is the JSON",
+          "costUsd": 0.002419065,
+          "latencyMs": 2392,
+          "err": null
+        },
+        {
+          "tag": "[listicle]",
+          "kind": "low",
+          "source": "'Best gaming mouse 2026': the HyperClick Pro is revolutionary, game-changing, and flawless — a must-have for every gamer.",
+          "note": "Here is the JSON requested:\n",
+          "costUsd": 0.00240867,
+          "latencyMs": 2061,
+          "err": null
+        },
+        {
+          "tag": "[affiliate-conflict]",
+          "kind": "low",
+          "source": "Sponsored review: SodaStream is the best sparkling-water maker, period — buy one today using our link.",
+          "note": "Here is the JSON requested:\n```json",
+          "costUsd": 0.00239679,
+          "latencyMs": 3034,
+          "err": null
+        }
+      ]
+    },
+    {
+      "model": "anthropic/claude-opus-4.8",
+      "quality": 1,
+      "skep_acc": 1,
+      "green_rate": 1,
+      "ctrl_acc": 1,
+      "json_rate": 1,
+      "toolcall_valid": 1,
+      "avg_cost_usd": 0.005783,
+      "total_cost_usd": 0.10988,
+      "p50_latency_ms": 2710,
+      "errors": 0,
+      "skep": [
+        {
+          "correct": true,
+          "got": false,
+          "isBS": true,
+          "jsonValid": true,
+          "costUsd": 0.00380655,
+          "latencyMs": 3238,
+          "err": null
+        },
+        {
+          "correct": true,
+          "got": true,
+          "isBS": false,
+          "jsonValid": true,
+          "costUsd": 0.0037422,
+          "latencyMs": 2710,
+          "err": null
+        },
+        {
+          "correct": true,
+          "got": false,
+          "isBS": true,
+          "jsonValid": true,
+          "costUsd": 0.0040392,
+          "latencyMs": 2906,
+          "err": null
+        },
+        {
+          "correct": true,
+          "got": false,
+          "isBS": true,
+          "jsonValid": true,
+          "costUsd": 0.00388575,
+          "latencyMs": 2241,
+          "err": null
+        },
+        {
+          "correct": true,
+          "got": false,
+          "isBS": true,
+          "jsonValid": true,
+          "costUsd": 0.0038808,
+          "latencyMs": 2657,
+          "err": null
+        },
+        {
+          "correct": true,
+          "got": true,
+          "isBS": false,
+          "jsonValid": true,
+          "costUsd": 0.00370755,
+          "latencyMs": 2556,
+          "err": null
+        },
+        {
+          "correct": true,
+          "got": false,
+          "isBS": true,
+          "jsonValid": true,
+          "costUsd": 0.0028314,
+          "latencyMs": 1835,
+          "err": null
+        },
+        {
+          "correct": true,
+          "got": true,
+          "isBS": false,
+          "jsonValid": true,
+          "costUsd": 0.0037323,
+          "latencyMs": 1988,
+          "err": null
+        },
+        {
+          "correct": true,
+          "got": false,
+          "isBS": true,
+          "jsonValid": true,
+          "costUsd": 0.0032274,
+          "latencyMs": 2184,
+          "err": null
+        },
+        {
+          "correct": true,
+          "got": false,
+          "isBS": true,
+          "jsonValid": true,
+          "costUsd": 0.0034947,
+          "latencyMs": 2016,
+          "err": null
+        }
+      ],
+      "tc": [
+        {
+          "valid": true,
+          "name": "web_search",
+          "costUsd": 0.0142461,
+          "latencyMs": 4706,
+          "err": null
+        },
+        {
+          "valid": true,
+          "name": "web_search",
+          "costUsd": 0.0142263,
+          "latencyMs": 4398,
+          "err": null
+        },
+        {
+          "valid": true,
+          "name": "web_search",
+          "costUsd": 0.0142461,
+          "latencyMs": 4776,
+          "err": null
+        }
+      ],
+      "notes": [
+        {
+          "tag": "[listicle][affiliate-conflict]",
+          "kind": "low",
+          "source": "'Top 10 Best Blenders of 2026' — the BlendMax Pro is simply the best blender money can buy, a revolutionary must-have. (Affiliate links throughout.)",
+          "note": "A 'Top 10 Best Blenders of 2026' listicle ranks the BlendMax Pro as the 'best blender money can buy,' calling it a 'revolutionary must-have.' CREDIBILITY: LOW — this is a listicle with affiliate links throughout, creating a financial conflict of interest. The praise is vague hyperbole with no specific specs, testing methodology, or measured performance data. Treat as promotional, not evidence; corroborate any claims with hands-on or expert-domain sources before including in the report.",
+          "costUsd": 0.0059004,
+          "latencyMs": 3795,
+          "err": null
+        },
+        {
+          "tag": "[manufacturer]",
+          "kind": "low",
+          "source": "Acme.com product page: the Acme X1 is the world's most advanced vacuum, rated #1 by customers, with game-changing suction.",
+          "note": "Manufacturer (Acme.com) product page claims the Acme X1 is the 'world's most advanced vacuum,' '#1 rated by customers,' with 'game-changing suction.' NOTE: Source is the manufacturer's own marketing page—claims are promotional, unverified, and lack specifics (no suction figures, no independent rating source cited). Treat superlatives as unsubstantiated; seek independent hands-on/expert testing for actual suction specs and verifiable customer ratings.",
+          "costUsd": 0.00550935,
+          "latencyMs": 3295,
+          "err": null
+        },
+        {
+          "tag": "[hands-on][expert-domain]",
+          "kind": "control",
+          "source": "RTINGS measured the Dell S2725QC at Delta-E 1.2 — best color accuracy of 47 monitors tested — but only 350 nits peak brightness.",
+          "note": "RTINGS [hands-on][expert-domain] measured Dell S2725QC at Delta-E 1.2 — best color accuracy of 47 monitors tested, but limited 350 nits peak brightness. High-credibility lab testing; strong color accuracy claim well-supported, brightness is a notable weakness.",
+          "costUsd": 0.00413325,
+          "latencyMs": 2570,
+          "err": null
+        },
+        {
+          "tag": "[community]",
+          "kind": "control",
+          "source": "Reddit r/BuyItForLife (1.8k upvotes): many owners say the Lodge cast-iron skillet lasts 15+ years; several note the rough factory surface needs seasoning.",
+          "note": "[community] Reddit r/BuyItForLife (1.8k upvotes): Numerous owners report the Lodge cast-iron skillet lasts 15+ years, indicating strong durability/longevity. Several note the rough factory surface requires seasoning to perform well. Credibility: community/anecdotal consensus with high engagement (1.8k upvotes)—useful as a real-owner longevity signal but not lab-verified; the seasoning complaint is a recurring, plausible usability caveat.",
+          "costUsd": 0.00558855,
+          "latencyMs": 4021,
+          "err": null
+        },
+        {
+          "tag": "[listicle]",
+          "kind": "low",
+          "source": "'Best gaming mouse 2026': the HyperClick Pro is revolutionary, game-changing, and flawless — a must-have for every gamer.",
+          "note": "[listicle] A 'Best gaming mouse 2026' roundup calls the HyperClick Pro 'revolutionary, game-changing, and flawless — a must-have for every gamer.' LOW credibility: listicle source with vague hyperbolic marketing language and no specifics, measurements, or hands-on testing. No concrete specs, performance data, or comparative evidence provided. Treat as promotional buzz, not substantiated; needs corroboration from hands-on or expert reviews.",
+          "costUsd": 0.0054747,
+          "latencyMs": 3020,
+          "err": null
+        },
+        {
+          "tag": "[affiliate-conflict]",
+          "kind": "low",
+          "source": "Sponsored review: SodaStream is the best sparkling-water maker, period — buy one today using our link.",
+          "note": "[affiliate-conflict] Sponsored review claims SodaStream is 'the best sparkling-water maker, period' and pushes readers to buy via their affiliate link. Source has a financial conflict of interest and offers no substantive evidence or comparison—treat this endorsement as promotional/unreliable, not as objective product assessment.",
+          "costUsd": 0.0042075,
+          "latencyMs": 2652,
+          "err": null
+        }
+      ]
+    },
+    {
+      "model": "deepseek/deepseek-v4-pro",
+      "quality": 1,
+      "skep_acc": 1,
+      "green_rate": 1,
+      "ctrl_acc": 1,
+      "json_rate": 1,
+      "toolcall_valid": 1,
+      "avg_cost_usd": 0.001102,
+      "total_cost_usd": 0.02093,
+      "p50_latency_ms": 7305,
+      "errors": 0,
+      "skep": [
+        {
+          "correct": true,
+          "got": false,
+          "isBS": true,
+          "jsonValid": true,
+          "costUsd": 0.0010029096,
+          "latencyMs": 7690,
+          "err": null
+        },
+        {
+          "correct": true,
+          "got": true,
+          "isBS": false,
+          "jsonValid": true,
+          "costUsd": 0.00105544296,
+          "latencyMs": 8874,
+          "err": null
+        },
+        {
+          "correct": true,
+          "got": false,
+          "isBS": true,
+          "jsonValid": true,
+          "costUsd": 0.00079118424,
+          "latencyMs": 6552,
+          "err": null
+        },
+        {
+          "correct": true,
+          "got": false,
+          "isBS": true,
+          "jsonValid": true,
+          "costUsd": 0.0007084044,
+          "latencyMs": 6256,
+          "err": null
+        },
+        {
+          "correct": true,
+          "got": false,
+          "isBS": true,
+          "jsonValid": true,
+          "costUsd": 0.0011700612,
+          "latencyMs": 8058,
+          "err": null
+        },
+        {
+          "correct": true,
+          "got": true,
+          "isBS": false,
+          "jsonValid": true,
+          "costUsd": 0.00111275208,
+          "latencyMs": 8425,
+          "err": null
+        },
+        {
+          "correct": true,
+          "got": false,
+          "isBS": true,
+          "jsonValid": true,
+          "costUsd": 0.00080710344,
+          "latencyMs": 6766,
+          "err": null
+        },
+        {
+          "correct": true,
+          "got": true,
+          "isBS": false,
+          "jsonValid": true,
+          "costUsd": 0.00149003712,
+          "latencyMs": 11511,
+          "err": null
+        },
+        {
+          "correct": true,
+          "got": false,
+          "isBS": true,
+          "jsonValid": true,
+          "costUsd": 0.0009710712,
+          "latencyMs": 9173,
+          "err": null
+        },
+        {
+          "correct": true,
+          "got": false,
+          "isBS": true,
+          "jsonValid": true,
+          "costUsd": 0.00095356008,
+          "latencyMs": 6100,
+          "err": null
+        }
+      ],
+      "tc": [
+        {
+          "valid": true,
+          "name": "web_search",
+          "costUsd": 0.00096417288,
+          "latencyMs": 4066,
+          "err": null
+        },
+        {
+          "valid": true,
+          "name": "web_search",
+          "costUsd": 0.00120614472,
+          "latencyMs": 4955,
+          "err": null
+        },
+        {
+          "valid": true,
+          "name": "web_search",
+          "costUsd": 0.00119977704,
+          "latencyMs": 5118,
+          "err": null
+        }
+      ],
+      "notes": [
+        {
+          "tag": "[listicle][affiliate-conflict]",
+          "kind": "low",
+          "source": "'Top 10 Best Blenders of 2026' — the BlendMax Pro is simply the best blender money can buy, a revolutionary must-have. (Affiliate links throughout.)",
+          "note": "Claims BlendMax Pro is the best blender but this is from a listicle with affiliate conflicts, so its enthusiastic recommendation is likely biased and of low credibility.",
+          "costUsd": 0.00102201264,
+          "latencyMs": 5205,
+          "err": null
+        },
+        {
+          "tag": "[manufacturer]",
+          "kind": "low",
+          "source": "Acme.com product page: the Acme X1 is the world's most advanced vacuum, rated #1 by customers, with game-changing suction.",
+          "note": "Manufacturer claims: 'world's most advanced vacuum, rated #1 by customers, game-changing suction.' Note: Source is the product page (self-claimed); these superlatives are likely marketing copy and lack independent verification.",
+          "costUsd": 0.00063358416,
+          "latencyMs": 7278,
+          "err": null
+        },
+        {
+          "tag": "[hands-on][expert-domain]",
+          "kind": "control",
+          "source": "RTINGS measured the Dell S2725QC at Delta-E 1.2 — best color accuracy of 47 monitors tested — but only 350 nits peak brightness.",
+          "note": "Color accuracy: Delta-E 1.2 measured by RTINGS. Brightness: 350 nits peak.",
+          "costUsd": 0.00159669576,
+          "latencyMs": 7929,
+          "err": null
+        },
+        {
+          "tag": "[community]",
+          "kind": "control",
+          "source": "Reddit r/BuyItForLife (1.8k upvotes): many owners say the Lodge cast-iron skillet lasts 15+ years; several note the rough factory surface needs seasoning.",
+          "note": "From a community discussion with high user consensus (1.8k upvotes), multiple owners report the Lodge cast-iron skillet lasts 15+ years. Several users note that the factory surface is rough and requires seasoning for optimal use.",
+          "costUsd": 0.00122418648,
+          "latencyMs": 7481,
+          "err": null
+        },
+        {
+          "tag": "[listicle]",
+          "kind": "low",
+          "source": "'Best gaming mouse 2026': the HyperClick Pro is revolutionary, game-changing, and flawless — a must-have for every gamer.",
+          "note": "From a listicle (low-evidence source with potential affiliate conflict), the HyperClick Pro receives extremely positive subjective praise ('revolutionary, game-changing, flawless, must-have'). This should be treated as a strong recommendation claim requiring hands-on or expert verification.",
+          "costUsd": 0.0018864252,
+          "latencyMs": 9650,
+          "err": null
+        },
+        {
+          "tag": "[affiliate-conflict]",
+          "kind": "low",
+          "source": "Sponsored review: SodaStream is the best sparkling-water maker, period — buy one today using our link.",
+          "note": "The claim that SodaStream is the 'best' sparkling-water maker appears in a sponsored review with an affiliate conflict, so this endorsement should be treated as biased and not taken at face value as impartial evidence.",
+          "costUsd": 0.0011382228,
+          "latencyMs": 7305,
+          "err": null
+        }
+      ]
+    }
+  ]
+}

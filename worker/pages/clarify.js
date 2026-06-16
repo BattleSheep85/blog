@@ -37,8 +37,9 @@ ${chips}
  */
 export function renderClarifyPage(query, tier, questions, env) {
     const prettyQuery = displayQuery(query);
-    const tierLabel = tier === 'exhaustive' ? 'Deep Dive' : tier === 'unbound' ? 'Unbound' : tier === 'instant' ? 'Instant' : 'Full';
-    const tierTime = tier === 'exhaustive' ? 'about 7 minutes' : tier === 'unbound' ? 'up to 30 minutes' : 'about 3 minutes';
+    // Tiers collapsed to one stack (2026-06-16) — single label/time for every run.
+    const tierLabel = 'Deep research';
+    const tierTime = 'about 3–4 minutes';
 
     const body = `<div class="mx-auto max-w-2xl px-6 py-12 md:py-16">
 <nav aria-label="Breadcrumb" class="mb-6 text-caption text-ink-3">

@@ -1,0 +1,16 @@
+{
+  "role": "planner",
+  "method": "skepticism probe (10 items, direct credibility judgment) + note-laundering (6 credibility-tagged sources, scored by a Claude judge) + tool-call validity (3 queries vs real AGENT_TOOLS schema) + JSON-output reliability. quality = 0.4*note_laundering + 0.3*skepticism + 0.15*toolcall + 0.15*json_rate. Real OpenRouter calls via TrueRank-Prod key.",
+  "rows": [
+    { "model": "openai/gpt-5.1-codex", "quality": 1.0, "note_score": 1.0, "skep_acc": 1.0, "toolcall": 1.0, "json_rate": 1.0, "avg_cost_usd": 0.000888, "p50_latency_ms": 1283 },
+    { "model": "anthropic/claude-opus-4.8", "quality": 1.0, "note_score": 1.0, "skep_acc": 1.0, "toolcall": 1.0, "json_rate": 1.0, "avg_cost_usd": 0.005783, "p50_latency_ms": 2710 },
+    { "model": "deepseek/deepseek-v4-pro", "quality": 1.0, "note_score": 1.0, "skep_acc": 1.0, "toolcall": 1.0, "json_rate": 1.0, "avg_cost_usd": 0.001102, "p50_latency_ms": 7305 },
+    { "model": "google/gemini-2.5-flash", "quality": 0.967, "note_score": 0.917, "skep_acc": 1.0, "toolcall": 1.0, "json_rate": 1.0, "avg_cost_usd": 0.000194, "p50_latency_ms": 929, "incumbent": true },
+    { "model": "google/gemini-3.5-flash", "quality": 0.51, "note_score": 0.0, "skep_acc": 0.8, "toolcall": 1.0, "json_rate": 0.8, "avg_cost_usd": 0.00257, "p50_latency_ms": 2153, "fail_note": "all 6 notes returned non-substantive prompt-echo garbage" },
+    { "model": "qwen/qwen3.5-397b-a17b", "quality": 0.508, "note_score": 0.333, "skep_acc": 0.5, "toolcall": 1.0, "json_rate": 0.5, "avg_cost_usd": 0.000827, "p50_latency_ms": 3187, "fail_note": "4 of 6 notes returned empty; unreliable free-form JSON output" }
+  ],
+  "recommendation": "google/gemini-2.5-flash",
+  "decision": "KEEP incumbent",
+  "verdict": "Incumbent gemini-2.5-flash scores 0.967 (near-perfect) at the lowest cost ($0.00019/call) and fastest latency (929ms). gpt-5.1-codex, opus-4.8, and deepseek-v4-pro are perfect (1.0) but cost 4.5x-30x more and run 1.4x-8x slower for only +0.033 quality (the difference is a single manufacturer-note nuance). qwen3.5-397b-a17b, the literature's top BS-resistance pick, FAILED empirically (0.508) by returning empty/unparseable notes. The documented ~15% BS-detection reputation did NOT reproduce because the production engine supplies deterministic credibility tags ([listicle]/[affiliate-conflict]) the planner correctly respected.",
+  "judge": "claude (off-OpenRouter-budget); per-model note ranking: opus-4.8 = gpt-5.1-codex = deepseek-v4-pro > gemini-2.5-flash > qwen3.5-397b > gemini-3.5-flash"
+}
