@@ -1,6 +1,32 @@
 # Issues
 
-Last updated: 2026-06-12
+Last updated: 2026-06-16
+
+## 2026-06-16 — Engine consolidation, benchmark, off-Cloudflare parallel worker
+
+Large multi-part round, all verified live in production:
+- [x] LLM-stack benchmark: every engine role benchmarked via real OpenRouter calls
+      (benchmarks/engine-llm-bench-2026-06.md). The planner's reputed "15% BS-detection"
+      did NOT reproduce; the literature's top replacement (qwen3.5-397b) failed
+      empirically. Supersedes the comment-only BullshitBench numbers.
+- [x] OpenRouter consolidated to one dedicated capped key (TrueRank-Prod).
+- [x] Tiers collapsed to ONE config (tiers.js ENGINE_CONFIG): synth moonshotai/kimi-k2.6
+      (matched opus honesty at ~1/9 cost), planner gemini-2.5-flash, classifier
+      gemini-2.5-flash-lite, ~50-search deep research. Live, ~$0.03-0.04/run.
+- [x] Kimi reasoning gotcha fixed: kimi-k2.6 reasons by default → empty synth on large
+      prompts; synth now passes reasoning:{enabled:false} + max_tokens 16000 (llm.js).
+- [x] Parallel engine v2 (parallel-engine.js): decompose-with-queries → parallel search →
+      parallel read → batched note-extraction → synth. ~43s, 145+ sources (was 81-137s).
+- [x] Off-Cloudflare research worker DEPLOYED on blackbox (Portainer, Approach B: worker
+      computes, CF persists via /api/internal/{next-job,complete}). Phase B cutover ACTIVE
+      (EXTERNAL_WORKER_ENABLED=true) — all research off-CF, uncapped; cron fallback covers
+      worker-down. Worker runs JOB_CONCURRENCY=3 jobs at once.
+- [x] Deploy: push-to-main does NOT deploy the Worker (no CI); deploy via
+      `CLOUDFLARE_API_TOKEN=$(.cf-token) npx wrangler deploy`.
+
+Reconciled stale opens: SERPER "0 products" HIGH, "no /dp/ links" MEDIUM, CF-token
+user-action, and the Phase-2 result-shape / source-evidence LOWs are now resolved (below).
+Funnel-freeze NOTE: GSC is now verified; still awaiting impressions before new funnel work.
 
 ## Debate-verdict remediation (2026-06-12, adversarial debate: 64/100 on-track)
 
@@ -93,8 +119,8 @@ All verified end-to-end on local dev (build green, 10/10 checks).
 - [x] HIGH: DuckDuckGo fallback repaired (was anti-bot blocked): browser-like headers + parser rewrite, verified against live responses. Engine has free web search again even before SERPER_API_KEY arrives.
 - [ ] LOW: /metrics emits snake_case keys (top_pages, affiliate_clicks) — consumers should use those names.
 - [x] SERPER_API_KEY provided 2026-06-11, validated live, in .dev.vars (gitignored). Full-tier verification run: 6 products with verdicts/prices/ratings sourced from Tom's Hardware/Wirecutter/RTINGS/Reddit, credibility tags on sources (hands-on/expert-domain/community), 6 Review JSON-LD blocks, 6 click-tracked CTAs, cost $0.108 (matches the $0.099 bench estimate). REMAINING: `wrangler secret put SERPER_API_KEY` at first deploy (needs CF auth).
-- [ ] MEDIUM: No direct /dp/ ASIN links yet — expert review pages link Amazon through affiliate redirects the extractor strips, so products fall back to tagged search links (still earn commission via /api/go). Improvement idea for a later round: post-synthesis ASIN resolution via one Serper `site:amazon.com` query per top product.
-- [ ] OPEN (user action): CLOUDFLARE_API_TOKEN or `wrangler login` needed for Phase 3 (D1 migration + chrisputer.tech cutover) and for pushing secrets.
+- [x] MEDIUM (RESOLVED via worker/lib/asin-resolver.js): No direct /dp/ ASIN links yet — expert review pages link Amazon through affiliate redirects the extractor strips, so products fall back to tagged search links (still earn commission via /api/go). Improvement idea for a later round: post-synthesis ASIN resolution via one Serper `site:amazon.com` query per top product.
+- [x] RESOLVED (.cf-token deploys + sets secrets): CLOUDFLARE_API_TOKEN or `wrangler login` needed for Phase 3 (D1 migration + chrisputer.tech cutover) and for pushing secrets.
 
 ## Phase 2: Research engine port (2026-06-11)
 
@@ -103,7 +129,7 @@ scoring + ASIN extraction, classifier, tiers, budget governor, cron reaper). Bui
 55/55 credibility tests pass, prompt fidelity audited, budget governor and tier gating
 verified live. One real instant-tier run executed (cost $0.0102, correctly recorded).
 
-- [ ] HIGH (BLOCKER for quality): Real runs produce 0 products without SERPER_API_KEY.
+- [x] HIGH (RESOLVED): Real runs produce 0 products without SERPER_API_KEY.
       DuckDuckGo's html.duckduckgo.com endpoint returns 0 parseable results (anti-bot /
       markup change, confirmed via live curl), so without Serper only RSS+HN work
       (~1 source) and synthesis honestly fails the run. NEEDS: the user's Serper.dev API
