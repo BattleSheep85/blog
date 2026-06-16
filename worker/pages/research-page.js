@@ -221,7 +221,7 @@ async function getRelatedResearch(db, currentSlug, canonical, category) {
 //
 // webOnly: the classifier flagged this category as not-sold-on-Amazon. NO
 // Amazon link of any kind renders for these — the primary CTA hands off to
-// Google via /find (monetized with AdSense-for-Search when configured).
+// a real Google search via /find (a 302 redirect; logged as a guide_click).
 export function resolveProductCtas(p, ids, isService, slug, cleanLinks, webOnly = false) {
   const mfrUrl = p.manufacturer_url && isValidHttpsUrl(p.manufacturer_url) ? p.manufacturer_url : '';
   const buyRaw = p.affiliate_url || p.product_url || '';
@@ -304,7 +304,7 @@ function renderProduct(p, index, ids, isService, slug, cleanLinks, webOnly) {
   //      → "Buy on Amazon"; no exact match → explicit "Search Amazon". Hidden
   //      for services/web-only categories and clean-link renders.
   //   2. googleCta — replaces the Amazon button for categories Amazon doesn't
-  //      sell; internal /find hand-off (monetized via AdSense-for-Search).
+  //      sell; internal /find hand-off (302-redirects to a Google search).
   //   3. retailerCta — small pill in the links row. Non-Amazon retailers only
   //      (Walmart, Best Buy, etc.) so we don't duplicate the Amazon button.
   const ctas = resolveProductCtas(p, ids, isService, slug, cleanLinks, webOnly);

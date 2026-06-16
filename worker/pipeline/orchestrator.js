@@ -125,8 +125,12 @@ export async function persistEngineResult(env, reportId, query, facets, topicalC
         ).run();
         // Idempotency latch: only count spend if THIS call transitioned the row
         // (a replayed /complete changes 0 rows and must not double-count).
-        if ((failRes.meta?.changes ?? 0) === 1) await incrementMonthlyCost(env, totalCostUsd);
-        return { status: (failRes.meta?.changes ?? 0) === 1 ? 'failed' : 'noop' };
+        const failWon = (failRes.meta?.changes ?? 0) === 1;
+        if (failWon) await incrementMonthlyCost(env, totalCostUsd);
+        // Telemetry: a lost latch here means two processors (e.g. off-CF worker +
+        // CF cron fallback) both ran this job — wasted duplicate work worth watching.
+        else console.log(JSON.stringify({ where: 'persist-duplicate', phase: 'fail', reportId }));
+        return { status: failWon ? 'failed' : 'noop' };
     }
 
     // Recover direct Amazon /dp/ links for products missing/redirect-hidden URLs.
@@ -191,7 +195,13 @@ export async function persistEngineResult(env, reportId, query, facets, topicalC
     // a replayed /complete changes 0 rows here, so skip cost/KV/IndexNow (the
     // DELETE-then-insert keeps products correct either way).
     const won = (batchRes[batchRes.length - 1]?.meta?.changes ?? 0) === 1;
-    if (!won) { await report('Already finalized — skipping duplicate completion.'); return { status: 'noop' }; }
+    if (!won) {
+        // Two processors raced this job to completion (off-CF worker + CF
+        // fallback). The latch kept the row/cost correct; log the wasted synth.
+        console.log(JSON.stringify({ where: 'persist-duplicate', phase: 'complete', reportId }));
+        await report('Already finalized — skipping duplicate completion.');
+        return { status: 'noop' };
+    }
     await incrementMonthlyCost(env, totalCostUsd);
     await setFinalReport(env.KV, reportId, resultJson);
     await report(`Research complete: ${result.products.length} products ranked.`);

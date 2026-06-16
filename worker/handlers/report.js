@@ -6,6 +6,7 @@
 
 import { getResearchById, getProductsByResearchId, insertFeedback } from '../lib/db.js';
 import { parseJsonSafe } from '../lib/utils.js';
+import { apiStatus } from '../lib/status.js';
 
 /**
  * Handle GET /api/report/:id
@@ -21,7 +22,7 @@ export async function handleGetReport(reportId, env) {
         return jsonResponse({
             id: row.id,
             slug: row.slug,
-            status: 'error',
+            status: apiStatus(row.status),
             error: parseJsonSafe(row.result, {}).error || 'Research failed',
         }, 200);
     }
@@ -30,7 +31,7 @@ export async function handleGetReport(reportId, env) {
         return jsonResponse({
             id: row.id,
             slug: row.slug,
-            status: row.status,
+            status: apiStatus(row.status),
             message: 'Report is still being generated',
         }, 202);
     }

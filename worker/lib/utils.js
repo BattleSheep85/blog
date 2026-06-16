@@ -65,6 +65,17 @@ export function displayQuery(query) {
   }).join(' ');
 }
 
+// True when a conditional request's If-Modified-Since covers a resource whose
+// last-modified time is `lastmodSec` (unix seconds) — i.e. the caller should
+// answer 304. Shared by index.js (maybe304) and sitemap.js so the date math
+// lives in exactly one place. Missing inputs or an unparseable date → false
+// (serve the full body).
+export function isNotModified(ifModifiedSince, lastmodSec) {
+  if (!ifModifiedSince || !lastmodSec) return false;
+  const since = Date.parse(ifModifiedSince);
+  return !isNaN(since) && Math.floor(since / 1000) >= lastmodSec;
+}
+
 export function timeAgo(epochMs) {
   const seconds = Math.floor((Date.now() - epochMs) / 1000);
   if (seconds < 60) return 'just now';

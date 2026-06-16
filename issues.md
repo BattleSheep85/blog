@@ -2,6 +2,31 @@
 
 Last updated: 2026-06-16
 
+## 2026-06-16 — /find redirect fix + deferred-backlog burndown
+
+User-reported bug + the tracked LOW backlog, all handled this round:
+- [x] HIGH (user-reported): /find "search on Google" links errored instead of searching.
+      The page embedded a Google Programmable Search (CSE) widget for AdSense-for-Search,
+      but AFS isn't available to this post-2022 AdSense account, so the widget earned $0 and
+      errored client-side. Rewrote worker/pages/find.js to always 302-redirect to a real
+      https://www.google.com/search?q=… (guide_click logging preserved, rate-limited).
+- [x] LOW: CSP carried dead cse.google.com / www.google.com / clients1.google.com grants
+      (script/style/connect/frame) only the removed CSE widget used — dropped them (tighter
+      CSP); fixed the stale CSP comment, research-page.js CTA comments, and the privacy.html
+      /find description (now "redirects you to a Google search").
+- [x] LOW: off-CF worker runs surfaced NO live progress (onEvent was a no-op) — added
+      POST /api/internal/progress (X-Worker-Secret auth, same progress:{id}/progress_log:{id}
+      KV shape, capped at 50) + research-worker.mjs posts a per-job monotonic beat per engine
+      event (best-effort, fire-and-forget). Processing page now animates for off-CF runs.
+- [x] LOW (telemetry): persistEngineResult now logs `persist-duplicate` when the idempotency
+      latch loses a race (off-CF worker + CF cron fallback both synthesized the same job) so
+      wasted double-synthesis is observable in logs.
+- [x] LOW (×3 from the Deferred list below): status-vocab → lib/status.js; maybe304 dup →
+      lib/utils.js isNotModified; static guide URLs/lastmod → lib/guides.js manifest.
+
+Gate: node --check (12 files) + import-graph/helper smoke tests + `node scripts/run-tests.mjs`
+(55/55) all green. Deferred B4 (canonical-dedup CTE) left open with rationale.
+
 ## 2026-06-16 — Engine consolidation, benchmark, off-Cloudflare parallel worker
 
 Large multi-part round, all verified live in production:
@@ -158,10 +183,10 @@ verified live. One real instant-tier run executed (cost $0.0102, correctly recor
       counter + 503 budget stop, tier validation (PUBLIC_TIERS), old pipeline deleted.
 
 ### Deferred (tracked, not bugs)
-- [ ] LOW: Status-vocabulary translation (complete/completed, failed/error) spread across research.js apiStatus(), report.js literals, and inline page JS — consolidate into one map module during Phase 2 rewire.
-- [ ] LOW: Canonical-dedup ROW_NUMBER CTE repeated across suggest/browse/sitemap — extract SQL-fragment helper.
-- [ ] LOW: maybe304() duplicated between index.js and sitemap.js — unify when next touching either.
-- [ ] LOW: Static guide URLs hardcoded in sitemap.js + GUIDES_LASTMOD in index.js — derive from a guides manifest.
+- [x] LOW: Status-vocabulary translation (complete/completed, failed/error) — consolidated into worker/lib/status.js (apiStatus); research.js + report.js import it (2026-06-16).
+- [ ] LOW: Canonical-dedup ROW_NUMBER CTE repeated across suggest/browse/sitemap — extract SQL-fragment helper. (Still deferred — the four call sites differ in table alias, ORDER BY, and selected columns, so a clean shared fragment isn't safely factorable without a dev server to verify; low value vs. regression risk.)
+- [x] LOW: maybe304() duplicated between index.js and sitemap.js — unified via isNotModified() in worker/lib/utils.js; both call sites import it (2026-06-16).
+- [x] LOW: Static guide URLs hardcoded in sitemap.js + GUIDES_LASTMOD in index.js — derived from worker/lib/guides.js manifest (STATIC_GUIDES/STATIC_GUIDE_SLUGS/GUIDES_LASTMOD); add a guide in one place (2026-06-16).
 - [ ] LOW: research.result JSON shape is an implicit contract across orchestrator/report.js/research-page.js — Phase 2 engine swap defines the canonical shape.
 - [ ] LOW: Filtered/fake source evidence no longer persisted (only kept source URLs) — Phase 2 credibility layer stores tags+scores per source.
 

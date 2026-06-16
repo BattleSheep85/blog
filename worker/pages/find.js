@@ -1,29 +1,26 @@
 /**
- * /find?q=... — monetized web-search hand-off for things Amazon doesn't sell
- * (lumber, vehicles, local services, ...).
+ * /find?q=... — web-search hand-off for things Amazon doesn't sell (lumber,
+ * vehicles, local services, ...).
  *
- * With GOOGLE_CSE_ID configured, renders Google Programmable Search results
- * on-site — the CSE is linked to our AdSense account, so AdSense-for-Search
- * ads on the results monetize the click. Without it, degrades to a plain
- * 302 to google.com so the CTA always works.
+ * Always a plain 302 to a real Google search so the CTA reliably works. We
+ * previously embedded a Google Programmable Search (CSE) widget here to monetize
+ * via AdSense-for-Search — but AFS isn't available to this (post-2022) AdSense
+ * account, so the embed earned nothing and the CSE widget errored client-side
+ * instead of showing results. Redirecting is what users expect and never breaks.
  *
- * Every render logs a guide_click (network 'google') so /metrics can show how
- * much non-Amazon CTA traffic we're sending.
+ * Every hand-off logs a guide_click (network 'google') so /metrics can show how
+ * much non-Amazon CTA traffic we send.
  */
 
-import { layout } from '../lib/html.js';
-import { escapeHtml } from '../lib/utils.js';
 import { logGuideClick } from '../lib/db.js';
 import { checkRateLimit } from '../lib/rate-limit.js';
-import { adSlot } from '../lib/ads.js';
 
 export async function handleFind(request, url, env) {
     const q = (url.searchParams.get('q') || '').trim().slice(0, 200);
     const ref = (url.searchParams.get('ref') || '').slice(0, 80);
 
-    // Best-effort analytics; never block or break the page. Logging (not the
-    // page itself) is throttled per IP so a scripted loop can't flood D1 with
-    // junk guide_clicks rows or skew the /metrics google-click counts.
+    // Best-effort analytics; never block or break the redirect. Logging (not the
+    // redirect) is throttled per IP so a scripted loop can't flood guide_clicks.
     try {
         const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
         const lim = await checkRateLimit(env.KV, `find:${ip}`, 30, 3600);
@@ -36,36 +33,11 @@ export async function handleFind(request, url, env) {
         console.error('[find] click log failed:', err instanceof Error ? err.message : String(err));
     }
 
-    // No Programmable Search Engine configured → plain Google hand-off.
-    if (!env.GOOGLE_CSE_ID) {
-        const dest = q
-            ? `https://www.google.com/search?q=${encodeURIComponent(q)}`
-            : 'https://www.google.com/';
-        return new Response(null, {
-            status: 302,
-            headers: { 'Location': dest, 'Cache-Control': 'no-store' },
-        });
-    }
-
-    const title = q ? `Where to find: ${q}` : 'Search the web';
-    const body = `<div class="container mx-auto max-w-4xl px-6 py-12">
-<nav aria-label="Breadcrumb" class="breadcrumb" style="font-size:.85rem;color:var(--ink-2);margin-bottom:1rem">
-<a href="/" style="color:var(--ink-2)">Home</a>
-<span aria-hidden="true" style="margin:0 .4rem;color:var(--ink-3)">/</span>
-<span style="color:var(--ink)">Find</span>
-</nav>
-<h1 class="font-serif text-h2 font-semibold text-ink">${escapeHtml(q ? `Where to find: ${q}` : 'Search the web')}</h1>
-<p class="mt-2 text-body-sm text-ink-2">This category isn't sold on Amazon, so here's where to find it across the wider web${ref ? ` — sent from <a href="/research/${escapeHtml(ref)}" style="color:var(--accent)">your research report</a>` : ''}.</p>
-${adSlot(env, 'top', 'Advertisement')}
-<div class="mt-6 rounded-xl border border-line bg-surface-1 p-4 shadow-card" style="min-height:24rem">
-<div class="gcse-searchresults-only" data-queryParameterName="q"></div>
-</div>
-${adSlot(env, 'bottom', 'Advertisement')}
-</div>`;
-
-    const cseScript = `<script async nonce="__CSP_NONCE__" src="https://cse.google.com/cse.js?cx=${encodeURIComponent(env.GOOGLE_CSE_ID)}"></script>`;
-    const html = layout(title, 'Find suppliers and sellers across the web.', body, '<meta name="robots" content="noindex, follow">' + cseScript, {
-        canonical: 'https://chrisputer.tech/find',
+    const dest = q
+        ? `https://www.google.com/search?q=${encodeURIComponent(q)}`
+        : 'https://www.google.com/';
+    return new Response(null, {
+        status: 302,
+        headers: { 'Location': dest, 'Cache-Control': 'no-store' },
     });
-    return html;
 }

@@ -19,7 +19,7 @@ import { renderBrowse } from './pages/browse.js';
 import { renderCategoryHub } from './pages/category.js';
 import { handleSubscribe } from './handlers/subscribe.js';
 import { handleChat } from './handlers/chat.js';
-import { handleNextJob, handleComplete } from './handlers/internal.js';
+import { handleNextJob, handleProgress, handleComplete } from './handlers/internal.js';
 import { handleSignup, handleLogin, handleLogout, renderLoginPage, renderAccountPage } from './handlers/auth.js';
 import { handleFind } from './pages/find.js';
 import { renderReviewsPage } from './pages/reviews.js';
@@ -27,13 +27,12 @@ import { handleMetrics } from './pages/metrics.js';
 import { runFlywheelTick } from './lib/keywords.js';
 import { getLatestResearchLastmod, generateSitemap, generateAtomFeed, generateOgImage } from './lib/sitemap.js';
 import { getResearchById } from './lib/db.js';
-import { displayQuery, escapeLikeWildcards, publicResearchFilter, canonicalizeQuery } from './lib/utils.js';
+import { displayQuery, escapeLikeWildcards, publicResearchFilter, canonicalizeQuery, isNotModified } from './lib/utils.js';
+import { GUIDES_LASTMOD } from './lib/guides.js';
 
 // Bump when the page template/schema shape changes in a way that should
 // invalidate every KV-cached HTML blob. Old keys age out on their own TTL.
 const CACHE_VERSION = 'tr8';
-// Lastmod advertised for the static /best/ guide pages in the sitemap.
-const GUIDES_LASTMOD = '2026-06-09';
 
 // Phase-B cutover flag: when 'true', the off-Cloudflare research worker is the
 // primary processor — the queue consumer defers (acks without processing,
@@ -109,6 +108,7 @@ export default {
             // Internal API for the off-Cloudflare research worker (track 2).
             // Both gated by the X-Worker-Secret header == env.WORKER_SECRET.
             if (path === '/api/internal/next-job' && method === 'POST') return handleNextJob(request, env);
+            if (path === '/api/internal/progress' && method === 'POST') return handleProgress(request, env);
             if (path === '/api/internal/complete' && method === 'POST') return handleComplete(request, env);
 
             // Accounts: email/password sessions + per-user search history.
@@ -586,12 +586,9 @@ function redirect301(destUrl) {
 }
 
 // Returns a 304 Not Modified if the client's If-Modified-Since covers the
-// resource's last-modified timestamp.
+// resource's last-modified timestamp (date math shared via lib/utils.js).
 function maybe304(ifModifiedSince, lastModifiedSec, cacheControl) {
-    if (!ifModifiedSince || !lastModifiedSec) return null;
-    const since = Date.parse(ifModifiedSince);
-    if (isNaN(since)) return null;
-    if (Math.floor(since / 1000) < lastModifiedSec) return null;
+    if (!isNotModified(ifModifiedSince, lastModifiedSec)) return null;
     return new Response(null, {
         status: 304,
         headers: {
@@ -608,15 +605,16 @@ function maybe304(ifModifiedSince, lastModifiedSec, cacheControl) {
 
 const CSP = (nonce) =>
     "default-src 'self'; " +
-    // cse.google.com powers the /find AdSense-for-Search results (the nonce'd
-    // loader + strict-dynamic trusts its descendants in modern browsers; the
-    // host entries are the pre-strict-dynamic fallback).
-    "script-src 'self' 'nonce-" + nonce + "' 'strict-dynamic' https://challenges.cloudflare.com https://static.cloudflareinsights.com https://pagead2.googlesyndication.com https://cse.google.com https://www.google.com; " +
-    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://www.google.com; " +
+    // AdSense display ads (googlesyndication/doubleclick) + Cloudflare beacon &
+    // Turnstile are the only third-party script/frame origins. /find no longer
+    // embeds a Google CSE widget (it 302-redirects to a plain Google search), so
+    // the old cse.google.com / www.google.com / clients1.google.com grants are gone.
+    "script-src 'self' 'nonce-" + nonce + "' 'strict-dynamic' https://challenges.cloudflare.com https://static.cloudflareinsights.com https://pagead2.googlesyndication.com; " +
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
     "font-src 'self' https://fonts.gstatic.com; " +
     "img-src 'self' data: https:; " +
-    "connect-src 'self' https://challenges.cloudflare.com https://cloudflareinsights.com https://cse.google.com https://www.google.com https://clients1.google.com; " +
-    "frame-src https://challenges.cloudflare.com https://googleads.g.doubleclick.net https://www.google.com https://cse.google.com; " +
+    "connect-src 'self' https://challenges.cloudflare.com https://cloudflareinsights.com; " +
+    "frame-src https://challenges.cloudflare.com https://googleads.g.doubleclick.net; " +
     "object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests";
 
 function makeNonce() {

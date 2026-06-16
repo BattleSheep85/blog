@@ -15,6 +15,7 @@ import { generateSlug, canonicalizeQuery, parseJsonSafe } from '../lib/utils.js'
 import { PUBLIC_TIERS } from '../lib/tiers.js';
 import { monthKey, monthlyBudgetUsd } from '../pipeline/orchestrator.js';
 import { getSessionUser, recordUserSearch } from '../lib/auth.js';
+import { apiStatus } from '../lib/status.js';
 
 /**
  * Handle POST /api/research
@@ -140,13 +141,6 @@ export async function handleStartResearch(request, env) {
         status: 'pending',
         remaining: rateCheck.remaining,
     });
-}
-
-// New-table statuses → legacy API vocabulary the frontend understands.
-function apiStatus(dbStatus) {
-    if (dbStatus === 'complete') return 'completed';
-    if (dbStatus === 'failed') return 'error';
-    return dbStatus; // pending | processing
 }
 
 /**

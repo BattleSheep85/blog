@@ -58,14 +58,29 @@ async function complete(payload) {
   }
 }
 
+// Push one live progress beat into CF's KV-backed SSE feed. Best-effort and
+// fire-and-forget: a short timeout, errors swallowed, never awaited by the
+// engine — the report still completes if the progress feed is down.
+function postProgress(reportId, step, message) {
+  fetch(`${CF_BASE}/api/internal/progress`, {
+    method: 'POST', headers: { 'X-Worker-Secret': SECRET, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ reportId, step, message: String(message).slice(0, 300) }),
+    signal: AbortSignal.timeout(10000),
+  }).catch(() => {});
+}
+
 async function processJob(job) {
   const config = { ...job.config, maxConcurrency: MAX_CONCURRENCY };
   if (MAX_SEARCHES > 0) config.maxSearches = MAX_SEARCHES;
   const t0 = Date.now();
   log(`[job ${job.reportId}] "${job.query}" (conc=${config.maxConcurrency}, searches=${config.maxSearches}, synth=${config.synthModel})`);
   try {
+    // Per-job monotonic step so the SSE feed orders beats correctly even across
+    // the worker's concurrent jobs (each writes its own progress_log:{reportId}).
+    let step = 0;
+    const onEvent = (_type, message) => { postProgress(job.reportId, ++step, message); };
     const engine = await runParallelEngine(
-      job.query, config, OPENROUTER_API_KEY, { SERPER_API_KEY }, async () => {},
+      job.query, config, OPENROUTER_API_KEY, { SERPER_API_KEY }, onEvent,
       job.facets, job.topicalCategory, job.clarifications || {},
     );
     log(`  engine: ${((Date.now() - t0) / 1000).toFixed(1)}s, ${engine.result?.products?.length ?? 0} products, ${engine.sources.length} sources, $${(engine.totalCostUsd || 0).toFixed(4)}`);

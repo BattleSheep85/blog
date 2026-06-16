@@ -1,16 +1,10 @@
-import { displayQuery, escapeXml, publicResearchFilter } from './utils.js';
+import { displayQuery, escapeXml, publicResearchFilter, isNotModified } from './utils.js';
 import { listCategories } from '../pages/category.js';
-
-// Slugs of the four static /best/ guide pages already emitted explicitly below.
-// Dynamic category hubs that collide with these are skipped to avoid duplicate
-// <loc> entries (a static guide URL carries a trailing slash; the hub does not,
-// but Google treats them as the same path, so we dedupe by slug).
-const STATIC_GUIDE_SLUGS = new Set([
-  'nas-for-home-media-server',
-  'mechanical-keyboards-under-100',
-  'wireless-earbuds-under-100',
-  'synology-vs-qnap',
-]);
+import { STATIC_GUIDES, STATIC_GUIDE_SLUGS } from './guides.js';
+// STATIC_GUIDES / STATIC_GUIDE_SLUGS are the single source of truth for the
+// four static /best/ guide pages: we emit one <url> per guide below and skip
+// any dynamic category hub whose slug collides with one (dedupe by slug, since
+// Google treats the trailing-slash guide URL and the bare hub as one path).
 
 // inlined from src/lib/static-assets.ts for phase 1
 const OG_IMAGE_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
@@ -53,12 +47,6 @@ export async function getLatestResearchLastmod(env, cacheVersion) {
 // template bump invalidates feeds along with pages.
 const XML_CACHE_VERSION = 'tr1';
 const XML_CACHE_TTL = 3600;
-
-function isNotModified(ifModifiedSince, lastmodSec) {
-  if (!ifModifiedSince || !lastmodSec) return false;
-  const since = Date.parse(ifModifiedSince);
-  return !isNaN(since) && Math.floor(since / 1000) >= lastmodSec;
-}
 
 function notModifiedResponse(lastmodSec) {
   return new Response(null, {
@@ -130,6 +118,12 @@ export async function generateSitemap(origin, env, ifModifiedSince, guidesLastmo
   // research completion. Signals freshness to crawlers for recrawl scheduling.
   const dynamicLastmod = newestLastmod ? `<lastmod>${new Date(newestLastmod * 1000).toISOString().split('T')[0]}</lastmod>` : '';
 
+  // Static /best/ guide URLs, generated from the shared manifest so adding a
+  // guide in lib/guides.js automatically lists it here (and in the dedupe set).
+  const guideEntries = STATIC_GUIDES
+    .map((g) => `<url><loc>${origin}/best/${g.slug}/</loc><lastmod>${guidesLastmod}</lastmod><changefreq>${g.changefreq}</changefreq><priority>${g.priority}</priority></url>`)
+    .join('\n');
+
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url><loc>${origin}/</loc>${dynamicLastmod}<changefreq>daily</changefreq><priority>1.0</priority></url>
@@ -140,10 +134,7 @@ export async function generateSitemap(origin, env, ifModifiedSince, guidesLastmo
 <url><loc>${origin}/privacy</loc><changefreq>yearly</changefreq><priority>0.2</priority></url>
 <url><loc>${origin}/terms</loc><changefreq>yearly</changefreq><priority>0.2</priority></url>
 <url><loc>${origin}/best/</loc><lastmod>${guidesLastmod}</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
-<url><loc>${origin}/best/nas-for-home-media-server/</loc><lastmod>${guidesLastmod}</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-<url><loc>${origin}/best/mechanical-keyboards-under-100/</loc><lastmod>${guidesLastmod}</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-<url><loc>${origin}/best/wireless-earbuds-under-100/</loc><lastmod>${guidesLastmod}</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-<url><loc>${origin}/best/synology-vs-qnap/</loc><lastmod>${guidesLastmod}</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+${guideEntries}
 ${hubEntries}
 ${entries}
 </urlset>`;
