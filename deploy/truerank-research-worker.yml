@@ -1,0 +1,48 @@
+# truerank-research-worker — off-Cloudflare research worker (track 2 / Approach B)
+#
+# Polls https://chrisputer.tech for pending research, runs the PARALLEL engine
+# on this host with no Cloudflare subrequest/time cap and high concurrency, then
+# hands the finished result back to Cloudflare (POST /api/internal/complete),
+# which does ASIN/image/affiliate resolution + the D1 write. Dependency-free
+# Node — no npm install. Mirrors the exhaustive-reddit-drafter stack pattern
+# (bind-mounted src, BWS secrets pasted into Portainer env). Unlike that stack
+# it does NOT need postgres-core-net — it talks to CF over HTTPS, not Postgres.
+#
+# Pre-deploy (once on the blackbox host):
+#   sudo mkdir -p /mnt/pods/truerank-research-worker/src
+#   # copy the worker entrypoint + the dependency-free engine/lib tree:
+#   rsync -a --delete <repo>/worker        /mnt/pods/truerank-research-worker/src/
+#   cp        <repo>/research-worker.mjs    /mnt/pods/truerank-research-worker/src/
+#   # (re-run this rsync to ship engine updates; restart the container after)
+#
+# Required Portainer env vars (from BWS):
+#   WORKER_SECRET        — MUST equal the CF Worker's WORKER_SECRET secret
+#   OPENROUTER_API_KEY   — TrueRank-Prod key
+#   SERPER_API_KEY
+# Optional:
+#   CF_BASE_URL          default https://chrisputer.tech
+#   MAX_CONCURRENCY      parallel sub-researchers per job (default 16)
+#   POLL_INTERVAL        seconds between empty polls (default 15)
+#   MAX_SEARCHES         per-run search budget; 0 = use the job's config (default 0)
+
+services:
+  truerank-research-worker:
+    image: node:22-slim
+    container_name: truerank-research-worker
+    restart: unless-stopped
+    working_dir: /app
+    command: ["node", "research-worker.mjs"]
+    volumes:
+      - /mnt/pods/truerank-research-worker/src:/app:ro
+    environment:
+      - TZ=America/Chicago
+      - CF_BASE_URL=${CF_BASE_URL:-https://chrisputer.tech}
+      - WORKER_SECRET=${WORKER_SECRET}
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - SERPER_API_KEY=${SERPER_API_KEY}
+      - MAX_CONCURRENCY=${MAX_CONCURRENCY:-16}
+      - POLL_INTERVAL=${POLL_INTERVAL:-15}
+      - MAX_SEARCHES=${MAX_SEARCHES:-0}
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }

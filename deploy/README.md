@@ -1,0 +1,84 @@
+# truerank-research-worker — deploy guide (track 2 / Approach B)
+
+Runs the **parallel research engine off Cloudflare** so research has no
+~950-subrequest / 20-min cap and can fan out with high concurrency. The public
+site keeps serving from Cloudflare's edge; only *processing* moves to this
+worker. Architecture (Approach B):
+
+```
+user / flywheel → CF /api/research (inserts a 'pending' research row)
+worker          → POST /api/internal/next-job   (atomic claim: pending→processing)
+worker          → runParallelEngine  (no CF limits, MAX_CONCURRENCY sub-researchers)
+worker          → POST /api/internal/complete   ({result, sources, cost})
+CF /complete    → ASIN + images + affiliate tagging + D1 write + IndexNow
+```
+
+The CF Worker side is **already deployed** (internal endpoints + `WORKER_SECRET`).
+This guide deploys the worker container on the `blackbox` host.
+
+## 1. Ship the code to the host
+
+Dependency-free Node — no `npm install`. Copy the entrypoint + the engine/lib tree:
+
+```bash
+sudo mkdir -p /mnt/pods/truerank-research-worker/src
+rsync -a --delete ~/projects/truerank/worker /mnt/pods/truerank-research-worker/src/
+cp               ~/projects/truerank/research-worker.mjs /mnt/pods/truerank-research-worker/src/
+# Re-run this rsync to ship engine updates, then restart the container.
+```
+
+## 2. Secrets (already in BWS)
+
+Paste these into the Portainer stack's Environment Variables:
+
+| Var | Source |
+|---|---|
+| `WORKER_SECRET` | BWS `WORKER_SECRET` — **must equal** the CF Worker's `WORKER_SECRET` secret |
+| `OPENROUTER_API_KEY` | BWS `OPENROUTER_API_KEY` (TrueRank-Prod) |
+| `SERPER_API_KEY` | BWS `SERPER_API_KEY` |
+
+Optional: `MAX_CONCURRENCY` (16), `POLL_INTERVAL` (15), `MAX_SEARCHES` (0 = job config), `CF_BASE_URL`.
+
+## 3. Deploy
+
+`stacks/truerank-research-worker.yml` → deploy via the Portainer REST API flow in
+`~/projects/blackbox/CLAUDE.md` (or paste into a new Portainer stack). It needs
+only outbound internet (CF + OpenRouter + Serper) — no `postgres-core-net`.
+
+## 4. Cutover — coexist first, then shift load (safe)
+
+**Phase A (zero-risk coexist).** Deploy the worker as-is. It and the CF queue
+consumer both claim jobs, but the atomic `pending→processing` claim guarantees
+**no double-processing**. The CF consumer (fires on enqueue) will still win most
+races, so the worker mostly idles — but this proves the worker is healthy in prod
+with no disruption. Watch `docker logs truerank-research-worker`.
+
+**Phase B (shift processing to the worker).** Once Phase A looks clean, set the CF
+Worker var `EXTERNAL_WORKER_ENABLED=true` and redeploy: the queue consumer then
+acks-without-processing (and the flywheel just inserts pending rows), so the
+worker becomes the primary processor with unlimited depth. *(This flag is added
+in the CF Worker as part of the cutover; flipping it back to `false` instantly
+restores CF-side processing as a fallback.)*
+
+**Rollback:** stop the container (CF resumes processing via the queue consumer,
+degraded to the sequential engine + CF caps but fully functional), or set
+`EXTERNAL_WORKER_ENABLED=false`.
+
+## 5. Verify
+
+```bash
+# seed a job and watch it flow through the worker:
+curl -s -X POST https://chrisputer.tech/api/research -H 'Content-Type: application/json' \
+  -d '{"query":"best <something fresh>"}'
+docker logs -f truerank-research-worker     # [job …] → engine → complete -> 200
+# then confirm the research row shows synth_model=kimi and products in D1.
+```
+
+## Known limitation
+
+The live SSE activity feed (`progress:{id}`) does **not** stream during off-CF
+processing (the worker can't write CF KV directly; `onEvent` is a no-op). The
+page still completes and renders normally — only the in-flight "activity" beats
+are absent. Fine for flywheel/background runs; if organic traffic grows and the
+live feed matters, add a `POST /api/internal/progress` endpoint the worker can
+ping. Tracked, deferred.
