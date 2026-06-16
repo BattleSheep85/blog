@@ -6,6 +6,12 @@
  * activity feed (progress:{id} + progress_log:{id}); the engine's onEvent
  * callback feeds that same updater so the agent-loop beats surface live.
  *
+ * The persist half is factored into persistEngineResult() so the off-Cloudflare
+ * research worker (track 2) can run the engine on its own host and hand the
+ * result back to CF (POST /api/internal/complete) for ASIN/image/affiliate
+ * resolution + the D1 write, where the bindings live. claimNextPendingJob()
+ * lets that worker pull jobs (GET /api/internal/next-job).
+ *
  * Honest-failure rule: a run that yields zero valid products is marked
  * 'failed', NOT 'complete', so it never absorbs new queries into its cluster.
  */
@@ -34,7 +40,6 @@ export async function runResearchPipeline(env, reportId, query) {
     const progress = createProgressUpdater(env.KV, reportId);
 
     try {
-        // Load the research row for tier + cached classifier facets.
         const row = await getResearchById(env.DB, reportId);
         if (!row) {
             console.error(`[orchestrator] research row ${reportId} not found`);
@@ -43,174 +48,17 @@ export async function runResearchPipeline(env, reportId, query) {
 
         const tier = row.tier || 'full';
         const config = getTierConfig(tier) || getTierConfig('full');
+        const { facets, topicalCategory, clarifications } = await ensureClassified(env, reportId, query, row, progress);
 
-        // Classifier facets/topical_category: reuse the row's stored values when
-        // present (set by a future interstitial), otherwise classify now and
-        // persist them so the report page + clustering have category context.
-        let facets = parseJsonSafe(row.facets, null);
-        let topicalCategory = row.topical_category || null;
-        const clarifications = parseJsonSafe(row.clarifications, {}) || {};
-
-        if (!facets) {
-            await progress('Classifying query...');
-            const classification = await classifyQuery(env, query, row.canonical_query || null);
-            facets = classification.facets;
-            topicalCategory = classification.topical_category;
-            await env.DB.prepare(
-                'UPDATE research SET facets = ?1, topical_category = ?2 WHERE id = ?3'
-            ).bind(
-                JSON.stringify(facets),
-                topicalCategory,
-                reportId,
-            ).run();
-        }
-
-        // onEvent bridges the engine's typed events to the KV progress updater
-        // so the live activity feed keeps working. Engine emits status/search/
-        // fetch/note/synthesize/error; we surface them all as progress entries.
-        const onEvent = async (_type, message, _detail) => {
-            await progress(message);
-        };
-
+        // onEvent bridges the engine's typed events to the KV progress updater.
+        const onEvent = async (_type, message, _detail) => { await progress(message); };
         await progress(`Starting ${tier} research...`);
 
         const engine = await runEngine(
-            query,
-            config,
-            env.OPENROUTER_API_KEY,
-            env,
-            onEvent,
-            facets,
-            topicalCategory,
-            clarifications,
+            query, config, env.OPENROUTER_API_KEY, env, onEvent, facets, topicalCategory, clarifications,
         );
 
-        const { result, sources, totalCostUsd, synthModel } = engine;
-
-        // Honest-failure: zero valid products → mark failed so clustering and
-        // the report page treat it as a non-result instead of an empty page.
-        if (!result || !Array.isArray(result.products) || result.products.length < 1) {
-            await progress('No reliable products found — marking research failed.');
-            await env.DB.prepare(
-                `UPDATE research SET status = 'failed', result = ?1, cost_usd = ?2,
-                    synth_model = ?3, completed_at = ?4 WHERE id = ?5`
-            ).bind(
-                JSON.stringify({ error: 'No reliable products found for this query.' }),
-                Number.isFinite(totalCostUsd) && totalCostUsd > 0 ? totalCostUsd : null,
-                synthModel || null,
-                nowEpoch(),
-                reportId,
-            ).run();
-            await incrementMonthlyCost(env, totalCostUsd);
-            return;
-        }
-
-        // Recover direct Amazon /dp/ product links for products that only got a
-        // redirect-hidden or missing URL from synthesis. One Serper query per
-        // missing product, capped → a handful of extra subrequests. Never
-        // throws; unresolved products pass through unchanged and fall back to
-        // explicit "Search Amazon" links at render time. Skipped entirely when
-        // the classifier says this category isn't sold on Amazon (lumber,
-        // vehicles, services, ...) — those pages render Google CTAs instead.
-        const amazonViable = facets?.sold_on_amazon !== false && facets?.is_service !== true;
-        if (amazonViable) {
-            await progress('Resolving Amazon product links...');
-            result.products = await resolveAsins(env, result.products, progress);
-        }
-
-        // Fill in product photos for items synthesis didn't attach an image to
-        // (one Serper Images query each, capped). Runs for every channel —
-        // service/web-only pages want photos too. The /api/img proxy makes
-        // hotlink-hostile hosts render fine.
-        result.products = await resolveImages(env, result.products, progress);
-
-        const affiliateIds = {
-            amazonTag: env.AMAZON_AFFILIATE_TAG || env.AMAZON_ASSOCIATE_TAG || DEFAULT_AFFILIATE_TAG,
-            walmartImpact: env.WALMART_IMPACT_ID || undefined,
-            targetImpact: env.IMPACT_TARGET_ID || undefined,
-            bestbuyImpact: env.IMPACT_BESTBUY_ID || undefined,
-            neweggImpact: env.IMPACT_NEWEGG_ID || undefined,
-            bhphoto: env.BHPHOTO_AFFILIATE_ID || undefined,
-        };
-
-        // Persist products. Retry-safety: DELETE-then-insert in one batch so a
-        // queue redelivery never duplicates rows. affiliate_url stores the
-        // TAGGED url — buildAffiliateUrl rejects fabricated /s? search links and
-        // returns '' for unknown hosts, so only real retailer/dp URLs get tagged.
-        const deleteStale = env.DB.prepare('DELETE FROM products WHERE research_id = ?1').bind(reportId);
-
-        const insertStmts = result.products.map((p) => {
-            const productUrl = sanitizeUrl(p.productUrl);
-            const affiliateUrl = productUrl ? buildAffiliateUrl(productUrl, affiliateIds) : '';
-            const metadataJson = p.metadata && Object.keys(p.metadata).length > 0
-                ? JSON.stringify(p.metadata) : null;
-            const imageUrl = p.imageUrl ? sanitizeUrl(p.imageUrl) : null;
-            return env.DB.prepare(
-                `INSERT INTO products (id, research_id, name, brand, price, currency, rating,
-                    image_url, product_url, manufacturer_url, affiliate_url,
-                    pros, cons, specs, verdict, rank, best_for, metadata)
-                 VALUES (?1, ?2, ?3, ?4, ?5, 'USD', ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17)`
-            ).bind(
-                generateId(),
-                reportId,
-                p.name,
-                p.brand || null,
-                typeof p.price === 'number' ? p.price : null,
-                typeof p.rating === 'number' ? p.rating : null,
-                imageUrl,
-                productUrl || null,
-                sanitizeUrl(p.manufacturerUrl) || null,
-                affiliateUrl || null,
-                JSON.stringify(p.pros || []),
-                JSON.stringify(p.cons || []),
-                JSON.stringify(p.specs || {}),
-                p.verdict || null,
-                typeof p.rank === 'number' ? p.rank : null,
-                p.bestFor || null,
-                metadataJson,
-            );
-        });
-
-        // result is the canonical engine shape; keep legacy source_count/
-        // filtered_count keys so report.js + status handlers keep working.
-        const resultJson = {
-            ...result,
-            query,
-            source_count: sources.length,
-            filtered_count: 0,
-        };
-
-        // sources column: url + credibility tags + score per source. The render
-        // path extracts .url from each entry (objects) or treats plain strings.
-        const sourcesJson = sources.map((s) => ({ url: s.url, credibility: s.credibility }));
-
-        const updateStmt = env.DB.prepare(
-            `UPDATE research SET status = 'complete', summary = ?1, category = ?2,
-                result = ?3, sources = ?4, completed_at = ?5, cost_usd = ?6, synth_model = ?7
-             WHERE id = ?8`
-        ).bind(
-            result.summary || '',
-            result.category || topicalCategory || null,
-            JSON.stringify(resultJson),
-            JSON.stringify(sourcesJson),
-            nowEpoch(),
-            Number.isFinite(totalCostUsd) && totalCostUsd > 0 ? totalCostUsd : null,
-            synthModel || null,
-            reportId,
-        );
-
-        await env.DB.batch([deleteStale, ...insertStmts, updateStmt]);
-        await incrementMonthlyCost(env, totalCostUsd);
-        await setFinalReport(env.KV, reportId, resultJson);
-        await progress(`Research complete: ${result.products.length} products ranked.`);
-
-        // Fire-and-forget: ping IndexNow so the freshly published/updated page
-        // gets indexed by Bing/DuckDuckGo/Yandex within hours. submitToIndexNow
-        // never throws and self-times-out, so it can't delay or fail the run.
-        if (row.slug) {
-            await submitToIndexNow(env, [`https://chrisputer.tech/research/${row.slug}`]);
-        }
-
+        await persistEngineResult(env, reportId, query, facets, topicalCategory, engine, row.slug, progress);
     } catch (err) {
         console.error('Pipeline error:', err);
         await progress(`Error: ${err.message}`);
@@ -223,6 +71,144 @@ export async function runResearchPipeline(env, reportId, query) {
         }
         await setFinalReport(env.KV, reportId, { error: err.message });
     }
+}
+
+/**
+ * Reuse the row's stored classifier facets/topical_category when present,
+ * otherwise classify now and persist them so the report page + clustering have
+ * category context. Returns { facets, topicalCategory, clarifications }.
+ */
+export async function ensureClassified(env, reportId, query, row, progress) {
+    let facets = parseJsonSafe(row.facets, null);
+    let topicalCategory = row.topical_category || null;
+    const clarifications = parseJsonSafe(row.clarifications, {}) || {};
+
+    if (!facets) {
+        if (progress) await progress('Classifying query...');
+        const classification = await classifyQuery(env, query, row.canonical_query || null);
+        facets = classification.facets;
+        topicalCategory = classification.topical_category;
+        await env.DB.prepare(
+            'UPDATE research SET facets = ?1, topical_category = ?2 WHERE id = ?3'
+        ).bind(JSON.stringify(facets), topicalCategory, reportId).run();
+    }
+    return { facets, topicalCategory, clarifications };
+}
+
+/**
+ * Persist an engine result: honest-failure gate → ASIN /dp resolution → image
+ * resolution → affiliate tagging → products + research D1 write → monthly cost
+ * counter → KV final report → IndexNow ping. Engine-agnostic: takes the
+ * { result, sources, totalCostUsd, synthModel } shape from either runEngine
+ * (CF) or the off-CF parallel worker. `progress` is optional (no-op default).
+ */
+export async function persistEngineResult(env, reportId, query, facets, topicalCategory, engine, slug, progress) {
+    const report = progress || (async () => {});
+    const { result, sources, totalCostUsd, synthModel } = engine;
+
+    // Honest-failure: zero valid products → mark failed so clustering and the
+    // report page treat it as a non-result instead of an empty page.
+    if (!result || !Array.isArray(result.products) || result.products.length < 1) {
+        await report('No reliable products found — marking research failed.');
+        await env.DB.prepare(
+            `UPDATE research SET status = 'failed', result = ?1, cost_usd = ?2,
+                synth_model = ?3, completed_at = ?4 WHERE id = ?5`
+        ).bind(
+            JSON.stringify({ error: 'No reliable products found for this query.' }),
+            Number.isFinite(totalCostUsd) && totalCostUsd > 0 ? totalCostUsd : null,
+            synthModel || null,
+            nowEpoch(),
+            reportId,
+        ).run();
+        await incrementMonthlyCost(env, totalCostUsd);
+        return { status: 'failed' };
+    }
+
+    // Recover direct Amazon /dp/ links for products missing/redirect-hidden URLs.
+    // Skipped when the classifier says this category isn't sold on Amazon.
+    const amazonViable = facets?.sold_on_amazon !== false && facets?.is_service !== true;
+    if (amazonViable) {
+        await report('Resolving Amazon product links...');
+        result.products = await resolveAsins(env, result.products, report);
+    }
+
+    // Fill product photos synthesis didn't attach (one Serper Images query each).
+    result.products = await resolveImages(env, result.products, report);
+
+    const affiliateIds = {
+        amazonTag: env.AMAZON_AFFILIATE_TAG || env.AMAZON_ASSOCIATE_TAG || DEFAULT_AFFILIATE_TAG,
+        walmartImpact: env.WALMART_IMPACT_ID || undefined,
+        targetImpact: env.IMPACT_TARGET_ID || undefined,
+        bestbuyImpact: env.IMPACT_BESTBUY_ID || undefined,
+        neweggImpact: env.IMPACT_NEWEGG_ID || undefined,
+        bhphoto: env.BHPHOTO_AFFILIATE_ID || undefined,
+    };
+
+    // Persist products. DELETE-then-insert in one batch so a redelivery never
+    // duplicates rows. affiliate_url stores the TAGGED url.
+    const deleteStale = env.DB.prepare('DELETE FROM products WHERE research_id = ?1').bind(reportId);
+    const insertStmts = result.products.map((p) => {
+        const productUrl = sanitizeUrl(p.productUrl);
+        const affiliateUrl = productUrl ? buildAffiliateUrl(productUrl, affiliateIds) : '';
+        const metadataJson = p.metadata && Object.keys(p.metadata).length > 0 ? JSON.stringify(p.metadata) : null;
+        const imageUrl = p.imageUrl ? sanitizeUrl(p.imageUrl) : null;
+        return env.DB.prepare(
+            `INSERT INTO products (id, research_id, name, brand, price, currency, rating,
+                image_url, product_url, manufacturer_url, affiliate_url,
+                pros, cons, specs, verdict, rank, best_for, metadata)
+             VALUES (?1, ?2, ?3, ?4, ?5, 'USD', ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17)`
+        ).bind(
+            generateId(), reportId, p.name, p.brand || null,
+            typeof p.price === 'number' ? p.price : null,
+            typeof p.rating === 'number' ? p.rating : null,
+            imageUrl, productUrl || null, sanitizeUrl(p.manufacturerUrl) || null, affiliateUrl || null,
+            JSON.stringify(p.pros || []), JSON.stringify(p.cons || []), JSON.stringify(p.specs || {}),
+            p.verdict || null, typeof p.rank === 'number' ? p.rank : null, p.bestFor || null, metadataJson,
+        );
+    });
+
+    const resultJson = { ...result, query, source_count: sources.length, filtered_count: 0 };
+    const sourcesJson = sources.map((s) => ({ url: s.url, credibility: s.credibility }));
+
+    const updateStmt = env.DB.prepare(
+        `UPDATE research SET status = 'complete', summary = ?1, category = ?2,
+            result = ?3, sources = ?4, completed_at = ?5, cost_usd = ?6, synth_model = ?7
+         WHERE id = ?8`
+    ).bind(
+        result.summary || '', result.category || topicalCategory || null,
+        JSON.stringify(resultJson), JSON.stringify(sourcesJson), nowEpoch(),
+        Number.isFinite(totalCostUsd) && totalCostUsd > 0 ? totalCostUsd : null,
+        synthModel || null, reportId,
+    );
+
+    await env.DB.batch([deleteStale, ...insertStmts, updateStmt]);
+    await incrementMonthlyCost(env, totalCostUsd);
+    await setFinalReport(env.KV, reportId, resultJson);
+    await report(`Research complete: ${result.products.length} products ranked.`);
+
+    if (slug) {
+        await submitToIndexNow(env, [`https://chrisputer.tech/research/${slug}`]);
+    }
+    return { status: 'complete', products: result.products.length };
+}
+
+/**
+ * Atomically claim the oldest pending research row (pending→processing) and
+ * return the job the off-CF worker needs. Returns null when the queue is empty.
+ * D1's single-writer serialization makes the subquery-UPDATE an atomic claim,
+ * so two pollers (or the legacy queue consumer) can't grab the same row.
+ */
+export async function claimNextPendingJob(env) {
+    const claimed = await env.DB.prepare(
+        `UPDATE research SET status = 'processing'
+         WHERE id = (SELECT id FROM research WHERE status = 'pending' ORDER BY created_at ASC LIMIT 1)
+         RETURNING id, query, slug, tier, facets, topical_category, canonical_query, clarifications`
+    ).first();
+    if (!claimed) return null;
+
+    const { facets, topicalCategory, clarifications } = await ensureClassified(env, claimed.id, claimed.query, claimed, null);
+    const config = getTierConfig(claimed.tier || 'full') || getTierConfig('full');
+    return { reportId: claimed.id, query: claimed.query, slug: claimed.slug, facets, topicalCategory, clarifications, config };
 }
 
 function nowEpoch() {
@@ -271,22 +257,15 @@ export function monthlyBudgetUsd(env) {
 }
 
 /**
- * Create a progress updater that writes to KV for SSE streaming.
- *
- * The pipeline is the single writer for a run, so the log array lives in this
- * closure: each step is an in-memory append plus two KV puts — `progress:`
- * (latest entry) and `progress_log:` (full log). No KV read-modify-write.
+ * Create a progress updater that writes to KV for SSE streaming. The pipeline is
+ * the single writer for a run, so the log array lives in this closure.
  */
 function createProgressUpdater(kv, reportId) {
     let stepIndex = 0;
     let log = [];
     return async function progress(message) {
         stepIndex++;
-        const progressData = {
-            step: stepIndex,
-            message,
-            timestamp: Date.now(),
-        };
+        const progressData = { step: stepIndex, message, timestamp: Date.now() };
         log = [...log, progressData];
         await Promise.all([
             kv.put(`progress:${reportId}`, JSON.stringify(progressData), { expirationTtl: 3600 }),

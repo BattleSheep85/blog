@@ -19,6 +19,7 @@ import { renderBrowse } from './pages/browse.js';
 import { renderCategoryHub } from './pages/category.js';
 import { handleSubscribe } from './handlers/subscribe.js';
 import { handleChat } from './handlers/chat.js';
+import { handleNextJob, handleComplete } from './handlers/internal.js';
 import { handleSignup, handleLogin, handleLogout, renderLoginPage, renderAccountPage } from './handlers/auth.js';
 import { handleFind } from './pages/find.js';
 import { renderReviewsPage } from './pages/reviews.js';
@@ -95,6 +96,11 @@ export default {
             if (path === '/api/chat' && method === 'POST') {
                 return handleChat(request, env);
             }
+
+            // Internal API for the off-Cloudflare research worker (track 2).
+            // Both gated by the X-Worker-Secret header == env.WORKER_SECRET.
+            if (path === '/api/internal/next-job' && method === 'POST') return handleNextJob(request, env);
+            if (path === '/api/internal/complete' && method === 'POST') return handleComplete(request, env);
 
             // Accounts: email/password sessions + per-user search history.
             if (path === '/api/auth/signup' && method === 'POST') return handleSignup(request, env);
