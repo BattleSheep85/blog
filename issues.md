@@ -2,6 +2,32 @@
 
 Last updated: 2026-06-16
 
+## 2026-06-16 — Google audit (godmode: "search, profit") — ads.txt + SEO hygiene
+
+Audited every Google-facing surface (AdSense, structured data, sitemap, robots,
+IndexNow, /find). State is mature; the standout gaps:
+
+- [x] HIGH (profit): `ads.txt` was MISSING. AdSense flags this as "Earnings at
+      risk — your ads.txt file doesn't contain your publisher ID" and can throttle
+      or stop serving ads. Added `public/ads.txt` (served at /ads.txt by the
+      [assets] binding) declaring `google.com, pub-6952672558994325, DIRECT,
+      f08c47fec0942fa0`. Pub ID matches wrangler.toml ADSENSE_PUBLISHER_ID and the
+      loader hardcoded in public/*.html. [godmode R1]
+- [ ] LOW (SEO crawl hygiene): robots.txt allows /find (a 302→Google redirect,
+      pointless to crawl) and the noindex'd /login + /account routes; doesn't
+      declare /feed.xml. Tighten Disallow list + add a Sitemap/feed hint. [R2 candidate]
+- [ ] LOW (rich-result validity): Product→Review JSON-LD uses
+      `reviewRating.worstRating: 0` (research-page.js ~L732). Google's Rating spec
+      expects worstRating ≥ 1 when bestRating is 5; 0 can trip a Search Console
+      "invalid rating" warning and suppress review stars. Verify product.rating
+      scale and set worstRating:1 (or normalize). [R2 candidate]
+
+Verified (NOT issues): static + server-rendered AdSense loaders use the same pub
+ID with no double-injection; per-product Review.reviewRating already makes pages
+review-snippet eligible (no fake aggregateRating — correct for the honesty ethos);
+sitemap excludes thin pages; IndexNow pings Bing/Yandex (Google relies on the
+sitemap + crawl, by design — Google doesn't consume IndexNow).
+
 ## 2026-06-16 — /find redirect fix + deferred-backlog burndown
 
 User-reported bug + the tracked LOW backlog, all handled this round:
