@@ -609,12 +609,22 @@ const CSP = (nonce) =>
     // Turnstile are the only third-party script/frame origins. /find no longer
     // embeds a Google CSE widget (it 302-redirects to a plain Google search), so
     // the old cse.google.com / www.google.com / clients1.google.com grants are gone.
+    // script-src uses nonce + strict-dynamic (Google's recommended "strict CSP"
+    // for AdSense, answer/16283098) so the nonce'd loader transitively trusts the
+    // ad scripts it injects — host allowlist entries here are ignored by modern
+    // browsers but kept for non-strict-dynamic fallbacks. NOT adding 'unsafe-eval'
+    // (Google lists it but it guts the CSP; revisit only on a confirmed eval CSP error).
     "script-src 'self' 'nonce-" + nonce + "' 'strict-dynamic' https://challenges.cloudflare.com https://static.cloudflareinsights.com https://pagead2.googlesyndication.com; " +
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
     "font-src 'self' https://fonts.gstatic.com; " +
     "img-src 'self' data: https:; " +
-    "connect-src 'self' https://challenges.cloudflare.com https://cloudflareinsights.com; " +
-    "frame-src https://challenges.cloudflare.com https://googleads.g.doubleclick.net; " +
+    // connect-src governs AdSense's measurement/anti-fraud beacons (NOT covered by
+    // strict-dynamic): impression/click pings (pagead2/doubleclick/tpc) + the
+    // mandatory Ad Traffic Quality beacons (ep1/ep2.adtrafficquality.google).
+    "connect-src 'self' https://challenges.cloudflare.com https://cloudflareinsights.com https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://ep1.adtrafficquality.google https://ep2.adtrafficquality.google https://www.google.com; " +
+    // frame-src governs the ad creative iframes: doubleclick + SafeFrame
+    // (tpc.googlesyndication.com) + some formats served from www.google.com.
+    "frame-src https://challenges.cloudflare.com https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://www.google.com; " +
     "object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests";
 
 function makeNonce() {
