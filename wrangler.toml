@@ -29,6 +29,10 @@ MONTHLY_BUDGET_USD = "60"
 # Programmatic-SEO flywheel: max keyword research runs the cron will start per
 # UTC day. The flywheel also stays dormant until SERPER_API_KEY is set.
 FLYWHEEL_DAILY_MAX = "6"
+# Phase B: route all research processing to the off-Cloudflare blackbox worker.
+# Queue consumer defers; a cron fallback covers worker-down. Set "false" to
+# instantly revert to CF-side (sequential) processing.
+EXTERNAL_WORKER_ENABLED = "true"
 # METRICS_TOKEN is intentionally NOT in [vars] — it is a secret, set via
 # `npx wrangler secret put METRICS_TOKEN`. /metrics returns 503 until it exists.
 ADSENSE_PUBLISHER_ID = "pub-6952672558994325"

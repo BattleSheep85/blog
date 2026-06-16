@@ -35,6 +35,15 @@ const CACHE_VERSION = 'tr8';
 // Lastmod advertised for the static /best/ guide pages in the sitemap.
 const GUIDES_LASTMOD = '2026-06-09';
 
+// Phase-B cutover flag: when 'true', the off-Cloudflare research worker is the
+// primary processor — the queue consumer defers (acks without processing,
+// leaving the row pending for the worker to claim) and a cron fallback handles
+// any pending row the worker hasn't picked up in ~5 min (homelab-down safety).
+function externalWorkerEnabled(env) {
+  const v = env.EXTERNAL_WORKER_ENABLED;
+  return v === true || v === 'true' || v === '1';
+}
+
 export default {
     /**
      * HTTP request handler — routes to appropriate handler.
@@ -260,6 +269,9 @@ export default {
     async queue(batch, env) {
         for (const message of batch.messages) {
             const { reportId, query } = message.body;
+            // Phase B: the off-CF worker is the primary processor — ack without
+            // processing and leave the row 'pending' for it to claim & run.
+            if (externalWorkerEnabled(env)) { message.ack(); continue; }
             try {
                 // Idempotency guard: claim the row by flipping pending→processing
                 // atomically. If 0 rows changed, the row is already processing or
@@ -331,6 +343,27 @@ export default {
             }
         } catch (err) {
             console.error(JSON.stringify({ where: 'scheduled-flywheel', error: err instanceof Error ? err.message : String(err) }));
+        }
+
+        // Fallback: when the off-CF worker is primary, a row pending > ~5 min
+        // means the worker is down/backlogged. Process the oldest one on CF
+        // (sequential, capped, but functional) so research never stalls. One per
+        // tick keeps the cron within its CPU/time budget.
+        if (externalWorkerEnabled(env)) {
+            try {
+                const staleCut = Math.floor(now / 1000) - 5 * 60;
+                const claimed = await env.DB.prepare(
+                    `UPDATE research SET status = 'processing'
+                     WHERE id = (SELECT id FROM research WHERE status = 'pending' AND created_at < ?1 ORDER BY created_at ASC LIMIT 1)
+                     RETURNING id, query`
+                ).bind(staleCut).first();
+                if (claimed) {
+                    console.log(JSON.stringify({ where: 'scheduled-fallback', reportId: claimed.id }));
+                    await runResearchPipeline(env, claimed.id, claimed.query);
+                }
+            } catch (err) {
+                console.error(JSON.stringify({ where: 'scheduled-fallback', error: err instanceof Error ? err.message : String(err) }));
+            }
         }
     },
 };
