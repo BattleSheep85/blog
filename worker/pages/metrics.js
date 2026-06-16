@@ -185,6 +185,21 @@ async function getFlywheel(env) {
   }
 }
 
+// Constant-time token compare (SHA-256 digests → fixed-length XOR scan) so the
+// metrics Bearer check has no early-out timing side-channel — matches the
+// internal-API auth pattern.
+async function timingSafeEqual(a, b) {
+  const enc = new TextEncoder();
+  const [da, db] = await Promise.all([
+    crypto.subtle.digest('SHA-256', enc.encode(a)),
+    crypto.subtle.digest('SHA-256', enc.encode(b)),
+  ]);
+  const va = new Uint8Array(da), vb = new Uint8Array(db);
+  let diff = 0;
+  for (let i = 0; i < va.length; i++) diff |= va[i] ^ vb[i];
+  return diff === 0;
+}
+
 export async function handleMetrics(request, env) {
   const token = env.METRICS_TOKEN;
   if (!token) {
@@ -193,7 +208,7 @@ export async function handleMetrics(request, env) {
 
   const auth = request.headers.get('Authorization') ?? '';
   const provided = auth.startsWith('Bearer ') ? auth.slice(7) : '';
-  if (provided !== token) {
+  if (!(await timingSafeEqual(provided, token))) {
     return jsonResponse({ error: 'Unauthorized' }, 401);
   }
 
