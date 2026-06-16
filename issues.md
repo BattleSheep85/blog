@@ -56,6 +56,96 @@ would misrepresent the scale and drop any sub-1.0 rating, so left as-is; sitemap
 excludes thin pages; IndexNow pings Bing/Yandex (Google relies on the sitemap +
 crawl, by design — Google doesn't consume IndexNow).
 
+## 2026-06-16 — Opportunity audit (8-dimension multi-agent sweep, ranked backlog)
+
+47 findings across SEO/traffic, conversion, content-quality, UX, perf, growth,
+reliability, measurement; grounded in file:line evidence + live site. Verify pass
+was cut short by an API session limit (8/47 verified before reset) — verdicts that
+landed: budget-governor + cache-headers = REAL; brotli/tailwind-prebuilt =
+ALREADY DONE; font preload/de-block + image-CLS attrs = NOT WORTH (fragile/
+CSP-blocked/no traffic signal). Strategic frame: traffic + measurement first
+(funnel-freeze unblock), conversion polish later.
+
+### DO NEXT (high impact / low effort)
+- [ ] HIGH: Per-page OG images are SVG (`/research/:slug/og.svg`, html.js:55
+      og:image:type=image/svg+xml) — SVG OG cards render BLANK on FB/X/LinkedIn/
+      Discord/Slack/iMessage → all social shares dead. Quick fix: point per-page
+      og:image at the static PNG `/og.png` (generic but working). Better: vendor a
+      resvg/satori wasm to render per-page PNG (no package mgr → vendored wasm OK).
+- [ ] HIGH: No FAQPage schema on the 163 research pages — emit it from existing
+      buyersGuide (howToChoose/pitfalls/marketingToIgnore) for rich-results + AI
+      citation (research-page.js:797-801). Homepage already has the FAQPage pattern.
+- [ ] HIGH: Thin single-guide /best hubs are sitemapped + indexable (doorway/thin
+      content risk). Gate `rows.length < 2|3` → noindex,follow + exclude from
+      sitemap hub loop (category.js:51, sitemap.js:108-115; ~153 hubs live).
+- [ ] HIGH: Homepage has NO link to the /research archive — first-timers can't see
+      existing rankings without spending a query (~$0.04 + wait). Add a Browse/
+      category strip (listCategories exists, used by browse.js:48-59).
+- [ ] HIGH: /metrics never joins views↔affiliate clicks → no per-page CTR, the
+      exact signal the re-research flywheel keys on (metrics.js:105-153).
+- [ ] MED(verified REAL): Static assets serve `cache-control: max-age=0,
+      must-revalidate` (css/js/og.png) — add `public/_headers` with
+      `max-age=31536000, immutable`. Repeat-visit speed + cost.
+- [ ] HIGH(constraint-protect, verified REAL): Budget governor split-brain —
+      intake gates trust the racy KV `cost:` counter (research.js:109, chat.js:120)
+      while the real ceiling uses D1 SUM; a burst can overspend MONTHLY_BUDGET_USD.
+      Add a `budgetExhausted(env)=max(D1 spend, KV)` gate helper. Pair: move the
+      failure-path incrementMonthlyCost INSIDE the idempotency latch (internal.js:106).
+
+### QUICK WINS (S)
+- [ ] MED: Unify brand (TrueRank vs Chrisputer Labs) across titles/og:site_name/
+      Organization schema — flagged by BOTH seo + ux agents (html.js:62,67 vs
+      static "TrueRank"). Consistent entity = brand consolidation + trust.
+- [ ] MED: Add year token to dynamic research <title> ("(2026)") like static guides
+      already do — CTR lift (research-page.js:1051).
+- [ ] MED: IndexNow-ping /best/ hubs (not just /research/) — plumbing exists
+      (orchestrator.js:209, indexnow.js accepts arrays).
+- [ ] MED: "Price as of <date>, check current price" caption near CTAs — honesty +
+      click-trust, reuses lastModifiedTs (research-page.js:357). Fits the ethos.
+- [ ] MED: Email capture on home/hubs (backend fully built; research-page-only today).
+- [ ] MED: Amazon `ascsubtag` (slug+rank) on /api/go redirects → free EPC/earnings
+      attribution per page via Associates report (affiliate.js:56-86).
+- [ ] HIGH: Raise engine READ_MIN_SCORE so hands-on expert reviews scoring 45
+      (50 base +hands-on +expert −45 affiliate-conflict) aren't dropped from
+      full-text READ (parallel-engine.js:21). Still discount their verdicts in synth
+      — read them, don't blindly trust. Direct moat lift.
+- [ ] MED: Add non-product (service/local/experience) queries to golden-query eval —
+      it's 10/10 buyable products today, blind to the facets most likely broken.
+- [ ] LOW: Recompress og.png 210KB→~60KB (hygiene); delete dead db.js legacy helpers
+      (insertProductV2/completeResearch lack the idempotency latch = footgun);
+      log when the decompose fallback fires (silent quality degradation).
+
+### STRATEGIC BETS (M/L, high impact)
+- [ ] HIGH/L: Ingest GSC Search Analytics → D1 via cron (the literal funnel-freeze
+      unblock metric; zero GSC code in repo). Needs a Google service-account/OAuth
+      cred (USER ACTION). This is the measurement that ends the freeze.
+- [ ] HIGH/M: Side-by-side comparison TABLE on research pages (highest-converting
+      "best X" unit; none exists — grep '<table' = 0). Also adds scannable content + SEO.
+- [ ] HIGH/M: Wire facet-specific research (prompts.js facetFocusBlocks) into the
+      LIVE parallel engine — today service/local/experience queries get a
+      product-shaped plan (parallel-engine.js decompose never receives facets).
+- [ ] MED/M: Internal-linking + topic-cluster — home/hubs → dynamic hubs + research;
+      add category breadcrumb level (Home>Research>Category>title) hub↔spoke.
+- [ ] HIGH/M: Log unservable demand (failed/thin/zero-match queries) → content roadmap.
+- [ ] MED/M: Route homepage search into the rich server-rendered processing page
+      (two different loading UIs today; homepage is a bare text log at peak abandonment).
+- [ ] MED/M: Atomic-ish KV rate limiter (concurrent burst bypasses limit);
+      pre-claim dedup so cron fallback + off-CF worker don't both run a paid engine.
+
+### USER-ACTION-GATED (not code-only)
+- [ ] Non-Amazon retailer CTAs: code fully supports Walmart/Target/BestBuy/Newegg/
+      B&H (affiliate-links.js) but needs Impact program IDs in wrangler.toml —
+      requires signing up for Impact + each retailer program.
+- [ ] AI-crawler block: tracked DECISION (above) — relax in Cloudflare dashboard to
+      allow Perplexity/ChatGPT/Google-AI-Overviews referral traffic.
+
+### SKIP / ALREADY DONE (don't chase)
+- Tailwind is prebuilt (not CDN) + Brotli is live — compression/CDN-blocking myths.
+- Font preload / print-swap de-blocking — fragile + the onload trick is CSP-blocked
+  (no unsafe-inline); image width/height — aspect-ratio already set, no CWV signal.
+- Product/Review JSON-LD, sitemap thin-page exclusion, ASIN /dp/ resolver,
+  clarifying questions, IndexNow(research), staleness re-research — already shipped.
+
 ## 2026-06-16 — /find redirect fix + deferred-backlog burndown
 
 User-reported bug + the tracked LOW backlog, all handled this round:
