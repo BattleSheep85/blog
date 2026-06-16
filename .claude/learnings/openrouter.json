@@ -1,0 +1,17 @@
+{
+  "domain": "openrouter",
+  "description": "OpenRouter model + API gotchas for the research engine",
+  "file_patterns": ["worker/engine/*.js", "worker/lib/tiers.js"],
+  "entries": [
+    {
+      "id": "kimi-k2.6-reasons-by-default",
+      "bad_pattern": "Calling moonshotai/kimi-k2.6 for synthesis with a fixed max_tokens and no reasoning control",
+      "good_pattern": "Pass reasoning:{enabled:false} + a generous max_tokens (16000) for kimi-k2.6 synthesis",
+      "regex": null,
+      "description": "kimi-k2.6 emits 5k-8k reasoning_tokens BEFORE any content even with no reasoning param. On a large synthesis prompt the reasoning exhausts max_tokens (8192) before the report JSON is produced -> empty content ('No synthesis response'). Fix 2026-06-16: reasoning:{enabled:false} drops reasoning_tokens to 0 with clean JSON; max_tokens 16000; threaded via config.synthReasoning/synthMaxTokens (llm.js reasoning arg now accepts a string effort OR a full reasoning object). Quality holds with reasoning off (verified: honest picks, trap avoided).",
+      "context": "synthesis call (config.synthModel) in engine.js / parallel-engine.js",
+      "discovered": "2026-06-16",
+      "severity": "HIGH"
+    }
+  ]
+}
