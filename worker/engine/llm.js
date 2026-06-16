@@ -24,14 +24,27 @@ export function llmBudgetMs(effort) {
 //
 // StreamResult shape: { content: string, usage?: OpenRouterUsage }
 
+// Reasoning accepts a string effort (legacy) OR a full OpenRouter reasoning
+// object — e.g. { enabled: false } to turn thinking OFF for models like
+// kimi-k2.6 that reason by default and would otherwise burn the entire
+// max_tokens budget on reasoning before emitting any content (empty synthesis).
+function normalizeReasoning(r) {
+  if (!r) return null;
+  return typeof r === 'string' ? { effort: r } : r;
+}
+function reasoningEffortOf(r) {
+  return typeof r === 'string' ? r : (r && r.effort) || undefined;
+}
+
 export async function callLLMStreaming(
   apiKey,
   model,
   messages,
   onToken,
-  reasoningEffort,
+  reasoning,
+  maxTokens,
 ) {
-  const { hardMs, chunkMs } = llmBudgetMs(reasoningEffort);
+  const { hardMs, chunkMs } = llmBudgetMs(reasoningEffortOf(reasoning));
   const controller = new AbortController();
   const hardTimer = setTimeout(() => controller.abort('hard'), hardMs);
   let chunkTimer = null;
@@ -40,7 +53,7 @@ export async function callLLMStreaming(
     chunkTimer = setTimeout(() => controller.abort('chunk'), chunkMs);
   };
 
-  console.log(`[llm-stream] calling model=${model} effort=${reasoningEffort ?? 'none'}`);
+  console.log(`[llm-stream] calling model=${model} effort=${reasoningEffortOf(reasoning) ?? 'none'}`);
   try {
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
@@ -56,12 +69,12 @@ export async function callLLMStreaming(
         model,
         messages,
         stream: true,
-        max_tokens: 8192,
+        max_tokens: maxTokens ?? 8192,
         // OpenRouter emits a final SSE chunk carrying the full usage object
         // (prompt/completion tokens + cost in USD) when this is set. Needed
         // for research.cost_usd accounting.
         stream_options: { include_usage: true },
-        ...(reasoningEffort ? { reasoning: { effort: reasoningEffort } } : {}),
+        ...(normalizeReasoning(reasoning) ? { reasoning: normalizeReasoning(reasoning) } : {}),
       }),
     });
 
@@ -115,7 +128,8 @@ export async function callLLM(
   model,
   messages,
   tools,
-  reasoningEffort,
+  reasoning,
+  maxTokens,
 ) {
   const body = {
     model,
@@ -125,16 +139,16 @@ export async function callLLM(
     body.tools = tools;
     body.tool_choice = 'auto';
   }
-  if (reasoningEffort) {
-    body.reasoning = { effort: reasoningEffort };
-  }
+  const rz = normalizeReasoning(reasoning);
+  if (rz) body.reasoning = rz;
+  if (maxTokens) body.max_tokens = maxTokens;
 
   // Scale timeout to reasoning effort — medium/high thinking phases alone can run 60-180s.
-  const { hardMs } = llmBudgetMs(reasoningEffort);
+  const { hardMs } = llmBudgetMs(reasoningEffortOf(reasoning));
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), hardMs);
 
-  console.log(`[llm] calling model=${model} effort=${reasoningEffort ?? 'none'} tools=${tools?.length ?? 0}`);
+  console.log(`[llm] calling model=${model} effort=${reasoningEffortOf(reasoning) ?? 'none'} tools=${tools?.length ?? 0}`);
   try {
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',

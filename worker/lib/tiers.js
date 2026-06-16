@@ -19,6 +19,12 @@ const ENGINE_CONFIG = {
   agentLoopBudgetMs: 210_000, // ~3.5 min, safely under the 20-min reaper
   synthModel: 'moonshotai/kimi-k2.6',
   plannerModel: 'google/gemini-2.5-flash',
+  // kimi-k2.6 reasons by default and would burn the whole synth token budget on
+  // reasoning before emitting the report JSON (empty synthesis on large prompts).
+  // Turn thinking OFF for synthesis and give the report a generous token ceiling.
+  synthReasoning: { enabled: false },
+  synthMaxTokens: 16000,
+  maxConcurrency: 6, // parallel sub-researchers (raised on the off-CF worker)
   reportSections: ['summary', 'products', 'comparison', 'categories', 'pitfalls', 'buyerGuide', 'methodology'],
   requireTurnstile: false,
   requireSubscription: false,

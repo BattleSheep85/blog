@@ -248,7 +248,8 @@ export async function runEngine(
       config.synthModel,
       synthMessages,
       (_delta, accumulated) => announceProduct(accumulated),
-      config.synthReasoningEffort,
+      config.synthReasoning,
+      config.synthMaxTokens,
     );
     synthContent = streamRes.content;
     if (typeof streamRes.usage?.cost === 'number' && Number.isFinite(streamRes.usage.cost)) {
@@ -263,7 +264,8 @@ export async function runEngine(
       config.synthModel,
       synthMessages,
       undefined,
-      config.synthReasoningEffort,
+      config.synthReasoning,
+      config.synthMaxTokens,
     );
     if (typeof retry.usage?.cost === 'number' && Number.isFinite(retry.usage.cost)) {
       state.totalCostUsd += retry.usage.cost;
@@ -299,7 +301,8 @@ export async function runEngine(
         { role: 'user', content: `Write the research report for: "${query}". Respond ONLY with valid JSON.` },
       ],
       undefined,
-      config.synthReasoningEffort,
+      config.synthReasoning,
+      config.synthMaxTokens,
     );
     if (typeof retryResponse.usage?.cost === 'number' && Number.isFinite(retryResponse.usage.cost)) {
       state.totalCostUsd += retryResponse.usage.cost;
