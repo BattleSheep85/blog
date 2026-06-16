@@ -74,11 +74,12 @@ docker logs -f truerank-research-worker     # [job …] → engine → complete 
 # then confirm the research row shows synth_model=kimi and products in D1.
 ```
 
-## Known limitation
+## Live activity feed (off-CF)
 
-The live SSE activity feed (`progress:{id}`) does **not** stream during off-CF
-processing (the worker can't write CF KV directly; `onEvent` is a no-op). The
-page still completes and renders normally — only the in-flight "activity" beats
-are absent. Fine for flywheel/background runs; if organic traffic grows and the
-live feed matters, add a `POST /api/internal/progress` endpoint the worker can
-ping. Tracked, deferred.
+The worker streams its progress into the same SSE activity feed CF-side runs use,
+via `POST /api/internal/progress` (X-Worker-Secret auth). For each engine event
+`research-worker.mjs` fires a best-effort, non-blocking beat carrying a per-job
+monotonic step; CF appends it to `progress_log:{id}` (capped at 50) and updates
+`progress:{id}`, so the processing page animates live for off-CF runs too. The
+posts are fire-and-forget with a short timeout — if the feed is down the report
+still completes normally. (This closed the earlier no-op `onEvent` limitation.)
