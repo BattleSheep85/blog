@@ -59,23 +59,23 @@ export function layout(title, description, body, extra_head = '', meta) {
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>${escapedTitle} | Chrisputer Labs</title>
+<title>${escapedTitle} | TrueRank</title>
 <meta name="description" content="${escapedDesc}">
-<meta property="og:title" content="${escapedTitle} | Chrisputer Labs">
+<meta property="og:title" content="${escapedTitle} | TrueRank">
 <meta property="og:description" content="${escapedDesc}">
 <meta property="og:type" content="${ogType}">${ogUrl}
-<meta property="og:site_name" content="Chrisputer Labs">
+<meta property="og:site_name" content="TrueRank">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="${escapeHtml(ogImage)}">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="${escapedTitle} — Chrisputer Labs">
+<meta property="og:image:alt" content="${escapedTitle} — TrueRank">
 <meta property="og:image:type" content="${ogImageType}">
 <meta name="twitter:card" content="${twitterCard}">
-<meta name="twitter:title" content="${escapedTitle} | Chrisputer Labs">
+<meta name="twitter:title" content="${escapedTitle} | TrueRank">
 <meta name="twitter:description" content="${escapedDesc}">
 <meta name="twitter:image" content="${escapeHtml(ogImage)}">
-<meta name="twitter:image:alt" content="${escapedTitle} — Chrisputer Labs">${
+<meta name="twitter:image:alt" content="${escapedTitle} — TrueRank">${
     meta?.canonical ? `\n<link rel="canonical" href="${escapeHtml(meta.canonical)}">` : ''
   }${
     meta?.article && ogType === 'article'
