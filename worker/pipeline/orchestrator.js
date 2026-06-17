@@ -23,7 +23,7 @@ import { buildAffiliateUrl } from '../lib/affiliate-links.js';
 import { resolveAsins } from '../lib/asin-resolver.js';
 import { resolveImages } from '../lib/image-resolver.js';
 import { getResearchById, generateId } from '../lib/db.js';
-import { sanitizeUrl } from '../lib/utils.js';
+import { sanitizeUrl, slugify } from '../lib/utils.js';
 import { submitToIndexNow } from '../lib/indexnow.js';
 
 const DEFAULT_AFFILIATE_TAG = 'battlesheep0a-20';
@@ -206,7 +206,14 @@ export async function persistEngineResult(env, reportId, query, facets, topicalC
     await setFinalReport(env.KV, reportId, resultJson);
     await report(`Research complete: ${result.products.length} products ranked.`);
     if (slug) {
-        await submitToIndexNow(env, [`https://chrisputer.tech/research/${slug}`]);
+        const urls = [`https://chrisputer.tech/research/${slug}`];
+        // Also ping the category hub so a new/changed guide gets its /best/ hub
+        // recrawled (where topical authority + internal links live). slugify
+        // matches renderCategoryHub; harmless if the hub is still thin (noindex).
+        const cat = result.category || topicalCategory;
+        const catSlug = cat ? slugify(cat) : '';
+        if (catSlug) urls.push(`https://chrisputer.tech/best/${catSlug}`);
+        await submitToIndexNow(env, urls);
     }
     return { status: 'complete', products: result.products.length };
 }
