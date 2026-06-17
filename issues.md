@@ -21,10 +21,10 @@ fixed prompt. Keep the swap gated.
       score (no false precision, null if thin); added NO-FABRICATION + CITATION-
       INTEGRITY + DATE-HONESTY rules. Downstream-safe (validate.js:92-93 + UI
       `!= null` guards + nullable D1 cols already handle it). [godmode R1]
-- [ ] #2 add a deterministic groundedness auto-metric to glm52-synth-bench.mjs
+- [x] #2 added a deterministic groundedness auto-metric to glm52-synth-bench.mjs
       (flag prices/specs numbers not in sources; null=grounded; tolerance for
       rounding) — a free, judge-independent regression gate. [R2]
-- [ ] #3 fix bench `schemaScore` so it stops REWARDING fabrication (drop the
+- [x] #3 fixed bench `schemaScore` so it stops REWARDING fabrication (drop the
       "rating is a number" credit; reward honest null). [R2]
 - [ ] #4 re-bench under the FIXED prompt — confirm fabrication dropped + whether
       glm still beats kimi (the ranking was contaminated by the deleted mandate).

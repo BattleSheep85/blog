@@ -111,7 +111,8 @@ function schemaScore(p) {
     Array.isArray(x?.pros) && x.pros.length >= 3,
     Array.isArray(x?.cons) && x.cons.length >= 2,
     typeof x?.verdict === 'string' && wc(x.verdict) >= 12,
-    typeof x?.rating === 'number',
+    // NOTE: rating presence is deliberately NOT scored — post-honesty-fix a rating
+    // is grounded-or-null, so requiring a number would reward fabrication.
   ].map((b) => (b ? 1 : 0))))) : 0;
   const bg = p.buyersGuide || p.buyers_guide || {};
   const bgOk = avg([
@@ -122,12 +123,40 @@ function schemaScore(p) {
   return round(avg([prods.length >= 3 ? 1 : 0, prodOk, bgOk]), 3);
 }
 
+// --- Deterministic groundedness (no judges): factual numbers (prices, spec values)
+// must trace to the sources the synth was actually given. Rating is editorial opinion
+// (post-honesty-fix), so it is NOT source-matched — we report its null-rate +
+// false-precision (non-half-step decimals = manufactured authority) instead.
+function numbersIn(text) {
+  const out = []; const re = /(\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?/g; let m;
+  while ((m = re.exec(String(text || ''))) !== null) { const n = parseFloat(m[0].replace(/,/g, '')); if (Number.isFinite(n)) out.push(n); }
+  return out;
+}
+function grounded(n, srcNums) {
+  return srcNums.some((s) => n === s || Math.abs(n - s) <= 0.5 || (s !== 0 && Math.abs(n - s) / Math.abs(s) <= 0.03));
+}
+function scenarioSourceNums(sc) {
+  return numbersIn([...(sc.notes || []).map((x) => x.content), ...(sc.sources || []).map((s) => s.content)].join(' '));
+}
+function groundednessOf(prods, srcNums) {
+  const g = { priceTotal: 0, priceUngrounded: 0, specTotal: 0, specUngrounded: 0, ratingNull: 0, ratingFalsePrecision: 0, ratingTotal: 0, productCount: (prods || []).length };
+  for (const p of (prods || [])) {
+    if (typeof p?.price === 'number') { g.priceTotal++; if (!grounded(p.price, srcNums)) g.priceUngrounded++; }
+    const specVals = p?.specs && typeof p.specs === 'object' ? Object.values(p.specs) : [];
+    for (const v of specVals) for (const n of numbersIn(v)) { g.specTotal++; if (!grounded(n, srcNums)) g.specUngrounded++; }
+    if (p?.rating == null) g.ratingNull++;
+    else if (typeof p.rating === 'number') { g.ratingTotal++; if (((p.rating * 2) % 1) !== 0) g.ratingFalsePrecision++; }
+  }
+  return g;
+}
+
 const config = SYNTH_CONFIGS['exhaustive-synth'];
 const rows = [];
 for (const cfg of CONFIGS) {
   process.stderr.write(`\n[${cfg.label}] `);
   const runs = [];
   for (const sc of ALL_SCENARIOS) {
+    const srcNums = scenarioSourceNums(sc);
     const prompt = buildSynthesisPrompt(sc.query, sc.notes, sc.sources, config, sc.facets, sc.topicalCategory, {});
     const r = await callModel(cfg.model, [
       { role: 'system', content: prompt },
@@ -148,11 +177,13 @@ for (const cfg of CONFIGS) {
       schema: schemaScore(parsed), products_count: prods.length, product_names: names,
       trap_present: trapIdx >= 0, trap_rank: trapIdx >= 0 ? trapIdx + 1 : null,
       legit_top_rank: legitTopRank,
+      grounded: groundednessOf(prods, srcNums),
       reasoning_tokens: r.reasoningTokens, completion_tokens: r.usage?.completion_tokens ?? 0,
       output: parsed, raw_content_len: (r.content || '').length,
       costUsd: round(r.costUsd, 5), latencyMs: r.latencyMs, err: r.err,
     });
   }
+  const g = runs.reduce((a, x) => { for (const k in x.grounded) a[k] = (a[k] || 0) + x.grounded[k]; return a; }, {});
   rows.push({
     label: cfg.label, model: cfg.model, reasoning: cfg.reasoning,
     json_rate: round(avg(runs.map((x) => (x.json_valid ? 1 : 0))), 3),
@@ -161,6 +192,14 @@ for (const cfg of CONFIGS) {
     trap_present_count: runs.filter((x) => x.trap_present).length,
     trap_last_or_absent: runs.filter((x) => !x.trap_present || x.trap_rank === x.products_count).length,
     legit_on_top: runs.filter((x) => x.legit_top_rank === 1).length,
+    // Groundedness (the no-lies gate): fraction of emitted prices / spec numbers NOT
+    // traceable to the sources the synth was given. Lower = more honest. Rating is
+    // editorial so it is reported (null-rate, false-precision count) not gated.
+    ungrounded_price_frac: g.priceTotal ? round(g.priceUngrounded / g.priceTotal, 3) : null,
+    ungrounded_spec_frac: g.specTotal ? round(g.specUngrounded / g.specTotal, 3) : null,
+    rating_null_frac: g.productCount ? round(g.ratingNull / g.productCount, 3) : null,
+    rating_false_precision: g.ratingFalsePrecision,
+    grounded_totals: g,
     avg_cost_usd: round(avg(runs.map((x) => x.costUsd)), 5),
     p50_latency_ms: Math.round(runs.map((x) => x.latencyMs).sort((a, b) => a - b)[Math.floor(runs.length / 2)]),
     avg_reasoning_tokens: Math.round(avg(runs.map((x) => x.reasoning_tokens))),
@@ -171,7 +210,8 @@ for (const cfg of CONFIGS) {
 writeFileSync(new URL(`./results/${OUT_FILE}`, import.meta.url), JSON.stringify({ expanded: EXPANDED, scenarios: ALL_SCENARIOS.length, spend: round(TOTAL_SPEND, 4), rows }, null, 2));
 process.stderr.write(`\n\nspend: $${round(TOTAL_SPEND, 4)}\n`);
 console.table(rows.map((r) => ({
-  config: r.label, json: r.json_rate, empty: r.empty_count, schema: r.schema,
-  trap_seen: r.trap_present_count, trap_handled: r.trap_last_or_absent, legit_1st: r.legit_on_top,
-  '$/call': r.avg_cost_usd, p50ms: r.p50_latency_ms, reason_tok: r.avg_reasoning_tokens, err: r.errors,
+  config: r.label, json: r.json_rate, schema: r.schema, trap_handled: r.trap_last_or_absent, legit_1st: r.legit_on_top,
+  ungrounded_price: r.ungrounded_price_frac, ungrounded_spec: r.ungrounded_spec_frac,
+  rating_null: r.rating_null_frac, false_prec: r.rating_false_precision,
+  '$/call': r.avg_cost_usd, p50ms: r.p50_latency_ms, err: r.errors,
 })));
