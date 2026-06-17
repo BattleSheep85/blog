@@ -2,6 +2,45 @@
 
 Last updated: 2026-06-17
 
+## 2026-06-17 — Honesty-benchmark audit (godmode: "tell no lies") + fixes
+
+6-lens adversarial audit of the synth honesty bench (is it valid + sufficient to
+GUARANTEE no-lies output?). Verdict: **sound-with-gaps** — the diagnosis is gold
+(prompt mandates fabrication, confirmed across ALL models incl. opus), but the
+honesty *ranking* isn't yet a trustworthy regression gate (judge scores unpersisted,
+faithfulness contaminated by the mandate, schemaScore REWARDS fabrication, n=6 with
+judge-spread ≈ the inter-model gap). The glm>kimi swap is directionally right (6/6,
+prompt-INDEPENDENT signals: kimi drops legit products + fakes citations + mis-attached
+the trap's affiliate URL + 2.6× slower) but NOT proven until a re-bench under the
+fixed prompt. Keep the swap gated.
+
+- [x] #1 HIGH (the core no-lies fix): synth prompt MANDATED fabrication — rating
+      "(inferred if not explicit)", price "(best estimate, never null)", freshness
+      on undated sources. Even opus fabricated a rating on 18/18 products. Fixed
+      `worker/engine/prompts.js`: price now source-or-null; rating = honest editorial
+      score (no false precision, null if thin); added NO-FABRICATION + CITATION-
+      INTEGRITY + DATE-HONESTY rules. Downstream-safe (validate.js:92-93 + UI
+      `!= null` guards + nullable D1 cols already handle it). [godmode R1]
+- [ ] #2 add a deterministic groundedness auto-metric to glm52-synth-bench.mjs
+      (flag prices/specs numbers not in sources; null=grounded; tolerance for
+      rounding) — a free, judge-independent regression gate. [R2]
+- [ ] #3 fix bench `schemaScore` so it stops REWARDING fabrication (drop the
+      "rating is a number" credit; reward honest null). [R2]
+- [ ] #4 re-bench under the FIXED prompt — confirm fabrication dropped + whether
+      glm still beats kimi (the ranking was contaminated by the deleted mandate).
+      Lite: re-run 6 scenarios + groundedness metric (cheap, no judges). Full: n≥20,
+      ≥5 judges incl. a non-Claude, PERSIST per-judge scores + 95% CI. [R3 lite now]
+- [ ] #5 add legit_recall (catches kimi dropping legit picks) + link_correctness
+      (catches the trap-URL-on-legit-product mis-citation) auto-metrics. [deferred]
+- [ ] #6 fixtures for untested lie-surfaces: comparative "X vs Y", discontinued/
+      recalled product, location-with-no-address. [deferred]
+- [ ] RESIDUAL (live no-lies monitoring): orchestrator.js:180 drops source `content`
+      on persist → live pages can't be audited against sources. Persist
+      content.slice(0,200) per source + add a groundedness check to run-eval.mjs so
+      PRODUCTION (not just the bench) is monitored for fabrication. [deferred — HIGH]
+- [ ] DOC cleanup: glm52-synth-bench-2026-06.md has contradictory judge counts
+      (54 vs 24) + two consensus tables; persist judge scores to results/. [R2]
+
 ## 2026-06-17 — GLM-5.2 synth bench (empirical, real-task honesty)
 
 Z.ai's GLM-5.2 (open-weights, AA Intelligence Index 51 vs kimi 43 — but coding-
