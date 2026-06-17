@@ -1,6 +1,27 @@
 # Issues
 
-Last updated: 2026-06-16
+Last updated: 2026-06-17
+
+## 2026-06-17 — GLM-5.2 synth bench (empirical, real-task honesty)
+
+Z.ai's GLM-5.2 (open-weights, AA Intelligence Index 51 vs kimi 43 — but coding-
+weighted) benched against the real synthesis honesty harness. Full writeup:
+`benchmarks/glm52-synth-bench-2026-06.md`. Spend ~$0.31 (24 honesty judges free).
+
+- [ ] DECISION (synth model swap): **glm-5.2 (reasoning OFF) beat incumbent
+      kimi-k2.6 on every axis** — consensus honesty 0.91 vs 0.84, faithfulness
+      0.87 vs 0.74 (the discriminator: kimi launders ungrounded specs + synthetic
+      ratings + dropped a legit product), schema 1.0 vs 0.834, fastest (32s),
+      +8% cost. Closes ~half the gap to the opus-4.8 ceiling (0.94). Recommended:
+      swap `worker/lib/tiers.js:20` synthModel → `z-ai/glm-5.2` (keep
+      `synthReasoning:{enabled:false}` — reasoning ON is worse + starves JSON).
+      Gated rollout (env-overridable + run-eval.mjs confirm) advised; off-CF
+      blackbox worker needs the rsync+restart too. AWAITING user go/no-go.
+- [x] Planner: glm-5.2 OFF matches gemini-2.5-flash's perfect BS-detection but at
+      3× cost + 8× latency → KEEP gemini-2.5-flash. Reasoning ON face-plants (0.2
+      acc, starved JSON) — confirms GLM must run reasoning-off for structured tasks.
+- [x] Captured the GLM-5.2 reasoning gotcha (same class as kimi) + AA-index-is-
+      coding-weighted caveat in the bench doc.
 
 ## 2026-06-16 — Google audit (godmode: "search, profit") — ads.txt + AdSense CSP
 

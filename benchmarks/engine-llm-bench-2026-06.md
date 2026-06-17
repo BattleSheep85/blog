@@ -4,6 +4,8 @@ _Empirical benchmark of candidate models for every role in the research engine, 
 
 **Status:** classifier ✅ · planner ✅ · instant-synth ✅ · full-synth ✅ · exhaustive-synth ✅ — **complete.**
 
+> **Addendum 2026-06-17:** Z.ai's **GLM-5.2** (released 06-16) was benched against the synth honesty harness — it **beat the kimi-k2.6 incumbent** (consensus honesty 0.91 vs 0.84, faithfulness 0.87 vs 0.74, schema 1.0 vs 0.834, faster, +8% cost). Recommendation: swap synthesis to `z-ai/glm-5.2` (reasoning off). Planner stays `gemini-2.5-flash`. See [`glm52-synth-bench-2026-06.md`](./glm52-synth-bench-2026-06.md).
+
 ---
 
 ## TL;DR — recommended stack
