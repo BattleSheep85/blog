@@ -13,7 +13,7 @@ import {
 } from '../lib/db.js';
 import { generateSlug, canonicalizeQuery, parseJsonSafe } from '../lib/utils.js';
 import { PUBLIC_TIERS } from '../lib/tiers.js';
-import { monthKey, monthlyBudgetUsd } from '../pipeline/orchestrator.js';
+import { budgetExhausted } from '../pipeline/orchestrator.js';
 import { getSessionUser, recordUserSearch } from '../lib/auth.js';
 import { apiStatus } from '../lib/status.js';
 
@@ -103,11 +103,10 @@ export async function handleStartResearch(request, env) {
         }, 429);
     }
 
-    // Monthly budget governor: each completed run increments cost:YYYY-MM in KV.
-    // If this month's spend has already hit the cap, refuse new work (503) so a
-    // runaway month can't keep burning the LLM budget.
-    const spent = Number(await env.KV.get(`cost:${monthKey()}`)) || 0;
-    if (spent >= monthlyBudgetUsd(env)) {
+    // Monthly budget governor — gate on MAX(KV soft counter, D1 completed-spend)
+    // so a burst of in-flight runs OR the accurate completed total can refuse new
+    // work (503). Closes the split-brain where intake trusted only the racy KV.
+    if (await budgetExhausted(env)) {
         return jsonResponse({ error: 'Monthly research budget exhausted — try tomorrow' }, 503);
     }
 

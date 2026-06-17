@@ -16,7 +16,7 @@
 import { checkRateLimit } from '../lib/rate-limit.js';
 import { getResearchBySlug, getProductsByResearchId } from '../lib/db.js';
 import { parseJsonSafe, displayQuery } from '../lib/utils.js';
-import { monthKey, monthlyBudgetUsd, incrementMonthlyCost } from '../pipeline/orchestrator.js';
+import { budgetExhausted, incrementMonthlyCost } from '../pipeline/orchestrator.js';
 
 const CHAT_MODEL = 'google/gemini-2.5-flash';
 const CHAT_TIMEOUT_MS = 25_000;
@@ -116,9 +116,8 @@ export async function handleChat(request, env) {
         return jsonResponse({ error: 'Chat limit reached for now — try again in a bit.' }, 429);
     }
 
-    // Same monthly governor as research runs.
-    const spent = Number(await env.KV.get(`cost:${monthKey()}`)) || 0;
-    if (spent >= monthlyBudgetUsd(env)) {
+    // Same monthly governor as research runs — gate on MAX(KV, D1 completed-spend).
+    if (await budgetExhausted(env)) {
         return jsonResponse({ error: 'Monthly budget exhausted — chat is paused until next month.' }, 503);
     }
 

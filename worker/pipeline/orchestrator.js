@@ -300,6 +300,22 @@ export function monthlyBudgetUsd(env) {
     return Number.isFinite(v) && v >= 0 ? v : DEFAULT_MONTHLY_BUDGET_USD;
 }
 
+// Authoritative budget gate for intake (POST /api/research, /api/chat). The KV
+// counter (cost:YYYY-MM) is a fast soft cache that can lag or lose concurrent
+// updates; D1 SUM(cost_usd) is race-free but only counts COMPLETED runs. Gating on
+// MAX(KV, D1) closes the split-brain where intake trusted only the racy KV value
+// while the off-CF claim path + cron fallback already gate on the accurate D1 sum.
+// Short-circuits on KV to avoid a D1 query on every request when already capped.
+export async function budgetExhausted(env) {
+    const budget = monthlyBudgetUsd(env);
+    if (budget <= 0) return true; // MONTHLY_BUDGET_USD=0 kill switch
+    let kv = 0;
+    try { kv = Number(await env.KV.get(`cost:${monthKey()}`)) || 0; } catch { kv = 0; }
+    if (kv >= budget) return true;
+    const d1 = await monthlySpendUsd(env);
+    return Math.max(kv, d1) >= budget;
+}
+
 /**
  * Create a progress updater that writes to KV for SSE streaming. The pipeline is
  * the single writer for a run, so the log array lives in this closure.

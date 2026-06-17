@@ -86,7 +86,7 @@ CSP-blocked/no traffic signal). Strategic frame: traffic + measurement first
 - [x] MED(verified REAL): Static assets serve `cache-control: max-age=0,
       must-revalidate` (css/js/og.png) — add `public/_headers` with
       `max-age=31536000, immutable`. Repeat-visit speed + cost.
-- [ ] HIGH(constraint-protect, verified REAL): Budget governor split-brain —
+- [x] HIGH(constraint-protect, verified REAL): Budget governor split-brain —
       intake gates trust the racy KV `cost:` counter (research.js:109, chat.js:120)
       while the real ceiling uses D1 SUM; a burst can overspend MONTHLY_BUDGET_USD.
       Add a `budgetExhausted(env)=max(D1 spend, KV)` gate helper. Pair: move the
