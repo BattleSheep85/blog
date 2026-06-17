@@ -105,7 +105,7 @@ CSP-blocked/no traffic signal). Strategic frame: traffic + measurement first
 - [ ] MED: Email capture on home/hubs (backend fully built; research-page-only today).
 - [x] MED: Amazon `ascsubtag` (slug+rank) on /api/go redirects → free EPC/earnings
       attribution per page via Associates report (affiliate.js:56-86).
-- [ ] HIGH: Raise engine READ_MIN_SCORE so hands-on expert reviews scoring 45
+- [x] HIGH: Raise engine READ_MIN_SCORE so hands-on expert reviews scoring 45
       (50 base +hands-on +expert −45 affiliate-conflict) aren't dropped from
       full-text READ (parallel-engine.js:21). Still discount their verdicts in synth
       — read them, don't blindly trust. Direct moat lift.

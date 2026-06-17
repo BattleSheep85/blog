@@ -18,7 +18,10 @@ const PROVIDERS = ['web', 'web', 'duckduckgo', 'rss', 'video', 'news'];
 const SEARCH_CONCURRENCY = 24;
 const READ_CONCURRENCY = 16;
 const MAX_READ = 24;
-const READ_MIN_SCORE = 50;     // read [community]/[hands-on]/[expert] (>=50), skip listicle/affiliate
+const READ_MIN_SCORE = 45;     // read [community]/[hands-on]/[expert] incl. hands-on+expert that
+                               // also monetize (base50+hands-on25+expert15-affiliate45=45); synth
+                               // still discounts affiliate-conflicted verdicts. Pure affiliate
+                               // listicles (~5) stay skipped. Bounded by MAX_READ regardless.
 const NOTE_BATCH = 4;
 
 const clamp = (n, lo, hi) => Math.max(lo, Math.min(hi, n));
