@@ -637,6 +637,7 @@ ${(buyersGuide.marketingToIgnore?.length ?? 0) > 0 ? `<h3 style="font-size:.85re
 </section>` : ''}
 
 ${products.length > 0 ? `<h2 id="products" style="font-size:1.25rem;font-weight:700;margin-bottom:1.5rem">${isService ? 'Recommendations' : 'Products compared'}</h2>
+${(!isService && products.some((p) => p.price != null)) ? `<p style="font-size:.8rem;color:var(--ink-3);margin:-0.9rem 0 1.25rem">Prices were last checked ${new Date(lastModifiedTs * 1000).toISOString().split('T')[0]} and can change — confirm the current price at the retailer before buying.</p>` : ''}
 <div class="product-grid">${products.map((p, i) => {
   const card = renderProduct(p, i, affiliateIds, isService, slug, cleanLinks, webOnly);
   // Mid-list ad after rank 3 when there are 5+ items — keeps the ad out of
@@ -1087,6 +1088,14 @@ document.addEventListener('DOMContentLoaded',function(){
   // cheap (DNS-only, no TLS handshake) and shaves ~50-200ms off the first
   // affiliate click. Web-only/service pages have no Amazon links to warm.
   const amazonHint = products.length > 0 && !webOnly && !isService ? '<link rel="dns-prefetch" href="//www.amazon.com">' : '';
-  const htmlOut = layout(displayTitle, entry.summary ?? 'AI-powered product research', body, amazonHint + noindex + structuredData + turnstileScript + extra, layoutMeta);
+  // Append the freshness year to the <title>/OG title only (not the on-page H1 or
+  // schema headline) — a measurable CTR lift on commercial "best X" queries. Use
+  // the page's last-completion year (honest: reflects actual freshness) and only
+  // when the title doesn't already carry a 4-digit year.
+  const titleYear = new Date(lastModifiedTs * 1000).getUTCFullYear();
+  const seoTitle = (entry.status === 'complete' && !/\b20\d{2}\b/.test(displayTitle))
+    ? `${displayTitle} (${titleYear})`
+    : displayTitle;
+  const htmlOut = layout(seoTitle, entry.summary ?? 'AI-powered product research', body, amazonHint + noindex + structuredData + turnstileScript + extra, layoutMeta);
   return { html: htmlOut, lastModified: lastModifiedTs };
 }
