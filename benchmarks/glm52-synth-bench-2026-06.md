@@ -14,7 +14,14 @@ The honesty audit (`benchmarks/results/` + issues.md) confirmed the synth prompt
 
 **What this means:** the R1 prompt fix is the real win — fabrication collapsed for every model (opus → 0/0). But under a prompt that explicitly says *"NEVER invent a price,"* **glm-5.2 keeps inventing** (53% of its prices are ungrounded; spot-checked: it stamped $299.99/$199.99/$249.99 on SSDs whose sources contain no prices, and $299.99 on all four office chairs incl. the trap). **kimi obeys** (0% ungrounded prices). The earlier "glm wins 6/6" was an artifact of the fabrication-mandating prompt + same-family judges scoring "who fabricates less flagrantly," exactly the contamination the audit flagged. kimi's "2.6× slower" was also variance — it ran 25s here, not 111s.
 
-**Decision:** **DO NOT swap. Keep `moonshotai/kimi-k2.6`.** It is more honest than glm-5.2 on the clearest lie-metric (numeric fabrication) under the corrected prompt, and cheaper. opus-4.8 is the honesty ceiling (0/0) but ~8× the cost — revisit only if the budget allows a premium-honesty tier. Next honesty target: kimi's residual 29% ungrounded *spec* numbers (further prompt tuning + the live groundedness monitor).
+**Decision:** **DO NOT swap. Keep `moonshotai/kimi-k2.6`.** It is at least as honest as glm-5.2 on the clearest lie-metric (numeric fabrication) under the corrected prompt, and cheaper. opus-4.8 is the honesty ceiling but ~8× the cost — revisit only if the budget allows a premium-honesty tier.
+
+### v2 update (tightened spec-grounding rule) — ALL models → 0/0, but note the variance
+
+After adding a pointed specs-grounding rule (`prompts.js`: "include a spec ONLY when its exact value appears in a source… an empty specs object beats unsourced numbers"), the re-bench shows **every model at 0 ungrounded prices AND 0 ungrounded specs** (kimi spec 0.29→**0**; glm price 0.53→**0**, spec 0.39→**0**; opus 0/0). Two honest reads:
+
+1. The prompt is now strong enough that even the previously-worst model (glm) complied — **kimi (the incumbent we keep) is at 0/0.** This is the deploy-worthy win.
+2. glm's price fabrication swinging **0.53 → 0 between two runs is real run-to-run non-determinism.** So a single bench run cannot reliably *rank* models on fabrication (the n≥20 / multi-run point from the audit stands). It does NOT change the decision — keep the cheaper incumbent kimi at 0/0 — but it means the *guarantee* of no-lies comes from the **live groundedness monitor on production output**, not from one green bench run. Bench = pre-flight; production monitoring = the standing promise.
 
 _Everything below was the PRE-prompt-fix analysis that led to this reversal — kept for the audit trail; superseded by the box above._
 
