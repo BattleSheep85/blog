@@ -1,5 +1,5 @@
 import { displayQuery, escapeXml, publicResearchFilter, isNotModified } from './utils.js';
-import { listCategories } from '../pages/category.js';
+import { listCategories, MIN_HUB_GUIDES } from '../pages/category.js';
 import { STATIC_GUIDES, STATIC_GUIDE_SLUGS } from './guides.js';
 // STATIC_GUIDES / STATIC_GUIDE_SLUGS are the single source of truth for the
 // four static /best/ guide pages: we emit one <url> per guide below and skip
@@ -108,7 +108,7 @@ export async function generateSitemap(origin, env, ifModifiedSince, guidesLastmo
   const categories = await listCategories(env).catch(() => []);
   const hubLastmod = newestLastmod ? new Date(newestLastmod * 1000).toISOString().split('T')[0] : null;
   const hubEntries = categories
-    .filter((c) => c.slug && !STATIC_GUIDE_SLUGS.has(c.slug))
+    .filter((c) => c.slug && !STATIC_GUIDE_SLUGS.has(c.slug) && (c.count ?? 0) >= MIN_HUB_GUIDES)
     .map((c) => {
       const lm = hubLastmod ? `<lastmod>${hubLastmod}</lastmod>` : '';
       return `<url><loc>${origin}/best/${c.slug}</loc>${lm}<changefreq>weekly</changefreq><priority>0.7</priority></url>`;

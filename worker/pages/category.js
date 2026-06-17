@@ -19,6 +19,12 @@ import {
 
 const SITE = 'https://chrisputer.tech';
 
+// A "Best X" hub with fewer than this many distinct guides is a thin/doorway
+// page (it just links to one research result). Such hubs render noindex,follow
+// and are excluded from the sitemap (see lib/sitemap.js) so they don't drag
+// down the site's overall content quality in Google's eyes.
+export const MIN_HUB_GUIDES = 2;
+
 /**
  * Render the /best/:categorySlug hub. Returns an HTML string, or null when no
  * complete research matches the slug.
@@ -113,12 +119,15 @@ ${r.summary ? `<p class="mt-2 line-clamp-2 text-body-sm text-ink-2">${escapeHtml
 
     const canonical = `<link rel="canonical" href="${canonicalUrl}">`;
     const structuredData = jsonLdScript(breadcrumbLd) + jsonLdScript(itemListLd);
+    // Thin single-guide hubs stay crawlable (so the noindex is honored + the
+    // outbound link to the research page passes equity) but are kept out of the index.
+    const robots = rows.length < MIN_HUB_GUIDES ? '<meta name="robots" content="noindex, follow">' : '';
 
     return layout(
         `Best ${categoryName}`,
         `Honest, source-backed ${categoryName.toLowerCase()} research and buying guides from Chrisputer Labs.`,
         body,
-        canonical + structuredData,
+        robots + canonical + structuredData,
         { ogUrl: canonicalUrl },
     );
 }
@@ -131,8 +140,12 @@ ${r.summary ? `<p class="mt-2 line-clamp-2 text-body-sm text-ink-2">${escapeHtml
  * their counts are merged.
  */
 export async function listCategories(env) {
+    // COUNT(DISTINCT cluster) so `count` equals the number of guides the hub
+    // actually renders (renderCategoryHub dedupes to one row per canonical
+    // cluster) — keeps the sitemap's MIN_HUB_GUIDES gate in sync with the page.
     const stmt = env.DB.prepare(
-        `SELECT r.category AS category, COUNT(*) AS count
+        `SELECT r.category AS category,
+                COUNT(DISTINCT COALESCE(r.canonical_query, r.slug)) AS count
          FROM research r
          WHERE ${publicResearchFilter('r')} AND r.category IS NOT NULL AND r.category <> ''
          GROUP BY r.category`
