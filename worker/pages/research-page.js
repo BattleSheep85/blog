@@ -736,7 +736,11 @@ ${entry.status === 'complete' ? `<div class="notify-footer" style="margin-top:2r
   });
 
   const isoModified = new Date(lastModifiedTs * 1000).toISOString();
-  const articleImage = `https://chrisputer.tech/research/${slug}/og.svg`;
+  // Social platforms (FB/X/LinkedIn/Slack/Discord/iMessage/WhatsApp) and Google
+  // rich-result image guidelines do NOT support SVG — an SVG og:image renders a
+  // blank share card. Use the static PNG until a vendored raster generator
+  // (resvg/satori wasm) can produce per-page PNGs at /research/:slug/og.png.
+  const articleImage = 'https://chrisputer.tech/og.png';
   const keywordTerms = entry.query.split(/\s+/).filter((w) => w.length > 2 && !/^(the|and|for|with|from|best|top|good|great)$/i.test(w)).slice(0, 8);
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -794,16 +798,51 @@ ${entry.status === 'complete' ? `<div class="notify-footer" style="margin-top:2r
     ],
   };
 
+  // FAQPage — assembled from data already rendered on the page (buyer's guide +
+  // top pick). Plain-text answers only. Note: Google deprecated FAQ rich-result
+  // *display* for non-gov/health sites (2023), but the markup is still valid
+  // structured data used for entity understanding and AI-answer grounding.
+  const faqSubject = displayTitle.replace(/^best\s+/i, '').trim() || displayTitle;
+  const faqEntities = [];
+  if (hasBuyersGuide && buyersGuide) {
+    if (buyersGuide.howToChoose) {
+      faqEntities.push({ q: `What should I consider when choosing ${faqSubject}?`, a: buyersGuide.howToChoose });
+    }
+    if ((buyersGuide.pitfalls?.length ?? 0) > 0) {
+      faqEntities.push({ q: `What common mistakes should I avoid with ${faqSubject}?`, a: buyersGuide.pitfalls.join(' ') });
+    }
+    if ((buyersGuide.marketingToIgnore?.length ?? 0) > 0) {
+      faqEntities.push({ q: `What marketing claims about ${faqSubject} should I ignore?`, a: buyersGuide.marketingToIgnore.join(' ') });
+    }
+  }
+  if (products.length > 0 && products[0].name) {
+    const top = products[0];
+    const topAnswer = top.verdict ? `${top.name} — ${top.verdict}` : top.name;
+    faqEntities.push({ q: `What's the top ${isService ? 'recommendation' : 'pick'} for ${faqSubject}?`, a: topAnswer });
+  }
+  const faqLd = faqEntities.length > 0 ? {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    '@id': `${pageUrl}#faq`,
+    mainEntity: faqEntities.map((e) => ({
+      '@type': 'Question',
+      name: e.q,
+      acceptedAnswer: { '@type': 'Answer', text: e.a },
+    })),
+  } : null;
+
   const structuredData = entry.status === 'complete'
     ? jsonLdScript(jsonLd) +
       (itemListLd ? jsonLdScript(itemListLd) : '') +
+      (faqLd ? jsonLdScript(faqLd) : '') +
       jsonLdScript(breadcrumbLd)
     : '';
 
   const layoutMeta = {
     ogUrl: pageUrl,
     ogType: 'article',
-    ogImage: `https://chrisputer.tech/research/${escapeHtml(slug)}/og.svg`,
+    // PNG, not the per-page og.svg — SVG share cards render blank everywhere.
+    ogImage: 'https://chrisputer.tech/og.png',
     twitterCard: 'summary_large_image',
     // Always canonical to the clean URL so ?src=... variants don't fragment SEO.
     canonical: pageUrl,
