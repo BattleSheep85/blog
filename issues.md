@@ -8,15 +8,26 @@ Z.ai's GLM-5.2 (open-weights, AA Intelligence Index 51 vs kimi 43 — but coding
 weighted) benched against the real synthesis honesty harness. Full writeup:
 `benchmarks/glm52-synth-bench-2026-06.md`. Spend ~$0.31 (24 honesty judges free).
 
-- [ ] DECISION (synth model swap): **glm-5.2 (reasoning OFF) beat incumbent
-      kimi-k2.6 on every axis** — consensus honesty 0.91 vs 0.84, faithfulness
-      0.87 vs 0.74 (the discriminator: kimi launders ungrounded specs + synthetic
-      ratings + dropped a legit product), schema 1.0 vs 0.834, fastest (32s),
-      +8% cost. Closes ~half the gap to the opus-4.8 ceiling (0.94). Recommended:
-      swap `worker/lib/tiers.js:20` synthModel → `z-ai/glm-5.2` (keep
-      `synthReasoning:{enabled:false}` — reasoning ON is worse + starves JSON).
-      Gated rollout (env-overridable + run-eval.mjs confirm) advised; off-CF
-      blackbox worker needs the rsync+restart too. AWAITING user go/no-go.
+- [ ] DECISION (synth model swap): **glm-5.2 (reasoning OFF) beats incumbent
+      kimi-k2.6 — CONFIRMED on the expanded 6-scenario bench** (overall honesty
+      0.74 vs 0.63, faithfulness 0.59 vs 0.44; glm leads on 6/6 scenarios). Plus
+      kimi p50 latency 111s vs glm 42s (2.6× slower AND less honest), schema 0.933
+      vs 0.834, +43% cost (still ~$0.013/run). Recommended GATED rollout: make
+      `worker/lib/tiers.js` synthModel env-overridable (`env.SYNTH_MODEL`), deploy
+      (behavior unchanged until set), `wrangler secret put SYNTH_MODEL=z-ai/glm-5.2`,
+      run-eval.mjs confirm, instant rollback via `secret delete`. Off-CF blackbox
+      worker needs the rsync+restart too. AWAITING user go/no-go.
+- [ ] HIGH (honesty — engine prompt, higher-leverage than the model swap): the
+      6-scenario bench's strict faithfulness judge found ALL synth models (incl.
+      opus, 0.67) fabricate data the sources don't contain — **synthetic per-product
+      numeric ratings** (4.x, rendered as authoritative stars), **invented prices**
+      ("$179.95"), and **invented freshness/date metadata** ("within 12-month
+      window") — because the synthesis schema MANDATES those fields. Fix the
+      synthesis prompt (`worker/engine/prompts.js`): forbid invented prices,
+      forbid fabricated numeric ratings (or mark them editorial-estimate, not
+      measured), and forbid freshness assertions when sources are undated. Lifts
+      EVERY config. (kimi additionally drops legit source-backed options — e.g.
+      omitted NuPhy Air75 twice despite hands-on+community backing; glm kept it.)
 - [x] Planner: glm-5.2 OFF matches gemini-2.5-flash's perfect BS-detection but at
       3× cost + 8× latency → KEEP gemini-2.5-flash. Reasoning ON face-plants (0.2
       acc, starved JSON) — confirms GLM must run reasoning-off for structured tasks.

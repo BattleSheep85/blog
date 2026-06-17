@@ -14,6 +14,14 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { buildSynthesisPrompt } from '../worker/engine/prompts.js';
 import { SYNTH_SCENARIOS, SYNTH_CONFIGS } from './synth-fixture.mjs';
+import { EXTRA_SCENARIOS } from './synth-fixture-glm-extra.mjs';
+
+// EXPANDED=1 → run all 6 scenarios (2 original + 4 extra) across the decision
+// configs only (kimi-OFF vs glm-OFF + opus anchor); default = original 2-scenario,
+// 4-config run. Output file differs so neither overwrites the other.
+const EXPANDED = process.env.EXPANDED === '1';
+const ALL_SCENARIOS = EXPANDED ? [...SYNTH_SCENARIOS, ...EXTRA_SCENARIOS] : SYNTH_SCENARIOS;
+const OUT_FILE = EXPANDED ? 'glm52-synth-raw-expanded.json' : 'glm52-synth-raw.json';
 
 function readEnv(path) {
   const out = {};
@@ -37,12 +45,15 @@ const PRICE = {
 
 // Production-relevant candidate configs. reasoning OFF = apples-to-apples with the
 // live kimi synth; the engine also sets synthMaxTokens 16000.
-const CONFIGS = [
+const CONFIGS_FULL = [
   { label: 'kimi-k2.6 (incumbent, reasoning OFF)', model: 'moonshotai/kimi-k2.6', reasoning: { enabled: false }, maxTokens: 16000 },
   { label: 'glm-5.2 (reasoning OFF)', model: 'z-ai/glm-5.2', reasoning: { enabled: false }, maxTokens: 16000 },
   { label: 'glm-5.2 (reasoning ON)', model: 'z-ai/glm-5.2', reasoning: { enabled: true }, maxTokens: 16000 },
   { label: 'opus-4.8 (honesty anchor, reasoning OFF)', model: 'anthropic/claude-opus-4.8', reasoning: { enabled: false }, maxTokens: 16000 },
 ];
+// Expanded run drops glm-reasoning-ON (already shown worse) to focus spend on the
+// kimi-vs-glm-OFF decision across more scenarios.
+const CONFIGS = EXPANDED ? CONFIGS_FULL.filter((c) => c.label !== 'glm-5.2 (reasoning ON)') : CONFIGS_FULL;
 
 const SPEND_CAP = Number(process.env.SPEND_CAP || 6);
 let TOTAL_SPEND = 0;
@@ -116,7 +127,7 @@ const rows = [];
 for (const cfg of CONFIGS) {
   process.stderr.write(`\n[${cfg.label}] `);
   const runs = [];
-  for (const sc of SYNTH_SCENARIOS) {
+  for (const sc of ALL_SCENARIOS) {
     const prompt = buildSynthesisPrompt(sc.query, sc.notes, sc.sources, config, sc.facets, sc.topicalCategory, {});
     const r = await callModel(cfg.model, [
       { role: 'system', content: prompt },
@@ -157,7 +168,7 @@ for (const cfg of CONFIGS) {
   });
 }
 
-writeFileSync(new URL('./results/glm52-synth-raw.json', import.meta.url), JSON.stringify({ spend: round(TOTAL_SPEND, 4), rows }, null, 2));
+writeFileSync(new URL(`./results/${OUT_FILE}`, import.meta.url), JSON.stringify({ expanded: EXPANDED, scenarios: ALL_SCENARIOS.length, spend: round(TOTAL_SPEND, 4), rows }, null, 2));
 process.stderr.write(`\n\nspend: $${round(TOTAL_SPEND, 4)}\n`);
 console.table(rows.map((r) => ({
   config: r.label, json: r.json_rate, empty: r.empty_count, schema: r.schema,

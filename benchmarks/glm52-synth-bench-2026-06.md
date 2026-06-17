@@ -2,16 +2,32 @@
 
 _Z.ai released **GLM-5.2** on 2026-06-16 (753B open-weights MIT, 1M context). It leads the Artificial Analysis Intelligence Index for open models (51 vs kimi-k2.6's 43) — but that index is **coding/agentic-weighted**, and the [main engine bench](./engine-llm-bench-2026-06.md) already proved leaderboard rank ≠ honesty here (qwen3.5, gemini-3.5 topped charts but failed the trap test). So we ran GLM-5.2 through the **real synthesis honesty harness**._
 
-## TL;DR — **SWAP synthesis to `z-ai/glm-5.2` (reasoning OFF)**
+## TL;DR — **SWAP synthesis to `z-ai/glm-5.2` (reasoning OFF), gated** — AND fix the prompt
 
-GLM-5.2 (reasoning off) beats the incumbent kimi-k2.6 on **every axis that matters** and closes ~half the gap to the opus-4.8 honesty ceiling for essentially free. Keep **gemini-2.5-flash** for the planner. Reasoning must stay **OFF** (the kimi gotcha reproduces).
+Two findings from the expanded **6-scenario** bench (keyboard, headphones, robot vacuum, office chair, portable SSD, + an email-marketing **service**):
 
-| Synth config | Overall honesty | **Faithfulness** | Trap handled | Conflict-flag | Schema | $/call | Latency |
+1. **glm-5.2 (reasoning off) beats kimi-k2.6 on every honesty axis, on 6/6 scenarios** — and is ~2.6× faster. Swap (gated behind a `SYNTH_MODEL` env override for instant rollback). Keep **gemini-2.5-flash** for the planner. Reasoning stays **OFF** (the kimi gotcha reproduces).
+2. **The bigger problem is the prompt, not the model.** Under a strict faithfulness judge, *every* config — including opus — fabricates: synthetic per-product **ratings** (4.4/4.2/4.0), invented **prices** ("$179.95"), and invented **freshness/date metadata** ("within the 12-month window") that no source supports, because the synthesis schema *mandates* those fields. Fixing the prompt lifts every config and is **higher-leverage than the model choice.** (See [issues.md] HIGH.)
+
+**Authoritative result — expanded consensus (n=6, 3 judges/output = 54 judges):**
+
+| Synth config | Overall honesty | **Faithfulness** | Trap | Schema | $/call | **p50 latency** | Beats kimi on |
 |---|---|---|---|---|---|---|---|
-| **`z-ai/glm-5.2` (reasoning OFF)** ✅ | **0.91** | **0.87** | 2/2 | 0.99 | **1.00** | $0.0126 | **32s** |
-| `z-ai/glm-5.2` (reasoning ON) | 0.90 | 0.82 | 2/2 | 0.99 | 0.967 | $0.0194 | 63s |
-| `moonshotai/kimi-k2.6` (incumbent, OFF) | 0.84 | **0.74** | 2/2 | 0.97 | 0.834 | $0.0117 | 41s |
-| `anthropic/claude-opus-4.8` (anchor, OFF) | 0.94 | 0.91 | 2/2 | 1.00 | 1.00 | $0.105 | 40s |
+| `anthropic/claude-opus-4.8` (ceiling, OFF) | 0.81 | 0.67 | 1.00 | 1.00 | $0.111 | 43s | — |
+| **`z-ai/glm-5.2` (reasoning OFF)** ✅ | **0.74** | **0.59** | 1.00 | **0.933** | $0.0132 | **42s** | **6/6 scenarios** |
+| `moonshotai/kimi-k2.6` (incumbent, OFF) | 0.63 | **0.44** | 0.99 | 0.834 | $0.0092 | **111s** ⚠ | — |
+
+The initial **2-scenario** pass (below) had higher absolute scores (glm 0.91, kimi 0.84) under a less-broad test; the 6-scenario run is stricter and more varied, dropping everyone — but **glm's lead held on all 6 queries** (overall 0.69–0.86 vs kimi 0.55–0.72; faithfulness 6/6). The margin widened, not narrowed. glm-5.2-ON was dropped from the expanded run (already shown worse + the reasoning-starve gotcha).
+
+### The systemic faithfulness finding (act on this regardless of the swap)
+
+All three models invent, with citation-flavored language ("verified independently", "per RTINGS test rig"), data absent from the sources:
+- **Synthetic numeric ratings** — the schema requires a `rating`, so models manufacture 4.x decimals with no source basis (and the UI renders them as stars → looks authoritative).
+- **Invented prices** — exact figures ("$179.95", "~$110") stated as fact when no source carries a price.
+- **Invented freshness/date metadata** — "all sources within the 12-month window" / "no outdated 2023 sources" when sources have NO dates.
+- **kimi additionally drops legit, source-backed options** (omitted NuPhy Air75 in 2 separate runs despite hands-on + community backing — glm included it). This is the worst failure mode and is kimi-specific.
+
+The synthesis prompt should explicitly forbid: inventing prices, fabricating numeric ratings (or mark them as editorial estimates, not measurements), and asserting freshness when sources are undated. That fix would raise *every* config's faithfulness and is the highest-leverage honesty work available.
 
 ## Why — faithfulness is the differentiator, and kimi is the weakest
 
@@ -60,5 +76,6 @@ Recommended rollout: env-overridable (`env.SYNTH_MODEL || 'z-ai/glm-5.2'`) so a 
 |---|---|
 | Synth bench (4 configs × 2 scenarios) | $0.297 |
 | Planner skepticism (3 configs × 10) | $0.009 |
-| 24 honesty judges + synthesis | $0 (off OpenRouter) |
-| **Total** | **≈ $0.31 / $100 key cap** |
+| Expanded synth bench (3 configs × 6 scenarios) | $0.803 |
+| 24 + 54 honesty judges + synthesis | $0 (off OpenRouter — Claude judges) |
+| **Total** | **≈ $1.11 / $100 key cap** |
