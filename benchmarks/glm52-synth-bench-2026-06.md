@@ -2,7 +2,25 @@
 
 _Z.ai released **GLM-5.2** on 2026-06-16 (753B open-weights MIT, 1M context). It leads the Artificial Analysis Intelligence Index for open models (51 vs kimi-k2.6's 43) — but that index is **coding/agentic-weighted**, and the [main engine bench](./engine-llm-bench-2026-06.md) already proved leaderboard rank ≠ honesty here (qwen3.5, gemini-3.5 topped charts but failed the trap test). So we ran GLM-5.2 through the **real synthesis honesty harness**._
 
-## TL;DR — **SWAP synthesis to `z-ai/glm-5.2` (reasoning OFF), gated** — AND fix the prompt
+## ⚠️ UPDATE 2026-06-17 (re-bench under the FIXED prompt) — the swap is REVERSED. KEEP kimi-k2.6.
+
+The honesty audit (`benchmarks/results/` + issues.md) confirmed the synth prompt *mandated* fabrication (rating "inferred", price "never null"). After fixing the prompt (`worker/engine/prompts.js`: price source-or-null, rating editorial, no-fabrication/citation/date rules) we **re-ran the 6-scenario bench under the corrected prompt with a deterministic groundedness gate** (fraction of emitted prices/spec-numbers not traceable to the sources; null = grounded). This is what the audit demanded — and it **reversed the ranking the original (contaminated) judging produced:**
+
+| config | ungrounded_price (old→new) | ungrounded_spec (old→new) | p50 latency | $/run | verdict |
+|---|---|---|---|---|---|
+| **opus-4.8** (ceiling) | 0.69 → **0.00** | 0.57 → **0.00** | 38s | $0.105 | perfectly grounded, but 8× cost |
+| **kimi-k2.6** (incumbent) ✅ | 0.64 → **0.00** | 0.81 → **0.29** | 25s | $0.0097 | obeys "no invented price"; KEEP |
+| **glm-5.2** (candidate) ✗ | 0.73 → **0.53** | 0.65 → **0.39** | 21s | $0.0131 | still invents prices/specs when told NOT to |
+
+**What this means:** the R1 prompt fix is the real win — fabrication collapsed for every model (opus → 0/0). But under a prompt that explicitly says *"NEVER invent a price,"* **glm-5.2 keeps inventing** (53% of its prices are ungrounded; spot-checked: it stamped $299.99/$199.99/$249.99 on SSDs whose sources contain no prices, and $299.99 on all four office chairs incl. the trap). **kimi obeys** (0% ungrounded prices). The earlier "glm wins 6/6" was an artifact of the fabrication-mandating prompt + same-family judges scoring "who fabricates less flagrantly," exactly the contamination the audit flagged. kimi's "2.6× slower" was also variance — it ran 25s here, not 111s.
+
+**Decision:** **DO NOT swap. Keep `moonshotai/kimi-k2.6`.** It is more honest than glm-5.2 on the clearest lie-metric (numeric fabrication) under the corrected prompt, and cheaper. opus-4.8 is the honesty ceiling (0/0) but ~8× the cost — revisit only if the budget allows a premium-honesty tier. Next honesty target: kimi's residual 29% ungrounded *spec* numbers (further prompt tuning + the live groundedness monitor).
+
+_Everything below was the PRE-prompt-fix analysis that led to this reversal — kept for the audit trail; superseded by the box above._
+
+---
+
+## ~~TL;DR — SWAP synthesis to `z-ai/glm-5.2`~~ (SUPERSEDED — see the reversal above)
 
 Two findings from the expanded **6-scenario** bench (keyboard, headphones, robot vacuum, office chair, portable SSD, + an email-marketing **service**):
 

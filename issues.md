@@ -26,10 +26,16 @@ fixed prompt. Keep the swap gated.
       rounding) — a free, judge-independent regression gate. [R2]
 - [x] #3 fixed bench `schemaScore` so it stops REWARDING fabrication (drop the
       "rating is a number" credit; reward honest null). [R2]
-- [ ] #4 re-bench under the FIXED prompt — confirm fabrication dropped + whether
-      glm still beats kimi (the ranking was contaminated by the deleted mandate).
-      Lite: re-run 6 scenarios + groundedness metric (cheap, no judges). Full: n≥20,
-      ≥5 judges incl. a non-Claude, PERSIST per-judge scores + 95% CI. [R3 lite now]
+- [x] #4 RE-BENCHED under the fixed prompt (deterministic groundedness gate, no
+      judges). RESULT — REVERSES THE SWAP. Fabrication collapsed for all models
+      (opus ungrounded price/spec 0.69/0.57→0/0; kimi 0.64/0.81→0/0.29) — R1 works.
+      BUT glm-5.2 STILL invents prices 53% of the time under "NEVER invent a price"
+      (spot-checked: $299.99/$199.99/$249.99 on SSDs with no source prices). kimi
+      obeys (0% ungrounded prices). **Decision: DO NOT swap — KEEP kimi-k2.6** (more
+      honest on the clearest lie-metric under the corrected prompt, + cheaper; kimi's
+      "2.6× slower" was variance — 25s here). opus is the honesty ceiling (0/0) at 8×
+      cost. [godmode R3] — Full n≥20/≥5-judge re-bench still optional for the other
+      axes (citations/omissions), but the numeric-fabrication signal is decisive. [R3]
 - [ ] #5 add legit_recall (catches kimi dropping legit picks) + link_correctness
       (catches the trap-URL-on-legit-product mis-citation) auto-metrics. [deferred]
 - [ ] #6 fixtures for untested lie-surfaces: comparative "X vs Y", discontinued/
@@ -47,15 +53,13 @@ Z.ai's GLM-5.2 (open-weights, AA Intelligence Index 51 vs kimi 43 — but coding
 weighted) benched against the real synthesis honesty harness. Full writeup:
 `benchmarks/glm52-synth-bench-2026-06.md`. Spend ~$0.31 (24 honesty judges free).
 
-- [ ] DECISION (synth model swap): **glm-5.2 (reasoning OFF) beats incumbent
-      kimi-k2.6 — CONFIRMED on the expanded 6-scenario bench** (overall honesty
-      0.74 vs 0.63, faithfulness 0.59 vs 0.44; glm leads on 6/6 scenarios). Plus
-      kimi p50 latency 111s vs glm 42s (2.6× slower AND less honest), schema 0.933
-      vs 0.834, +43% cost (still ~$0.013/run). Recommended GATED rollout: make
-      `worker/lib/tiers.js` synthModel env-overridable (`env.SYNTH_MODEL`), deploy
-      (behavior unchanged until set), `wrangler secret put SYNTH_MODEL=z-ai/glm-5.2`,
-      run-eval.mjs confirm, instant rollback via `secret delete`. Off-CF blackbox
-      worker needs the rsync+restart too. AWAITING user go/no-go.
+- [x] DECISION (synth model swap): **REVERSED → KEEP kimi-k2.6, do NOT swap.** The
+      2-scenario/6-scenario "glm wins" result ran under the fabrication-MANDATING
+      prompt + same-family judges (scoring "who fabricates less flagrantly"). The
+      re-bench under the FIXED prompt with a deterministic groundedness gate (see
+      audit #4) shows glm-5.2 is the WORST at obeying "don't fabricate" (53% ungrounded
+      prices vs kimi 0%). kimi's apparent latency/honesty disadvantages were prompt-
+      and variance-artifacts. The real win was the prompt fix (R1), not a model swap.
 - [ ] HIGH (honesty — engine prompt, higher-leverage than the model swap): the
       6-scenario bench's strict faithfulness judge found ALL synth models (incl.
       opus, 0.67) fabricate data the sources don't contain — **synthetic per-product
