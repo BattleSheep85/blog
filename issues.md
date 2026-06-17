@@ -67,23 +67,23 @@ CSP-blocked/no traffic signal). Strategic frame: traffic + measurement first
 (funnel-freeze unblock), conversion polish later.
 
 ### DO NEXT (high impact / low effort)
-- [ ] HIGH: Per-page OG images are SVG (`/research/:slug/og.svg`, html.js:55
+- [x] HIGH: Per-page OG images are SVG (`/research/:slug/og.svg`, html.js:55
       og:image:type=image/svg+xml) — SVG OG cards render BLANK on FB/X/LinkedIn/
       Discord/Slack/iMessage → all social shares dead. Quick fix: point per-page
       og:image at the static PNG `/og.png` (generic but working). Better: vendor a
       resvg/satori wasm to render per-page PNG (no package mgr → vendored wasm OK).
-- [ ] HIGH: No FAQPage schema on the 163 research pages — emit it from existing
+- [x] HIGH: No FAQPage schema on the 163 research pages — emit it from existing
       buyersGuide (howToChoose/pitfalls/marketingToIgnore) for rich-results + AI
       citation (research-page.js:797-801). Homepage already has the FAQPage pattern.
-- [ ] HIGH: Thin single-guide /best hubs are sitemapped + indexable (doorway/thin
+- [x] HIGH: Thin single-guide /best hubs are sitemapped + indexable (doorway/thin
       content risk). Gate `rows.length < 2|3` → noindex,follow + exclude from
       sitemap hub loop (category.js:51, sitemap.js:108-115; ~153 hubs live).
-- [ ] HIGH: Homepage has NO link to the /research archive — first-timers can't see
+- [x] HIGH: Homepage has NO link to the /research archive — first-timers can't see
       existing rankings without spending a query (~$0.04 + wait). Add a Browse/
       category strip (listCategories exists, used by browse.js:48-59).
 - [ ] HIGH: /metrics never joins views↔affiliate clicks → no per-page CTR, the
       exact signal the re-research flywheel keys on (metrics.js:105-153).
-- [ ] MED(verified REAL): Static assets serve `cache-control: max-age=0,
+- [x] MED(verified REAL): Static assets serve `cache-control: max-age=0,
       must-revalidate` (css/js/og.png) — add `public/_headers` with
       `max-age=31536000, immutable`. Repeat-visit speed + cost.
 - [ ] HIGH(constraint-protect, verified REAL): Budget governor split-brain —

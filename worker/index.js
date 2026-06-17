@@ -687,5 +687,18 @@ async function serveAsset(request, env, overrideUrl) {
         const html = (await res.text()).replaceAll('__CSP_NONCE__', nonce);
         return withSecurityHeaders(res, nonce, html);
     }
-    return withSecurityHeaders(res, null);
+    // The [assets] binding serves static files with `max-age=0, must-revalidate`,
+    // forcing a conditional round-trip on every repeat visit. Override with a
+    // cacheable policy. Filenames aren't content-hashed, so use stale-while-
+    // revalidate: repeat loads are always instant (fresh, or stale served while a
+    // background revalidate runs) and edits still propagate quickly. Media/fonts
+    // effectively never change → long fresh window; css/js change on deploy → short
+    // fresh window so updates land within ~an hour.
+    const out = withSecurityHeaders(res, null);
+    const pathname = new URL(overrideUrl || request.url).pathname;
+    const longLived = /\.(?:svg|png|jpe?g|gif|webp|avif|ico|woff2?|webmanifest)$/i.test(pathname);
+    out.headers.set('Cache-Control', longLived
+        ? 'public, max-age=604800, stale-while-revalidate=2592000'
+        : 'public, max-age=3600, stale-while-revalidate=604800');
+    return out;
 }
