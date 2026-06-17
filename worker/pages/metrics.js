@@ -164,6 +164,44 @@ async function getAffiliateClicks(env, sinceSqlDatetime) {
   };
 }
 
+// Demand the site couldn't serve — the content-roadmap signal — mined from
+// EXISTING data (no new table needed): /find hand-offs (guide_clicks where
+// network='google' = queries we redirected to Google because we don't research
+// them) + failed/thin research runs (queries we tried but couldn't answer well).
+async function getUnservedDemand(env) {
+  const [findRes, weakRes] = await Promise.all([
+    env.DB.prepare(
+      `SELECT product_query AS query, COUNT(*) AS c
+         FROM guide_clicks
+        WHERE affiliate_network = 'google' AND product_query <> ''
+        GROUP BY product_query
+        ORDER BY c DESC
+        LIMIT 20`,
+    ).all().catch(() => ({ results: [] })),
+    env.DB.prepare(
+      `SELECT r.query, r.status,
+              (SELECT COUNT(*) FROM products p WHERE p.research_id = r.id) AS product_count
+         FROM research r
+        WHERE r.status = 'failed'
+           OR (r.status = 'complete'
+               AND (SELECT COUNT(*) FROM products p WHERE p.research_id = r.id) < 3)
+        ORDER BY r.created_at DESC
+        LIMIT 20`,
+    ).all().catch(() => ({ results: [] })),
+  ]);
+  return {
+    find_handoffs: (findRes.results ?? []).map((r) => ({
+      query: r.query,
+      count: Number(r.c) || 0,
+    })),
+    weak_results: (weakRes.results ?? []).map((r) => ({
+      query: r.query,
+      status: r.status,
+      product_count: Number(r.product_count) || 0,
+    })),
+  };
+}
+
 async function getGuideClicks(env) {
   const res = await env.DB.prepare(
     `SELECT guide_slug, COUNT(*) AS c
@@ -228,7 +266,7 @@ export async function handleMetrics(request, env) {
   const sinceSeconds = nowSeconds - THIRTY_DAYS_SECONDS;
   const sinceSqlDatetime = isoSecondsToSqlDatetime(sinceSeconds);
 
-  const [budget, runs, topPages, affiliate, guideClicks, subscribers, flywheel] =
+  const [budget, runs, topPages, affiliate, guideClicks, subscribers, flywheel, unservedDemand] =
     await Promise.all([
       getMonthSpend(env, nowSeconds),
       getRunStats(env, sinceSeconds),
@@ -237,6 +275,7 @@ export async function handleMetrics(request, env) {
       getGuideClicks(env),
       getSubscriberCount(env),
       getFlywheel(env),
+      getUnservedDemand(env),
     ]);
 
   return jsonResponse(
@@ -249,6 +288,7 @@ export async function handleMetrics(request, env) {
       guide_clicks: guideClicks,
       subscribers,
       flywheel,
+      unserved_demand: unservedDemand,
     },
     200,
   );

@@ -126,7 +126,7 @@ CSP-blocked/no traffic signal). Strategic frame: traffic + measurement first
       product-shaped plan (parallel-engine.js decompose never receives facets).
 - [ ] MED/M: Internal-linking + topic-cluster — home/hubs → dynamic hubs + research;
       add category breadcrumb level (Home>Research>Category>title) hub↔spoke.
-- [ ] HIGH/M: Log unservable demand (failed/thin/zero-match queries) → content roadmap.
+- [x] HIGH/M: Log unservable demand (surface-only) (failed/thin/zero-match queries) → content roadmap.
 - [ ] MED/M: Route homepage search into the rich server-rendered processing page
       (two different loading UIs today; homepage is a bare text log at peak abandonment).
 - [ ] MED/M: Atomic-ish KV rate limiter (concurrent burst bypasses limit);
