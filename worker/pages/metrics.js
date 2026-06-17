@@ -103,20 +103,32 @@ async function getRunStats(env, sinceSeconds) {
 }
 
 async function getTopPages(env) {
+  // CTR = affiliate clicks ÷ page views per page. This is the exact signal the
+  // re-research flywheel keys on (high views + zero clicks → converting-but-wrong
+  // page → re-run), so expose it here too. Clicks are joined through products.
   const res = await env.DB.prepare(
     `SELECT r.slug, r.query, r.view_count AS views,
-            (SELECT COUNT(*) FROM products p WHERE p.research_id = r.id) AS product_count
+            (SELECT COUNT(*) FROM products p WHERE p.research_id = r.id) AS product_count,
+            (SELECT COUNT(*) FROM affiliate_clicks ac
+               JOIN products p2 ON p2.id = ac.product_id
+              WHERE p2.research_id = r.id) AS clicks
        FROM research r
       WHERE r.status = 'complete'
       ORDER BY r.view_count DESC
       LIMIT 20`,
   ).all();
-  return (res.results ?? []).map((r) => ({
-    slug: r.slug,
-    query: r.query,
-    views: Number(r.views) || 0,
-    product_count: Number(r.product_count) || 0,
-  }));
+  return (res.results ?? []).map((r) => {
+    const views = Number(r.views) || 0;
+    const clicks = Number(r.clicks) || 0;
+    return {
+      slug: r.slug,
+      query: r.query,
+      views,
+      clicks,
+      ctr_pct: views > 0 ? Math.round((clicks / views) * 1000) / 10 : null,
+      product_count: Number(r.product_count) || 0,
+    };
+  });
 }
 
 async function getAffiliateClicks(env, sinceSqlDatetime) {

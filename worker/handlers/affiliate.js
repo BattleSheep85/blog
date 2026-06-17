@@ -50,7 +50,9 @@ export async function handleAffiliateClick(productId, request, env) {
     // with product_url as the untagged fallback). name/brand let us rebuild a
     // tagged Amazon search when no real /dp/ link was persisted.
     const product = await env.DB.prepare(
-        'SELECT affiliate_url, product_url, name, brand FROM products WHERE id = ?'
+        `SELECT p.affiliate_url, p.product_url, p.name, p.brand, r.slug AS research_slug
+           FROM products p LEFT JOIN research r ON r.id = p.research_id
+          WHERE p.id = ?`
     ).bind(productId).first();
 
     const amazonTag = env.AMAZON_ASSOCIATE_TAG || env.AMAZON_AFFILIATE_TAG || '';
@@ -85,6 +87,11 @@ export async function handleAffiliateClick(productId, request, env) {
         }
     }
 
+    // Per-page EPC attribution: Amazon surfaces ascsubtag in the Associates Orders
+    // report, so we can see which research page actually EARNS (not just which gets
+    // clicks). No-op for non-Amazon redirects.
+    redirectUrl = withAmazonSubtag(redirectUrl, product?.research_slug ? `tr-${product.research_slug}` : 'tr-direct');
+
     // Wait for logging before redirecting
     await logPromise;
 
@@ -95,6 +102,23 @@ export async function handleAffiliateClick(productId, request, env) {
             'Cache-Control': 'no-cache, no-store',
         },
     });
+}
+
+// Append an Amazon Associates subtag (per-page EPC attribution). Only applied to
+// amazon.com URLs; no-op elsewhere. Shows in the Associates Orders report. Keep it
+// short and to [a-z0-9_-] — Amazon truncates/strips unusual characters.
+function withAmazonSubtag(url, subtag) {
+    if (!url || !subtag) return url;
+    try {
+        const u = new URL(url);
+        const host = u.hostname.replace(/^www\./, '').toLowerCase();
+        if (host !== 'amazon.com' && !host.endsWith('.amazon.com')) return url;
+        const clean = subtag.toLowerCase().replace(/[^a-z0-9_-]+/g, '-').slice(0, 80);
+        u.searchParams.set('ascsubtag', clean);
+        return u.toString();
+    } catch {
+        return url;
+    }
 }
 
 /**
@@ -113,9 +137,11 @@ export async function handleAffiliateSearch(request, env) {
     const tagSuffix = amazonTag ? `&tag=${encodeURIComponent(amazonTag)}` : '';
     // Only ever build an amazon.com URL server-side. No user-controlled host,
     // so there is no open-redirect surface.
-    const redirectUrl = q
+    const baseUrl = q
         ? `https://www.amazon.com/s?k=${encodeURIComponent(q)}${tagSuffix}`
         : `https://www.amazon.com/${amazonTag ? `?tag=${encodeURIComponent(amazonTag)}` : ''}`;
+    // Per-page EPC attribution for guide pages, keyed by the guide slug (ref).
+    const redirectUrl = withAmazonSubtag(baseUrl, ref ? `tr-guide-${ref}` : 'tr-guide');
 
     // Best-effort analytics. Never let logging break the redirect.
     try {

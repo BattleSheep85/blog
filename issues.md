@@ -81,7 +81,7 @@ CSP-blocked/no traffic signal). Strategic frame: traffic + measurement first
 - [x] HIGH: Homepage has NO link to the /research archive — first-timers can't see
       existing rankings without spending a query (~$0.04 + wait). Add a Browse/
       category strip (listCategories exists, used by browse.js:48-59).
-- [ ] HIGH: /metrics never joins views↔affiliate clicks → no per-page CTR, the
+- [x] HIGH: /metrics never joins views↔affiliate clicks → no per-page CTR, the
       exact signal the re-research flywheel keys on (metrics.js:105-153).
 - [x] MED(verified REAL): Static assets serve `cache-control: max-age=0,
       must-revalidate` (css/js/og.png) — add `public/_headers` with
@@ -93,17 +93,17 @@ CSP-blocked/no traffic signal). Strategic frame: traffic + measurement first
       failure-path incrementMonthlyCost INSIDE the idempotency latch (internal.js:106).
 
 ### QUICK WINS (S)
-- [ ] MED: Unify brand (TrueRank vs Chrisputer Labs) across titles/og:site_name/
+- [x] MED: Unify brand (TrueRank vs Chrisputer Labs) across titles/og:site_name/
       Organization schema — flagged by BOTH seo + ux agents (html.js:62,67 vs
       static "TrueRank"). Consistent entity = brand consolidation + trust.
-- [ ] MED: Add year token to dynamic research <title> ("(2026)") like static guides
+- [x] MED: Add year token to dynamic research <title> ("(2026)") like static guides
       already do — CTR lift (research-page.js:1051).
-- [ ] MED: IndexNow-ping /best/ hubs (not just /research/) — plumbing exists
+- [x] MED: IndexNow-ping /best/ hubs (not just /research/) — plumbing exists
       (orchestrator.js:209, indexnow.js accepts arrays).
-- [ ] MED: "Price as of <date>, check current price" caption near CTAs — honesty +
+- [x] MED: "Price as of <date>, check current price" caption near CTAs — honesty +
       click-trust, reuses lastModifiedTs (research-page.js:357). Fits the ethos.
 - [ ] MED: Email capture on home/hubs (backend fully built; research-page-only today).
-- [ ] MED: Amazon `ascsubtag` (slug+rank) on /api/go redirects → free EPC/earnings
+- [x] MED: Amazon `ascsubtag` (slug+rank) on /api/go redirects → free EPC/earnings
       attribution per page via Associates report (affiliate.js:56-86).
 - [ ] HIGH: Raise engine READ_MIN_SCORE so hands-on expert reviews scoring 45
       (50 base +hands-on +expert −45 affiliate-conflict) aren't dropped from
