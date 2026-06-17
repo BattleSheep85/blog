@@ -46,6 +46,20 @@ fixed prompt. Keep the swap gated.
       PRODUCTION (not just the bench) is monitored for fabrication. [deferred — HIGH]
 - [ ] DOC cleanup: glm52-synth-bench-2026-06.md has contradictory judge counts
       (54 vs 24) + two consensus tables; persist judge scores to results/. [R2]
+- [x] INSIGHT (model selection): honesty here is NOT predicted by raw intelligence
+      (AA Index) OR generic instruction-following (AA IFBench — Claude clusters LOW
+      ~55% there yet opus fabricated 0%). It IS predicted by FACTS-Grounding +
+      hallucination/abstention (Vectara HHEM). Screen future synth models (and the
+      local model) on grounding/abstention, not size/IFBench. [user hypothesis,
+      refined + confirmed against our groundedness data: opus<kimi<glm by fabrication]
+- [ ] ROADMAP (self-host synth on 7900 XTX to cut spend): `docs/local-synth-roadmap.md`.
+      HONEST verdict: hardware GREEN, wiring GREEN (~15 lines, fallback exists), COST
+      RED (synth is only ~$3/mo; idle GPU power ~$10/mo would cost MORE than it saves —
+      never breaks even on cost). Real justification = ownership / no-rug-pull on the
+      honesty-critical component, or 10× scale. Recommended model: Qwen3-30B-A3B (MoE,
+      fits 24GB, fast) or Qwen3-14B (best distill base); avoid Phi-4 (refuses 19%),
+      Llama-70B (won't fit). **Phase 0 (~$0): run a stock local model through the
+      EXISTING groundedness gate — make-or-break before any training.** [deferred]
 
 ## 2026-06-17 — GLM-5.2 synth bench (empirical, real-task honesty)
 
