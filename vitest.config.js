@@ -21,6 +21,7 @@ export default defineWorkersConfig({
         'worker/lib/youtube.js', 'worker/lib/jina.js', 'worker/lib/duckduckgo.js', 'worker/lib/rss.js',
         'worker/engine/parallel-engine.js',
         'worker/pages/browse.js', 'worker/pages/category.js', 'worker/pages/research-page.js',
+        'worker/handlers/subscribe.js', 'worker/handlers/image.js', 'worker/handlers/auth.js',
         'worker/index.js',
       ],
     },
