@@ -2,6 +2,17 @@
 
 Last updated: 2026-06-18
 
+## 2026-06-18 — Integration coverage: handlers + sitemap (godmode R6)
+
+Built on the R5 harness. Shared schema helper (test/integration/_schema.js applies
+001+002+003). New specs (45 integration tests total): affiliate (conversion redirect
+tree + click logging), report (all row states + feedback validation), internal (auth
+gating, atomic claim, progress feed, failure paths), sitemap (XML/feed/OG + 304 + cache).
+- [x] Line coverage on the 6 integration-tested I/O modules: db 100%, rate-limit 100%,
+      report 100%, sitemap 94.6%, affiliate 93.2%, internal 81.3% (overall 92.8%).
+      Remaining gaps are error-catch blocks + internal's success-persist path (triggers
+      Serper/IndexNow fetch — needs a fetch-mocked round).
+
 ## 2026-06-18 — Workers test harness for I/O-module coverage (godmode R5)
 
 User chose to relax zero-npm for a DEV-ONLY test harness (toward true 100% incl. I/O).

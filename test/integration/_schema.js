@@ -1,0 +1,13 @@
+// Shared helper: apply the real D1 schema (migrations 001→002→003) to the
+// in-memory test database. Each integration spec runs in its own isolated worker,
+// so each applies the schema in a beforeAll.
+import init from '../../schema/001_initial.sql?raw';
+import guides from '../../schema/002_guide_clicks.sql?raw';
+import v2 from '../../schema/003_research_v2.sql?raw';
+
+export async function applySchema(db) {
+  for (const sql of [init, guides, v2]) {
+    const stmts = sql.replace(/--[^\n]*/g, '').split(';').map((s) => s.trim()).filter(Boolean);
+    for (const s of stmts) await db.prepare(s).run();
+  }
+}

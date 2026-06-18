@@ -13,7 +13,10 @@ export default defineWorkersConfig({
     coverage: {
       provider: 'istanbul', // v8 coverage doesn't work inside workerd; istanbul does
       reporter: ['text', 'text-summary'],
-      include: ['worker/lib/db.js', 'worker/lib/rate-limit.js'],
+      include: [
+        'worker/lib/db.js', 'worker/lib/rate-limit.js', 'worker/lib/sitemap.js',
+        'worker/handlers/affiliate.js', 'worker/handlers/report.js', 'worker/handlers/internal.js',
+      ],
     },
     poolOptions: {
       workers: {
