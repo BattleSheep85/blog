@@ -290,8 +290,10 @@ export function analyze(query, notes, sources) {
       _topGenres: [...new Set(a.support.flatMap((s) => s.tags))],
     });
   }
-  // rank: weight (credible evidence mass) then rating
-  products.sort((a, b) => b._weight - a._weight || b.rating - a.rating);
+  // rank by RATING first (quality — the cap already requires real evidence for a high
+  // score), then credible-evidence mass as the tiebreaker. Ranking by mention-count
+  // alone wrongly floats the "cheap alternative" above the actual top pick.
+  products.sort((a, b) => b.rating - a.rating || b._weight - a._weight);
   products.forEach((p, i) => { p.rank = i + 1; });
   return products;
 }
