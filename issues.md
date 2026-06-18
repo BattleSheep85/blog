@@ -28,10 +28,27 @@ score from ranking high.
       (preserves the synth's holistic intent-fit ordering). 20 unit tests in
       worker/engine/validate.test.js (wired into run-tests.mjs), all green.
 - Verify post-deploy: re-run the apparel query, confirm no ★<3.5 / no-name pick survives.
-- [ ] HIGH (NEXT): recall gap — "photo/video backup software or appliance" never
-      surfaced Immich (arguably the top self-hosted FOSS option). Engine likely biased
-      toward buyable/affiliate products + missed/penalized free self-hosted software.
-      Investigate classifier framing + search coverage + synth's product bias.
+- [x] HIGH: recall gap — photo-backup queries never surfaced Immich (THE leading
+      self-hosted FOSS photo backup). Root cause: search COVERAGE — Immich was in 0/69
+      sources; the planner never searched self-hosted/FOSS angles, and commercial "best
+      app" listicles don't list community projects. Three-part fix, all deployed +
+      verified (Immich now ranks #3 ★4 for "best photo backup software for android",
+      was absent before):
+      (1) parallel-engine.js DECOMPOSE_SYSTEM — planner must add a self-hosted/FOSS
+          aspect for self-hostable categories;
+      (2) prompts.js synth — include open-source/self-hosted options on merit despite
+          no affiliate/retailer link (brand=project, productUrl=GitHub/official, price=
+          0/null, note self-hosting in cons);
+      (3) worker/lib/foss-leaders.js — curated category→leading-FOSS allowlist (inverse
+          of the churn denylist); parallel-engine appends a deterministic by-name aspect
+          ("Immich review self-hosted", …) so their evidence is actually fetched. This
+          was the decisive lever — prompt-only got self-hosted angles searched but didn't
+          reliably reach one specific project.
+- [ ] LOW: knockoff floor (3.5) + synth variance can yield thin pages (a verification run
+      collapsed to 1 product — engine produced 1 pre-gate, so NOT over-filtering, but
+      watch for thin results; dial floor back to 3.0 if they become common).
+- [ ] LOW: GOOGLE_CSE_ID env var (wrangler.toml) is dead since the /find CSE removal — drop
+      on next wrangler.toml edit.
 
 ## 2026-06-17 — DIRECTION: pure-ML extraction synthesis engine (no LLM) — design done
 
