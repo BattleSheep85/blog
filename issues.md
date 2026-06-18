@@ -2,6 +2,21 @@
 
 Last updated: 2026-06-18
 
+## 2026-06-18 — Integration coverage: router + fetch-mocked modules (R7–R8)
+
+- [x] R7: index.js routing via SELF.fetch (11 tests) — CORS, /find 302, sitemap/feed,
+      /api/report, /research/:slug (render + 404), legacy 301, internal 401, security
+      headers. index.js 0% → 39% line (rest = research/chat/queue/scheduled flows).
+- [x] R8: fetch-mocked modules — classifier.js (cache hit, fail-open ×3, reject, no-canon,
+      rejection-message map → 98.8% line) + indexnow.js (no-op/success/non-OK/throw → 100%).
+      Proves the vi.stubGlobal('fetch') pattern in workerd.
+- [x] 78 integration tests; covered I/O modules: db/rate-limit/report 100%, indexnow 100%,
+      classifier 98.8%, sitemap 94.6%, affiliate 93.2%, internal 81.3%, index 39%.
+- Remaining (same patterns, incremental): resolvers (asin/image), search providers
+      (jina/rss/duckduckgo/youtube), engine (engine/parallel-engine/tools/llm-stream),
+      keywords, auth, chat/subscribe/image handlers, category/clarify/browse pages, and the
+      research-submission + queue + scheduled paths of index.js.
+
 ## 2026-06-18 — Integration coverage: handlers + sitemap (godmode R6)
 
 Built on the R5 harness. Shared schema helper (test/integration/_schema.js applies
