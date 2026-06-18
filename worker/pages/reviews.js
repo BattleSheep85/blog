@@ -13,9 +13,19 @@ import { layout, jsonLdScript } from '../lib/html.js';
 import { escapeHtml, parseJsonSafe, isValidHttpsUrl, displayQuery } from '../lib/utils.js';
 import { renderItemImage, resolveProductCtas, isNonProductCategory } from './research-page.js';
 import { adSlot } from '../lib/ads.js';
+import {
+  PAGE_SIZE, PRICE_BANDS, RATING_OPTIONS, SORT_OPTIONS,
+  parseProductFilters, isNarrowed, buildProductWhere, orderByClause, reviewsHref,
+} from '../lib/product-search.js';
 
-const PAGE_SIZE = 24;
 const DEFAULT_AFFILIATE_TAG = 'battlesheep0a-20';
+
+// SQL CASE that buckets p.price into PRICE_BANDS keys — generated from the
+// constant so the JS bands and the SQL facet counts can never drift. Bounds are
+// our own numeric constants (never user input), so inlining them is safe.
+const PRICE_BAND_CASE = `CASE ${PRICE_BANDS.map((b) =>
+  b.max == null ? `WHEN p.price >= ${b.min} THEN '${b.key}'`
+    : `WHEN p.price >= ${b.min} AND p.price < ${b.max} THEN '${b.key}'`).join(' ')} END`;
 
 function starsHtml(rating) {
   if (rating == null) return '';
@@ -68,38 +78,73 @@ ${ctaHtml}
 </article>`;
 }
 
+// One facet group in the left rail: a heading + value rows with counts. The
+// active value toggles off (links back to the cleared filter); inactive values
+// link to the narrowed filter. `valueOf` extracts the comparison key per row.
+function facetGroup(title, filters, dim, rows, opts = {}) {
+  const { activeKey = filters[dim] || '', valueOf = (r) => r.key, labelOf = (r) => r.label, countOf = (r) => r.n } = opts;
+  const items = rows.filter((r) => countOf(r) > 0 || valueOf(r) === activeKey);
+  if (items.length === 0 && !activeKey) return '';
+  const row = (label, count, href, active) =>
+    `<li><a href="${escapeHtml(href)}" rel="nofollow" style="display:flex;justify-content:space-between;gap:.5rem;padding:.28rem .1rem;font-size:.85rem;text-decoration:none;color:${active ? 'var(--ink)' : 'var(--ink-2)'};font-weight:${active ? '600' : '400'}">
+<span style="display:flex;gap:.4rem;align-items:center;min-width:0"><span aria-hidden="true" style="flex-shrink:0">${active ? '☑' : '☐'}</span><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(label)}</span></span>
+${count != null ? `<span style="color:var(--ink-3);flex-shrink:0">${count.toLocaleString()}</span>` : ''}</a></li>`;
+  return `<div style="margin-bottom:1.4rem">
+<h3 style="font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);margin-bottom:.5rem">${escapeHtml(title)}</h3>
+<ul style="list-style:none;margin:0;padding:0">
+${items.map((r) => {
+    const key = valueOf(r);
+    const active = key === activeKey;
+    return row(labelOf(r), countOf(r), reviewsHref(filters, { [dim]: active ? '' : key }), active);
+  }).join('')}
+</ul></div>`;
+}
+
 export async function renderReviewsPage(url, env) {
-  const pageNum = Math.max(1, Math.min(200, parseInt(url.searchParams.get('page') || '1', 10) || 1));
-  const category = (url.searchParams.get('category') || '').trim().slice(0, 120);
-  const offset = (pageNum - 1) * PAGE_SIZE;
+  const filters = parseProductFilters((n) => url.searchParams.get(n));
+  const offset = (filters.page - 1) * PAGE_SIZE;
 
-  const whereCategory = category ? 'AND r.category = ?1' : '';
-  const baseWhere = `FROM products p JOIN research r ON r.id = p.research_id
-     WHERE r.status = 'complete' AND p.verdict IS NOT NULL AND p.verdict != '' ${whereCategory}`;
+  const join = 'FROM products p JOIN research r ON r.id = p.research_id';
+  const main = buildProductWhere(filters);                 // full filter (list + count)
+  const wCat = buildProductWhere(filters, 'category');     // facet contexts exclude their own dim
+  const wBrand = buildProductWhere(filters, 'brand');
+  const wPrice = buildProductWhere(filters, 'price');
+  const wRating = buildProductWhere(filters, 'rating');
 
-  const listBinds = category ? [category, PAGE_SIZE, offset] : [PAGE_SIZE, offset];
-  const limitIdx = category ? 2 : 1;
-  const [listRes, countRes, catRes] = await Promise.all([
+  const [listRes, countRes, catRes, brandRes, priceRes, ratingRes] = await Promise.all([
     env.DB.prepare(
       `SELECT p.id, p.name, p.brand, p.price, p.rating, p.image_url, p.product_url,
               p.affiliate_url, p.manufacturer_url, p.pros, p.cons, p.verdict, p.rank,
               r.slug, r.query, r.category, r.facets, r.completed_at, r.view_count
-       ${baseWhere}
-       ORDER BY (p.image_url IS NULL OR p.image_url = '') ASC, r.view_count DESC, r.completed_at DESC, p.rank ASC
-       LIMIT ?${limitIdx} OFFSET ?${limitIdx + 1}`
-    ).bind(...listBinds).all(),
-    env.DB.prepare(`SELECT COUNT(*) AS n ${baseWhere}`).bind(...(category ? [category] : [])).first(),
+       ${join} WHERE ${main.clause}
+       ORDER BY ${orderByClause(filters.sort)}
+       LIMIT ? OFFSET ?`
+    ).bind(...main.binds, PAGE_SIZE, offset).all(),
+    env.DB.prepare(`SELECT COUNT(*) AS n ${join} WHERE ${main.clause}`).bind(...main.binds).first(),
     env.DB.prepare(
-      `SELECT r.category, COUNT(*) AS n FROM products p JOIN research r ON r.id = p.research_id
-       WHERE r.status = 'complete' AND p.verdict IS NOT NULL AND p.verdict != '' AND r.category IS NOT NULL
-       GROUP BY r.category ORDER BY n DESC LIMIT 12`
-    ).all(),
+      `SELECT r.category AS key, COUNT(*) AS n ${join} WHERE ${wCat.clause} AND r.category IS NOT NULL AND r.category != ''
+       GROUP BY r.category ORDER BY n DESC LIMIT 15`
+    ).bind(...wCat.binds).all(),
+    env.DB.prepare(
+      `SELECT p.brand AS key, COUNT(*) AS n ${join} WHERE ${wBrand.clause} AND p.brand IS NOT NULL AND p.brand != ''
+       GROUP BY p.brand ORDER BY n DESC LIMIT 15`
+    ).bind(...wBrand.binds).all(),
+    env.DB.prepare(
+      `SELECT ${PRICE_BAND_CASE} AS key, COUNT(*) AS n ${join} WHERE ${wPrice.clause} AND p.price IS NOT NULL
+       GROUP BY key`
+    ).bind(...wPrice.binds).all(),
+    env.DB.prepare(
+      `SELECT SUM(CASE WHEN p.rating >= 4.5 THEN 1 ELSE 0 END) AS r45,
+              SUM(CASE WHEN p.rating >= 4 THEN 1 ELSE 0 END) AS r4,
+              SUM(CASE WHEN p.rating >= 3.5 THEN 1 ELSE 0 END) AS r35
+       ${join} WHERE ${wRating.clause}`
+    ).bind(...wRating.binds).first(),
   ]);
 
   const rows = listRes.results ?? [];
   const total = countRes?.n ?? rows.length;
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
-  if (rows.length === 0 && pageNum > 1) return null; // out-of-range page → 404
+  if (rows.length === 0 && filters.page > 1) return null; // out-of-range page → 404
 
   const affiliateIds = {
     amazonTag: env.AMAZON_AFFILIATE_TAG || env.AMAZON_ASSOCIATE_TAG || DEFAULT_AFFILIATE_TAG,
@@ -110,31 +155,63 @@ export async function renderReviewsPage(url, env) {
     bhphoto: env.BHPHOTO_AFFILIATE_ID || undefined,
   };
 
-  const categories = (catRes.results ?? []).filter((c) => c.category);
-  const chip = (label, href, active) =>
-    `<a href="${escapeHtml(href)}" class="card-badge" style="text-decoration:none;${active ? 'background:color-mix(in srgb,var(--accent) 18%,transparent);color:var(--ink);border-color:color-mix(in srgb,var(--accent) 45%,transparent)' : ''}">${escapeHtml(label)}</a>`;
-  const chipsHtml = categories.length > 0
-    ? `<div style="display:flex;flex-wrap:wrap;gap:.45rem;margin:1.25rem 0">
-${chip('All', '/reviews', !category)}
-${categories.map((c) => chip(`${c.category} (${c.n})`, `/reviews?category=${encodeURIComponent(c.category)}`, category === c.category)).join('')}
-</div>` : '';
+  // ── Left rail: search box + facet groups ──────────────────────────────────
+  const priceCounts = new Map((priceRes.results ?? []).map((r) => [r.key, r.n]));
+  const ratingCounts = { '4.5': ratingRes?.r45 ?? 0, '4': ratingRes?.r4 ?? 0, '3.5': ratingRes?.r35 ?? 0 };
 
-  const pageHref = (n) => {
-    const params = new URLSearchParams();
-    if (category) params.set('category', category);
-    if (n > 1) params.set('page', String(n));
-    const qs = params.toString();
-    return `/reviews${qs ? `?${qs}` : ''}`;
-  };
+  const hidden = (name, val) => (val ? `<input type="hidden" name="${name}" value="${escapeHtml(val)}">` : '');
+  const searchForm = `<form method="get" action="/reviews" role="search" style="margin-bottom:1.4rem">
+${hidden('category', filters.category)}${hidden('brand', filters.brand)}${hidden('price', filters.price)}${hidden('rating', filters.rating)}${filters.sort !== 'featured' ? hidden('sort', filters.sort) : ''}
+<label for="rev-q" style="font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);display:block;margin-bottom:.4rem">Search products</label>
+<div style="display:flex;gap:.4rem">
+<input id="rev-q" type="search" name="q" value="${escapeHtml(filters.q)}" placeholder="e.g. nas, headphones" maxlength="80" style="flex:1;min-width:0;padding:.5rem .6rem;border:1px solid var(--line);border-radius:.5rem;background:var(--surface-1);color:var(--ink);font-size:.85rem">
+<button type="submit" class="btn" style="font-size:.82rem;padding:.5rem .8rem">Go</button>
+</div></form>`;
+
+  const sidebar = `<aside aria-label="Filters" style="position:sticky;top:5rem">
+${searchForm}
+${facetGroup('Category', filters, 'category', catRes.results ?? [], { labelOf: (r) => r.key, valueOf: (r) => r.key })}
+${facetGroup('Brand', filters, 'brand', brandRes.results ?? [], { labelOf: (r) => r.key, valueOf: (r) => r.key })}
+${facetGroup('Price', filters, 'price', PRICE_BANDS.map((b) => ({ ...b, n: priceCounts.get(b.key) ?? 0 })))}
+${facetGroup('Rating', filters, 'rating', RATING_OPTIONS.map((o) => ({ ...o, n: ratingCounts[o.key] ?? 0 })))}
+</aside>`;
+
+  // ── Active-filter chips + sort row ─────────────────────────────────────────
+  const activeChips = [];
+  const chipFor = (dim, label) => `<a href="${escapeHtml(reviewsHref(filters, { [dim]: '' }))}" rel="nofollow" class="card-badge" style="text-decoration:none">${escapeHtml(label)} <span aria-hidden="true">&times;</span></a>`;
+  if (filters.q) activeChips.push(chipFor('q', `“${filters.q}”`));
+  if (filters.category) activeChips.push(chipFor('category', filters.category));
+  if (filters.brand) activeChips.push(chipFor('brand', filters.brand));
+  if (filters.price) activeChips.push(chipFor('price', PRICE_BANDS.find((b) => b.key === filters.price)?.label || filters.price));
+  if (filters.rating) activeChips.push(chipFor('rating', RATING_OPTIONS.find((o) => o.key === filters.rating)?.label || filters.rating));
+  const chipsRow = activeChips.length
+    ? `<div style="display:flex;flex-wrap:wrap;gap:.45rem;align-items:center;margin-bottom:1rem">
+${activeChips.join('')}
+<a href="/reviews" rel="nofollow" style="font-size:.8rem;color:var(--accent);text-decoration:none">Clear all</a></div>`
+    : '';
+
+  const sortLinks = SORT_OPTIONS.map((o) =>
+    `<a href="${escapeHtml(reviewsHref(filters, { sort: o.key }))}" rel="nofollow" style="font-size:.82rem;text-decoration:none;padding:.2rem .1rem;color:${filters.sort === o.key ? 'var(--ink)' : 'var(--ink-3)'};font-weight:${filters.sort === o.key ? '600' : '400'};border-bottom:2px solid ${filters.sort === o.key ? 'var(--accent)' : 'transparent'}">${escapeHtml(o.label)}</a>`).join('');
+
   const pagerHtml = totalPages > 1
     ? `<nav aria-label="Pagination" style="display:flex;justify-content:center;gap:.6rem;align-items:center;margin-top:2rem">
-${pageNum > 1 ? `<a href="${escapeHtml(pageHref(pageNum - 1))}" class="btn" style="font-size:.85rem;padding:.5rem .9rem">&larr; Newer</a>` : ''}
-<span style="font-size:.85rem;color:var(--ink-3)">Page ${pageNum} of ${totalPages}</span>
-${pageNum < totalPages ? `<a href="${escapeHtml(pageHref(pageNum + 1))}" class="btn" style="font-size:.85rem;padding:.5rem .9rem">Older &rarr;</a>` : ''}
+${filters.page > 1 ? `<a href="${escapeHtml(reviewsHref(filters, { page: filters.page - 1 }))}" rel="nofollow" class="btn" style="font-size:.85rem;padding:.5rem .9rem">&larr; Newer</a>` : ''}
+<span style="font-size:.85rem;color:var(--ink-3)">Page ${filters.page} of ${totalPages}</span>
+${filters.page < totalPages ? `<a href="${escapeHtml(reviewsHref(filters, { page: filters.page + 1 }))}" rel="nofollow" class="btn" style="font-size:.85rem;padding:.5rem .9rem">Older &rarr;</a>` : ''}
 </nav>` : '';
 
-  const heading = category ? `Product reviews: ${category}` : 'Product reviews';
-  const body = `<div class="container" style="max-width:72rem;padding:3rem 1.5rem;margin:0 auto">
+  // Category-specific heading only when category is the SOLE active filter (so
+  // the H1/title match the indexable category listing); any further narrowing
+  // falls back to the generic heading (those variants are noindex anyway).
+  const categoryOnly = filters.category && !filters.brand && !filters.price && !filters.rating && !filters.q;
+  const heading = categoryOnly ? `Product reviews: ${filters.category}` : 'Product reviews';
+  const resultsHtml = rows.length
+    ? `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(15.5rem,1fr));gap:1.1rem">
+${rows.map((r) => renderReviewCard(r, affiliateIds)).join('')}
+</div>`
+    : `<p style="color:var(--ink-2);padding:2rem 0">No products match these filters. <a href="/reviews" style="color:var(--accent)">Clear all filters</a> and try again.</p>`;
+
+  const body = `<div class="container" style="max-width:78rem;padding:2.5rem 1.5rem;margin:0 auto">
 <nav aria-label="Breadcrumb" class="breadcrumb" style="font-size:.85rem;color:var(--ink-2);margin-bottom:1rem">
 <a href="/" style="color:var(--ink-2)">Home</a>
 <span aria-hidden="true" style="margin:0 .4rem;color:var(--ink-3)">/</span>
@@ -142,16 +219,24 @@ ${pageNum < totalPages ? `<a href="${escapeHtml(pageHref(pageNum + 1))}" class="
 </nav>
 <div class="page-header">
 <h1>${escapeHtml(heading)}</h1>
-<p style="color:var(--ink-2);font-size:.95rem;margin-top:.5rem;max-width:60ch">${total.toLocaleString()} products reviewed across our research reports. Every rating is synthesized from real user reviews and independent testing — never paid placements. Click through to any report for the full review with sources.</p>
+<p style="color:var(--ink-2);font-size:.95rem;margin-top:.5rem;max-width:62ch">Filter every product we've reviewed by category, brand, price, and rating. Ratings are synthesized from real user reviews and independent testing — never paid placements.</p>
 </div>
-${chipsHtml}
 ${adSlot(env, 'top', 'Advertisement')}
-<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(17rem,1fr));gap:1.1rem;margin-top:1.5rem">
-${rows.map((r) => renderReviewCard(r, affiliateIds)).join('')}
+<div class="reviews-shell" style="display:grid;grid-template-columns:15rem minmax(0,1fr);gap:2rem;align-items:start;margin-top:1.5rem">
+${sidebar}
+<div>
+<div style="display:flex;flex-wrap:wrap;gap:.75rem 1.25rem;justify-content:space-between;align-items:baseline;border-bottom:1px solid var(--line);padding-bottom:.7rem;margin-bottom:1.1rem">
+<p style="font-size:.9rem;color:var(--ink-2)"><strong style="color:var(--ink)">${total.toLocaleString()}</strong> product${total === 1 ? '' : 's'}</p>
+<div style="display:flex;flex-wrap:wrap;gap:.1rem 1rem;align-items:center"><span style="font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-3)">Sort</span>${sortLinks}</div>
 </div>
+${chipsRow}
+${resultsHtml}
 ${pagerHtml}
+</div>
+</div>
 ${adSlot(env, 'bottom', 'Advertisement')}
-</div>`;
+</div>
+<style>@media (max-width:780px){.reviews-shell{grid-template-columns:1fr !important}.reviews-shell aside{position:static !important}}</style>`;
 
   // ItemList JSON-LD: products with ratings + review bodies — the structure
   // Google parses for review rich results on directory pages.
@@ -185,9 +270,13 @@ ${adSlot(env, 'bottom', 'Advertisement')}
     ],
   };
 
-  // Self-canonical per filter/page so paginated/filtered variants don't
-  // collapse into one URL (Google treats ?page= as distinct content here).
-  const canonical = `https://chrisputer.tech${pageHref(pageNum)}`;
+  // SEO: only the base listing and a single-category listing are indexable.
+  // Every further facet combination (brand/price/rating/keyword/sort/page>1) is
+  // noindex,follow and canonicals up to the nearest indexable parent — this is
+  // the standard defense against faceted-navigation index bloat (a 192-category
+  // × 570-brand × 7-price × 3-rating space is millions of thin URLs otherwise).
+  const narrowed = isNarrowed(filters);
+  const canonical = `https://chrisputer.tech${reviewsHref({ category: filters.category })}`;
   const imgWireScript = `<script nonce="__CSP_NONCE__">
 (function(){
   document.querySelectorAll('.item-image-photo').forEach(function(img){
@@ -199,10 +288,10 @@ ${adSlot(env, 'bottom', 'Advertisement')}
   });
 })();
 </script>`;
-  const desc = category
-    ? `Honest reviews of ${category} — ratings, pros and cons, and verdicts synthesized from real user reviews. No paid placements.`
-    : 'Every product TrueRank has reviewed: photos, honest ratings, pros and cons, and verdicts synthesized from real user reviews. No paid placements.';
+  const desc = categoryOnly
+    ? `Honest reviews of ${filters.category} — ratings, pros and cons, and verdicts synthesized from real user reviews. No paid placements.`
+    : 'Every product TrueRank has reviewed, filterable by category, brand, price, and rating. Honest ratings, pros and cons, and verdicts synthesized from real user reviews. No paid placements.';
   return layout(heading, desc, body,
     jsonLdScript(itemListLd) + jsonLdScript(breadcrumbLd) + imgWireScript,
-    { canonical });
+    { canonical, noindex: narrowed });
 }

@@ -78,6 +78,8 @@ export function layout(title, description, body, extra_head = '', meta) {
 <meta name="twitter:image:alt" content="${escapedTitle} — TrueRank">${
     meta?.canonical ? `\n<link rel="canonical" href="${escapeHtml(meta.canonical)}">` : ''
   }${
+    meta?.noindex ? '\n<meta name="robots" content="noindex,follow">' : ''
+  }${
     meta?.article && ogType === 'article'
       ? (
           (meta.article.publishedTime ? `\n<meta property="article:published_time" content="${escapeHtml(meta.article.publishedTime)}">` : '') +

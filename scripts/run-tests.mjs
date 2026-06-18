@@ -8,10 +8,12 @@
 
 import { runCredibilityTests } from '../worker/lib/credibility.test.js';
 import { runValidateTests } from '../worker/engine/validate.test.js';
+import { runProductSearchTests } from '../worker/lib/product-search.test.js';
 
 const suites = [
   ['credibility', runCredibilityTests],
   ['validate-quality-gate', runValidateTests],
+  ['product-search', runProductSearchTests],
 ];
 
 let failed = 0;

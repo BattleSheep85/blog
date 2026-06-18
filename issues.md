@@ -2,6 +2,27 @@
 
 Last updated: 2026-06-18
 
+## 2026-06-18 — Newegg-style faceted product search (godmode R1)
+
+User ask: "for the already reviewed products, let's give it a Newegg-style organized
+search tool." Catalog is 1,097 reviewed products / 192 categories / 570 brands /
+$0.25–$30k — genuinely warrants faceting. Upgraded /reviews in place (not a duplicate
+surface).
+- [x] FEATURE: faceted search engine `worker/lib/product-search.js` (pure, testable):
+      parseProductFilters (validate/clamp), buildProductWhere (parameterized WHERE with
+      facet "exclude-self", LIKE-escaped keyword), price bands, rating options, sort map,
+      reviewsHref serializer, isNarrowed. 37 unit tests.
+- [x] FEATURE: /reviews (`worker/pages/reviews.js`) rebuilt as a left-rail faceted UI —
+      keyword search + Category/Brand/Price/Rating facets with live counts (computed
+      exclude-self), active-filter chips, sort row, result count, responsive (sidebar
+      stacks on mobile). SSR + no-JS (GET form + plain links). Reuses the review cards +
+      ItemList JSON-LD.
+- [x] SEO: only the base + single-category listings are indexable; every further facet
+      combo is noindex,follow (new `meta.noindex` in html.js layout) + canonicals up to the
+      nearest indexable parent; all facet links rel=nofollow — standard defense against
+      faceted-nav index bloat (else millions of thin URLs). D1 NULLS LAST + CASE-GROUP-BY
+      verified against prod.
+
 ## 2026-06-18 — Quality: marketplace-churn ("knockoff") brands ranked high
 
 User report: a linen-shirt search surfaced legit ~$200 shirts but ALSO Amazon-native
