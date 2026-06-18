@@ -80,10 +80,13 @@ ${ctaHtml}
 
 // One facet group in the left rail: a heading + value rows with counts. The
 // active value toggles off (links back to the cleared filter); inactive values
-// link to the narrowed filter. `valueOf` extracts the comparison key per row.
+// link to the narrowed filter. `keyOf` extracts the comparison key per row.
+// NB: the option is `keyOf`, NOT `valueOf` — `valueOf` is an Object.prototype
+// method, so a destructuring default `{ valueOf = … } = {}` reads the inherited
+// native method instead of applying the default, then throws when called.
 function facetGroup(title, filters, dim, rows, opts = {}) {
-  const { activeKey = filters[dim] || '', valueOf = (r) => r.key, labelOf = (r) => r.label, countOf = (r) => r.n } = opts;
-  const items = rows.filter((r) => countOf(r) > 0 || valueOf(r) === activeKey);
+  const { activeKey = filters[dim] || '', keyOf = (r) => r.key, labelOf = (r) => r.label, countOf = (r) => r.n } = opts;
+  const items = rows.filter((r) => countOf(r) > 0 || keyOf(r) === activeKey);
   if (items.length === 0 && !activeKey) return '';
   const row = (label, count, href, active) =>
     `<li><a href="${escapeHtml(href)}" rel="nofollow" style="display:flex;justify-content:space-between;gap:.5rem;padding:.28rem .1rem;font-size:.85rem;text-decoration:none;color:${active ? 'var(--ink)' : 'var(--ink-2)'};font-weight:${active ? '600' : '400'}">
@@ -93,7 +96,7 @@ ${count != null ? `<span style="color:var(--ink-3);flex-shrink:0">${count.toLoca
 <h3 style="font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);margin-bottom:.5rem">${escapeHtml(title)}</h3>
 <ul style="list-style:none;margin:0;padding:0">
 ${items.map((r) => {
-    const key = valueOf(r);
+    const key = keyOf(r);
     const active = key === activeKey;
     return row(labelOf(r), countOf(r), reviewsHref(filters, { [dim]: active ? '' : key }), active);
   }).join('')}
@@ -170,8 +173,8 @@ ${hidden('category', filters.category)}${hidden('brand', filters.brand)}${hidden
 
   const sidebar = `<aside aria-label="Filters" style="position:sticky;top:5rem">
 ${searchForm}
-${facetGroup('Category', filters, 'category', catRes.results ?? [], { labelOf: (r) => r.key, valueOf: (r) => r.key })}
-${facetGroup('Brand', filters, 'brand', brandRes.results ?? [], { labelOf: (r) => r.key, valueOf: (r) => r.key })}
+${facetGroup('Category', filters, 'category', catRes.results ?? [], { labelOf: (r) => r.key, keyOf: (r) => r.key })}
+${facetGroup('Brand', filters, 'brand', brandRes.results ?? [], { labelOf: (r) => r.key, keyOf: (r) => r.key })}
 ${facetGroup('Price', filters, 'price', PRICE_BANDS.map((b) => ({ ...b, n: priceCounts.get(b.key) ?? 0 })))}
 ${facetGroup('Rating', filters, 'rating', RATING_OPTIONS.map((o) => ({ ...o, n: ratingCounts[o.key] ?? 0 })))}
 </aside>`;
