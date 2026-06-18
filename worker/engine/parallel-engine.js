@@ -44,7 +44,11 @@ async function runPool(tasks, limit) {
 }
 
 // ── Step 1: decompose into aspects WITH search queries ──────────────────────
-const DECOMPOSE_SYSTEM = `You are the lead planner for an honest product-research project. Break the user's query into independent research aspects, and for EACH aspect write concrete web search queries that would surface credible evidence (expert reviews, hands-on tests, owner complaints, prices). Good aspects: top contenders, build quality & reliability, value picks, common complaints & failure modes, expert hands-on testing, key specs/features. Make queries specific (include the product type, year, "review", "vs", "problems", "best", price bands). Output ONLY JSON: {"aspects":[{"title":"<short>","queries":["q1","q2",...]}]}.`;
+const DECOMPOSE_SYSTEM = `You are the lead planner for an honest product-research project. Break the user's query into independent research aspects, and for EACH aspect write concrete web search queries that would surface credible evidence (expert reviews, hands-on tests, owner complaints, prices). Good aspects: top contenders, build quality & reliability, value picks, common complaints & failure modes, expert hands-on testing, key specs/features. Make queries specific (include the product type, year, "review", "vs", "problems", "best", price bands).
+
+SELF-HOSTED / OPEN-SOURCE COVERAGE (critical — do not skip): if the query is about software, apps, online services, or tech that can be self-hosted or has open-source options — photo/file backup, media servers, note-taking, password managers, home automation, dashboards, document management, RSS, etc. — you MUST devote one aspect to self-hosted / open-source / FOSS alternatives. Some of the BEST options in these categories are community-driven and NEVER appear in commercial "best app" listicles (e.g. Immich and PhotoPrism for photos, Nextcloud for files, Jellyfin for media, Paperless-ngx for documents, Bitwarden/Vaultwarden for passwords, Home Assistant for automation). Queries for that aspect should target where these are discussed: "self-hosted <X>", "best open source <X>", "<X> reddit r/selfhosted", "<X> r/datahoarder", "awesome-selfhosted <X>", "<X> github alternative". Missing the leading FOSS option in a self-hostable category is a serious recall failure.
+
+Output ONLY JSON: {"aspects":[{"title":"<short>","queries":["q1","q2",...]}]}.`;
 
 async function decompose(query, key, plannerModel, nAspects, perAspect) {
   const messages = [
