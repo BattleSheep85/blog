@@ -22,6 +22,11 @@ surface).
       nearest indexable parent; all facet links rel=nofollow — standard defense against
       faceted-nav index bloat (else millions of thin URLs). D1 NULLS LAST + CASE-GROUP-BY
       verified against prod.
+- [x] HIGH (regression caught + fixed pre-stay-live): first deploy 500'd every /reviews
+      request — facetGroup destructured an option named `valueOf`, which collides with
+      Object.prototype.valueOf so the destructuring default never applied and calling it
+      threw. Renamed valueOf→keyOf; captured as a javascript learning. Verified live: base
+      200 + 1,097 count + all facets; facet combos 200 + noindex + canonical to base.
 
 ## 2026-06-18 — Quality: marketplace-churn ("knockoff") brands ranked high
 
