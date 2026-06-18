@@ -18,6 +18,7 @@ export default defineWorkersConfig({
         'worker/handlers/affiliate.js', 'worker/handlers/report.js', 'worker/handlers/internal.js',
         'worker/lib/classifier.js', 'worker/lib/indexnow.js',
         'worker/lib/asin-resolver.js', 'worker/lib/image-resolver.js',
+        'worker/lib/youtube.js', 'worker/lib/jina.js', 'worker/lib/duckduckgo.js', 'worker/lib/rss.js',
         'worker/index.js',
       ],
     },
