@@ -9,16 +9,18 @@
 import { runCredibilityTests } from '../worker/lib/credibility.test.js';
 import { runValidateTests } from '../worker/engine/validate.test.js';
 import { runProductSearchTests } from '../worker/lib/product-search.test.js';
+import { runReviewsRenderTests } from '../worker/pages/reviews.test.js';
 
 const suites = [
   ['credibility', runCredibilityTests],
   ['validate-quality-gate', runValidateTests],
   ['product-search', runProductSearchTests],
+  ['reviews-render', runReviewsRenderTests], // async suite (awaited below)
 ];
 
 let failed = 0;
 for (const [name, fn] of suites) {
-  const report = fn();
+  const report = await fn();
   const total = report.passed + report.failed;
   console.log(`${name}: ${report.passed}/${total} passed`);
   if (report.failed > 0) {

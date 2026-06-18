@@ -171,11 +171,24 @@ ${hidden('category', filters.category)}${hidden('brand', filters.brand)}${hidden
 <button type="submit" class="btn" style="font-size:.82rem;padding:.5rem .8rem">Go</button>
 </div></form>`;
 
+  // Custom price-range form. Preserves every other filter as hidden inputs but
+  // NOT the preset band — entering a range replaces the band (parseProductFilters
+  // gives the band precedence, so we must drop it here to honor the range).
+  const priceRangeForm = `<form method="get" action="/reviews" style="margin:-.4rem 0 1.4rem">
+${hidden('q', filters.q)}${hidden('category', filters.category)}${hidden('brand', filters.brand)}${hidden('rating', filters.rating)}${filters.sort !== 'featured' ? hidden('sort', filters.sort) : ''}
+<div style="display:flex;gap:.35rem;align-items:center">
+<input type="number" name="pmin" min="0" step="1" value="${filters.pmin ?? ''}" aria-label="Minimum price" placeholder="Min" style="width:100%;min-width:0;padding:.4rem .5rem;border:1px solid var(--line);border-radius:.45rem;background:var(--surface-1);color:var(--ink);font-size:.82rem">
+<span style="color:var(--ink-3)">–</span>
+<input type="number" name="pmax" min="0" step="1" value="${filters.pmax ?? ''}" aria-label="Maximum price" placeholder="Max" style="width:100%;min-width:0;padding:.4rem .5rem;border:1px solid var(--line);border-radius:.45rem;background:var(--surface-1);color:var(--ink);font-size:.82rem">
+<button type="submit" class="btn" style="font-size:.8rem;padding:.4rem .7rem">Go</button>
+</div></form>`;
+
   const sidebar = `<aside aria-label="Filters" style="position:sticky;top:5rem">
 ${searchForm}
 ${facetGroup('Category', filters, 'category', catRes.results ?? [], { labelOf: (r) => r.key, keyOf: (r) => r.key })}
 ${facetGroup('Brand', filters, 'brand', brandRes.results ?? [], { labelOf: (r) => r.key, keyOf: (r) => r.key })}
 ${facetGroup('Price', filters, 'price', PRICE_BANDS.map((b) => ({ ...b, n: priceCounts.get(b.key) ?? 0 })))}
+${priceRangeForm}
 ${facetGroup('Rating', filters, 'rating', RATING_OPTIONS.map((o) => ({ ...o, n: ratingCounts[o.key] ?? 0 })))}
 </aside>`;
 
@@ -185,7 +198,14 @@ ${facetGroup('Rating', filters, 'rating', RATING_OPTIONS.map((o) => ({ ...o, n: 
   if (filters.q) activeChips.push(chipFor('q', `“${filters.q}”`));
   if (filters.category) activeChips.push(chipFor('category', filters.category));
   if (filters.brand) activeChips.push(chipFor('brand', filters.brand));
-  if (filters.price) activeChips.push(chipFor('price', PRICE_BANDS.find((b) => b.key === filters.price)?.label || filters.price));
+  // Price: a preset band OR a custom pmin/pmax range. Either way, the chip clears
+  // all three price keys so the price filter fully resets in one click.
+  if (filters.price || filters.pmin != null || filters.pmax != null) {
+    const label = filters.price
+      ? (PRICE_BANDS.find((b) => b.key === filters.price)?.label || filters.price)
+      : `${filters.pmin != null ? '$' + filters.pmin : '$0'} – ${filters.pmax != null ? '$' + filters.pmax : 'any'}`;
+    activeChips.push(`<a href="${escapeHtml(reviewsHref(filters, { price: '', pmin: '', pmax: '' }))}" rel="nofollow" class="card-badge" style="text-decoration:none">${escapeHtml(label)} <span aria-hidden="true">&times;</span></a>`);
+  }
   if (filters.rating) activeChips.push(chipFor('rating', RATING_OPTIONS.find((o) => o.key === filters.rating)?.label || filters.rating));
   const chipsRow = activeChips.length
     ? `<div style="display:flex;flex-wrap:wrap;gap:.45rem;align-items:center;margin-bottom:1rem">
@@ -206,7 +226,8 @@ ${filters.page < totalPages ? `<a href="${escapeHtml(reviewsHref(filters, { page
   // Category-specific heading only when category is the SOLE active filter (so
   // the H1/title match the indexable category listing); any further narrowing
   // falls back to the generic heading (those variants are noindex anyway).
-  const categoryOnly = filters.category && !filters.brand && !filters.price && !filters.rating && !filters.q;
+  const categoryOnly = filters.category && !filters.brand && !filters.price && !filters.rating && !filters.q
+    && filters.pmin == null && filters.pmax == null;
   const heading = categoryOnly ? `Product reviews: ${filters.category}` : 'Product reviews';
   const resultsHtml = rows.length
     ? `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(15.5rem,1fr));gap:1.1rem">

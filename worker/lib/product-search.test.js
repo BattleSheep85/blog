@@ -66,6 +66,33 @@ export function runProductSearchTests() {
     eq('where: open-ended price band → single bind', binds, [1000]);
   }
   {
+    // Custom price range (pmin/pmax): both bounds + NOT NULL guard.
+    const f = parseProductFilters(getOf({ pmin: '50', pmax: '300' }));
+    eq('parse: pmin/pmax numbers', [f.pmin, f.pmax], [50, 300]);
+    const { clause, binds } = buildProductWhere(f);
+    ok('where: custom range has NOT NULL', clause.includes('p.price IS NOT NULL'));
+    eq('where: custom range binds', binds, [50, 300]);
+  }
+  {
+    // A $0 floor is the default → dropped; pmax<pmin → pmax dropped.
+    eq('parse: pmin 0 dropped', parseProductFilters(getOf({ pmin: '0' })).pmin, null);
+    eq('parse: pmax<pmin dropped', parseProductFilters(getOf({ pmin: '100', pmax: '20' })).pmax, null);
+    eq('parse: negative dropped', parseProductFilters(getOf({ pmax: '-5' })).pmax, null);
+  }
+  {
+    // A preset band takes precedence over a custom range when both are present.
+    const f = parseProductFilters(getOf({ price: '50-100', pmin: '5', pmax: '5000' }));
+    const { binds } = buildProductWhere(f);
+    eq('where: band wins over custom range', binds, [50, 100]);
+  }
+  {
+    // Custom range narrows (noindex) and round-trips through reviewsHref.
+    const f = parseProductFilters(getOf({ pmin: '50', pmax: '300' }));
+    ok('narrowed: custom range narrows', isNarrowed(f));
+    eq('href: serializes pmin/pmax', reviewsHref(f), '/reviews?pmin=50&pmax=300');
+    eq('href: clearing price keys', reviewsHref(f, { price: '', pmin: '', pmax: '' }), '/reviews');
+  }
+  {
     // Facet "exclude self": the brand facet's own counts must NOT constrain brand.
     const f = parseProductFilters(getOf({ category: 'NAS', brand: 'Synology' }));
     const { clause, binds } = buildProductWhere(f, 'brand');

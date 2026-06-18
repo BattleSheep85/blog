@@ -2,6 +2,24 @@
 
 Last updated: 2026-06-18
 
+## 2026-06-18 — Faceted search R2 + audit of the four "improve every aspect" areas
+
+User picked all four godmode directions. Audit found the existing card infra already
+covers most of them; added the one genuine gap + hardened tests.
+- [x] DISCOVERABILITY/UX: custom price min/max inputs in the Price facet (presets are
+      coarse across $0.25–$30k). product-search.js parses pmin/pmax (clamp, drop $0 floor
+      + pmax<pmin), buildProductWhere applies the range (band takes precedence), isNarrowed
+      + reviewsHref + active-chip (clears all 3 price keys) updated. +11 unit tests.
+- [x] HARDENING: added a render smoke test (worker/pages/reviews.test.js, mock D1, async
+      suite) that drives renderReviewsPage across base/category/multi-facet/custom-range —
+      would have caught the valueOf 500 pre-deploy. 16 assertions.
+- [x] CONVERSION: audited — the new search grid ALREADY click-tracks (cards reuse
+      resolveProductCtas with id+slug → /api/go/:id → affiliate_clicks). No gap.
+- [x] SPEED: audited — product images already loading="lazy" via the edge-cached /api/img
+      proxy (no Referer, hotlink-proof). No gap.
+- [x] SEO: facet combos noindex+canonical, rel=nofollow (shipped R1). No gap.
+- Quality-watch items (thin-page floor, denylist/allowlist growth) remain open below.
+
 ## 2026-06-18 — Newegg-style faceted product search (godmode R1)
 
 User ask: "for the already reviewed products, let's give it a Newegg-style organized

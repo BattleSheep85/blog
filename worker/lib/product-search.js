@@ -50,17 +50,31 @@ const ORDER_BY = {
  * Normalize raw query params into a validated filter object. `get(name)` is any
  * (name) => string|null accessor (URLSearchParams.get works directly).
  */
+// Upper sanity bound for a custom price input ($10M — well above any real product).
+const PRICE_CAP = 1e7;
+
 export function parseProductFilters(get) {
   const str = (name, max) => (get(name) || '').toString().trim().slice(0, max);
   const priceKey = str('price', 12);
   const ratingKey = str('rating', 8);
   const sort = str('sort', 16);
   const pageRaw = parseInt(str('page', 6), 10);
+  // Custom price range (pmin/pmax). Non-negative finite numbers, capped. A pmax
+  // below pmin is dropped (treated as "no upper bound") rather than rejected.
+  const num = (name) => {
+    const v = parseFloat(str(name, 12));
+    return Number.isFinite(v) && v >= 0 ? Math.min(v, PRICE_CAP) : null;
+  };
+  let pmin = num('pmin');
+  let pmax = num('pmax');
+  if (pmin != null && pmax != null && pmax < pmin) pmax = null;
+  if (pmin === 0) pmin = null; // a $0 floor is the default — drop it
   return {
     q: str('q', 80),
     category: str('category', 120),
     brand: str('brand', 120),
     price: PRICE_BAND_BY_KEY.has(priceKey) ? priceKey : '',
+    pmin, pmax,
     rating: RATING_KEYS.has(ratingKey) ? ratingKey : '',
     sort: SORT_KEYS.has(sort) ? sort : 'featured',
     page: Number.isFinite(pageRaw) ? Math.max(1, Math.min(200, pageRaw)) : 1,
@@ -69,10 +83,11 @@ export function parseProductFilters(get) {
 
 // True when any narrowing facet is active (used for noindex + canonical). A bare
 // category filter stays indexable (it maps to a real listing); anything more
-// specific — brand, price, rating, keyword, non-default sort, page>1 — does not.
+// specific — brand, price (band or custom range), rating, keyword, non-default
+// sort, page>1 — does not.
 export function isNarrowed(filters) {
-  return !!(filters.brand || filters.price || filters.rating || filters.q
-    || (filters.sort && filters.sort !== 'featured') || filters.page > 1);
+  return !!(filters.brand || filters.price || filters.pmin != null || filters.pmax != null
+    || filters.rating || filters.q || (filters.sort && filters.sort !== 'featured') || filters.page > 1);
 }
 
 // SQLite LIKE wildcards must be escaped so a user's "%" can't match everything.
@@ -105,12 +120,17 @@ export function buildProductWhere(filters, exclude) {
     conds.push('p.brand = ?');
     binds.push(filters.brand);
   }
-  if (filters.price && exclude !== 'price') {
-    const band = PRICE_BAND_BY_KEY.get(filters.price);
+  if (exclude !== 'price') {
+    // A preset band takes precedence over a custom range when both are present.
+    const band = filters.price ? PRICE_BAND_BY_KEY.get(filters.price) : null;
     if (band) {
       conds.push('p.price IS NOT NULL AND p.price >= ?');
       binds.push(band.min);
       if (band.max != null) { conds.push('p.price < ?'); binds.push(band.max); }
+    } else if (filters.pmin != null || filters.pmax != null) {
+      conds.push('p.price IS NOT NULL');
+      if (filters.pmin != null) { conds.push('p.price >= ?'); binds.push(filters.pmin); }
+      if (filters.pmax != null) { conds.push('p.price <= ?'); binds.push(filters.pmax); }
     }
   }
   if (filters.rating && exclude !== 'rating') {
@@ -137,6 +157,8 @@ export function reviewsHref(filters, over = {}) {
   if (f.category) p.set('category', f.category);
   if (f.brand) p.set('brand', f.brand);
   if (f.price) p.set('price', f.price);
+  if (f.pmin) p.set('pmin', String(f.pmin));
+  if (f.pmax) p.set('pmax', String(f.pmax));
   if (f.rating) p.set('rating', f.rating);
   if (f.sort && f.sort !== 'featured') p.set('sort', f.sort);
   if (f.page > 1) p.set('page', String(f.page));
