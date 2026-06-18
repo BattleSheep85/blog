@@ -25,6 +25,10 @@ function sentences(text) {
 }
 const words = (s) => String(s || '').toLowerCase().match(/[a-z0-9'’#-]+/g) || [];
 const norm = (s) => String(s || '').toLowerCase().replace(/[^a-z0-9 ]+/g, ' ').replace(/\s+/g, ' ').trim();
+// Split a sentence into clauses so a mixed "X is great but the bin is small" yields
+// a separate pro AND con, and a comparison "A and B are best; C is value" separates.
+const CLAUSE_SPLIT = /\s*(?:;|—|–|\bbut\b|\bthough\b|\bhowever\b|\bwhereas\b|\bwhile\b|\bexcept\b|\byet\b)\s+/i;
+const clausesOf = (sentence) => String(sentence || '').split(CLAUSE_SPLIT).map((c) => c.trim()).filter(Boolean);
 
 // ── candidate harvest ─────────────────────────────────────────────────────────
 // Pull Title-Case product-name candidates from notes + source titles/content.
@@ -157,7 +161,7 @@ function aliasMatchers(c) {
   return names.map((n) => n.toLowerCase());
 }
 
-function analyzeProduct(c, sources) {
+function analyzeProduct(c, sources, otherMatchers = [], seen = new Set()) {
   const matchers = aliasMatchers(c);
   // supporting sources: those whose text mentions a matcher
   const support = [];
@@ -197,15 +201,43 @@ function analyzeProduct(c, sources) {
     if (!specs[unit]) specs[unit] = `${m[1]}${/^[a-z%"]/.test(unit) ? ' ' : ' '}${m[2]}`.trim();
   }
 
-  // pros/cons: classify each mentioning sentence by polarity (credibility-aware)
+  // pros/cons: CLAUSE-level + single-product ATTRIBUTION (the #1 honesty fix).
+  // A comparison sentence ("A and B are best; C is value") is split, and a clause is
+  // credited to this product only when the clause is about it and names no rival.
+  const otherIn = (txt) => otherMatchers.some((m) => txt.toLowerCase().includes(m));
+  const selfIn = (txt) => matchers.some((m) => txt.toLowerCase().includes(m));
   const pros = [], cons = [];
   for (const ps of proConSents) {
-    const { score, hits } = sentencePolarity(ps.sentence);
-    if (hits === 0) continue;
-    const clean = ps.sentence.replace(/\s+/g, ' ').trim();
-    if (clean.length < 12 || clean.length > 240) continue;
-    if (score >= 0.8) pros.push({ text: clean, score, cred: ps.cred });
-    else if (score <= -0.8) cons.push({ text: clean, score, cred: ps.cred });
+    const sentHasRival = otherIn(ps.sentence);
+    for (const clause of clausesOf(ps.sentence)) {
+      const clean = clause.replace(/\s+/g, ' ').trim();
+      if (clean.length < 12 || clean.length > 220) continue;
+      // multi-product sentence: keep only clauses that name THIS product and no rival.
+      // single-product sentence: all its clauses attribute here (carries the "but …" con).
+      if (sentHasRival && (!selfIn(clean) || otherIn(clean))) continue;
+      const key = clean.toLowerCase();
+      if (seen.has(key)) continue; // never reuse the same clause across products
+      const { score, hits } = sentencePolarity(clean);
+      if (!hits) continue;
+      if (score >= 0.8) { pros.push({ text: clean, score, cred: ps.cred }); seen.add(key); }
+      else if (score <= -0.6) { cons.push({ text: clean, score, cred: ps.cred }); seen.add(key); } // cons scarce + validate-required → more sensitive
+    }
+  }
+  // Recall fallback: a legit, credibly-sourced product mentioned ONLY in comparisons
+  // (e.g. "A and B are the best picks") would otherwise lose every clause and be
+  // dropped — and dropping a real product is itself a lie. Allow ONE comparative
+  // clause that positively names it (deduped), so it still appears honestly.
+  if (pros.length === 0) {
+    for (const ps of proConSents) {
+      let done = false;
+      for (const clause of clausesOf(ps.sentence)) {
+        const clean = clause.replace(/\s+/g, ' ').trim();
+        if (clean.length < 12 || clean.length > 220 || !selfIn(clean) || seen.has(clean.toLowerCase())) continue;
+        const { score, hits } = sentencePolarity(clean);
+        if (hits && score >= 0.8) { pros.push({ text: clean, score, cred: ps.cred }); seen.add(clean.toLowerCase()); done = true; break; }
+      }
+      if (done) break;
+    }
   }
   const pick = (arr, sign) => arr.sort((a, b) => sign * (b.score - a.score) || b.cred - a.cred)
     .filter((x, i, a) => a.findIndex((y) => y.text === x.text) === i).slice(0, 4).map((x) => x.text);
@@ -234,9 +266,12 @@ function rate(product) {
 
 export function analyze(query, notes, sources) {
   const harvested = resolveCandidates(harvestCandidates(sources, notes || []));
+  const allMatch = harvested.map((c) => ({ c, m: aliasMatchers(c) }));
+  const seen = new Set(); // a given clause is used as a pro/con for at most ONE product
   const products = [];
   for (const c of harvested) {
-    const a = analyzeProduct(c, sources);
+    const others = allMatch.filter((x) => x.c !== c).flatMap((x) => x.m).filter((m) => m.length > 2);
+    const a = analyzeProduct(c, sources, others, seen);
     // INCLUSION RULE (the trap-suppressor): keep only products with ≥1 credible,
     // non-listicle/affiliate/manufacturer supporting source. Fabricated traps are
     // backed ONLY by listicle/affiliate/manufacturer sources → excluded, honestly.

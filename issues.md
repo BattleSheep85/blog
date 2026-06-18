@@ -22,7 +22,7 @@ small encoder batches; reserve it only for an optional Layer-2 booster).
       they appeared only in affiliate sources"). THESIS CONFIRMED. Real remaining
       gaps are quality/attribution, NOT fabrication (see Phase 1). Not prod-ready.
 - [ ] Phase 1 (the real quality work the proof surfaced — all "wrong-not-fabricated"):
-      (1) **aspect→product mis-attribution** [#1 risk, observed live]: a multi-
+      (1) [x] FIXED **aspect→product mis-attribution** [#1 risk, observed live]: a multi-
       product sentence ("V1 and Air75 are best… RK84 is great value") attaches as a
       pro to ALL three — fix: prefer single-product sentences, dedup a shared
       sentence to one product, abstain on comparative constructions. (2) rating

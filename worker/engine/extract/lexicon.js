@@ -29,6 +29,10 @@ export const VALENCE = {
   problem: -1.3, problems: -1.5, fails: -2.0, failure: -2.1, dies: -1.8, leak: -1.6,
   mediocre_hdr: -1.2, downside: -1.2, drawback: -1.4, gripe: -1.1, concern: -0.9,
   worse: -1.6, lacks: -1.5, missing: -1.2, limited: -1.0, weaker: -1.3, strict: -0.8,
+  subpar: -2.0, underwhelming: -2.0, struggles: -1.6, cramped: -1.5, stiff: -1.2,
+  plasticky: -1.6, choppy: -1.4, tinny: -1.5, harsh: -1.3, finicky: -1.5, clunky: -1.5,
+  dated: -1.2, shallow: -1.1, mediocre: -1.6, wind: -0.3, rough: -1.1, truncated: -1.0,
+  incomplete: -1.3, small: -0.7, tight: -0.6, fills: -0.5,
 };
 
 // Negators flip polarity of the next few tokens.
