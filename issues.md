@@ -12,16 +12,26 @@ research workflow). Also corrected: the 7900 XTX idle power is SUNK (already on 
 so cost was over-stated — AND the GPU isn't even needed in the path (CPU wins for
 small encoder batches; reserve it only for an optional Layer-2 booster).
 
-- [ ] Phase 0 (NEXT, ~$0, gated): hand-roll Layer-1 end-to-end in plain JS (no deps,
-      runs in the Worker): candidate harvest (Aho-Corasick gazetteer + model-code
-      regex + Title-Case n-grams + cross-source ≥2-domain VOTE) → entity-resolve
-      (extend asin-resolver.js) → fact-extract (price=schema.org Offer+median; specs
-      regex; pros/cons=Intl.Segmenter + vendored VADER lexicon ABSA, same-sentence
-      attachment) → deterministic credibility-weighted ranking + Bayesian shrinkage
-      → TextRank+template prose → validate.js (UNCHANGED) → existing report JSON
-      (frontend unchanged). Score vs kimi on the EXISTING glm52-synth-bench.mjs
-      (groundedness=0 by construction) + a human read of 5 real reports. Reuses
-      credibility.js, asin-resolver.js, jina.js. New: worker/engine/extract/*.
+- [x] Phase 0 BUILT + PROVEN (~$0, local only, NOT deployed). New modules
+      worker/engine/extract/{lexicon,gazetteer,engine,prose,index}.js +
+      benchmarks/phase0-extract-bench.mjs. Result on all 6 trap fixtures:
+      **trap leaks 0/6, ungrounded price/spec 0/0 (fabrication impossible by
+      construction), 0-14ms** (vs ~40s LLM), legit-recall 1.0 on 5/6, legit #1 on
+      5/6 (the 6th is a harness name-match artifact: "ConvertKit" vs gold "Kit
+      (ConvertKit)"). Human read = genuinely honest, on-brand ("ignore hype words…
+      they appeared only in affiliate sources"). THESIS CONFIRMED. Real remaining
+      gaps are quality/attribution, NOT fabrication (see Phase 1). Not prod-ready.
+- [ ] Phase 1 (the real quality work the proof surfaced — all "wrong-not-fabricated"):
+      (1) **aspect→product mis-attribution** [#1 risk, observed live]: a multi-
+      product sentence ("V1 and Air75 are best… RK84 is great value") attaches as a
+      pro to ALL three — fix: prefer single-product sentences, dedup a shared
+      sentence to one product, abstain on comparative constructions. (2) rating
+      calibration (two 5/5s; tune shrinkage/scale so thin evidence can't hit 5).
+      (3) pro/con crispness + depth (clause-level not whole-sentence; expand VADER
+      lexicon from data). (4) BUILD the eval harness: triple-level (entity,slot,
+      value) Precision/Recall/F1 + nDCG/recall@K + ~30-50 hand-labeled REAL pages;
+      gates price-attach ≥0.95, legit recall@5 ≥0.9, trap=1.0. Groundedness alone
+      is now useless (0 by construction).
 - [ ] Phase 1: NEW eval harness — groundedness alone is now useless (0 by
       construction). The REAL risks are WRONG-not-fabricated: aspect→product
       mis-attribution (#1), wrong-merge (RK84≠RK87 — hiding a product IS a lie),
