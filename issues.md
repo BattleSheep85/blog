@@ -21,6 +21,11 @@ so this round ships nothing to prod (no deploy).
       handlers, engine LLM, index.js, full SSR research-page) need the CF runtime and are
       integration code — out of the unit-coverage target. Full coverage there needs a
       Workers test harness (Miniflair/wrangler) — a separate, larger effort.
+- [x] R4 extended coverage to more pure modules: prompts.js (buildAgentPrompt +
+      buildSynthesisPrompt — 100% line; the synth assertions also regression-guard the
+      brand-quality/FOSS/rank rules), llm.js pure helpers (llmBudgetMs, pruneMessages —
+      the rest is fetch I/O), search-bar.js (100%). Gate now spans 14 modules at 99.88%
+      line / 308 assertions; the only uncovered line is affiliate-links' unreachable catch.
 
 ## 2026-06-18 — Faceted search R2 + audit of the four "improve every aspect" areas
 

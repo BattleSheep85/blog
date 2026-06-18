@@ -29,8 +29,8 @@ Supply chain security is a hard requirement.
 - Local dev: `npx wrangler dev` (wrangler is the only CLI tool, used ad-hoc not as a dependency)
 - Deploy: Push to main → Cloudflare auto-deploys
 - DB migrations: `npx wrangler d1 execute DB --file=schema/001_initial.sql`
-- Tests: `node scripts/run-tests.mjs` (272 assertions across 8 suites — credibility rubric, validate quality-gate, product-search faceting, reviews render-smoke, utils, affiliate-links, lib-pure, credibility-extra)
-- Coverage gate: `bash scripts/coverage.sh` (Node built-in V8 coverage, zero npm; enforces ~100% line on the pure-logic layer. I/O modules need the CF runtime and are out of unit-coverage scope by design.)
+- Tests: `node scripts/run-tests.mjs` (308 assertions across 10 suites — credibility, validate quality-gate, product-search faceting, reviews render-smoke, utils, affiliate-links, lib-pure, credibility-extra, prompts, llm)
+- Coverage gate: `bash scripts/coverage.sh` (Node built-in V8 coverage, zero npm; ~99.9% line on the 14-module pure-logic layer. I/O modules need the CF runtime and are out of unit-coverage scope by design.)
 - Output eval: `node scripts/run-eval.mjs` (golden-query honesty audit against the live site; `--spend` enqueues missing runs, ~$0.10 each)
 
 ## Architecture

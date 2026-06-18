@@ -26,7 +26,9 @@ INCLUDES=(
   worker/lib/tiers.js
   worker/lib/ads.js
   worker/lib/html.js
+  worker/lib/search-bar.js
   worker/engine/validate.js
+  worker/engine/prompts.js
 )
 ARGS=()
 for f in "${INCLUDES[@]}"; do ARGS+=("--test-coverage-include=$f"); done

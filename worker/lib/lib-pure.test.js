@@ -5,6 +5,7 @@ import { STATIC_GUIDES, STATIC_GUIDE_SLUGS, GUIDES_LASTMOD } from './guides.js';
 import { getTierConfig, isValidTier, PUBLIC_TIERS, TIER_CONFIGS } from './tiers.js';
 import { adSlot } from './ads.js';
 import { html, raw, jsonLdScript, layout } from './html.js';
+import { searchBar } from './search-bar.js';
 
 export function runLibPureTests() {
   const report = { passed: 0, failed: 0, failures: [] };
@@ -73,6 +74,15 @@ export function runLibPureTests() {
     ok('layout relative image prepended', out.includes('https://chrisputer.tech/og.png'));
     ok('layout png image type', out.includes('og:image:type" content="image/png"'));
     ok('layout no canonical when absent', !out.includes('rel="canonical"'));
+  }
+
+  // search-bar.js — both sizes render a form with the right placeholder.
+  {
+    const large = searchBar('large');
+    const small = searchBar('small');
+    ok('searchBar large placeholder', large.includes('What product are you researching?'));
+    ok('searchBar small placeholder', small.includes('Research a product...'));
+    ok('searchBar has a form', large.includes('class="search-form"') || large.includes('search-form'));
   }
 
   return report;
