@@ -17,6 +17,7 @@ export default defineWorkersConfig({
         'worker/lib/db.js', 'worker/lib/rate-limit.js', 'worker/lib/sitemap.js',
         'worker/handlers/affiliate.js', 'worker/handlers/report.js', 'worker/handlers/internal.js',
         'worker/lib/classifier.js', 'worker/lib/indexnow.js',
+        'worker/lib/asin-resolver.js', 'worker/lib/image-resolver.js',
         'worker/index.js',
       ],
     },
