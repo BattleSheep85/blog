@@ -17,6 +17,16 @@ const PRODUCT = {
   completed_at: 1700000000, view_count: 9,
 };
 
+// A web-only (not-sold-on-Amazon) product so the card renders the Google-handoff
+// CTA branch instead of the Amazon CTA.
+const WEB_ONLY = {
+  id: 'svc1', name: 'Lawn Care Service', brand: '', price: null, rating: 4,
+  image_url: '', product_url: '', affiliate_url: '', manufacturer_url: '',
+  pros: '["reliable"]', cons: '["regional"]', verdict: 'Solid local service overall.',
+  rank: 2, slug: 'best-lawn-care', query: 'best lawn care service', category: 'services',
+  facets: '{"sold_on_amazon":false,"is_service":true}', completed_at: 1700000000, view_count: 1,
+};
+
 // Mock D1: route each statement by its SQL (the 6 queries run concurrently via
 // Promise.all, so call-order can't distinguish them) — list → product rows,
 // each facet GROUP BY → {key,n} rows, count/rating-sum → .first shapes.
@@ -31,7 +41,7 @@ function mockEnv() {
             if (sql.includes('GROUP BY r.category')) return { results: [{ key: 'NAS', n: 5 }, { key: 'Audio', n: 3 }] };
             if (sql.includes('GROUP BY p.brand')) return { results: [{ key: 'Synology', n: 3 }, { key: 'Sony', n: 2 }] };
             if (sql.includes('GROUP BY key')) return { results: [{ key: 'u25', n: 2 }, { key: '250-500', n: 1 }] };
-            return { results: [PRODUCT] }; // the list query
+            return { results: [PRODUCT, WEB_ONLY] }; // the list query (Amazon + web-only CTAs)
           },
           async first() {
             if (sql.includes('SUM(CASE WHEN p.rating')) return { r45: 10, r4: 20, r35: 30 };

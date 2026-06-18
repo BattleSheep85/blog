@@ -1,0 +1,79 @@
+// Full-coverage assertions for the remaining small pure modules:
+// status.js, guides.js, tiers.js, ads.js, and html.js's pure helpers + layout().
+import { apiStatus } from './status.js';
+import { STATIC_GUIDES, STATIC_GUIDE_SLUGS, GUIDES_LASTMOD } from './guides.js';
+import { getTierConfig, isValidTier, PUBLIC_TIERS, TIER_CONFIGS } from './tiers.js';
+import { adSlot } from './ads.js';
+import { html, raw, jsonLdScript, layout } from './html.js';
+
+export function runLibPureTests() {
+  const report = { passed: 0, failed: 0, failures: [] };
+  const eq = (name, a, e) => {
+    const A = JSON.stringify(a), E = JSON.stringify(e);
+    if (A === E) report.passed++; else { report.failed++; report.failures.push(`${name}: expected ${E}, got ${A}`); }
+  };
+  const ok = (name, c) => eq(name, !!c, true);
+
+  // status.js
+  eq('apiStatus complete', apiStatus('complete'), 'completed');
+  eq('apiStatus failed', apiStatus('failed'), 'error');
+  eq('apiStatus pending', apiStatus('pending'), 'pending');
+  eq('apiStatus processing', apiStatus('processing'), 'processing');
+
+  // guides.js
+  eq('guides count', STATIC_GUIDES.length, 4);
+  ok('guide slug set', STATIC_GUIDE_SLUGS.has('synology-vs-qnap'));
+  eq('guides lastmod', GUIDES_LASTMOD, '2026-06-09');
+
+  // tiers.js
+  eq('tier full → config', getTierConfig('full'), TIER_CONFIGS.full);
+  eq('tier unknown → default config', getTierConfig('zzz').synthModel, 'moonshotai/kimi-k2.6');
+  ok('all tier keys share one config', TIER_CONFIGS.instant === TIER_CONFIGS.full && TIER_CONFIGS.full === TIER_CONFIGS.exhaustive);
+  eq('public tiers', PUBLIC_TIERS, ['instant', 'full']);
+  for (const t of ['instant', 'full', 'exhaustive', 'unbound']) ok(`isValidTier ${t}`, isValidTier(t));
+  ok('isValidTier rejects', !isValidTier('bogus'));
+
+  // ads.js
+  eq('adSlot no publisher → ""', adSlot({}, 'top', 'Ad'), '');
+  eq('adSlot no slot → ""', adSlot({ ADSENSE_PUBLISHER_ID: 'pub-1' }, 'top', 'Ad'), '');
+  {
+    const env = { ADSENSE_PUBLISHER_ID: 'pub-1', ADSENSE_SLOT_TOP: 'T', ADSENSE_SLOT_MID: 'M', ADSENSE_SLOT_BOTTOM: 'B' };
+    ok('adSlot top renders slot', adSlot(env, 'top', 'Ad').includes('data-ad-slot="T"'));
+    ok('adSlot mid renders slot', adSlot(env, 'mid', 'Ad').includes('data-ad-slot="M"'));
+    ok('adSlot bottom renders slot', adSlot(env, 'bottom', 'Ad').includes('data-ad-slot="B"'));
+    ok('adSlot escapes label', adSlot(env, 'top', '<x>').includes('&lt;x&gt;'));
+  }
+
+  // html.js — tagged template + helpers
+  eq('html escapes interpolation', html`<b>${'<x>'}</b>`, '<b>&lt;x&gt;</b>');
+  eq('html passes raw branded', html`a${raw('<b>')}c`, 'a<b>c');
+  eq('html joins arrays (raw + escaped)', html`${[raw('<i>'), '<x>']}`, '<i>&lt;x&gt;');
+  eq('html null → empty', html`a${null}b`, 'ab');
+  eq('raw brand', raw('<b>').__html, '<b>');
+  ok('jsonLdScript escapes <', jsonLdScript({ a: '</script>' }).includes('\\u003c/script>'));
+
+  // html.js layout() — exercise the meta branches + capDescription
+  {
+    const longSpaced = 'word '.repeat(50); // >155, has spaces past index 100
+    const out = layout('Title', longSpaced, '<main>x</main>', '<style>x</style>', {
+      ogType: 'article', ogUrl: 'https://x/y', canonical: 'https://x/c', noindex: true, ogImage: 'https://cdn/x.svg',
+      article: { publishedTime: '2026-01-01', modifiedTime: '2026-01-02', author: 'A', section: 'Tech', tags: ['t1', 't2'] },
+    });
+    ok('layout title', out.includes('<title>Title | TrueRank</title>'));
+    ok('layout canonical', out.includes('rel="canonical" href="https://x/c"'));
+    ok('layout noindex', out.includes('name="robots" content="noindex,follow"'));
+    ok('layout article meta', out.includes('article:published_time') && out.includes('article:tag'));
+    ok('layout svg image type', out.includes('og:image:type" content="image/svg+xml"'));
+    ok('layout caps long description with ellipsis', out.includes('…'));
+  }
+  {
+    // relative ogImage gets host prepended; png type; no-space long desc branch.
+    const noSpace = 'a'.repeat(160);
+    const out = layout('T', noSpace, 'b', '', { ogImage: '/og.png' });
+    ok('layout relative image prepended', out.includes('https://chrisputer.tech/og.png'));
+    ok('layout png image type', out.includes('og:image:type" content="image/png"'));
+    ok('layout no canonical when absent', !out.includes('rel="canonical"'));
+  }
+
+  return report;
+}

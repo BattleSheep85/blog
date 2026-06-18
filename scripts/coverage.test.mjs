@@ -1,10 +1,12 @@
-#!/usr/bin/env node
-// Test runner for the worker's in-repo test suites. Zero dependencies —
-// run with plain `node scripts/run-tests.mjs`. Exits non-zero on any failure
-// so it can gate commits or deploys.
-//
-// This is THE way the credibility rubric (PRD §2 trust-weight table) is
-// re-verified. If you touch worker/lib/credibility.js, run this.
+// node:test harness so Node's built-in V8 coverage (zero npm) can measure the
+// pure test suites. Run:
+//   node --test --experimental-test-coverage \
+//     --test-coverage-include='worker/lib/**' --test-coverage-include='worker/engine/**' \
+//     scripts/coverage.test.mjs
+// Each suite is a hand-rolled runner returning {passed, failed, failures}; we
+// just assert zero failures so coverage reflects what the suites exercise.
+import test from 'node:test';
+import assert from 'node:assert';
 
 import { runCredibilityTests } from '../worker/lib/credibility.test.js';
 import { runValidateTests } from '../worker/engine/validate.test.js';
@@ -19,26 +21,16 @@ const suites = [
   ['credibility', runCredibilityTests],
   ['validate-quality-gate', runValidateTests],
   ['product-search', runProductSearchTests],
-  ['reviews-render', runReviewsRenderTests], // async suite (awaited below)
+  ['reviews-render', runReviewsRenderTests],
   ['utils', runUtilsTests],
   ['affiliate-links', runAffiliateLinksTests],
   ['lib-pure', runLibPureTests],
   ['credibility-extra', runCredibilityExtraTests],
 ];
 
-let failed = 0;
 for (const [name, fn] of suites) {
-  const report = await fn();
-  const total = report.passed + report.failed;
-  console.log(`${name}: ${report.passed}/${total} passed`);
-  if (report.failed > 0) {
-    failed += report.failed;
-    for (const f of report.failures) console.log(`  FAIL ${f}`);
-  }
+  test(name, async () => {
+    const report = await fn();
+    assert.strictEqual(report.failed, 0, `${name}: ${report.failures.join('; ')}`);
+  });
 }
-
-if (failed > 0) {
-  console.error(`\n${failed} assertion(s) failed`);
-  process.exit(1);
-}
-console.log('\nAll suites green');

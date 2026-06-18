@@ -2,6 +2,26 @@
 
 Last updated: 2026-06-18
 
+## 2026-06-18 — Test coverage to ~100% on the pure-logic layer (godmode R3)
+
+User: "keep looping and try to get 100% coverage." Zero-npm project → used Node's
+built-in V8 coverage (no package manager). Test files aren't bundled into the worker,
+so this round ships nothing to prod (no deploy).
+- [x] Coverage harness: scripts/coverage.test.mjs (node:test wrapper over the suites) +
+      scripts/coverage.sh (threshold gate, exits non-zero on regression). Documented in
+      CLAUDE.md.
+- [x] New suites: utils.test.js (33), affiliate-links.test.js (32), lib-pure.test.js (37:
+      status/guides/tiers/ads/html), credibility-extra.test.js (8). Extended validate +
+      product-search + reviews-render suites. Total 272 assertions, all green.
+- [x] Result — pure-logic layer LINE coverage: brand-quality, foss-leaders, product-search,
+      utils, credibility, status, guides, tiers, ads, html, validate, reviews.js all 100%;
+      affiliate-links 98.4% (one UNREACHABLE defensive catch — URL is pre-validated by
+      isValidHttpsUrl, so the inner new URL() can't throw). 99.85% line overall on the set.
+- [x] Boundary documented: I/O modules (db, classifier, search providers, resolvers,
+      handlers, engine LLM, index.js, full SSR research-page) need the CF runtime and are
+      integration code — out of the unit-coverage target. Full coverage there needs a
+      Workers test harness (Miniflair/wrangler) — a separate, larger effort.
+
 ## 2026-06-18 — Faceted search R2 + audit of the four "improve every aspect" areas
 
 User picked all four godmode directions. Audit found the existing card infra already

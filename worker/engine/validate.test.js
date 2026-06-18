@@ -171,5 +171,81 @@ export function runValidateTests() {
     eq('e2e ranks contiguous', ranks(result.products), [1, 2, 3]);
   }
 
+  // ── Field sanitizers (image / metadata / specs / buyersGuide / coercion) ────
+  // A complete product with an overridable imageUrl, exercised through the public
+  // validateResearchResult so the internal sanitizers are covered.
+  const withImg = (img) => ({
+    name: 'Img Test', brand: 'B', rating: 4.5, price: 10, productUrl: 'https://x', manufacturerUrl: 'https://m',
+    imageUrl: img, pros: ['a', 'b', 'c'], cons: ['x', 'y'], verdict: 'a'.repeat(15), rank: 1,
+  });
+  const imgOf = (img) => validateResearchResult({
+    summary: 'S', category: 'C',
+    products: [withImg(img), withImg('https://cdn.x/ok.jpg'), withImg('https://cdn.x/ok2.png')],
+  }).products[0].imageUrl;
+
+  eq('image: valid jpg kept', imgOf('https://cdn.x/photo.jpg'), 'https://cdn.x/photo.jpg');
+  eq('image: malformed url (https+ext but unparseable) → ""', imgOf('https://exa mple .com/a.jpg'), '');
+  eq('image: non-string → ""', imgOf(12345), '');
+  eq('image: blank → ""', imgOf('   '), '');
+  eq('image: non-https → ""', imgOf('http://x/a.jpg'), '');
+  eq('image: over 2000 chars → ""', imgOf('https://x/' + 'a'.repeat(2000) + '.jpg'), '');
+  eq('image: no image extension → ""', imgOf('https://x/page'), '');
+  eq('image: youtube host → ""', imgOf('https://m.youtube.com/a.jpg'), '');
+  eq('image: *.youtube.com → ""', imgOf('https://foo.youtube.com/a.jpg'), '');
+
+  {
+    // Metadata + specs coercion in one product.
+    const r = validateResearchResult({
+      summary: 'S', category: 'C',
+      buyersGuide: { howToChoose: 'choose wisely here', pitfalls: ['p1'], marketingToIgnore: ['m1'] },
+      products: [
+        { name: 'A', rating: 4.5, pros: ['a', 'b', 'c'], cons: ['x', 'y'], verdict: 'a'.repeat(15),
+          metadata: { good: 'val', bad: 5, '': 'skipKey' },
+          specs: { w: 2.5, c: 'black', on: true, n: null, obj: { nested: 1 } } },
+        { name: 'B', rating: 4.5, pros: ['a', 'b', 'c'], cons: ['x', 'y'], verdict: 'b'.repeat(15) },
+        { name: 'C', rating: 4.5, pros: ['a', 'b', 'c'], cons: ['x', 'y'], verdict: 'c'.repeat(15) },
+      ],
+    });
+    eq('metadata: keeps string, drops non-string + empty key', r.products[0].metadata, { good: 'val' });
+    eq('specs: coerces num/bool/string, drops null+nested', r.products[0].specs, { w: '2.5', c: 'black', on: 'true' });
+    eq('buyersGuide preserved', r.buyersGuide.howToChoose, 'choose wisely here');
+  }
+
+  // A null / non-object element in the products array → coerced to a placeholder
+  // (which the completeness filter then drops), without throwing.
+  {
+    const r = validateResearchResult({
+      summary: 'S', products: [
+        null, 'a string',
+        { name: 'A', rating: 4, pros: ['a'], cons: ['b'], verdict: 'a'.repeat(15) },
+        { name: 'B', rating: 4, pros: ['a'], cons: ['b'], verdict: 'b'.repeat(15) },
+        { name: 'C', rating: 4, pros: ['a'], cons: ['b'], verdict: 'c'.repeat(15) },
+      ],
+    });
+    eq('null/non-object products dropped, valid kept', r.products.map((p) => p.name), ['A', 'B', 'C']);
+  }
+
+  // products not an array → [] (no throw); missing summary throws.
+  eq('non-array products → empty', validateResearchResult({ summary: 'S', products: 'nope' }).products, []);
+  {
+    let threw = false;
+    try { validateResearchResult({ products: [] }); } catch { threw = true; }
+    eq('missing summary throws', threw, true);
+  }
+  // non-object input throws.
+  {
+    let threw = false;
+    try { validateResearchResult(null); } catch { threw = true; }
+    eq('null input throws', threw, true);
+  }
+  // buyersGuide absent → no buyersGuide key on the result.
+  eq('no buyersGuide → omitted', 'buyersGuide' in validateResearchResult({
+    summary: 'S', products: [
+      { name: 'A', rating: 4, pros: ['a'], cons: ['b'], verdict: 'a'.repeat(15) },
+      { name: 'B', rating: 4, pros: ['a'], cons: ['b'], verdict: 'b'.repeat(15) },
+      { name: 'C', rating: 4, pros: ['a'], cons: ['b'], verdict: 'c'.repeat(15) },
+    ],
+  }), false);
+
   return report;
 }

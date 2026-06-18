@@ -5,7 +5,7 @@
 
 import {
   parseProductFilters, isNarrowed, buildProductWhere, orderByClause, reviewsHref,
-  PRICE_BANDS, RATING_OPTIONS,
+  priceBand, PRICE_BANDS, RATING_OPTIONS,
 } from './product-search.js';
 
 // get-accessor over a plain object (mirrors URLSearchParams.get → string|null).
@@ -126,6 +126,10 @@ export function runProductSearchTests() {
   // ── orderByClause ──────────────────────────────────────────────────────────
   ok('order: known sort', orderByClause('price-asc').includes('p.price ASC'));
   ok('order: unknown → featured default', orderByClause('zzz').includes('view_count'));
+
+  // ── priceBand lookup ───────────────────────────────────────────────────────
+  eq('priceBand known', priceBand('50-100').label, '$50 – $100');
+  eq('priceBand unknown → null', priceBand('zzz'), null);
 
   // ── constants sanity ───────────────────────────────────────────────────────
   eq('price bands count', PRICE_BANDS.length, 7);
