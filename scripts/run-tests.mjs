@@ -7,9 +7,11 @@
 // re-verified. If you touch worker/lib/credibility.js, run this.
 
 import { runCredibilityTests } from '../worker/lib/credibility.test.js';
+import { runValidateTests } from '../worker/engine/validate.test.js';
 
 const suites = [
   ['credibility', runCredibilityTests],
+  ['validate-quality-gate', runValidateTests],
 ];
 
 let failed = 0;

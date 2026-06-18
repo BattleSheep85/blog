@@ -69,6 +69,41 @@ function extractBuyersGuide(val) {
   return { howToChoose, pitfalls, marketingToIgnore };
 }
 
+// Editorial-rating floor. A pick the synth scored below this is treated as
+// low-confidence/promotional (the marketplace-churn-brand signature) and dropped
+// when better picks exist. Strict less-than, so an honest 3.0 (a legit basic
+// brand like Old Navy) survives; a 2.5 (Coofandy-style no-name) does not.
+export const MIN_RATING = 3;
+
+/**
+ * Drop sub-floor-rated picks (keeping ≥3) and renumber ranks contiguously so a
+ * dropped low pick leaves no gap. Pure + immutable.
+ *
+ * We deliberately do NOT re-sort by rating: rating is not the only ranking
+ * signal (intent fit, price, availability matter too), so the synth's holistic
+ * order is preserved among the survivors. The floor removes the egregious junk;
+ * the synth prompt's "rank must track quality" rule handles finer ordering.
+ *
+ * @param {Array<object>} products - completeness-filtered product objects
+ * @returns {Array<object>} surviving picks, re-ranked 1..n in the synth's order
+ */
+export function applyQualityGate(products) {
+  if (!Array.isArray(products) || products.length === 0) return products;
+
+  // A pick survives if it's unrated (honest "too thin to score") or at/above the
+  // floor. Only enforce the drop while ≥3 picks remain, so thin categories keep
+  // their best available options rather than collapsing below a usable list.
+  const strong = products.filter((p) => p.rating === null || p.rating >= MIN_RATING);
+  const kept = strong.length >= 3 ? strong : products;
+
+  // Renumber 1..n following the synth's own rank field (robust to an array that
+  // isn't already rank-ordered); stable on ties so the original order wins.
+  return kept
+    .map((p, i) => ({ p, i }))
+    .sort((a, b) => (a.p.rank - b.p.rank) || (a.i - b.i))
+    .map(({ p }, i) => ({ ...p, rank: i + 1 }));
+}
+
 export function validateResearchResult(data) {
   if (!data || typeof data !== 'object') throw new Error('Response is not an object');
   const obj = data;
@@ -112,7 +147,17 @@ export function validateResearchResult(data) {
   );
   const filtered = complete.length >= 3 ? complete : products;
 
+  // Quality gate: drop picks the synth itself rated below the floor. The rating
+  // is OUR editorial score (derived from source credibility, per the synth
+  // prompt), so a sub-3/5 score means the evidence is thin/promotional — the
+  // signature of a no-name marketplace-churn brand (the "cheap knockoff" a savvy
+  // buyer avoids). We only drop while ≥3 stronger picks remain, so thin
+  // categories keep their best available options. Crucial guards against
+  // over-filtering legit budget brands: a null rating is honest "too thin to
+  // score" and is NEVER dropped; price/cheapness is never a factor here.
+  const ranked = applyQualityGate(filtered);
+
   const buyersGuide = extractBuyersGuide(obj.buyersGuide);
 
-  return { summary, category, products: filtered, methodology, ...(buyersGuide ? { buyersGuide } : {}) };
+  return { summary, category, products: ranked, methodology, ...(buyersGuide ? { buyersGuide } : {}) };
 }

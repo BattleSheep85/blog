@@ -1,6 +1,28 @@
 # Issues
 
-Last updated: 2026-06-17
+Last updated: 2026-06-18
+
+## 2026-06-18 — Quality: marketplace-churn ("knockoff") brands ranked high
+
+User report: a linen-shirt search surfaced legit ~$200 shirts but ALSO Amazon-native
+junk (no-name "Chinese rip-off dump" sellers). Root-caused from prod D1: the
+"best men's shirts for hot humid weather" run ranked **Coofandy ★2.5 at #3** (above
+Abercrombie). The synth prompt was richly tuned for SOURCE credibility (who reviewed)
+but had NO guidance on PRODUCT/BRAND quality, and nothing stopped a sub-3/5 editorial
+score from ranking high.
+- [x] HIGH: synth prompt now has a PRODUCT/BRAND QUALITY block — distrust
+      marketplace-churn / rebadged-generic / dropship brands (no independent brand
+      identity, no hands-on/expert coverage, promotional-only sources), never rank them
+      above established brands, give them a low editorial rating (don't inherit gamed
+      marketplace stars), and explicitly: cheapness is NOT the disqualifier (Uniqlo/
+      Amazon Basics/Anker/Old Navy are fine). Plus a "RANK MUST TRACK QUALITY" rule.
+      (worker/engine/prompts.js)
+- [x] HIGH: deterministic backstop in validate.js `applyQualityGate` — drops any pick
+      the synth rated < 3.0 while ≥3 stronger picks remain; never drops null ratings
+      (honest "too thin to score") or on price; renumbers ranks contiguously WITHOUT
+      re-sorting (preserves the synth's holistic intent-fit ordering). 12 unit tests in
+      worker/engine/validate.test.js (wired into run-tests.mjs), all green.
+- Verify post-deploy: re-run the apparel query, confirm no ★<3 / no-name pick survives.
 
 ## 2026-06-17 — DIRECTION: pure-ML extraction synthesis engine (no LLM) — design done
 
