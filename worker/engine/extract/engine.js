@@ -239,29 +239,29 @@ function analyzeProduct(c, sources, otherMatchers = [], seen = new Set()) {
       if (done) break;
     }
   }
-  const pick = (arr, sign) => arr.sort((a, b) => sign * (b.score - a.score) || b.cred - a.cred)
-    .filter((x, i, a) => a.findIndex((y) => y.text === x.text) === i).slice(0, 4).map((x) => x.text);
-
-  return { support, price, specs, pros: pick(pros, 1), cons: pick(cons, -1), proConSents };
+  return { support, price, specs, pros, cons }; // pros/cons are RAW scored clauses
 }
 
-// ── ranking + rating (deterministic, auditable) ────────────────────────────────
-function rate(product) {
-  // credibility-weighted mean polarity over the product's mentioning sentences,
-  // with Bayesian shrinkage toward a neutral prior so thin evidence can't spike.
+// rank/dedup the scored clauses into the final text list
+const pick = (arr, sign) => arr.sort((a, b) => sign * (b.score - a.score) || b.cred - a.cred)
+  .filter((x, i, a) => a.findIndex((y) => y.text === x.text) === i).slice(0, 4).map((x) => x.text);
+
+// ── rating (deterministic, auditable) ──────────────────────────────────────────
+// Rate from the CLEAN attributed clauses (not raw comparative sentences, which used
+// to inflate thin products to 5/5) + an evidence cap so a product with little
+// credible backing can't top out. Editorial 0-5; never invented precision.
+function rate(pros, cons, credibleCount) {
   let wSum = 0, wPol = 0;
-  for (const ps of product.proConSents) {
-    const { score, hits } = sentencePolarity(ps.sentence);
-    if (!hits) continue;
-    const handsOn = (ps.genre || []).some((t) => t === 'hands-on' || t === 'expert-domain') ? 1.25 : 1;
-    const w = (ps.cred / 100) * handsOn;
-    wSum += w; wPol += w * Math.max(-3, Math.min(3, score / Math.max(1, hits)));
+  for (const x of [...pros, ...cons]) {
+    const w = Math.max(0.2, x.cred / 100);
+    wSum += w; wPol += w * Math.max(-3, Math.min(3, x.score));
   }
-  const C = 3, prior = 0.4; // shrink toward slightly-positive prior (curated picks skew positive)
+  const C = 2.5, prior = 0.3;
   const meanPol = wSum > 0 ? wPol / wSum : 0;
   const shrunk = (wSum * meanPol + C * prior) / (wSum + C);
-  const rating = Math.round(Math.max(0, Math.min(5, 2.6 + shrunk * 1.4)) * 2) / 2; // → 0..5 in 0.5 steps
-  return { rating, weight: wSum, nEff: Math.round(wSum * 10) / 10 };
+  const cap = 3.5 + 0.5 * Math.min(3, credibleCount); // 1 src→4.0, 2→4.5, ≥3→5.0
+  const rating = Math.min(2.5 + shrunk * 1.3, cap);
+  return Math.round(Math.max(0, Math.min(5, rating)) * 2) / 2; // 0..5 in 0.5 steps
 }
 
 export function analyze(query, notes, sources) {
@@ -279,13 +279,14 @@ export function analyze(query, notes, sources) {
     if (!credible.length) continue;
     // also require some real signal (a pro or a con) so we don't list a bare name
     if (a.pros.length === 0 && a.cons.length === 0) continue;
-    const r = rate(a);
+    const rating = rate(a.pros, a.cons, credible.length);
+    const weight = credible.reduce((s, x) => s + x.score, 0); // credible evidence mass for ranking
     products.push({
-      name: c.name, brand: c.brand || '', price: a.price, rating: r.rating,
-      pros: a.pros, cons: a.cons, specs: a.specs,
+      name: c.name, brand: c.brand || '', price: a.price, rating,
+      pros: pick(a.pros, 1), cons: pick(a.cons, -1), specs: a.specs,
       productUrl: '', manufacturerUrl: '', imageUrl: '',
       verdict: '', bestFor: '', metadata: {},
-      _credibleCount: credible.length, _nEff: r.nEff, _weight: r.weight, _proConSents: a.proConSents,
+      _credibleCount: credible.length, _nEff: Math.round(weight / 100 * 10) / 10, _weight: weight,
       _topGenres: [...new Set(a.support.flatMap((s) => s.tags))],
     });
   }
