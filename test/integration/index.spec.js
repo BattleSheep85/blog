@@ -79,4 +79,43 @@ describe('index.js routing', () => {
     expect(res.headers.get('X-Content-Type-Options')).toBe('nosniff');
     expect(res.headers.get('Content-Security-Policy')).toContain("default-src 'self'");
   });
+
+  it('GET /research (browse) → 200 HTML', async () => {
+    const res = await SELF.fetch(`${BASE}/research`);
+    expect(res.status).toBe(200);
+    expect(res.headers.get('Content-Type')).toContain('text/html');
+  });
+
+  it('GET /reviews (faceted) → 200 with the filter sidebar', async () => {
+    const res = await SELF.fetch(`${BASE}/reviews`);
+    expect(res.status).toBe(200);
+    expect(await res.text()).toContain('aria-label="Filters"');
+  });
+
+  it('GET /reviews?brand=… → 200 + noindex on the facet combo', async () => {
+    const res = await SELF.fetch(`${BASE}/reviews?brand=Synology&price=250-500`);
+    expect(res.status).toBe(200);
+    expect(await res.text()).toContain('noindex,follow');
+  });
+
+  it('GET /best/:category hub → 200 or 404 (never throws)', async () => {
+    const res = await SELF.fetch(`${BASE}/best/nas`);
+    expect([200, 404]).toContain(res.status);
+  });
+
+  it('GET /api/search/suggest?q=… → JSON array', async () => {
+    const res = await SELF.fetch(`${BASE}/api/search/suggest?q=nas`);
+    expect(res.status).toBe(200);
+    expect(Array.isArray(await res.json())).toBe(true);
+  });
+
+  it('GET /research/:slug/og.svg → SVG image', async () => {
+    const res = await SELF.fetch(`${BASE}/research/best-budget-nas/og.svg`);
+    expect(res.headers.get('Content-Type')).toContain('image/svg+xml');
+  });
+
+  it('GET /api/research/:id → completed status JSON', async () => {
+    const res = await SELF.fetch(`${BASE}/api/research/${completeId}`);
+    expect((await res.json()).status).toBe('completed');
+  });
 });

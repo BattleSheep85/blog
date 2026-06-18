@@ -20,6 +20,7 @@ export default defineWorkersConfig({
         'worker/lib/asin-resolver.js', 'worker/lib/image-resolver.js',
         'worker/lib/youtube.js', 'worker/lib/jina.js', 'worker/lib/duckduckgo.js', 'worker/lib/rss.js',
         'worker/engine/parallel-engine.js',
+        'worker/pages/browse.js', 'worker/pages/category.js', 'worker/pages/research-page.js',
         'worker/index.js',
       ],
     },
