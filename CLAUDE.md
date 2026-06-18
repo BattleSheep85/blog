@@ -22,15 +22,24 @@ and produces honest comparison reports. Monetized via affiliate links (Amazon As
 - **Deployment**: GitHub (private) → Cloudflare Pages + Workers
 
 ## Key Constraint
-NO package managers. No npm, pip, cargo, etc. All dependencies vendored or loaded via CDN.
-Supply chain security is a hard requirement.
+NO RUNTIME package managers. The deployed Worker is plain JS with ZERO runtime
+dependencies — everything that ships is vendored or loaded via CDN. Supply chain
+security is a hard requirement for anything that reaches production.
+
+**One scoped exception (2026-06-18): dev/test tooling.** A Miniflare-backed Workers
+test harness (`vitest` + `@cloudflare/vitest-pool-workers`) lives in `devDependencies`
+ONLY. It is never bundled into the worker (wrangler bundles `worker/index.js`'s import
+graph; `node_modules`/test specs aren't in it). `node_modules/` is gitignored;
+`package.json` + `package-lock.json` are committed for reproducible installs. The runtime
+zero-dependency rule is unchanged — do NOT add a dependency that ships to the worker.
 
 ## Commands
 - Local dev: `npx wrangler dev` (wrangler is the only CLI tool, used ad-hoc not as a dependency)
 - Deploy: Push to main → Cloudflare auto-deploys
 - DB migrations: `npx wrangler d1 execute DB --file=schema/001_initial.sql`
 - Tests: `node scripts/run-tests.mjs` (308 assertions across 10 suites — credibility, validate quality-gate, product-search faceting, reviews render-smoke, utils, affiliate-links, lib-pure, credibility-extra, prompts, llm)
-- Coverage gate: `bash scripts/coverage.sh` (Node built-in V8 coverage, zero npm; ~99.9% line on the 14-module pure-logic layer. I/O modules need the CF runtime and are out of unit-coverage scope by design.)
+- Coverage gate: `bash scripts/coverage.sh` (Node built-in V8 coverage, zero npm; ~99.9% line on the 14-module pure-logic layer)
+- Integration tests (I/O modules, real D1/KV via Miniflare): `npx vitest run` (or `--coverage`). Specs in `test/integration/*.spec.js`, config in `vitest.config.js`. Needs `npm install` first (dev deps only).
 - Output eval: `node scripts/run-eval.mjs` (golden-query honesty audit against the live site; `--spend` enqueues missing runs, ~$0.10 each)
 
 ## Architecture

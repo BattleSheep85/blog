@@ -2,6 +2,23 @@
 
 Last updated: 2026-06-18
 
+## 2026-06-18 — Workers test harness for I/O-module coverage (godmode R5)
+
+User chose to relax zero-npm for a DEV-ONLY test harness (toward true 100% incl. I/O).
+- [x] Harness: vitest + @cloudflare/vitest-pool-workers + @vitest/coverage-istanbul in
+      devDependencies; vitest.config.js (defineWorkersConfig, bindings from wrangler.toml,
+      Miniflare in-memory D1/KV). Runs tests INSIDE workerd with real bindings. node_modules
+      gitignored; package.json + lock committed. CLAUDE.md updated: runtime stays zero-dep,
+      this is the one scoped exception, never bundled.
+- [x] Integration specs (test/integration/*.spec.js): smoke (D1+KV bindings), db.spec
+      (all 13 db.js helpers vs real D1 with 001+002+003 schema applied — db.js 100% line,
+      was 37%), rate-limit.spec (KV sliding window — 100%). 13 tests green + coverage report.
+- [x] Two test layers documented: fast pure-logic (`node scripts/run-tests.mjs`, zero-dep,
+      308 assertions) + I/O integration (`npx vitest run --coverage`).
+- Remaining toward full-codebase 100%: handlers, sitemap, classifier, resolvers, engine
+      orchestration, index.js routing — now UNBLOCKED by the harness; each is an incremental
+      round (write *.spec.js using env bindings + SELF.fetch for routes).
+
 ## 2026-06-18 — Test coverage to ~100% on the pure-logic layer (godmode R3)
 
 User: "keep looping and try to get 100% coverage." Zero-npm project → used Node's

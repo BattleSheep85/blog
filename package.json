@@ -1,0 +1,16 @@
+{
+  "name": "truerank-dev-tests",
+  "private": true,
+  "type": "module",
+  "description": "DEV/TEST ONLY. The deployed Cloudflare Worker is plain JS with ZERO runtime dependencies (see CLAUDE.md). These devDependencies exist solely for the Miniflare/vitest Workers integration-test harness and never ship to the worker.",
+  "scripts": {
+    "test": "node scripts/run-tests.mjs",
+    "test:integration": "vitest run",
+    "coverage": "bash scripts/coverage.sh"
+  },
+  "devDependencies": {
+    "@cloudflare/vitest-pool-workers": "^0.9.0",
+    "@vitest/coverage-istanbul": "^3.2.6",
+    "vitest": "~3.2.0"
+  }
+}
