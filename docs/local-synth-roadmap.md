@@ -6,6 +6,14 @@
 
 ---
 
+## ⚠️ UPDATE 2026-06-17 — two user corrections (read first)
+
+1. **Idle GPU power is a SUNK cost, not a marginal one.** The workstation already runs 24/7, so its idle draw is paid regardless. The only NEW cost of self-hosting inference there is the *extra watts during a run* (cents/run), NOT the ~$10/mo idle figure used in §1/§cost below. **That removes the main cost objection — the cost case is far less "red" than stated.**
+
+2. **Direction change: NOT a self-hosted LLM — a purpose-built ML / extraction pipeline ("pure ML, for faster everything").** This is *more* mission-aligned than distilling an LLM: an **extraction-based engine cannot fabricate** — it only surfaces facts that exist in the sources (literal receipts), which structurally eliminates the no-lies problem this whole session fixed, and runs in ms on CPU. The hard part shifts from "honesty" to "fluent prose" (verdicts/buyersGuide). The LLM-distillation plan below is **superseded** by the extraction-pipeline direction — kept for reference + the still-valid acceptance-gate idea (the existing `glm52-synth-bench.mjs` groundedness gate scores an ML pipeline too, and it will hit 0 by construction). Architecture sketch + spike plan: see issues.md 2026-06-17 + the response that prompted this update.
+
+---
+
 ## 1. Verdict — worth doing, but NOT for the money (yet)
 
 **Lead honestly: the cost argument does not hold today.**
