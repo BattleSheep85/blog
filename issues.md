@@ -2,6 +2,18 @@
 
 Last updated: 2026-06-18
 
+## 2026-06-18 — Integration coverage: engine + pages + handlers (R11–R13)
+
+- [x] R11: parallel-engine.js (production burst engine) via vi.mock on llm.js + tools.js —
+      full pipeline, zero-source non-result, FOSS injection, stream→retry fallback (4 tests).
+- [x] R12: page renderers + more router via SELF.fetch — browse 91%, category 97%,
+      research-page 63%, index.js 39%→50% (18 routing tests). Schema helper applies 005/006/007.
+- [x] R13: subscribe (85%) / image (100%) / auth signup-login-logout (DB+crypto) handlers.
+      Captured vitest-pool-workers isolatedStorage + istanbul-coverage gotchas as learnings.
+- 125 integration + 308 pure-logic = 433 tests. Remaining tail (incremental, same patterns):
+      tools.js executeTool internals, engine.js agent-loop (CF fallback), keywords, chat,
+      clarify page, deeper research-page/index branches (research-submission + queue + scheduled).
+
 ## 2026-06-18 — Integration coverage: router + fetch-mocked modules (R7–R8)
 
 - [x] R7: index.js routing via SELF.fetch (11 tests) — CORS, /find 302, sitemap/feed,
