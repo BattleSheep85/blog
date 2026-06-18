@@ -49,6 +49,20 @@ small encoder batches; reserve it only for an optional Layer-2 booster).
       the REAL acceptance gate = ~30-50 hand-labeled REAL pages (synthetic fixtures
       overstate precision per the design) + gold "best-pick" labels for nDCG rank
       quality. Nothing deployed.
+- [x] REAL-PAGE GATE RUN (benchmarks/real-page-bench.mjs, live gather x3, ~$0.13).
+      VERDICT: extraction honesty is STRUCTURAL + holds on real data (ext_ungrounded
+      0/0 on 55-96 real sources) — BUT hand-rolled candidate detection is NOT
+      production-viable on real markdown even after R5 hardening: concatenated names
+      ("Sony WH-1000XM4 Wireless Samsung"), spec/heading fragments as products
+      ("Bluetooth 6", "Yes Weight 52g"), off-topic leakage; name-overlap with the
+      LLM's clean picks only 3/10, 5/6, 2/10. This is the NER problem — regex is
+      whack-a-mole. The fact/pro-con/ranking machinery is solid; CANDIDATE DETECTION
+      needs ML (the design's Layer-2 GLiNER ONNX). KEY REFRAME: the prompt-fixed kimi
+      ALSO scored 0 fabrication on real data with clean products — so honesty (the
+      original driver) is ALREADY SOLVED by R1's prompt fix (shipped). Pure-ML is now
+      a speed/cost/ownership choice, not a honesty necessity. AWAITING user fork:
+      (A) build the GLiNER ML-NER candidate layer; (B) shelve pure-ML (LLM is honest
+      enough now, synth ~$3/mo); (C) hybrid (extraction facts + ML/LLM for names only).
 - [ ] Phase 2: ship Layer-1 as production synth behind a flag (A/B vs kimi; cut kimi
       to fallback). Phase 3 (cond.): fastText classifier replacing gemini-flash-lite.
       Phase 4 (cond., only if measured ABSA gap): GLiNER+DeBERTa ONNX booster on
