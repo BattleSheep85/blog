@@ -40,6 +40,15 @@ small encoder batches; reserve it only for an optional Layer-2 booster).
       recall@K + ~30-50 hand-labeled REAL pages. Gates: price-attach precision ≥0.95,
       legit recall@5 ≥0.9, trap-suppression =1.0. "Wrong-but-auditable beats
       confidently-fabricated" — every error traces to a source quote + a weight.
+- [x] R1-R4 (godmode, local only): eval gate built (benchmarks/extract-eval.mjs) +
+      attribution fixed (clause-level, single_attribution 0.46→0.94, dup 0.43→0) +
+      rating calibrated (evidence cap, pct_rating5 0.26→0.05) + rank-by-rating. ALL
+      7 gates green on fixtures (trap 0, ungrounded 0, recall 0.944, precision 0.944).
+      REMAINING before prod: (a) con/pro DEPTH polish (avg_cons 0.36 — empty con
+      sections; validate.js floor keeps products so not a dropper, but thin); (b)
+      the REAL acceptance gate = ~30-50 hand-labeled REAL pages (synthetic fixtures
+      overstate precision per the design) + gold "best-pick" labels for nDCG rank
+      quality. Nothing deployed.
 - [ ] Phase 2: ship Layer-1 as production synth behind a flag (A/B vs kimi; cut kimi
       to fallback). Phase 3 (cond.): fastText classifier replacing gemini-flash-lite.
       Phase 4 (cond., only if measured ABSA gap): GLiNER+DeBERTa ONNX booster on
