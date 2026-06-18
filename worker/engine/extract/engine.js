@@ -29,6 +29,15 @@ const norm = (s) => String(s || '').toLowerCase().replace(/[^a-z0-9 ]+/g, ' ').r
 // a separate pro AND con, and a comparison "A and B are best; C is value" separates.
 const CLAUSE_SPLIT = /\s*(?:;|—|–|\bbut\b|\bthough\b|\bhowever\b|\bwhereas\b|\bwhile\b|\bexcept\b|\byet\b)\s+/i;
 const clausesOf = (sentence) => String(sentence || '').split(CLAUSE_SPLIT).map((c) => c.trim()).filter(Boolean);
+// Real source content is jina MARKDOWN (links/images/headings) — strip it before any
+// extraction so link/image/url syntax never leaks into product names or facts.
+const stripMarkdown = (t) => String(t || '')
+  .replace(/!\[[^\]]*\]\([^)]*\)/g, ' ')   // images
+  .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1') // links → keep text, drop url
+  .replace(/https?:\/\/\S+/g, ' ')         // bare urls
+  .replace(/[#>*`|_~]+/g, ' ')             // md punctuation
+  .replace(/\][([)\]]*/g, ' ')             // stray bracket/paren debris
+  .replace(/\s+/g, ' ').trim();
 
 // ── candidate harvest ─────────────────────────────────────────────────────────
 // Pull Title-Case product-name candidates from notes + source titles/content.
@@ -92,6 +101,11 @@ function harvestCandidates(sources, notes) {
         // category/headline noise ("Office Chairs", "10 Best Robot Vacuums") which
         // have neither — and a fabricated trap with neither never even enters.
         if (!brand && !code) continue;
+        // Real-markdown noise rejects (clean fixtures never had these):
+        if (toks.length > 5) continue;                          // concatenated headings/lists
+        if (toks.length >= 4 && !brand) continue;               // long non-brand string = a heading
+        if (/[[\]()]|\.(?:jpg|jpeg|png|webp|gif|avif|svg)\b|https?:/i.test(name)) continue; // md/url/img debris
+        if (!brand && /\b(?:more|from|vetted|customer|photo|image|zoom|click|shop|deal|review|guide|under|dollars?|cheapest|budget|jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec)\b/i.test(low)) continue; // nav/date/category
         const key = norm(name);
         if (!cands.has(key)) cands.set(key, { name, toks, brand: firstBrand(toks), hasCode: code, srcIdx: new Set(), sents: [] });
         const c = cands.get(key);
@@ -265,20 +279,26 @@ function rate(pros, cons, credibleCount) {
 }
 
 export function analyze(query, notes, sources) {
-  const harvested = resolveCandidates(harvestCandidates(sources, notes || []));
+  // Strip jina markdown FIRST so link/image/url/heading syntax can't leak anywhere.
+  const cleanSources = (sources || []).map((s) => ({ ...s, title: stripMarkdown(s.title), content: stripMarkdown(s.content) }));
+  const cleanNotes = (notes || []).map((n) => ({ ...n, content: stripMarkdown(n.content) }));
+  const harvested = resolveCandidates(harvestCandidates(cleanSources, cleanNotes));
   const allMatch = harvested.map((c) => ({ c, m: aliasMatchers(c) }));
   const seen = new Set(); // a given clause is used as a pro/con for at most ONE product
   const products = [];
   for (const c of harvested) {
     const others = allMatch.filter((x) => x.c !== c).flatMap((x) => x.m).filter((m) => m.length > 2);
-    const a = analyzeProduct(c, sources, others, seen);
-    // INCLUSION RULE (the trap-suppressor): keep only products with ≥1 credible,
-    // non-listicle/affiliate/manufacturer supporting source. Fabricated traps are
-    // backed ONLY by listicle/affiliate/manufacturer sources → excluded, honestly.
+    const a = analyzeProduct(c, cleanSources, others, seen);
+    // INCLUSION RULE: keep only products with credible (non-listicle/affiliate/
+    // manufacturer) support — suppresses fabricated traps — AND require CORROBORATION
+    // (≥2 credible sources, OR a strong hands-on/expert source plus ≥2 real pros/cons).
+    // Real pages flood the harvester with one-off brand mentions; corroboration prunes them.
     const credible = a.support.filter((s) => s.score >= MIN_CREDIBLE_SCORE && !s.tags.every((t) => NONCREDIBLE_GENRES.has(t)));
-    if (!credible.length) continue;
-    // also require some real signal (a pro or a con) so we don't list a bare name
     if (a.pros.length === 0 && a.cons.length === 0) continue;
+    // Corroboration: ≥2 credible sources, OR a single credible source with SUBSTANTIVE
+    // coverage (both a pro AND a con). One-off real-data noise mentions (a stray
+    // positive) get dropped; a genuinely discussed single-source product is kept.
+    if (!(credible.length >= 2 || (credible.length >= 1 && a.pros.length >= 1 && a.cons.length >= 1))) continue;
     const rating = rate(a.pros, a.cons, credible.length);
     const weight = credible.reduce((s, x) => s + x.score, 0); // credible evidence mass for ranking
     products.push({
@@ -294,8 +314,9 @@ export function analyze(query, notes, sources) {
   // score), then credible-evidence mass as the tiebreaker. Ranking by mention-count
   // alone wrongly floats the "cheap alternative" above the actual top pick.
   products.sort((a, b) => b.rating - a.rating || b._weight - a._weight);
-  products.forEach((p, i) => { p.rank = i + 1; });
-  return products;
+  const capped = products.slice(0, 10); // cap — real data can surface many; show the best-evidenced
+  capped.forEach((p, i) => { p.rank = i + 1; });
+  return capped;
 }
 
 export { sentences, sentencePolarity, MARKETING };
