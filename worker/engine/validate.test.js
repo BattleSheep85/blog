@@ -6,10 +6,13 @@
 // but-reputable budget brands.
 
 import { applyQualityGate, MIN_RATING, validateResearchResult } from './validate.js';
+import { isChurnBrand } from '../lib/brand-quality.js';
 
-// Minimal product factory — only the fields the gate reads.
-function prod(name, rating, rank) {
-  return { name, rating, rank };
+// Minimal product factory — only the fields the gate reads. `brand` defaults to
+// the first word of the name (so churn detection has something to match) but can
+// be overridden.
+function prod(name, rating, rank, brand) {
+  return { name, rating, rank, brand: brand === undefined ? name.split(' ')[0] : brand };
 }
 
 // A fully-formed product for the end-to-end validateResearchResult path.
@@ -106,6 +109,37 @@ export function runValidateTests() {
     eq('orders by rank field then renumbers', names(gated), ['First', 'Second']);
     eq('renumbered after reorder', ranks(gated), [1, 2]);
   }
+
+  // Denylist: a known churn brand is dropped even with a GAMED-high rating
+  // (the whole point of the denylist — the rating floor can't catch these).
+  {
+    const gated = applyQualityGate([
+      prod('Patagonia Hoody', 4.5, 1, 'Patagonia'),
+      prod('Coofandy Shirt', 4.6, 2, 'Coofandy'),
+      prod('Smartwool Tee', 4.4, 3, 'Smartwool'),
+      prod('REI Hoodie', 4.3, 4, 'REI Co-op'),
+    ]);
+    eq('drops churn brand despite gamed-high rating', names(gated), ['Patagonia Hoody', 'Smartwool Tee', 'REI Hoodie']);
+  }
+
+  // Denylist is unconditional — drops a churn brand even if it takes the list
+  // below 3 (an all-junk query then yields an honest non-result downstream).
+  {
+    const gated = applyQualityGate([
+      prod('Good A', 4.0, 1, 'Patagonia'),
+      prod('Junk', 4.9, 2, 'Coofandy'),
+      prod('Good B', 4.1, 3, 'Smartwool'),
+    ]);
+    eq('churn drop is unconditional (may go below 3)', names(gated), ['Good A', 'Good B']);
+  }
+
+  // isChurnBrand normalization: case + spacing + punctuation insensitive.
+  eq('churn match: exact', isChurnBrand('Coofandy'), true);
+  eq('churn match: uppercase', isChurnBrand('COOFANDY'), true);
+  eq('churn match: spaced + punctuated', isChurnBrand('Coo-Fandy'), true);
+  eq('legit brand not churn', isChurnBrand('Patagonia'), false);
+  eq('legit short electronics brand not churn', isChurnBrand('LG'), false);
+  eq('empty brand not churn', isChurnBrand(''), false);
 
   // Empty / non-array input is returned untouched (no throw).
   eq('empty array untouched', applyQualityGate([]), []);

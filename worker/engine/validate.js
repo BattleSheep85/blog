@@ -1,3 +1,5 @@
+import { isChurnBrand } from '../lib/brand-quality.js';
+
 // Hosts that only serve pages (never direct images) — if the LLM hands us one
 // of these, it's a review/video/listing URL, not an image.
 const NON_IMAGE_HOSTS = new Set([
@@ -71,18 +73,22 @@ function extractBuyersGuide(val) {
 
 // Editorial-rating floor. A pick the synth scored below this is treated as
 // low-confidence/promotional (the marketplace-churn-brand signature) and dropped
-// when better picks exist. Strict less-than, so an honest 3.0 (a legit basic
-// brand like Old Navy) survives; a 2.5 (Coofandy-style no-name) does not.
-export const MIN_RATING = 3;
+// when better picks exist. Strict less-than, so an honest 3.5 survives; anything
+// the synth rated 3.4 or below — including Coofandy-style no-names — does not.
+// Raised from 3.0 → 3.5 per the "go aggressive" directive (2026-06-18).
+export const MIN_RATING = 3.5;
 
 /**
- * Drop sub-floor-rated picks (keeping ≥3) and renumber ranks contiguously so a
- * dropped low pick leaves no gap. Pure + immutable.
+ * Quality gate. Two layers, then a renumber:
+ *  1. Hard-drop known marketplace-churn brands UNCONDITIONALLY (their star
+ *     ratings are gamed, so the floor can't catch them) — these are never shown.
+ *  2. Drop sub-floor-rated picks while ≥3 stronger picks remain — the softer
+ *     signal, so it keeps a usable list in thin categories. Null ratings (honest
+ *     "too thin to score") are never dropped; price is never a factor.
  *
  * We deliberately do NOT re-sort by rating: rating is not the only ranking
  * signal (intent fit, price, availability matter too), so the synth's holistic
- * order is preserved among the survivors. The floor removes the egregious junk;
- * the synth prompt's "rank must track quality" rule handles finer ordering.
+ * order is preserved among the survivors. Pure + immutable.
  *
  * @param {Array<object>} products - completeness-filtered product objects
  * @returns {Array<object>} surviving picks, re-ranked 1..n in the synth's order
@@ -90,11 +96,15 @@ export const MIN_RATING = 3;
 export function applyQualityGate(products) {
   if (!Array.isArray(products) || products.length === 0) return products;
 
-  // A pick survives if it's unrated (honest "too thin to score") or at/above the
-  // floor. Only enforce the drop while ≥3 picks remain, so thin categories keep
-  // their best available options rather than collapsing below a usable list.
-  const strong = products.filter((p) => p.rating === null || p.rating >= MIN_RATING);
-  const kept = strong.length >= 3 ? strong : products;
+  // Layer 1 — churn denylist. Unconditional: a known no-name marketplace brand
+  // is never shown even if it's the only thing left (an all-junk query then
+  // yields an honest non-result downstream, which is correct).
+  const notChurn = products.filter((p) => !isChurnBrand(p.brand));
+
+  // Layer 2 — editorial-rating floor, with a ≥3-survivors guard so a thin
+  // category keeps its best available options instead of collapsing.
+  const strong = notChurn.filter((p) => p.rating === null || p.rating >= MIN_RATING);
+  const kept = strong.length >= 3 ? strong : notChurn;
 
   // Renumber 1..n following the synth's own rank field (robust to an array that
   // isn't already rank-ordered); stable on ties so the original order wins.

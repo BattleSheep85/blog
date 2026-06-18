@@ -17,12 +17,21 @@ score from ranking high.
       marketplace stars), and explicitly: cheapness is NOT the disqualifier (Uniqlo/
       Amazon Basics/Anker/Old Navy are fine). Plus a "RANK MUST TRACK QUALITY" rule.
       (worker/engine/prompts.js)
-- [x] HIGH: deterministic backstop in validate.js `applyQualityGate` — drops any pick
-      the synth rated < 3.0 while ≥3 stronger picks remain; never drops null ratings
-      (honest "too thin to score") or on price; renumbers ranks contiguously WITHOUT
-      re-sorting (preserves the synth's holistic intent-fit ordering). 12 unit tests in
+- [x] HIGH: deterministic backstop in validate.js `applyQualityGate` — two layers +
+      renumber: (1) UNCONDITIONAL hard-drop of known churn brands via
+      worker/lib/brand-quality.js `isChurnBrand` (denylist seeded with Coofandy +
+      curated Amazon/SHEIN-family fast-fashion; apparel-focused so legit short-name
+      electronics brands aren't false-positived; their gamed star ratings dodge the
+      floor, hence unconditional); (2) editorial-rating floor raised 3.0 → 3.5 ("go
+      aggressive" directive), dropping sub-floor picks while ≥3 stronger remain; null
+      ratings + price never trigger a drop. Renumbers ranks WITHOUT re-sorting
+      (preserves the synth's holistic intent-fit ordering). 20 unit tests in
       worker/engine/validate.test.js (wired into run-tests.mjs), all green.
-- Verify post-deploy: re-run the apparel query, confirm no ★<3 / no-name pick survives.
+- Verify post-deploy: re-run the apparel query, confirm no ★<3.5 / no-name pick survives.
+- [ ] HIGH (NEXT): recall gap — "photo/video backup software or appliance" never
+      surfaced Immich (arguably the top self-hosted FOSS option). Engine likely biased
+      toward buyable/affiliate products + missed/penalized free self-hosted software.
+      Investigate classifier framing + search coverage + synth's product bias.
 
 ## 2026-06-17 — DIRECTION: pure-ML extraction synthesis engine (no LLM) — design done
 
