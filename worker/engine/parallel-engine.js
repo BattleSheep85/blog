@@ -12,6 +12,7 @@ import { runSearch, readPageInto } from './tools.js';
 import { buildSynthesisPrompt } from './prompts.js';
 import { callLLM, callLLMStreaming } from './llm.js';
 import { validateResearchResult } from './validate.js';
+import { fossLeadersFor } from '../lib/foss-leaders.js';
 
 const PER_ASPECT_QUERIES = 5;
 const PROVIDERS = ['web', 'web', 'duckduckgo', 'rss', 'video', 'news'];
@@ -112,6 +113,21 @@ export async function runParallelEngine(query, config, openrouterKey, env, onEve
   await emit(onEvent, 'status', `Planning ${nAspects} research angles...`);
   const { aspects, cost: dc } = await decompose(query, openrouterKey, config.plannerModel, nAspects, PER_ASPECT_QUERIES);
   totalCostUsd += dc;
+
+  // Guaranteed coverage for category-leading FOSS/self-hosted projects that
+  // commercial listicles ignore (e.g. Immich for photo backup). The decompose
+  // prompt asks the planner to explore self-hosted angles, but reaching ONE
+  // specific community project isn't reliable — so for known self-hostable
+  // categories we append a deterministic by-name aspect, ensuring those projects'
+  // evidence is actually fetched and read. No-op for non-matching queries.
+  const fossLeaders = fossLeadersFor(query);
+  if (fossLeaders.length) {
+    aspects.push({
+      title: 'Self-hosted / open-source leaders',
+      queries: fossLeaders.slice(0, PER_ASPECT_QUERIES).map((p) => `${p} review self-hosted`),
+    });
+    await emit(onEvent, 'status', `Checking self-hosted/open-source leaders: ${fossLeaders.slice(0, 5).join(', ')}...`);
+  }
 
   // Flatten to (query, provider) tasks; cycle providers for source diversity.
   const tasks = [];
