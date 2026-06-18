@@ -2,6 +2,42 @@
 
 Last updated: 2026-06-17
 
+## 2026-06-17 — DIRECTION: pure-ML extraction synthesis engine (no LLM) — design done
+
+User pivot: replace the generative-LLM synth with a purpose-built ML/EXTRACTION
+engine ("pure ML, faster everything"). Rationale: extraction CANNOT fabricate (it
+only emits spans that exist in sources) → "tell no lies" becomes a STRUCTURAL
+property, not a behavior we police. Full design: `docs/ml-engine-design.md` (6-area
+research workflow). Also corrected: the 7900 XTX idle power is SUNK (already on 24/7),
+so cost was over-stated — AND the GPU isn't even needed in the path (CPU wins for
+small encoder batches; reserve it only for an optional Layer-2 booster).
+
+- [ ] Phase 0 (NEXT, ~$0, gated): hand-roll Layer-1 end-to-end in plain JS (no deps,
+      runs in the Worker): candidate harvest (Aho-Corasick gazetteer + model-code
+      regex + Title-Case n-grams + cross-source ≥2-domain VOTE) → entity-resolve
+      (extend asin-resolver.js) → fact-extract (price=schema.org Offer+median; specs
+      regex; pros/cons=Intl.Segmenter + vendored VADER lexicon ABSA, same-sentence
+      attachment) → deterministic credibility-weighted ranking + Bayesian shrinkage
+      → TextRank+template prose → validate.js (UNCHANGED) → existing report JSON
+      (frontend unchanged). Score vs kimi on the EXISTING glm52-synth-bench.mjs
+      (groundedness=0 by construction) + a human read of 5 real reports. Reuses
+      credibility.js, asin-resolver.js, jina.js. New: worker/engine/extract/*.
+- [ ] Phase 1: NEW eval harness — groundedness alone is now useless (0 by
+      construction). The REAL risks are WRONG-not-fabricated: aspect→product
+      mis-attribution (#1), wrong-merge (RK84≠RK87 — hiding a product IS a lie),
+      polarity flips, price mis-parse ("$50 off"→$50), mis-rank, cherry-pick/
+      omission. Add triple-level (entity,slot,value) Precision/Recall/F1 + nDCG/
+      recall@K + ~30-50 hand-labeled REAL pages. Gates: price-attach precision ≥0.95,
+      legit recall@5 ≥0.9, trap-suppression =1.0. "Wrong-but-auditable beats
+      confidently-fabricated" — every error traces to a source quote + a weight.
+- [ ] Phase 2: ship Layer-1 as production synth behind a flag (A/B vs kimi; cut kimi
+      to fallback). Phase 3 (cond.): fastText classifier replacing gemini-flash-lite.
+      Phase 4 (cond., only if measured ABSA gap): GLiNER+DeBERTa ONNX booster on
+      blackbox CPU, silent-degrade to Layer 1 — never a hard dependency.
+- [ ] HONEST losses (accepted): prose fluency (mitigate via verbatim-quote framing
+      → "actual quotes, not marketing" = brand asset); novel cross-source synthesis
+      (which was ALSO the fabrication surface). Net positive for an honesty brand.
+
 ## 2026-06-17 — Honesty-benchmark audit (godmode: "tell no lies") + fixes
 
 6-lens adversarial audit of the synth honesty bench (is it valid + sufficient to
