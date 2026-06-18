@@ -32,20 +32,20 @@
           "manufacturerUrl": "",
           "imageUrl": "",
           "pros": [
-            "The Keychron V1 and NuPhy Air75 are the best budget picks; the Royal Kludge RK84 is great value if you tune the stabs.",
-            "The Keychron V1 offers the best typing experience for the money — measured 8ms latency, excellent stabilizers, doubleshot PBT keycaps.",
             "Tom's Hardware names Keychron V1 best value and warns against no-name boards with inflated marketing claims.",
-            "Keychron V1 is our value pick; the Royal Kludge RK84 is a solid wireless budget option."
+            "The Keychron V1 offers the best typing experience for the money",
+            "the Keychron V1 has the best typing feel and measured low latency in its price class.",
+            "measured 8ms latency, excellent stabilizers, doubleshot PBT keycaps."
           ],
           "cons": [],
           "specs": {
             "ms": "8 ms"
           },
           "metadata": {
-            "evidenceWeight": "8.1",
+            "evidenceWeight": "2.5",
             "sources": "3"
           },
-          "verdict": "Backed by 3 credible sources, with no consistent drawback in our sources. What reviewers liked: The Keychron V1 and NuPhy Air75 are the best budget picks; the Royal Kludge RK84 is great value if you tune the stabs.",
+          "verdict": "Backed by 3 credible sources, with no consistent drawback in our sources. What reviewers liked: Tom's Hardware names Keychron V1 best value and warns against no-name boards with inflated marketing claims.",
           "rank": 1,
           "bestFor": "the money"
         },
@@ -53,13 +53,13 @@
           "name": "Royal Kludge RK84",
           "brand": "Royal Kludge",
           "price": null,
-          "rating": 4.5,
+          "rating": 3.5,
           "productUrl": "",
           "manufacturerUrl": "",
           "imageUrl": "",
           "pros": [
-            "The Keychron V1 and NuPhy Air75 are the best budget picks; the Royal Kludge RK84 is great value if you tune the stabs.",
-            "Keychron V1 is our value pick; the Royal Kludge RK84 is a solid wireless budget option.",
+            "the Royal Kludge RK84 is great value if you tune the stabs.",
+            "the Royal Kludge RK84 is a solid wireless budget option.",
             "The Royal Kludge RK84 is a strong cheaper wireless alternative."
           ],
           "cons": [
@@ -69,10 +69,10 @@
             "ms": "8 ms"
           },
           "metadata": {
-            "evidenceWeight": "6.6",
+            "evidenceWeight": "3",
             "sources": "4"
           },
-          "verdict": "Backed by 4 credible sources. What reviewers liked: The Keychron V1 and NuPhy Air75 are the best budget picks; the Royal Kludge RK84 is great value if you tune the stabs. The main drawback they noted: Some Royal Kludge units show QC variance (stabilizer rattle) per community reports.",
+          "verdict": "Backed by 4 credible sources. What reviewers liked: the Royal Kludge RK84 is great value if you tune the stabs. The main drawback they noted: Some Royal Kludge units show QC variance (stabilizer rattle) per community reports.",
           "rank": 2,
           "bestFor": "buyers prioritizing specific tradeoffs"
         },
@@ -80,21 +80,20 @@
           "name": "NuPhy Air75",
           "brand": "NuPhy",
           "price": null,
-          "rating": 5,
+          "rating": 3.5,
           "productUrl": "",
           "manufacturerUrl": "",
           "imageUrl": "",
           "pros": [
-            "The Keychron V1 and NuPhy Air75 are the best budget picks; the Royal Kludge RK84 is great value if you tune the stabs.",
             "NuPhy Air75 also loved for low profile."
           ],
           "cons": [],
           "specs": {},
           "metadata": {
-            "evidenceWeight": "3",
+            "evidenceWeight": "1.3",
             "sources": "2"
           },
-          "verdict": "Backed by 2 credible sources, with no consistent drawback in our sources. What reviewers liked: The Keychron V1 and NuPhy Air75 are the best budget picks; the Royal Kludge RK84 is great value if you tune the stabs.",
+          "verdict": "Backed by 2 credible sources, with no consistent drawback in our sources. What reviewers liked: NuPhy Air75 also loved for low profile.",
           "rank": 3,
           "bestFor": "low profile"
         }
@@ -129,7 +128,7 @@
           "name": "Sony WH-CH720N",
           "brand": "Sony",
           "price": 200,
-          "rating": 4.5,
+          "rating": 4,
           "productUrl": "",
           "manufacturerUrl": "",
           "imageUrl": "",
@@ -140,7 +139,7 @@
           "cons": [],
           "specs": {},
           "metadata": {
-            "evidenceWeight": "3.3",
+            "evidenceWeight": "1.8",
             "sources": "2"
           },
           "verdict": "Backed by 2 credible sources, with no consistent drawback in our sources. What reviewers liked: RTINGS hands-on ranks the Sony WH-CH720N best ANC under $200, with measured isolation figures.",
@@ -151,18 +150,18 @@
           "name": "Soundcore Space One",
           "brand": "Soundcore",
           "price": 200,
-          "rating": 4,
+          "rating": 3.5,
           "productUrl": "",
           "manufacturerUrl": "",
           "imageUrl": "",
           "pros": [
             "Soundcore Space One is the value champion at ~$100.",
-            "Soundcore Space One praised for ANC value at ~$100; long battery life."
+            "Soundcore Space One praised for ANC value at ~$100"
           ],
           "cons": [],
           "specs": {},
           "metadata": {
-            "evidenceWeight": "3.3",
+            "evidenceWeight": "2.3",
             "sources": "3"
           },
           "verdict": "Backed by 3 credible sources, with no consistent drawback in our sources. What reviewers liked: Soundcore Space One is the value champion at ~$100.",
@@ -179,14 +178,14 @@
           "imageUrl": "",
           "pros": [],
           "cons": [
-            "Sennheiser Accentum sounds better but slightly weaker ANC."
+            "slightly weaker ANC."
           ],
           "specs": {},
           "metadata": {
-            "evidenceWeight": "1.1",
+            "evidenceWeight": "1.4",
             "sources": "2"
           },
-          "verdict": "Backed by 2 credible sources. Reviewers' main reservation: Sennheiser Accentum sounds better but slightly weaker ANC. We found no strong positive consensus to balance it.",
+          "verdict": "Backed by 2 credible sources. Reviewers' main reservation: slightly weaker ANC. We found no strong positive consensus to balance it.",
           "rank": 3,
           "bestFor": "buyers prioritizing specific tradeoffs"
         }
@@ -203,7 +202,7 @@
       "Shark AI Ultra"
     ],
     "report": {
-      "summary": "We compared 3 robot vacuums using only credibility-weighted sources (real hands-on and expert reviews, discounting marketing and affiliate listicles). The strongest evidence backs the Roborock Q Revo. Every claim below links to the source it came from — nothing here is invented.",
+      "summary": "We compared 3 robot vacuums using only credibility-weighted sources (real hands-on and expert reviews, discounting marketing and affiliate listicles). The strongest evidence backs the eufy X8 Pro. Every claim below links to the source it came from — nothing here is invented.",
       "category": "robot vacuums",
       "buyersGuide": {
         "howToChoose": "Weigh the specifics each credible source actually measured over marketing claims, and prefer options backed by hands-on testing over listicle mentions.",
@@ -218,29 +217,6 @@
       },
       "products": [
         {
-          "name": "Roborock Q Revo",
-          "brand": "Roborock",
-          "price": 350,
-          "rating": 4.5,
-          "productUrl": "",
-          "manufacturerUrl": "",
-          "imageUrl": "",
-          "pros": [
-            "The Roborock Q Revo led pet-hair pickup and auto-empties into a dock; the eufy X8 Pro is the value pick at ~$350 with strong suction.",
-            "RTINGS hands-on tested 22 robot vacuums; the Roborock Q Revo had the best pet-hair pickup on carpet and self-empties.",
-            "After months of hands-on testing across homes with pets, our picks are the Roborock Q Revo and, for value, the eufy X8 Pro."
-          ],
-          "cons": [],
-          "specs": {},
-          "metadata": {
-            "evidenceWeight": "5.4",
-            "sources": "3"
-          },
-          "verdict": "Backed by 3 credible sources, with no consistent drawback in our sources. What reviewers liked: The Roborock Q Revo led pet-hair pickup and auto-empties into a dock; the eufy X8 Pro is the value pick at ~$350 with strong suction.",
-          "rank": 1,
-          "bestFor": "value"
-        },
-        {
           "name": "eufy X8 Pro",
           "brand": "eufy",
           "price": 350,
@@ -249,38 +225,59 @@
           "manufacturerUrl": "",
           "imageUrl": "",
           "pros": [
-            "The Roborock Q Revo led pet-hair pickup and auto-empties into a dock; the eufy X8 Pro is the value pick at ~$350 with strong suction.",
-            "After months of hands-on testing across homes with pets, our picks are the Roborock Q Revo and, for value, the eufy X8 Pro."
+            "the eufy X8 Pro is the value pick at ~$350 with strong suction."
           ],
           "cons": [],
           "specs": {},
           "metadata": {
-            "evidenceWeight": "2.2",
+            "evidenceWeight": "2.3",
             "sources": "3"
           },
-          "verdict": "Backed by 3 credible sources, with no consistent drawback in our sources. What reviewers liked: The Roborock Q Revo led pet-hair pickup and auto-empties into a dock; the eufy X8 Pro is the value pick at ~$350 with strong suction.",
-          "rank": 2,
-          "bestFor": "value"
+          "verdict": "Backed by 3 credible sources, with no consistent drawback in our sources. What reviewers liked: the eufy X8 Pro is the value pick at ~$350 with strong suction.",
+          "rank": 1,
+          "bestFor": "most buyers in this category"
         },
         {
-          "name": "Shark AI Ultra",
-          "brand": "Shark",
-          "price": null,
+          "name": "Roborock Q Revo",
+          "brand": "Roborock",
+          "price": 350,
           "rating": 3.5,
           "productUrl": "",
           "manufacturerUrl": "",
           "imageUrl": "",
           "pros": [
-            "Shark AI Ultra navigation is good but the bin is small per community reports.",
-            "Shark AI Ultra navigates well but the dustbin fills fast with a heavy shedder."
+            "the Roborock Q Revo had the best pet-hair pickup on carpet and self-empties."
           ],
           "cons": [],
           "specs": {},
           "metadata": {
-            "evidenceWeight": "2.1",
+            "evidenceWeight": "2.3",
+            "sources": "3"
+          },
+          "verdict": "Backed by 3 credible sources, with no consistent drawback in our sources. What reviewers liked: the Roborock Q Revo had the best pet-hair pickup on carpet and self-empties.",
+          "rank": 2,
+          "bestFor": "buyers prioritizing specific tradeoffs"
+        },
+        {
+          "name": "Shark AI Ultra",
+          "brand": "Shark",
+          "price": null,
+          "rating": 3,
+          "productUrl": "",
+          "manufacturerUrl": "",
+          "imageUrl": "",
+          "pros": [
+            "Shark AI Ultra navigation is good"
+          ],
+          "cons": [
+            "the bin is small per community reports."
+          ],
+          "specs": {},
+          "metadata": {
+            "evidenceWeight": "0.6",
             "sources": "1"
           },
-          "verdict": "Backed by 1 credible source, with no consistent drawback in our sources. What reviewers liked: Shark AI Ultra navigation is good but the bin is small per community reports.",
+          "verdict": "Backed by 1 credible source. What reviewers liked: Shark AI Ultra navigation is good The main drawback they noted: the bin is small per community reports.",
           "rank": 3,
           "bestFor": "buyers prioritizing specific tradeoffs"
         }
@@ -297,7 +294,7 @@
       "IKEA Markus"
     ],
     "report": {
-      "summary": "We compared 4 office chairs using only credibility-weighted sources (real hands-on and expert reviews, discounting marketing and affiliate listicles). The strongest evidence backs the HON Ignition 2.0. Every claim below links to the source it came from — nothing here is invented.",
+      "summary": "We compared 4 office chairs using only credibility-weighted sources (real hands-on and expert reviews, discounting marketing and affiliate listicles). The strongest evidence backs the HON Ignition 2. Every claim below links to the source it came from — nothing here is invented.",
       "category": "office chairs",
       "buyersGuide": {
         "howToChoose": "Weigh the specifics each credible source actually measured over marketing claims, and prefer options backed by hands-on testing over listicle mentions.",
@@ -313,7 +310,7 @@
       },
       "products": [
         {
-          "name": "HON Ignition 2.0",
+          "name": "HON Ignition 2",
           "brand": "HON",
           "price": 300,
           "rating": 4,
@@ -321,20 +318,15 @@
           "manufacturerUrl": "",
           "imageUrl": "",
           "pros": [
-            "Under $300 the HON Ignition 2.0 offers the best adjustability for the money; the IKEA Markus is a comfortable high-back budget option.",
-            "Wirecutter hands-on names the Steelcase Series 1 the best sub-$500 ergonomic chair; HON Ignition 2.0 is the budget pick.",
-            "Markus has great lumbar for the price; HON armrests can get wobbly after a year but the chair is solid.",
-            "The HON Ignition 2.0 and Steelcase Series 1 lead under $300; be wary of unbranded chairs making \"perfect posture\" claims with no testing."
+            "Under $300 the HON Ignition 2.0 offers the best adjustability for the money"
           ],
-          "cons": [
-            "HON Ignition armrests are wobbly per several long-term owners."
-          ],
+          "cons": [],
           "specs": {},
           "metadata": {
-            "evidenceWeight": "4.7",
+            "evidenceWeight": "2.3",
             "sources": "3"
           },
-          "verdict": "Backed by 3 credible sources. What reviewers liked: Under $300 the HON Ignition 2.0 offers the best adjustability for the money; the IKEA Markus is a comfortable high-back budget option. The main drawback they noted: HON Ignition armrests are wobbly per several long-term owners.",
+          "verdict": "Backed by 3 credible sources, with no consistent drawback in our sources. What reviewers liked: Under $300 the HON Ignition 2.0 offers the best adjustability for the money",
           "rank": 1,
           "bestFor": "the money"
         },
@@ -342,68 +334,69 @@
           "name": "IKEA Markus",
           "brand": "IKEA",
           "price": 300,
-          "rating": 4.5,
+          "rating": 4,
           "productUrl": "",
           "manufacturerUrl": "",
           "imageUrl": "",
           "pros": [
-            "Under $300 the HON Ignition 2.0 offers the best adjustability for the money; the IKEA Markus is a comfortable high-back budget option.",
-            "IKEA Markus is a long-running budget favorite with a high back and good lumbar."
+            "IKEA Markus is a long-running budget favorite with a high back and good lumbar.",
+            "the IKEA Markus is a comfortable high-back budget option."
           ],
           "cons": [],
           "specs": {},
           "metadata": {
-            "evidenceWeight": "3.3",
+            "evidenceWeight": "1.5",
             "sources": "2"
           },
-          "verdict": "Backed by 2 credible sources, with no consistent drawback in our sources. What reviewers liked: Under $300 the HON Ignition 2.0 offers the best adjustability for the money; the IKEA Markus is a comfortable high-back budget option.",
+          "verdict": "Backed by 2 credible sources, with no consistent drawback in our sources. What reviewers liked: IKEA Markus is a long-running budget favorite with a high back and good lumbar.",
           "rank": 2,
-          "bestFor": "the money"
+          "bestFor": "buyers prioritizing specific tradeoffs"
         },
         {
           "name": "Steelcase Series 1",
           "brand": "Steelcase",
           "price": 300,
-          "rating": 5,
+          "rating": 3.5,
           "productUrl": "",
           "manufacturerUrl": "",
           "imageUrl": "",
           "pros": [
-            "Wirecutter hands-on names the Steelcase Series 1 the best sub-$500 ergonomic chair; HON Ignition 2.0 is the budget pick.",
-            "The HON Ignition 2.0 and Steelcase Series 1 lead under $300; be wary of unbranded chairs making \"perfect posture\" claims with no testing."
+            "Wirecutter hands-on names the Steelcase Series 1 the best sub-$500 ergonomic chair"
           ],
           "cons": [],
           "specs": {},
           "metadata": {
-            "evidenceWeight": "3",
+            "evidenceWeight": "1.7",
             "sources": "2"
           },
-          "verdict": "Backed by 2 credible sources, with no consistent drawback in our sources. What reviewers liked: Wirecutter hands-on names the Steelcase Series 1 the best sub-$500 ergonomic chair; HON Ignition 2.0 is the budget pick.",
+          "verdict": "Backed by 2 credible sources, with no consistent drawback in our sources. What reviewers liked: Wirecutter hands-on names the Steelcase Series 1 the best sub-$500 ergonomic chair",
           "rank": 3,
           "bestFor": "buyers prioritizing specific tradeoffs"
         },
         {
-          "name": "HON Ignition 2",
+          "name": "HON Ignition 2.0",
           "brand": "HON",
           "price": 300,
-          "rating": 5,
+          "rating": 3,
           "productUrl": "",
           "manufacturerUrl": "",
           "imageUrl": "",
           "pros": [
-            "Under $300 the HON Ignition 2.0 offers the best adjustability for the money; the IKEA Markus is a comfortable high-back budget option.",
-            "Wirecutter hands-on names the Steelcase Series 1 the best sub-$500 ergonomic chair; HON Ignition 2.0 is the budget pick.",
-            "The HON Ignition 2.0 and Steelcase Series 1 lead under $300; be wary of unbranded chairs making \"perfect posture\" claims with no testing."
+            "Markus has great lumbar for the price",
+            "the chair is solid."
           ],
-          "cons": [],
+          "cons": [
+            "HON armrests can get wobbly after a year",
+            "HON Ignition armrests are wobbly per several long-term owners."
+          ],
           "specs": {},
           "metadata": {
-            "evidenceWeight": "2.6",
+            "evidenceWeight": "2.3",
             "sources": "3"
           },
-          "verdict": "Backed by 3 credible sources, with no consistent drawback in our sources. What reviewers liked: Under $300 the HON Ignition 2.0 offers the best adjustability for the money; the IKEA Markus is a comfortable high-back budget option.",
+          "verdict": "Backed by 3 credible sources. What reviewers liked: Markus has great lumbar for the price The main drawback they noted: HON armrests can get wobbly after a year",
           "rank": 4,
-          "bestFor": "the money"
+          "bestFor": "the price"
         }
       ],
       "methodology": "3 credible source(s) analyzed by extraction (no generative model). Products are ranked by the weight of credibility-weighted evidence; ratings are editorial estimates derived from that evidence, and any product backed only by affiliate listicles, sponsored posts, or manufacturer pages was excluded as unverified. Every price, spec, pro, and con is a span taken directly from a source — nothing is invented."
@@ -418,7 +411,7 @@
       "SanDisk Extreme Pro"
     ],
     "report": {
-      "summary": "We compared 3 portable ssds using only credibility-weighted sources (real hands-on and expert reviews, discounting marketing and affiliate listicles). The strongest evidence backs the SanDisk Extreme Pro. Every claim below links to the source it came from — nothing here is invented.",
+      "summary": "We compared 3 portable ssds using only credibility-weighted sources (real hands-on and expert reviews, discounting marketing and affiliate listicles). The strongest evidence backs the Samsung T7 Shield. Every claim below links to the source it came from — nothing here is invented.",
       "category": "portable SSDs",
       "buyersGuide": {
         "howToChoose": "Weigh the specifics each credible source actually measured over marketing claims, and prefer options backed by hands-on testing over listicle mentions.",
@@ -434,29 +427,6 @@
       },
       "products": [
         {
-          "name": "SanDisk Extreme Pro",
-          "brand": "SanDisk",
-          "price": null,
-          "rating": 4,
-          "productUrl": "",
-          "manufacturerUrl": "",
-          "imageUrl": "",
-          "pros": [
-            "SanDisk Extreme Pro is fast but check the firmware revision."
-          ],
-          "cons": [],
-          "specs": {
-            "mb/s": "1,000 MB/s"
-          },
-          "metadata": {
-            "evidenceWeight": "3.3",
-            "sources": "2"
-          },
-          "verdict": "Backed by 2 credible sources, with no consistent drawback in our sources. What reviewers liked: SanDisk Extreme Pro is fast but check the firmware revision.",
-          "rank": 1,
-          "bestFor": "most buyers in this category"
-        },
-        {
           "name": "Samsung T7 Shield",
           "brand": "Samsung",
           "price": null,
@@ -465,44 +435,67 @@
           "manufacturerUrl": "",
           "imageUrl": "",
           "pros": [
-            "The Crucial X9 Pro sustained ~1,000 MB/s for large 4K transfers; the Samsung T7 Shield is the rugged value pick with IP65.",
-            "Tom's Hardware benchmarked sustained write speeds; the Crucial X9 Pro held high sustained writes for 4K editing, Samsung T7 Shield is the rugged value pick."
+            "the Samsung T7 Shield is the rugged value pick with IP65."
           ],
           "cons": [],
           "specs": {
             "mb/s": "1,000 MB/s"
           },
           "metadata": {
-            "evidenceWeight": "3.3",
+            "evidenceWeight": "2.3",
             "sources": "3"
           },
-          "verdict": "Backed by 3 credible sources, with no consistent drawback in our sources. What reviewers liked: The Crucial X9 Pro sustained ~1,000 MB/s for large 4K transfers; the Samsung T7 Shield is the rugged value pick with IP65.",
-          "rank": 2,
-          "bestFor": "large 4K transfers"
+          "verdict": "Backed by 3 credible sources, with no consistent drawback in our sources. What reviewers liked: the Samsung T7 Shield is the rugged value pick with IP65.",
+          "rank": 1,
+          "bestFor": "most buyers in this category"
         },
         {
           "name": "Crucial X9 Pro",
           "brand": "Crucial",
           "price": null,
-          "rating": 4,
+          "rating": 3.5,
           "productUrl": "",
           "manufacturerUrl": "",
           "imageUrl": "",
           "pros": [
-            "The Crucial X9 Pro sustained ~1,000 MB/s for large 4K transfers; the Samsung T7 Shield is the rugged value pick with IP65.",
-            "Tom's Hardware benchmarked sustained write speeds; the Crucial X9 Pro held high sustained writes for 4K editing, Samsung T7 Shield is the rugged value pick."
+            "the Crucial X9 Pro held high sustained writes for 4K editing, Samsung T7 Shield is the rugged value pick."
           ],
           "cons": [],
           "specs": {
             "mb/s": "1,000 MB/s"
           },
           "metadata": {
-            "evidenceWeight": "3.3",
+            "evidenceWeight": "2.3",
             "sources": "3"
           },
-          "verdict": "Backed by 3 credible sources, with no consistent drawback in our sources. What reviewers liked: The Crucial X9 Pro sustained ~1,000 MB/s for large 4K transfers; the Samsung T7 Shield is the rugged value pick with IP65.",
+          "verdict": "Backed by 3 credible sources, with no consistent drawback in our sources. What reviewers liked: the Crucial X9 Pro held high sustained writes for 4K editing, Samsung T7 Shield is the rugged value pick.",
+          "rank": 2,
+          "bestFor": "buyers prioritizing specific tradeoffs"
+        },
+        {
+          "name": "SanDisk Extreme Pro",
+          "brand": "SanDisk",
+          "price": null,
+          "rating": 3,
+          "productUrl": "",
+          "manufacturerUrl": "",
+          "imageUrl": "",
+          "pros": [
+            "SanDisk Extreme Pro is fast"
+          ],
+          "cons": [
+            "has a history of older-gen reliability complaints."
+          ],
+          "specs": {
+            "mb/s": "1,000 MB/s"
+          },
+          "metadata": {
+            "evidenceWeight": "1.5",
+            "sources": "2"
+          },
+          "verdict": "Backed by 2 credible sources. What reviewers liked: SanDisk Extreme Pro is fast The main drawback they noted: has a history of older-gen reliability complaints.",
           "rank": 3,
-          "bestFor": "large 4K transfers"
+          "bestFor": "buyers prioritizing specific tradeoffs"
         }
       ],
       "methodology": "3 credible source(s) analyzed by extraction (no generative model). Products are ranked by the weight of credibility-weighted evidence; ratings are editorial estimates derived from that evidence, and any product backed only by affiliate listicles, sponsored posts, or manufacturer pages was excluded as unverified. Every price, spec, pro, and con is a span taken directly from a source — nothing is invented."
@@ -535,22 +528,20 @@
           "name": "Kit ConvertKit",
           "brand": "Kit",
           "price": null,
-          "rating": 5,
+          "rating": 4,
           "productUrl": "",
           "manufacturerUrl": "",
           "imageUrl": "",
           "pros": [
-            "Kit (ConvertKit) is best for creators and automations; MailerLite has the best free tier; Brevo is strong for higher volume by send-based pricing.",
-            "An expert SaaS review site hands-on tested deliverability and editor UX; Kit (ConvertKit) is best for creators, MailerLite best free tier.",
-            "Kit (ConvertKit) and MailerLite are the usual recommendations for small newsletters; MailerLite free tier is great but onboarding approval can be strict."
+            "Kit (ConvertKit) is best for creators and automations"
           ],
           "cons": [],
           "specs": {},
           "metadata": {
-            "evidenceWeight": "8.6",
+            "evidenceWeight": "1.4",
             "sources": "2"
           },
-          "verdict": "Backed by 2 credible sources, with no consistent drawback in our sources. What reviewers liked: Kit (ConvertKit) is best for creators and automations; MailerLite has the best free tier; Brevo is strong for higher volume by send-based pricing.",
+          "verdict": "Backed by 2 credible sources, with no consistent drawback in our sources. What reviewers liked: Kit (ConvertKit) is best for creators and automations",
           "rank": 1,
           "bestFor": "creators and automations"
         },
@@ -558,47 +549,46 @@
           "name": "MailerLite",
           "brand": "MailerLite",
           "price": null,
-          "rating": 4.5,
+          "rating": 4,
           "productUrl": "",
           "manufacturerUrl": "",
           "imageUrl": "",
           "pros": [
-            "Kit (ConvertKit) is best for creators and automations; MailerLite has the best free tier; Brevo is strong for higher volume by send-based pricing.",
-            "An expert SaaS review site hands-on tested deliverability and editor UX; Kit (ConvertKit) is best for creators, MailerLite best free tier.",
-            "Kit (ConvertKit) and MailerLite are the usual recommendations for small newsletters; MailerLite free tier is great but onboarding approval can be strict."
+            "MailerLite has the best free tier",
+            "MailerLite free tier is great"
           ],
           "cons": [
             "MailerLite approval/onboarding can be strict for new accounts per community reports."
           ],
           "specs": {},
           "metadata": {
-            "evidenceWeight": "6.4",
+            "evidenceWeight": "1.4",
             "sources": "2"
           },
-          "verdict": "Backed by 2 credible sources. What reviewers liked: Kit (ConvertKit) is best for creators and automations; MailerLite has the best free tier; Brevo is strong for higher volume by send-based pricing. The main drawback they noted: MailerLite approval/onboarding can be strict for new accounts per community reports.",
+          "verdict": "Backed by 2 credible sources. What reviewers liked: MailerLite has the best free tier The main drawback they noted: MailerLite approval/onboarding can be strict for new accounts per community reports.",
           "rank": 2,
-          "bestFor": "creators and automations"
+          "bestFor": "new accounts per community reports"
         },
         {
           "name": "Brevo",
           "brand": "Brevo",
           "price": null,
-          "rating": 4.5,
+          "rating": 3.5,
           "productUrl": "",
           "manufacturerUrl": "",
           "imageUrl": "",
           "pros": [
-            "Kit (ConvertKit) is best for creators and automations; MailerLite has the best free tier; Brevo is strong for higher volume by send-based pricing."
+            "Brevo is strong for higher volume by send-based pricing."
           ],
           "cons": [],
           "specs": {},
           "metadata": {
-            "evidenceWeight": "2.2",
+            "evidenceWeight": "1.4",
             "sources": "2"
           },
-          "verdict": "Backed by 2 credible sources, with no consistent drawback in our sources. What reviewers liked: Kit (ConvertKit) is best for creators and automations; MailerLite has the best free tier; Brevo is strong for higher volume by send-based pricing.",
+          "verdict": "Backed by 2 credible sources, with no consistent drawback in our sources. What reviewers liked: Brevo is strong for higher volume by send-based pricing.",
           "rank": 3,
-          "bestFor": "creators and automations"
+          "bestFor": "higher volume by send-based pricing"
         }
       ],
       "methodology": "2 credible source(s) analyzed by extraction (no generative model). Products are ranked by the weight of credibility-weighted evidence; ratings are editorial estimates derived from that evidence, and any product backed only by affiliate listicles, sponsored posts, or manufacturer pages was excluded as unverified. Every price, spec, pro, and con is a span taken directly from a source — nothing is invented."
