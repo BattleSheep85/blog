@@ -33,6 +33,10 @@ export const VALENCE = {
   plasticky: -1.6, choppy: -1.4, tinny: -1.5, harsh: -1.3, finicky: -1.5, clunky: -1.5,
   dated: -1.2, shallow: -1.1, mediocre: -1.6, wind: -0.3, rough: -1.1, truncated: -1.0,
   incomplete: -1.3, small: -0.7, tight: -0.6, fills: -0.5,
+  // extended negative coverage (con recall) — data only, no threshold changes
+  muddy: -1.4, distorts: -1.6, distortion: -1.4, distorted: -1.5, mono: -0.8,
+  crackles: -1.6, crackle: -1.4, hiss: -1.2, buzzes: -1.4, bulky: -1.3, narrow: -0.9,
+  short: -0.6, soft: -0.5, lacking: -1.6, struggles: -1.6, struggle: -1.4, pricey: -1.0,
 };
 
 // Negators flip polarity of the next few tokens.

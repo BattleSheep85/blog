@@ -29,9 +29,64 @@ const norm = (s) => String(s || '').toLowerCase().replace(/[^a-z0-9 ]+/g, ' ').r
 // a separate pro AND con, and a comparison "A and B are best; C is value" separates.
 const CLAUSE_SPLIT = /\s*(?:;|—|–|\bbut\b|\bthough\b|\bhowever\b|\bwhereas\b|\bwhile\b|\bexcept\b|\byet\b)\s+/i;
 const clausesOf = (sentence) => String(sentence || '').split(CLAUSE_SPLIT).map((c) => c.trim()).filter(Boolean);
+// Contrast markers introduce a drawback. A clause AFTER one carries a con even when a
+// positive category word cancels the negative to a mild net score ("bulky for a
+// portable speaker": bulky −1.3 + portable +1.2 ≈ −0.1).
+const CONTRAST_RE = /\b(?:but|though|however|whereas|yet)\b/i;
+function clausesWithContrast(sentence) {
+  const s = String(sentence || '');
+  const parts = s.split(CLAUSE_SPLIT);
+  const markers = s.match(new RegExp(CLAUSE_SPLIT.source, 'gi')) || [];
+  const out = [];
+  let afterContrast = false;
+  for (let i = 0; i < parts.length; i++) {
+    if (i > 0 && CONTRAST_RE.test(markers[i - 1] || '')) afterContrast = true;
+    const t = parts[i].trim();
+    if (t) out.push({ text: t, afterContrast });
+  }
+  return out;
+}
+// Tidy a clause for display: drop leading bullets/conjunctions/"label:" preambles and
+// trailing punctuation. Only removes edge noise, so the core stays a verbatim source span.
+function tidyClause(s) {
+  return String(s || '').replace(/\s+/g, ' ').trim()
+    .replace(/^[-–—•*\s]+/, '')
+    .replace(/^[A-Z][A-Za-z ]{2,24}:\s+/, '')               // "Measured on our rig: …"
+    .replace(/^(?:and|but|or|though|however|yet|so|because)\s+/i, '')
+    .replace(/[,;:\-–—\s]+$/, '')
+    .trim();
+}
+// A listicle HEADLINE / heading line (never a real pro/con). Conjunctive + bounded so a
+// short Title-Case verdict that carries a real claim ("Best Battery Life In Its Class")
+// is NOT rejected.
+function looksLikeHeadline(clean) {
+  const toks = clean.split(/\s+/);
+  const noTerminal = !/[.!?]$/.test(clean);
+  const titleRun = toks.length >= 4 && toks.filter((w) => /^[A-Z]/.test(w)).length / toks.length > 0.6;
+  const listicleShape = /^(?:the\s+)?\d+\s+best\b/i.test(clean) || /\bbest\b[^.!?]*\bfor\b\s*(?:19|20)\d\d/i.test(clean);
+  const hasClaim = (clean.toLowerCase().match(/[a-z0-9'’#-]+/g) || []).some((w) => VALENCE[w] !== undefined);
+  return (listicleShape && noTerminal) || (noTerminal && titleRun && !hasClaim);
+}
+// HTML-entity decode — MUST run before any markdown stripping or clause splitting.
+// Real jina/HTML content carries raw entities (&#9679;, &amp;, &#39;); left encoded
+// they (a) surface as literal garbage in pros/names and (b) their embedded ';' makes
+// the clause splitter cut a clause mid-word ("best low-end &amp" ). Decoding here is
+// strictly corrective — it replaces an escape with its literal source character, or
+// drops a DECORATIVE glyph (bullet/arrow/star/control) to a space; it never invents text.
+const NAMED = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: ' ', hellip: '…', mdash: '—', ndash: '–', bull: ' ', middot: ' ', rsquo: "'", lsquo: "'", ldquo: '"', rdquo: '"', deg: '°', trade: '™', reg: '®', copy: '©' };
+const safeCp = (cp) => {
+  if (!Number.isFinite(cp) || cp < 0x20) return ' ';
+  if (cp >= 0x2022 && cp <= 0x2606) return ' '; // decorative bullets/arrows/stars → space (never a claim)
+  try { return String.fromCodePoint(cp); } catch { return ' '; }
+};
+export const decodeEntities = (t) => String(t || '')
+  .replace(/&#x([0-9a-f]+);/gi, (_, h) => safeCp(parseInt(h, 16)))
+  .replace(/&#(\d+);/g, (_, d) => safeCp(parseInt(d, 10)))
+  .replace(/&([a-z]+);/gi, (m, n) => (NAMED[n.toLowerCase()] ?? ' '));
+
 // Real source content is jina MARKDOWN (links/images/headings) — strip it before any
 // extraction so link/image/url syntax never leaks into product names or facts.
-const stripMarkdown = (t) => String(t || '')
+const stripMarkdown = (t) => decodeEntities(String(t || ''))
   .replace(/!\[[^\]]*\]\([^)]*\)/g, ' ')   // images
   .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1') // links → keep text, drop url
   .replace(/https?:\/\/\S+/g, ' ')         // bare urls
@@ -53,6 +108,34 @@ const firstBrand = (toks) => {
 const YEAR_RE = /^(?:19|20)\d\d$/;
 const anyBrand = (toks) => firstBrand(toks) || toks.some((t) => BRANDS.has(t.toLowerCase()));
 const cleanTok = (t) => t.replace(/^[("'“]+|[)"'”.,;:]+$/g, '');
+
+// Trailing tokens that are never part of a product name: sentence-continuation
+// verbs + review words. Deliberately NARROW — NOT all sentiment/stopwords, which
+// would truncate legit edition names ("Charge 5 Value"); the bare-rating/ordinal
+// boundary below catches "4.0"/"2nd" structurally instead.
+const NAME_TAIL_DENY = new Set(['appears', 'delivers', 'offers', 'features', 'comes', 'makes', 'looks', 'sounds', 'tested', 'review', 'reviews', 'rated', 'ranked', 'seems', 'remains', 'stays', 'provides', 'brings', 'adds', 'impresses', 'the', 'a', 'an', 'and', 'or', 'but', 'with', 'for']);
+// Strip review-score/version/ordinal noise and trailing verbs that bled into a name.
+// Returns a NEW token array; tail-only, order-preserving, and never trims away the
+// brand+model code (which would cause a false merge in resolveCandidates).
+function trimNameTail(toks) {
+  // 1) hard boundary: a bare DECIMAL (rating/version "4.0","2.0") or dangling ordinal
+  //    ("2nd") is never part of a name — the name ends before it. Bare INTEGERS are
+  //    left alone (usually model numbers, e.g. "Motion 300").
+  let cut = toks.length;
+  for (let k = 1; k < toks.length; k++) {
+    const t = cleanTok(toks[k]);
+    if (/^\d+\.\d+$/.test(t) || /^\d+(?:st|nd|rd|th)$/i.test(t)) { cut = k; break; }
+  }
+  let out = toks.slice(0, cut);
+  // 2) drop trailing sentence-continuation/review words, but never below 2 tokens
+  //    (avoids shrinking to a bare brand → false merges).
+  while (out.length > 2 && NAME_TAIL_DENY.has(cleanTok(out[out.length - 1]).toLowerCase())) out.pop();
+  // hard guard: if trimming removed the only structural token (brand/model code), keep
+  // the original — do not over-shorten.
+  const struct = (arr) => arr.some((t) => BRANDS.has(cleanTok(t).toLowerCase()) || hasModelCode(t));
+  if (!out.length || (struct(toks) && !struct(out))) return toks;
+  return out;
+}
 
 // All candidate name strings in one sentence: Title-Case runs + brand-led runs
 // (the latter catches lowercase brands like "eufy", "iRobot").
@@ -91,6 +174,7 @@ function harvestCandidates(sources, notes) {
         // strip leading stopword/publisher/number/year tokens; trailing stopword/year
         while (toks.length && (STOPWORDS.has(toks[0].toLowerCase()) || PUBLISHERS.has(toks[0].toLowerCase()) || /^\d+$/.test(toks[0]) || YEAR_RE.test(toks[0]))) toks.shift();
         while (toks.length && (STOPWORDS.has(toks[toks.length - 1].toLowerCase()) || YEAR_RE.test(toks[toks.length - 1]))) toks.pop();
+        toks = trimNameTail(toks); // strip bled rating/version/ordinal + trailing verbs
         if (!toks.length) continue;
         const name = toks.join(' ');
         const low = name.toLowerCase();
@@ -220,12 +304,14 @@ function analyzeProduct(c, sources, otherMatchers = [], seen = new Set()) {
   // credited to this product only when the clause is about it and names no rival.
   const otherIn = (txt) => otherMatchers.some((m) => txt.toLowerCase().includes(m));
   const selfIn = (txt) => matchers.some((m) => txt.toLowerCase().includes(m));
+  const negHit = (txt) => (txt.toLowerCase().match(/[a-z0-9'’#-]+/g) || []).some((w) => (VALENCE[w] ?? 0) <= -0.8);
   const pros = [], cons = [];
   for (const ps of proConSents) {
     const sentHasRival = otherIn(ps.sentence);
-    for (const clause of clausesOf(ps.sentence)) {
-      const clean = clause.replace(/\s+/g, ' ').trim();
+    for (const cl of clausesWithContrast(ps.sentence)) {
+      const clean = tidyClause(cl.text);
       if (clean.length < 12 || clean.length > 220) continue;
+      if (looksLikeHeadline(clean)) continue; // drop listicle/heading lines, not real claims
       // multi-product sentence: keep only clauses that name THIS product and no rival.
       // single-product sentence: all its clauses attribute here (carries the "but …" con).
       if (sentHasRival && (!selfIn(clean) || otherIn(clean))) continue;
@@ -234,7 +320,11 @@ function analyzeProduct(c, sources, otherMatchers = [], seen = new Set()) {
       const { score, hits } = sentencePolarity(clean);
       if (!hits) continue;
       if (score >= 0.8) { pros.push({ text: clean, score, cred: ps.cred }); seen.add(key); }
-      else if (score <= -0.6) { cons.push({ text: clean, score, cred: ps.cred }); seen.add(key); } // cons scarce + validate-required → more sensitive
+      // con: a clearly-negative clause, OR a post-contrast ("but …") clause with a real
+      // negative term whose net is only mild because a category word cancelled it.
+      else if (score <= -0.6 || (cl.afterContrast && score < 0.2 && negHit(clean))) {
+        cons.push({ text: clean, score, cred: ps.cred }); seen.add(key);
+      }
     }
   }
   // Recall fallback: a legit, credibly-sourced product mentioned ONLY in comparisons
@@ -244,9 +334,9 @@ function analyzeProduct(c, sources, otherMatchers = [], seen = new Set()) {
   if (pros.length === 0) {
     for (const ps of proConSents) {
       let done = false;
-      for (const clause of clausesOf(ps.sentence)) {
-        const clean = clause.replace(/\s+/g, ' ').trim();
-        if (clean.length < 12 || clean.length > 220 || !selfIn(clean) || seen.has(clean.toLowerCase())) continue;
+      for (const cl of clausesWithContrast(ps.sentence)) {
+        const clean = tidyClause(cl.text);
+        if (clean.length < 12 || clean.length > 220 || looksLikeHeadline(clean) || !selfIn(clean) || seen.has(clean.toLowerCase())) continue;
         const { score, hits } = sentencePolarity(clean);
         if (hits && score >= 0.8) { pros.push({ text: clean, score, cred: ps.cred }); seen.add(clean.toLowerCase()); done = true; break; }
       }

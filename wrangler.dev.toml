@@ -1,0 +1,75 @@
+# Dev/staging Worker — tr-dev.chrisputer.tech
+#
+# A password-protected preview of UNSHIPPED work, fully isolated from production
+# (its own D1, KV, and queues). Currently running the experimental pure-ML
+# extraction synthesizer (SYNTH_ENGINE=extract) so its deterministic 0–5 ratings
+# can be compared against prod's generative-synth ratings on the same query.
+#
+# Deploy:  CLOUDFLARE_API_TOKEN=… npx wrangler deploy -c wrangler.dev.toml
+# The password wall activates because DEV_AUTH_USER (below) + DEV_AUTH_PASS
+# (secret) are set. Production (wrangler.toml) sets neither, so it is a no-op.
+
+name = "truerank-dev"
+main = "worker/index.js"
+compatibility_date = "2025-01-01"
+compatibility_flags = ["nodejs_compat"]
+routes = [
+  { pattern = "tr-dev.chrisputer.tech", custom_domain = true },
+]
+
+[assets]
+directory = "./public"
+binding = "ASSETS"
+run_worker_first = true
+
+[limits]
+cpu_ms = 300000
+
+[vars]
+ENVIRONMENT = "dev"
+# Experimental synth: deterministic pure-extraction engine (no generative model).
+SYNTH_ENGINE = "extract"
+# Dev processes research CF-side (the off-CF blackbox worker is prod-only).
+EXTERNAL_WORKER_ENABLED = "false"
+# Public half of the Basic Auth wall; DEV_AUTH_PASS is a secret.
+DEV_AUTH_USER = "dev"
+RATE_LIMIT_MAX = "20"
+RATE_LIMIT_WINDOW_SECONDS = "3600"
+CACHE_TTL_SECONDS = "86400"
+# Small independent budget so dev runs can't eat the prod allowance.
+MONTHLY_BUDGET_USD = "10"
+# No programmatic-SEO flywheel on dev.
+FLYWHEEL_DAILY_MAX = "0"
+ADSENSE_PUBLISHER_ID = "pub-6952672558994325"
+ADSENSE_SLOT_TOP = "2568816027"
+ADSENSE_SLOT_MID = "8942652687"
+ADSENSE_SLOT_BOTTOM = "7765302384"
+AMAZON_AFFILIATE_TAG = "battlesheep0a-20"
+
+# D1 Database (isolated dev copy)
+[[d1_databases]]
+binding = "DB"
+database_name = "truerank-dev-db"
+database_id = "cefca6b6-807d-4995-b59c-7e6fa23cf386"
+
+# KV Namespace (isolated dev copy)
+[[kv_namespaces]]
+binding = "KV"
+id = "41424b28a3a34afbac31dcdd213769a9"
+
+# Queue Producer
+[[queues.producers]]
+binding = "RESEARCH_QUEUE"
+queue = "truerank-dev-research"
+
+# Queue Consumer
+[[queues.consumers]]
+queue = "truerank-dev-research"
+max_batch_size = 1
+max_retries = 2
+dead_letter_queue = "truerank-dev-dlq"
+
+# Secrets (set via: wrangler secret put <NAME> -c wrangler.dev.toml):
+#   OPENROUTER_API_KEY — paid OpenRouter key (planner/classifier; synth is local)
+#   SERPER_API_KEY     — Serper.dev Google Search
+#   DEV_AUTH_PASS      — Basic Auth password for the dev wall

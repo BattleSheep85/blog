@@ -57,9 +57,71 @@
             var input = form.querySelector('input[name="query"]');
             var query = (input && input.value || '').trim();
             if (query.length < 3) return;
-            startResearch(query);
+            beginResearch(query);
         });
     });
+
+    function esc(s) {
+        return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+            return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+        });
+    }
+
+    // Inquisitive step: classify the query first. If it has need-questions, show
+    // them with a one-tap "Just search for it" skip; otherwise go straight to
+    // research. Fail-OPEN on any error so research is never blocked.
+    function beginResearch(query) {
+        setFormsBusy(true);
+        fetch('/api/classify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ query: query }),
+        })
+            .then(readJson)
+            .then(function (data) {
+                if (data && data.accept === false && data.reject_message) { showError(data.reject_message); return; }
+                var qs = (data && data.clarifying_questions) || [];
+                if (qs.length > 0) { renderClarify(query, qs); }
+                else { startResearch(query, null); }
+            })
+            .catch(function () { startResearch(query, null); }); // fail-open
+    }
+
+    function renderClarify(query, questions) {
+        var sec = document.getElementById('clarify-section');
+        if (!sec) { startResearch(query, null); return; }
+        var h = '<div class="mx-auto max-w-2xl rounded-xl border border-line bg-surface-1 p-6 shadow-card text-left">';
+        h += '<h2 class="font-serif text-h3 font-semibold text-ink mb-1">A couple quick questions</h2>';
+        h += '<p class="text-body-sm text-ink-3 mb-5">Your answers sharpen the pick — or skip them and just search it as-is.</p>';
+        h += '<form id="clarify-inline-form">';
+        questions.forEach(function (q, i) {
+            h += '<fieldset class="clarify-q mb-4 border-0 p-0"><legend class="font-sans text-body-sm font-semibold text-ink mb-2">' + esc(q.question) + '</legend><div class="chip-row flex flex-wrap gap-2">';
+            (q.suggested_answers || []).forEach(function (a, j) {
+                var id = 'cq' + i + '_' + j;
+                h += '<label class="chip" for="' + id + '"><input type="radio" id="' + id + '" name="q_' + esc(q.key) + '" value="' + esc(a) + '"><span>' + esc(a) + '</span></label>';
+            });
+            h += '</div></fieldset>';
+        });
+        h += '<div class="flex flex-wrap gap-2 mt-5">';
+        h += '<button type="submit" class="inline-flex flex-1 items-center justify-center rounded-lg bg-accent-strong px-4 py-2 text-body-sm font-semibold text-white transition-colors hover:bg-accent-hover" style="min-width:9rem">Run research</button>';
+        h += '<button type="button" data-skip class="inline-flex items-center justify-center rounded-lg border border-line bg-surface-1 px-4 py-2 text-body-sm font-semibold text-ink transition-colors hover:bg-surface-2">Just search for it</button>';
+        h += '</div></form></div>';
+        sec.innerHTML = h;
+        showSection('clarify');
+        scrollToEl(sec);
+        var form = document.getElementById('clarify-inline-form');
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            var clar = {};
+            questions.forEach(function (q) {
+                var sel = form.querySelector('input[name="q_' + (window.CSS && CSS.escape ? CSS.escape(q.key) : q.key) + '"]:checked');
+                if (sel) clar[q.key] = sel.value;
+            });
+            startResearch(query, clar);
+        });
+        var skip = form.querySelector('[data-skip]');
+        if (skip) skip.addEventListener('click', function () { startResearch(query, null); });
+    }
 
     function setFormsBusy(busy) {
         searchForms.forEach(function (form) {
@@ -108,7 +170,7 @@
         return fallback + (m ? ' (' + m + ')' : '');
     }
 
-    function startResearch(query) {
+    function startResearch(query, clarifications) {
         setFormsBusy(true);
         showSection('progress');
         clearProgress();
@@ -116,10 +178,12 @@
         // Scroll the working area into view (hero search may be far up).
         scrollToEl(document.getElementById('progress-section'));
 
+        var reqBody = { query: query };
+        if (clarifications && Object.keys(clarifications).length) reqBody.clarifications = clarifications;
         fetch('/api/research', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ query: query }),
+            body: JSON.stringify(reqBody),
         })
             .then(readJson)
             .then(function (data) {
@@ -209,7 +273,7 @@
     }
 
     function showSection(name) {
-        ['progress', 'error'].forEach(function (s) {
+        ['progress', 'error', 'clarify'].forEach(function (s) {
             var el = document.getElementById(s + '-section');
             if (el) el.classList.toggle('hidden', s !== name);
         });

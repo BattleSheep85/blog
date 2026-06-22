@@ -14,7 +14,7 @@ import { handleProductImage } from './handlers/image.js';
 import { runResearchPipeline, monthlySpendUsd, monthlyBudgetUsd } from './pipeline/orchestrator.js';
 import { renderResearchResult } from './pages/research-page.js';
 import { renderClarifyPage, extractClarifications } from './pages/clarify.js';
-import { classifyQuery } from './lib/classifier.js';
+import { classifyQuery, userFacingRejection } from './lib/classifier.js';
 import { renderBrowse } from './pages/browse.js';
 import { renderCategoryHub } from './pages/category.js';
 import { handleSubscribe } from './handlers/subscribe.js';
@@ -43,6 +43,34 @@ function externalWorkerEnabled(env) {
   return v === true || v === 'true' || v === '1';
 }
 
+// Dev-only HTTP Basic Auth wall. Active ONLY when BOTH DEV_AUTH_USER and
+// DEV_AUTH_PASS are set in the environment — production never sets them, so this
+// is a complete no-op there. When active it guards the ENTIRE surface (pages,
+// API, assets) so the unshipped extraction build stays private. Returns a 401
+// Response to short-circuit, or null to allow the request through.
+function requireDevAuth(request, env) {
+  const user = env.DEV_AUTH_USER;
+  const pass = env.DEV_AUTH_PASS;
+  if (!user || !pass) return null; // gate disabled (e.g. production)
+  const header = request.headers.get('Authorization') || '';
+  if (header.startsWith('Basic ')) {
+    let decoded = '';
+    try { decoded = atob(header.slice(6)); } catch { decoded = ''; }
+    const idx = decoded.indexOf(':');
+    if (idx >= 0 && decoded.slice(0, idx) === user && decoded.slice(idx + 1) === pass) {
+      return null; // credentials valid
+    }
+  }
+  return new Response('Authentication required.', {
+    status: 401,
+    headers: {
+      'WWW-Authenticate': 'Basic realm="TrueRank Dev", charset="UTF-8"',
+      'Cache-Control': 'no-store',
+      'Content-Type': 'text/plain; charset=utf-8',
+    },
+  });
+}
+
 export default {
     /**
      * HTTP request handler — routes to appropriate handler.
@@ -64,10 +92,34 @@ export default {
             });
         }
 
+        // Dev-only password wall (no-op in production — see requireDevAuth).
+        const devAuth = requireDevAuth(request, env);
+        if (devAuth) return devAuth;
+
         try {
             // ── API routes ──────────────────────────────────────────────────
             if (path === '/api/research' && method === 'POST') {
                 return handleStartResearch(request, env);
+            }
+
+            // Pre-research classify: powers the inquisitive UX. The home search box
+            // calls this first; if the query has need-questions the client shows them
+            // (with a one-tap "Just search for it" skip) before starting research.
+            // Fail-OPEN — any error returns accept:true with no questions so research
+            // is never blocked. KV-cached classify, so this is cheap/fast.
+            if (path === '/api/classify' && method === 'POST') {
+                let cbody;
+                try { cbody = await request.json(); } catch { cbody = {}; }
+                const cq = String(cbody.query || '').trim();
+                const jres = (obj) => new Response(JSON.stringify(obj), { headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } });
+                if (cq.length < 3 || cq.length > 500) return jres({ accept: true, clarifying_questions: [] });
+                try {
+                    const c = await classifyQuery(env, cq, null);
+                    if (!c.accept) return jres({ accept: false, reject_message: userFacingRejection(c.reject_reason), clarifying_questions: [] });
+                    return jres({ accept: true, clarifying_questions: c.clarifying_questions || [], suggested_refinement: c.suggested_refinement || null });
+                } catch {
+                    return jres({ accept: true, clarifying_questions: [] }); // fail-open
+                }
             }
 
             const eventsMatch = path.match(/^\/api\/research\/([a-z0-9-]+)\/events$/);

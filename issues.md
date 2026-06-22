@@ -1,6 +1,44 @@
 # Issues
 
-Last updated: 2026-06-21
+Last updated: 2026-06-22
+
+## 2026-06-22 — Dev-box work (on tr-dev only; NOT prod, NOT committed)
+
+User testing of the password-protected dev box (tr-dev.chrisputer.tech, extraction engine) drove these.
+
+- [ ] HIGH (OPS): **Serper search key shared dev+prod, free quota EXHAUSTED by dev testing.**
+      `web_search` returns 0 ("Not enough credits") → engine finds 0 sources → research fails
+      "No reliable products found." Likely degrades PROD search too. DDG fallback is blocked
+      from Cloudflare edge IPs (works from shell, 0 from Worker), so the free fallback doesn't
+      save it. FIX: user topping up Serper (paid); also give dev its OWN key. Follow-up: a
+      CF-friendly general-search fallback (Brave API / self-hosted SearXNG on blackbox).
+- [x] HIGH (QUALITY): extraction output defects — name bleed ("Motion 300 Appears",
+      "SRS-XB100 4.0 Excellent", "Micro 2nd"), HTML-entity garbage in pros, listicle headlines
+      as pros, best_for="under", near-zero cons. Fixed Q1-Q6 in worker/engine/extract/* +
+      prose.js; gated by benchmarks/extract-eval.mjs (new messy fixtures + name_dirty/entity/
+      text_ungrounded/bestfor_dirty/avg_cons gates). ALL GATES PASS.
+- [x] HIGH (UX): a rating (e.g. 3.5/5) was shown with NO explanation and often zero cons —
+      user couldn't tell why a low-rated product was suggested. Fixed: always surface cons +
+      a render-time "Why X/5:" rationale line (research-page.js ratingNote()); low ratings
+      now say "recommended only if it fits a specific need." Applies to extraction + synth.
+- [x] HIGH (UX, reviewer feedback): a buyer won't purchase a sub-4★ pick without reading the
+      actual criticism first ("won't buy below 4★ unless I can read the low ratings"). Added a
+      prominent "⚠ Why some reviewers rated it low" block (research-page.js criticalReviewsBlock)
+      for products rated <4 (and unrated): surfaces the critical points, framed "decide whether
+      it's a dealbreaker for you", with an honest note when no criticism was found. Shows on
+      both product cards and the Our-pick box. Verified on dev. [DEPLOY TO PROD pending Serper +
+      ship-gate.]
+- [ ] MEDIUM (DEEPEN): the critical block reuses extracted `cons`. A stronger version would
+      capture verbatim 1-2★ review excerpts with source/star attribution so buyers read real
+      negative reviews, not summarized clauses. Follow-up after Serper restored.
+- [x] MEDIUM (UX): presumptive — the home search box bypassed the clarify step (app.js POSTed
+      /api/research directly). Now classifies first via /api/classify and shows inline
+      need-questions with a one-tap "Just search for it" skip.
+- [x] PERF: agent-loop latency (~135s) — planner reasoning:{effort:low}, concurrent+
+      budget-admitted tool calls (engine.js), synth throughput provider routing, classifier
+      strict structured outputs. Mechanics verified (LLM params accepted live; caught a gemini
+      `quantizations` 404 in testing → planner provider dropped). Wall-clock unmeasured until
+      Serper restored.
 
 ## 2026-06-21 — UX: "Unexpected token '<'" on research submit (HTML instead of JSON)
 

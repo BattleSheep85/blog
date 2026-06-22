@@ -24,6 +24,23 @@ const ENGINE_CONFIG = {
   // Turn thinking OFF for synthesis and give the report a generous token ceiling.
   synthReasoning: { enabled: false },
   synthMaxTokens: 16000,
+  // ── speed knobs (OpenRouter platform levers) ──────────────────────────────
+  // The agent loop is tool-ROUTING, not deep reasoning — cap thinking tokens per
+  // turn. Biggest accuracy-safe wall-clock lever on the sequential MAX_TURNS path.
+  plannerReasoning: { effort: 'low' },
+  // NO provider object for the planner: gemini-2.5-flash is served by a SINGLE
+  // provider (Google) on OpenRouter that does not expose a quantization tag, so a
+  // `quantizations` filter 404s ("no endpoints"), and sort/max_price can only hurt
+  // (filter to zero) with no routing benefit. The planner's real speed lever is
+  // reasoning:{effort:'low'} above. Verified empirically 2026-06-22.
+  plannerProvider: null,
+  // Synth (kimi-k2.6) IS multi-provider, so throughput-sort genuinely shortens the
+  // long stream; fp8+ quantization guards accuracy; allow_fallbacks keeps failover.
+  // Verified accepted by OpenRouter 2026-06-22.
+  synthProvider: { sort: 'throughput', allow_fallbacks: true, quantizations: ['fp8', 'fp16', 'bf16', 'fp32'] },
+  // Cap a hung planner routing turn well below the synth budget (the loop retries
+  // once on error, so a rare false abort self-heals). gemini tool turns finish in s.
+  plannerHardMs: 45_000,
   maxConcurrency: 6, // parallel sub-researchers (raised on the off-CF worker)
   reportSections: ['summary', 'products', 'comparison', 'categories', 'pitfalls', 'buyerGuide', 'methodology'],
   requireTurnstile: false,

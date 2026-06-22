@@ -58,6 +58,18 @@ export async function runResearchPipeline(env, reportId, query) {
             query, config, env.OPENROUTER_API_KEY, env, onEvent, facets, topicalCategory, clarifications,
         );
 
+        // Dev-only: stash the raw extractor input (notes + full source text) so we
+        // can build regression fixtures from authentic messy pages. No-op in prod.
+        if (env.ENVIRONMENT === 'dev') {
+            try {
+                await env.KV.put(`debug:extract-input:${reportId}`, JSON.stringify({
+                    query, facets, topicalCategory,
+                    notes: engine.notes || [],
+                    sources: (engine.sources || []).map((s) => ({ url: s.url, title: s.title, credibility: s.credibility, content: s.content })),
+                }), { expirationTtl: 7 * 86400 });
+            } catch (e) { console.log('[dev] extract-input stash failed:', e?.message); }
+        }
+
         await persistEngineResult(env, reportId, query, facets, topicalCategory, engine, row.slug, progress);
     } catch (err) {
         console.error('Pipeline error:', err);

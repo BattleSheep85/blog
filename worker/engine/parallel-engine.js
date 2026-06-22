@@ -51,14 +51,14 @@ SELF-HOSTED / OPEN-SOURCE COVERAGE (critical — do not skip): if the query is a
 
 Output ONLY JSON: {"aspects":[{"title":"<short>","queries":["q1","q2",...]}]}.`;
 
-async function decompose(query, key, plannerModel, nAspects, perAspect) {
+async function decompose(query, key, plannerModel, nAspects, perAspect, plannerOpts = {}) {
   const messages = [
     { role: 'system', content: DECOMPOSE_SYSTEM },
     { role: 'user', content: `Query: "${query}"\nProduce exactly ${nAspects} aspects, each with ${perAspect} search queries.` },
   ];
   let cost = 0;
   try {
-    const resp = await callLLM(key, plannerModel, messages);
+    const resp = await callLLM(key, plannerModel, messages, { ...plannerOpts });
     if (Number.isFinite(resp.usage?.cost)) cost = resp.usage.cost;
     const raw = resp.choices?.[0]?.message?.content ?? '';
     const m = raw.match(/```(?:json)?\s*([\s\S]*?)```/);
@@ -82,7 +82,7 @@ async function decompose(query, key, plannerModel, nAspects, perAspect) {
 // ── Step 4: batched finding extraction from full read pages ─────────────────
 const NOTE_SYSTEM = `You extract factual research findings for an honest product report. From the source pages below (each prefixed with its credibility tags), write concise notes: product names, specs, measured results, prices, pros, cons, and known issues — each with the source it came from. Respect credibility: treat [listicle]/[affiliate-conflict]/[manufacturer] claims as marketing, never launder hype as fact. Output ONLY JSON: {"notes":[{"category":"product|comparison|issue|pricing|recommendation","content":"<finding with source attribution>"}]}.`;
 
-async function extractNotes(query, batch, key, plannerModel) {
+async function extractNotes(query, batch, key, plannerModel, plannerOpts = {}) {
   const block = batch.map((s, i) => {
     const tags = (s.credibility?.tags || []).map((t) => `[${t}]`).join('');
     return `### SOURCE ${i + 1} ${tags} ${s.title}\n${s.url}\n${(s.content || '').slice(0, 2200)}`;
@@ -92,7 +92,7 @@ async function extractNotes(query, batch, key, plannerModel) {
     { role: 'user', content: `Query: "${query}"\n\n${block}` },
   ];
   try {
-    const resp = await callLLM(key, plannerModel, messages, undefined, undefined, 2000);
+    const resp = await callLLM(key, plannerModel, messages, { maxTokens: 2000, ...plannerOpts });
     const cost = Number.isFinite(resp.usage?.cost) ? resp.usage.cost : 0;
     const raw = resp.choices?.[0]?.message?.content ?? '';
     const m = raw.match(/```(?:json)?\s*([\s\S]*?)```/);
@@ -109,9 +109,11 @@ export async function runParallelEngine(query, config, openrouterKey, env, onEve
 
   const target = config.maxSearches ?? 50;
   const nAspects = clamp(Math.round(target / PER_ASPECT_QUERIES), 4, 16);
+  // OpenRouter speed knobs for the planner-model calls (decompose + note extraction).
+  const plannerOpts = { reasoning: config.plannerReasoning, provider: config.plannerProvider };
 
   await emit(onEvent, 'status', `Planning ${nAspects} research angles...`);
-  const { aspects, cost: dc } = await decompose(query, openrouterKey, config.plannerModel, nAspects, PER_ASPECT_QUERIES);
+  const { aspects, cost: dc } = await decompose(query, openrouterKey, config.plannerModel, nAspects, PER_ASPECT_QUERIES, plannerOpts);
   totalCostUsd += dc;
 
   // Guaranteed coverage for category-leading FOSS/self-hosted projects that
@@ -162,7 +164,7 @@ export async function runParallelEngine(query, config, openrouterKey, env, onEve
   // 4. Batched finding extraction from the pages that actually returned body text.
   const readOk = toRead.filter((s) => (s.content?.length ?? 0) > 300);
   await emit(onEvent, 'status', `Extracting findings from ${readOk.length} pages...`);
-  const noteRes = await runPool(chunk(readOk, NOTE_BATCH).map((b) => () => extractNotes(query, b, openrouterKey, config.plannerModel)), 6);
+  const noteRes = await runPool(chunk(readOk, NOTE_BATCH).map((b) => () => extractNotes(query, b, openrouterKey, config.plannerModel, plannerOpts)), 6);
   const notes = [];
   for (const r of noteRes) { if (!r) continue; totalCostUsd += r.cost || 0; for (const n of r.notes) notes.push(n); }
   console.log(`[parallel] ${aspects.length} aspects, ${tasks.length} searches, ${sources.length} sources, ${readOk.length} read, ${notes.length} notes`);
@@ -182,12 +184,12 @@ export async function runParallelEngine(query, config, openrouterKey, env, onEve
 
   let synthContent = '';
   try {
-    const sr = await callLLMStreaming(openrouterKey, config.synthModel, synthMessages, (_d, acc) => announceProduct(acc), config.synthReasoning, config.synthMaxTokens);
+    const sr = await callLLMStreaming(openrouterKey, config.synthModel, synthMessages, (_d, acc) => announceProduct(acc), { reasoning: config.synthReasoning, maxTokens: config.synthMaxTokens, provider: config.synthProvider });
     synthContent = sr.content;
     if (Number.isFinite(sr.usage?.cost)) totalCostUsd += sr.usage.cost;
   } catch (err) {
     console.error('[parallel] synth stream failed:', err instanceof Error ? err.message : String(err));
-    const retry = await callLLM(openrouterKey, config.synthModel, synthMessages, undefined, config.synthReasoning, config.synthMaxTokens);
+    const retry = await callLLM(openrouterKey, config.synthModel, synthMessages, { reasoning: config.synthReasoning, maxTokens: config.synthMaxTokens, provider: config.synthProvider });
     if (Number.isFinite(retry.usage?.cost)) totalCostUsd += retry.usage.cost;
     synthContent = retry.choices?.[0]?.message?.content ?? '';
   }
@@ -197,7 +199,7 @@ export async function runParallelEngine(query, config, openrouterKey, env, onEve
   let parsed = extractJson(synthContent);
   if (parsed === null) {
     console.warn('[parallel] streamed JSON unparseable, retrying non-streaming');
-    const retry = await callLLM(openrouterKey, config.synthModel, synthMessages, undefined, config.synthReasoning, config.synthMaxTokens);
+    const retry = await callLLM(openrouterKey, config.synthModel, synthMessages, { reasoning: config.synthReasoning, maxTokens: config.synthMaxTokens, provider: config.synthProvider });
     if (Number.isFinite(retry.usage?.cost)) totalCostUsd += retry.usage.cost;
     parsed = extractJson(retry.choices?.[0]?.message?.content ?? '');
     if (parsed === null) throw Object.assign(new Error('Invalid JSON from synthesis'), { totalCostUsd });
