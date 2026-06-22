@@ -113,10 +113,30 @@ const isBoilerplate = (name) => {
     || /^(?:bluetooth|displayport|hdmi|usb|wi-?fi|android|ios|version|chapter|step|figure|table|page|vol|gen|win|macos|category|section)\s+\d+$/i.test(t)
     || /\d{1,2}:\d{2}/.test(n)
     || /\b(?:january|february|march|april|may|june|july|august|september|october|november|december)\s+\d{1,2}\b/i.test(n)
-    || /^(?:over|under|up to|from|about|around|approx|nearly|almost|less than|more than)\s+\$?\d/i.test(t)
+    || /^(?:over|under|up to|from|about|around|approx|nearly|almost|less than|more than|at|with|for|the|a|an)\s+\$?\d/i.test(t) // "At 52g", "Over 100"
+    || /^\d+(?:\.\d+)?\s*(?:k|m|g|kg|mm|cm|hz|mah|wh|w|gb|tb|ms|nits|lbs?|oz|fps|hrs?|hours?)$/i.test(t)                       // bare spec/measure "52g", "144K"
     || /\b(\w+)\s+\1\b/i.test(n)
+    || ((n.match(/\b(facebook|google|microsoft|meta|twitter|youtube|reddit|instagram|tiktok|linkedin|wikipedia|netflix)\b/gi) || []).length >= 2) // company-list sentence fragment
     || /\b(privacy|cookies?|terms of|subscribe|newsletter|sign in|log in|skip to|table of contents|all rights)\b/i.test(n);
 };
+// Distinct known brands in a token list — 3+ is a company LIST ("Apple Facebook Google
+// Microsoft"), not a product; a 2nd NON-ADJACENT brand is two products merged
+// ("Apple AirPods | Sony XM6") and the name should be truncated at it.
+function brandTruncate(toks) {
+  let first = -1, cut = toks.length; const seen = new Set();
+  for (let k = 0; k < toks.length; k++) {
+    if (BRANDS.has(cleanTok(toks[k]).toLowerCase())) {
+      seen.add(cleanTok(toks[k]).toLowerCase());
+      if (first < 0) first = k;
+      else if (k > first + 1) { cut = k; break; } // non-adjacent 2nd brand → cut (merge)
+    }
+  }
+  const out = toks.slice(0, cut);
+  // Drop if 3+ distinct brands (a company LIST), or the result is ENTIRELY brands/
+  // stopwords with no model token ("Apple Facebook", "Anker Soundcore" alone).
+  const allBrandOrStop = out.length >= 2 && out.every((t) => { const l = cleanTok(t).toLowerCase(); return BRANDS.has(l) || STOPWORDS.has(l); });
+  return { toks: out, drop: seen.size >= 3 || allBrandOrStop };
+}
 const firstBrand = (toks) => {
   const l = toks.map((t) => t.toLowerCase());
   if (l.length >= 2 && BRANDS.has(`${l[0]} ${l[1]}`)) return `${toks[0]} ${toks[1]}`;
@@ -197,7 +217,9 @@ function harvestCandidates(sources, notes) {
         // strip leading stopword/publisher/number/year tokens; trailing stopword/year
         while (toks.length && (STOPWORDS.has(toks[0].toLowerCase()) || PUBLISHERS.has(toks[0].toLowerCase()) || /^\d+$/.test(toks[0]) || YEAR_RE.test(toks[0]))) toks.shift();
         while (toks.length && (STOPWORDS.has(toks[toks.length - 1].toLowerCase()) || YEAR_RE.test(toks[toks.length - 1]))) toks.pop();
-        toks = trimNameTail(toks); // strip bled rating/version/ordinal + trailing verbs
+        const bt = brandTruncate(toks); // split a 2-product merge; flag a 3+ brand list
+        if (bt.drop) continue;
+        toks = trimNameTail(bt.toks); // strip bled rating/version/ordinal + trailing verbs
         if (!toks.length) continue;
         const name = toks.join(' ');
         const low = name.toLowerCase();
@@ -459,6 +481,7 @@ export function analyze(query, notes, sources) {
   const allMatch = harvested.map((c) => ({ c, m: aliasMatchers(c) }));
   const seen = new Set(); // a given clause is used as a pro/con for at most ONE product
   const products = [];
+  let _zeroPC = 0, _corrob = 0;
   for (const c of harvested) {
     const others = allMatch.filter((x) => x.c !== c).flatMap((x) => x.m).filter((m) => m.length > 2);
     const a = analyzeProduct(c, cleanSources, others, seen);
@@ -467,11 +490,13 @@ export function analyze(query, notes, sources) {
     // (≥2 credible sources, OR a strong hands-on/expert source plus ≥2 real pros/cons).
     // Real pages flood the harvester with one-off brand mentions; corroboration prunes them.
     const credible = a.support.filter((s) => s.score >= MIN_CREDIBLE_SCORE && !s.tags.every((t) => NONCREDIBLE_GENRES.has(t)));
-    if (a.pros.length === 0 && a.cons.length === 0) continue;
-    // Corroboration: ≥2 credible sources, OR a single credible source with SUBSTANTIVE
-    // coverage (both a pro AND a con). One-off real-data noise mentions (a stray
-    // positive) get dropped; a genuinely discussed single-source product is kept.
-    if (!(credible.length >= 2 || (credible.length >= 1 && a.pros.length >= 1 && a.cons.length >= 1))) continue;
+    if (a.pros.length === 0 && a.cons.length === 0) { _zeroPC++; continue; }
+    // INCLUSION: require ≥1 CREDIBLE source (non-listicle/affiliate/manufacturer) — this
+    // is the fabricated-trap suppressor (a trap has only promotional support → 0 credible
+    // → dropped). We deliberately DO NOT require extra corroboration anymore: the goal is
+    // COMPREHENSIVE honest coverage (show every real, credibly-mentioned product), not a
+    // curated top-few. Thin products are surfaced with their evidence + honest caveats.
+    if (credible.length < 1) { _corrob++; continue; }
     const rating = rate(a.pros, a.cons, credible.length);
     const weight = credible.reduce((s, x) => s + x.score, 0); // credible evidence mass for ranking
     products.push({
@@ -487,7 +512,10 @@ export function analyze(query, notes, sources) {
   // score), then credible-evidence mass as the tiebreaker. Ranking by mention-count
   // alone wrongly floats the "cheap alternative" above the actual top pick.
   products.sort((a, b) => b.rating - a.rating || b._weight - a._weight);
-  const capped = products.slice(0, 10); // cap — real data can surface many; show the best-evidenced
+  if (typeof process !== 'undefined' && process.env && process.env.DEBUG_FUNNEL) {
+    console.error(`[funnel] harvested=${harvested.length} dropZeroProCon=${_zeroPC} dropCredible=${_corrob} passed=${products.length} → shown=${Math.min(products.length, 40)}`);
+  }
+  const capped = products.slice(0, 40); // generous cap — comprehensive coverage, ranked best-first
   capped.forEach((p, i) => { p.rank = i + 1; });
   return capped;
 }
