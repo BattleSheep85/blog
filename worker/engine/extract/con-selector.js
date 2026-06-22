@@ -7,8 +7,13 @@
 // LLM is far better at recognizing a drawback phrased without a sentiment keyword
 // ("the app is required to change EQ"), but it is allowed to recognize, not invent.
 import { callLLM } from '../llm.js';
+import { sentencePolarity } from './engine.js';
 
 const gNorm = (s) => String(s || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').replace(/\s+/g, ' ').trim();
+// "video playback isn't a problem", "no issues", "not a dealbreaker" — a NEGATED
+// negative is PRAISE, not a con. The grounding gate can't catch this (it's a real
+// span); a polarity guard must.
+const POSITIVE_NEGATION = /\b(?:isn'?t|aren'?t|wasn'?t|not|no|never|without|hardly|rarely) (?:a |an |any |really |much )?(?:problem|issue|issues|con|cons|downside|drawback|deal.?breaker|complaint|concern|trouble|fuss|compromise|sacrifice|disappoint\w*)\b/i;
 
 const SELECT_SYSTEM = `You extract CRITICISM for an honesty-first product tool. You are given numbered REVIEW SENTENCES about ONE product. Return only the ones that state a DRAWBACK, limitation, complaint, missing feature, or caveat about THIS product.
 
@@ -49,6 +54,8 @@ export async function selectCons(productName, spans, apiKey, model, maxCons = 3)
     const g = gNorm(t);
     if (g.length < 8 || t.length > 220) continue;
     if (!corpus.includes(g)) continue;          // invented / paraphrased-too-far → DROP
+    if (POSITIVE_NEGATION.test(t)) continue;     // "isn't a problem" = praise, not a con
+    if (sentencePolarity(t).score >= 0.8) continue; // clearly-positive span → not a con
     if (used.has(g)) continue;
     used.add(g); out.push(t);
     if (out.length >= maxCons) break;
