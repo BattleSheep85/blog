@@ -6,7 +6,7 @@
 import {
   parseProductFilters, isNarrowed, buildProductWhere, orderByClause, reviewsHref,
   priceBand, PRICE_BANDS, RATING_OPTIONS,
-} from './product-search.js';
+} from '../../worker/lib/product-search.js';
 
 // get-accessor over a plain object (mirrors URLSearchParams.get → string|null).
 const getOf = (o) => (n) => (n in o ? String(o[n]) : null);

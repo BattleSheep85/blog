@@ -1,5 +1,5 @@
 // Full-coverage assertions for affiliate-links.js (pure URL tagging).
-import { buildAffiliateUrl, buildAmazonSearchFallback, retailerLabel } from './affiliate-links.js';
+import { buildAffiliateUrl, buildAmazonSearchFallback, retailerLabel } from '../../worker/lib/affiliate-links.js';
 
 export function runAffiliateLinksTests() {
   const report = { passed: 0, failed: 0, failures: [] };

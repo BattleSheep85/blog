@@ -16,7 +16,7 @@ import {
   isManufacturerDomain,
   scoreSource,
   formatCredibilityBadge,
-} from './credibility.js';
+} from '../../worker/lib/credibility.js';
 
 // TestReport = { passed: number, failed: number, failures: string[] }
 // Case = [name, actual, expected]

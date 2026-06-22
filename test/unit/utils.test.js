@@ -3,7 +3,7 @@ import {
   slugify, generateSlug, isValidHttpsUrl, sanitizeUrl, escapeLikeWildcards,
   escapeHtml, escapeXml, displayQuery, isNotModified, timeAgo, parseJsonSafe,
   publicResearchFilter, canonicalizeQuery,
-} from './utils.js';
+} from '../../worker/lib/utils.js';
 
 export function runUtilsTests() {
   const report = { passed: 0, failed: 0, failures: [] };

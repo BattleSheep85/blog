@@ -5,9 +5,9 @@
 // ≥3 better picks remain, without ever punishing honest null ratings or cheap-
 // but-reputable budget brands.
 
-import { applyQualityGate, MIN_RATING, validateResearchResult } from './validate.js';
-import { isChurnBrand } from '../lib/brand-quality.js';
-import { fossLeadersFor } from '../lib/foss-leaders.js';
+import { applyQualityGate, MIN_RATING, validateResearchResult } from '../../worker/engine/validate.js';
+import { isChurnBrand } from '../../worker/lib/brand-quality.js';
+import { fossLeadersFor } from '../../worker/lib/foss-leaders.js';
 
 // Minimal product factory — only the fields the gate reads. `brand` defaults to
 // the first word of the name (so churn detection has something to match) but can

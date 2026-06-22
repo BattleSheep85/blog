@@ -6,7 +6,7 @@
 // asserts it produces HTML without throwing, with the right indexable/noindex
 // signal. Cheap insurance against shipping another render 500.
 
-import { renderReviewsPage } from '../pages/reviews.js';
+import { renderReviewsPage } from '../../worker/pages/reviews.js';
 
 const PRODUCT = {
   id: 'abcd1234', name: 'Synology DS224+', brand: 'Synology', price: 499, rating: 4.5,

@@ -8,16 +8,16 @@
 import test from 'node:test';
 import assert from 'node:assert';
 
-import { runCredibilityTests } from '../worker/lib/credibility.test.js';
-import { runValidateTests } from '../worker/engine/validate.test.js';
-import { runProductSearchTests } from '../worker/lib/product-search.test.js';
-import { runReviewsRenderTests } from '../worker/pages/reviews.test.js';
-import { runCredibilityExtraTests } from '../worker/lib/credibility-extra.test.js';
-import { runPromptsTests } from '../worker/engine/prompts.test.js';
-import { runLlmTests } from '../worker/engine/llm.test.js';
-import { runUtilsTests } from '../worker/lib/utils.test.js';
-import { runAffiliateLinksTests } from '../worker/lib/affiliate-links.test.js';
-import { runLibPureTests } from '../worker/lib/lib-pure.test.js';
+import { runCredibilityTests } from '../test/unit/credibility.test.js';
+import { runValidateTests } from '../test/unit/validate.test.js';
+import { runProductSearchTests } from '../test/unit/product-search.test.js';
+import { runReviewsRenderTests } from '../test/unit/reviews.test.js';
+import { runCredibilityExtraTests } from '../test/unit/credibility-extra.test.js';
+import { runPromptsTests } from '../test/unit/prompts.test.js';
+import { runLlmTests } from '../test/unit/llm.test.js';
+import { runUtilsTests } from '../test/unit/utils.test.js';
+import { runAffiliateLinksTests } from '../test/unit/affiliate-links.test.js';
+import { runLibPureTests } from '../test/unit/lib-pure.test.js';
 
 const suites = [
   ['credibility', runCredibilityTests],

@@ -1,7 +1,7 @@
 // Supplemental credibility coverage: the functions the main rubric suite
 // (credibility.test.js) doesn't exercise — extractAmazonProductUrls, the hostOf
 // catch (invalid URL), and the video-source scoring prior.
-import { extractAmazonProductUrls, isExpertDomain, scoreSource } from './credibility.js';
+import { extractAmazonProductUrls, isExpertDomain, scoreSource } from '../../worker/lib/credibility.js';
 
 export function runCredibilityExtraTests() {
   const report = { passed: 0, failed: 0, failures: [] };

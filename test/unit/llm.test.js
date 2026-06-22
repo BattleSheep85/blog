@@ -1,6 +1,6 @@
 // Coverage for the pure helpers in llm.js: the reasoning-effort time budgets and
 // the context-pruning algorithm (truncate middle tool outputs, then drop oldest).
-import { llmBudgetMs, pruneMessages } from './llm.js';
+import { llmBudgetMs, pruneMessages } from '../../worker/engine/llm.js';
 
 export function runLlmTests() {
   const report = { passed: 0, failed: 0, failures: [] };

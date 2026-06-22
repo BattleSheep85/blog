@@ -2,8 +2,8 @@
 // assertions also lock in the load-bearing honesty/quality rules (brand-quality,
 // open-source inclusion, rank-tracks-quality) so an accidental edit can't silently
 // drop them.
-import { buildAgentPrompt, buildSynthesisPrompt } from './prompts.js';
-import { getTierConfig } from '../lib/tiers.js';
+import { buildAgentPrompt, buildSynthesisPrompt } from '../../worker/engine/prompts.js';
+import { getTierConfig } from '../../worker/lib/tiers.js';
 
 const CONFIG = getTierConfig('full');
 

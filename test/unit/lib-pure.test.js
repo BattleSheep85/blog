@@ -1,11 +1,11 @@
 // Full-coverage assertions for the remaining small pure modules:
 // status.js, guides.js, tiers.js, ads.js, and html.js's pure helpers + layout().
-import { apiStatus } from './status.js';
-import { STATIC_GUIDES, STATIC_GUIDE_SLUGS, GUIDES_LASTMOD } from './guides.js';
-import { getTierConfig, isValidTier, PUBLIC_TIERS, TIER_CONFIGS } from './tiers.js';
-import { adSlot } from './ads.js';
-import { html, raw, jsonLdScript, layout } from './html.js';
-import { searchBar } from './search-bar.js';
+import { apiStatus } from '../../worker/lib/status.js';
+import { STATIC_GUIDES, STATIC_GUIDE_SLUGS, GUIDES_LASTMOD } from '../../worker/lib/guides.js';
+import { getTierConfig, isValidTier, PUBLIC_TIERS, TIER_CONFIGS } from '../../worker/lib/tiers.js';
+import { adSlot } from '../../worker/lib/ads.js';
+import { html, raw, jsonLdScript, layout } from '../../worker/lib/html.js';
+import { searchBar } from '../../worker/lib/search-bar.js';
 
 export function runLibPureTests() {
   const report = { passed: 0, failed: 0, failures: [] };
