@@ -53,6 +53,7 @@ function tidyClause(s) {
     .replace(/^[-–—•*\s]+/, '')
     .replace(/^[A-Z][A-Za-z ]{2,24}:\s+/, '')               // "Measured on our rig: …"
     .replace(/^(?:and|but|or|though|however|yet|so|because)\s+/i, '')
+    .replace(/\s*[:|—-]\s*(?:r\/\w+|reddit|youtube|amazon(?:\.com)?|[A-Z][a-z]+\.(?:com|net|org|io)\b).*$/i, '') // source-attribution chrome tail
     .replace(/[,;:\-–—\s]+$/, '')
     .trim();
 }
@@ -98,6 +99,24 @@ const stripMarkdown = (t) => decodeEntities(String(t || ''))
 // Pull Title-Case product-name candidates from notes + source titles/content.
 const TITLECASE_RUN = /\b([A-Z][A-Za-z]*(?:[''-][A-Za-z]+)?(?:\s+(?:[A-Z][A-Za-z0-9]*|[A-Z]{1,6}[-]?[A-Za-z0-9]*\d[A-Za-z0-9-]*|\d[A-Za-z0-9-]*|\([A-Za-z]+\)))*)\b/g;
 const hasModelCode = (s) => /\b[A-Za-z]*\d[A-Za-z0-9-]*\b/.test(s) || /\b[A-Z]{2,}[-]?\d/.test(s);
+// A STRONG model code has a letter ADJACENT to a digit (WF-1000XM6, j9, RK84, K70,
+// P20i) — a real product code, NOT a bare integer ("Bluetooth 6", "Over 100",
+// "Supportive Shoe 3"). A no-brand candidate needs one; a bare number is chrome.
+const hasStrongCode = (s) => /[A-Za-z]\d|\d[A-Za-z]/.test(String(s)) || /\b[A-Z]{2,}-?\d/.test(String(s));
+// Boilerplate / chrome / non-product fragments that the Title-Case harvester picks up
+// from real pages: license footers, CTAs, timestamps, dates, bare tech-term+number,
+// quantifier phrases, repeated words, nav. None of these are products.
+const isBoilerplate = (name) => {
+  const n = String(name || ''); const t = n.trim();
+  return /\b(attribution|sharealike|noncommercial|creative commons|rights reserved)\b/i.test(n)
+    || /\b(check (?:latest |the )?price|buy now|shop now|view deal|add to cart|see price|best price|guaranteed|read more|learn more)\b/i.test(n)
+    || /^(?:bluetooth|displayport|hdmi|usb|wi-?fi|android|ios|version|chapter|step|figure|table|page|vol|gen|win|macos|category|section)\s+\d+$/i.test(t)
+    || /\d{1,2}:\d{2}/.test(n)
+    || /\b(?:january|february|march|april|may|june|july|august|september|october|november|december)\s+\d{1,2}\b/i.test(n)
+    || /^(?:over|under|up to|from|about|around|approx|nearly|almost|less than|more than)\s+\$?\d/i.test(t)
+    || /\b(\w+)\s+\1\b/i.test(n)
+    || /\b(privacy|cookies?|terms of|subscribe|newsletter|sign in|log in|skip to|table of contents|all rights)\b/i.test(n);
+};
 const firstBrand = (toks) => {
   const l = toks.map((t) => t.toLowerCase());
   if (l.length >= 2 && BRANDS.has(`${l[0]} ${l[1]}`)) return `${toks[0]} ${toks[1]}`;
@@ -113,7 +132,9 @@ const cleanTok = (t) => t.replace(/^[("'“]+|[)"'”.,;:]+$/g, '');
 // verbs + review words. Deliberately NARROW — NOT all sentiment/stopwords, which
 // would truncate legit edition names ("Charge 5 Value"); the bare-rating/ordinal
 // boundary below catches "4.0"/"2nd" structurally instead.
-const NAME_TAIL_DENY = new Set(['appears', 'delivers', 'offers', 'features', 'comes', 'makes', 'looks', 'sounds', 'tested', 'review', 'reviews', 'rated', 'ranked', 'seems', 'remains', 'stays', 'provides', 'brings', 'adds', 'impresses', 'the', 'a', 'an', 'and', 'or', 'but', 'with', 'for']);
+const NAME_TAIL_DENY = new Set(['appears', 'delivers', 'offers', 'features', 'comes', 'makes', 'looks', 'sounds', 'tested', 'review', 'reviews', 'rated', 'ranked', 'seems', 'remains', 'stays', 'provides', 'brings', 'adds', 'impresses', 'the', 'a', 'an', 'and', 'or', 'but', 'with', 'for',
+  // chrome/listicle words that bleed off real pages ("Qrevo Curv Review Pros", "Jet Bot … Yes")
+  'pros', 'cons', 'yes', 'no', 'which', 'source', 'sources', 'dimensions', 'while', 'specifications', 'specs', 'price', 'prices', 'deal', 'deals', 'guide', 'vs', 'versus', 'exposed', 'pick', 'picks', 'kit', 'assembly', 'failures', 'here', 'now', 'today', 'update', 'updated', 'list', 'ranking', 'comparison', 'best', 'top', 'buy', 'shop', 'verdict', 'rating', 'score', 'overview', 'summary']);
 // Strip review-score/version/ordinal noise and trailing verbs that bled into a name.
 // Returns a NEW token array; tail-only, order-preserving, and never trims away the
 // brand+model code (which would cause a false merge in resolveCandidates).
@@ -124,7 +145,9 @@ function trimNameTail(toks) {
   let cut = toks.length;
   for (let k = 1; k < toks.length; k++) {
     const t = cleanTok(toks[k]);
-    if (/^\d+\.\d+$/.test(t) || /^\d+(?:st|nd|rd|th)$/i.test(t)) { cut = k; break; }
+    // bare rating/version "4.0", ordinal "2nd", a price "$749.99", or a timestamp
+    // "02:32" are never part of a name — the name ends before them.
+    if (/^\d+\.\d+$/.test(t) || /^\d+(?:st|nd|rd|th)$/i.test(t) || /^\$\d/.test(t) || /^\d{1,2}:\d{2}$/.test(t)) { cut = k; break; }
   }
   let out = toks.slice(0, cut);
   // 2) drop trailing sentence-continuation/review words, but never below 2 tokens
@@ -181,10 +204,12 @@ function harvestCandidates(sources, notes) {
         if (low.length < 3 || PUBLISHERS.has(low) || toks.every((t) => STOPWORDS.has(t.toLowerCase()))) continue;
         const brand = anyBrand(toks);
         const code = hasModelCode(name);
-        // KEEP RULE: a real product has a known brand OR a model code. This drops
-        // category/headline noise ("Office Chairs", "10 Best Robot Vacuums") which
-        // have neither — and a fabricated trap with neither never even enters.
-        if (!brand && !code) continue;
+        // KEEP RULE: a real product has a known brand OR a STRONG model code (letter
+        // adjacent to a digit). A no-brand name whose only "code" is a bare integer
+        // ("Bluetooth 6", "Over 100", "Supportive Shoe 3") is chrome/spec noise, not a
+        // product — drop it. (Brand present → keep regardless, "Motion 300" is fine.)
+        if (!brand && !hasStrongCode(name)) continue;
+        if (isBoilerplate(name)) continue; // license footers, CTAs, timestamps, nav
         // Real-markdown noise rejects (clean fixtures never had these):
         if (toks.length > 5) continue;                          // concatenated headings/lists
         if (toks.length >= 4 && !brand) continue;               // long non-brand string = a heading
@@ -259,6 +284,23 @@ function aliasMatchers(c) {
   return names.map((n) => n.toLowerCase());
 }
 
+// High-precision criticism cues — feature-absence + complaint phrasing that signals a
+// drawback even when the VADER polarity is mild (real reviews bury cons in "lacks
+// LDAC", "the only downside", "wish it had", "battery life is short"). Used by the
+// proximity body-miner; deliberately specific to avoid false positives ("no issues").
+const CON_CUE = /\b(lacks?|lacking|missing|doesn'?t have|does not have|don'?t have|no (?:ldac|aptx|anc|usb-?c|wireless charging|warranty|app control|water resistance)|wish (?:it|they|i) (?:had|could|would)|only (?:downside|complaint|issue|gripe|drawback)|main (?:downside|drawback|complaint|gripe)|the catch|the downside|biggest (?:downside|drawback)|drawback|gripe|caveat|could be better|falls? short|struggles? (?:with|to|in)|fails? to|too (?:small|big|bulky|heavy|loud|quiet|short|expensive|pricey|dim|tight|stiff|thin|flimsy)|(?:bit|fairly|quite|rather|somewhat|a little|on the) (?:heavy|bulky|loud|noisy|expensive|pricey|dim|slow|stiff|thin|short)(?:\s+side)?|not (?:as good|the best|great|comfortable|worth)|battery (?:life )?(?:is |was )?(?:short|weak|poor|mediocre|disappointing|only|just)|short battery|runs? hot|overheats?|disappoint(?:ing|ed)?|flimsy|cheaply made|poorly (?:made|built))\b/i;
+// A neutral META/category statement (not a product-specific con) — guards the
+// strong-negative branch against "...whose models range from inexpensive to pricey".
+const META_STMT = /\b(brands?|models?|range from|evaluates?|generally|category|options|overall|most of|many of|whose models|the lineup|across the board)\b/i;
+// A source TITLE / product-listing line ("Review NuPhy Air75 V3 … 84 Keys 75% Custom"),
+// not a sentence of criticism — title-case heavy with spec/listing tokens and no verb.
+function looksLikeListing(clean) {
+  if (/^(?:review|the best|top \d|best \d|\d+ best)\b/i.test(clean)) return true;
+  const toks = clean.split(/\s+/);
+  const capRatio = toks.filter((w) => /^[A-Z0-9]/.test(w)).length / Math.max(1, toks.length);
+  return toks.length >= 5 && capRatio > 0.6 && /\b(keys?|wireless|mechanical|bluetooth|custom|rgb|hot.?swap|\d{2,}%|gen|edition)\b/i.test(clean);
+}
+
 function analyzeProduct(c, sources, otherMatchers = [], seen = new Set()) {
   const matchers = aliasMatchers(c);
   // supporting sources: those whose text mentions a matcher
@@ -311,7 +353,7 @@ function analyzeProduct(c, sources, otherMatchers = [], seen = new Set()) {
     for (const cl of clausesWithContrast(ps.sentence)) {
       const clean = tidyClause(cl.text);
       if (clean.length < 12 || clean.length > 220) continue;
-      if (looksLikeHeadline(clean)) continue; // drop listicle/heading lines, not real claims
+      if (looksLikeHeadline(clean) || looksLikeListing(clean)) continue; // drop listicle/heading/title lines
       // multi-product sentence: keep only clauses that name THIS product and no rival.
       // single-product sentence: all its clauses attribute here (carries the "but …" con).
       if (sentHasRival && (!selfIn(clean) || otherIn(clean))) continue;
@@ -324,6 +366,47 @@ function analyzeProduct(c, sources, otherMatchers = [], seen = new Set()) {
       // negative term whose net is only mild because a category word cancelled it.
       else if (score <= -0.6 || (cl.afterContrast && score < 0.2 && negHit(clean))) {
         cons.push({ text: clean, score, cred: ps.cred }); seen.add(key);
+      }
+    }
+  }
+
+  // PROXIMITY con-mining over credible review BODIES: real reviews state criticism a
+  // sentence or two AFTER the product name (or as feature-absence — "lacks LDAC"),
+  // which the same-sentence loop above misses. Scan a 3-sentence window around each
+  // mention in a credible body, STOP at a rival mention (attribution boundary), and
+  // accept grounded negative / feature-absence clauses. Capped + body-only so
+  // grounding + precision hold (every con is still a verbatim source span).
+  if (cons.length < 3) {
+    const bodies = support.filter((s) => s.score >= MIN_CREDIBLE_SCORE
+      && !(s.tags || []).every((t) => NONCREDIBLE_GENRES.has(t))
+      && String(s.source.content || '').length >= 400);
+    outer:
+    for (const s of bodies) {
+      const sents = sentences(s.source.content);
+      for (let i = 0; i < sents.length; i++) {
+        if (!selfIn(sents[i])) continue;
+        for (let j = i; j <= i + 2 && j < sents.length; j++) {
+          if (j > i && otherIn(sents[j]) && !selfIn(sents[j])) break; // rival → stop window
+          for (const cl of clausesWithContrast(sents[j])) {
+            const clean = tidyClause(cl.text);
+            if (clean.length < 14 || clean.length > 220 || looksLikeHeadline(clean)) continue;
+            if (otherIn(clean) && !selfIn(clean)) continue; // names only a rival
+            const key = clean.toLowerCase();
+            if (seen.has(key)) continue;
+            const { score } = sentencePolarity(clean);
+            if (score >= 0.6) continue;                    // leans positive → not a con
+            if (looksLikeListing(clean)) continue;         // source title / product-listing line, not a con
+            // PRECISION: a con needs an explicit complaint CUE, or a strongly-negative,
+            // SHORT, focused clause (not a rambling meta/category statement — that was the
+            // "out of tight spots" / "...to pricey" false-positive source).
+            const isCon = CON_CUE.test(clean)
+              || (score <= -0.7 && negHit(clean) && clean.length <= 110 && !META_STMT.test(clean));
+            if (!isCon) continue;
+            cons.push({ text: clean, score: Math.min(score, -0.3), cred: s.score });
+            seen.add(key);
+            if (cons.length >= 3) break outer;
+          }
+        }
       }
     }
   }

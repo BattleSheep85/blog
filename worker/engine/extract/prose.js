@@ -15,7 +15,7 @@ export function buildVerdict(p) {
   const con = p.cons[0] ? trimQuote(p.cons[0]) : '';
   const support = `Backed by ${p._credibleCount} credible source${p._credibleCount === 1 ? '' : 's'}`;
   if (pro && con) return `${support}. What reviewers liked: ${pro} The main drawback they noted: ${con}`;
-  if (pro) return `${support}, with no consistent drawback in our sources. What reviewers liked: ${pro}`;
+  if (pro) return `${support}. What reviewers liked: ${pro} No specific criticism surfaced in the sources we read — not proof none exists, so check recent reviews before buying.`;
   if (con) return `${support}. Reviewers' main reservation: ${con} We found no strong positive consensus to balance it.`;
   return `${support}; reviewers' commentary was mixed and we did not find a clear consensus.`;
 }
