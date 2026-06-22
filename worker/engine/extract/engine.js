@@ -515,7 +515,10 @@ export function analyze(query, notes, sources) {
   if (typeof process !== 'undefined' && process.env && process.env.DEBUG_FUNNEL) {
     console.error(`[funnel] harvested=${harvested.length} dropZeroProCon=${_zeroPC} dropCredible=${_corrob} passed=${products.length} → shown=${Math.min(products.length, 40)}`);
   }
-  const capped = products.slice(0, 40); // generous cap — comprehensive coverage, ranked best-first
+  // Comprehensive but pipeline-safe: each shown product costs downstream ASIN + image +
+  // con-selector work, so an unbounded list times out the queue consumer. 24 is ~2.5x the
+  // old 10 (the "see them all" win) while staying within the per-run subrequest/time budget.
+  const capped = products.slice(0, 24);
   capped.forEach((p, i) => { p.rank = i + 1; });
   return capped;
 }

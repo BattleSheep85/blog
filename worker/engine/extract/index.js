@@ -15,10 +15,12 @@ const _k = (s) => String(s || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim
 // selector can only return verbatim source substrings (its own groundedness gate), so
 // this adds recall WITHOUT adding a fabrication surface. Mutates report in place; safe
 // no-op without a model/key. Runs only on thin products, concurrency-capped, cheap.
-export async function enrichConsLLM(report, sources, apiKey, model, { minCons = 2, maxCons = 3, concurrency = 4 } = {}) {
+export async function enrichConsLLM(report, sources, apiKey, model, { minCons = 2, maxCons = 3, concurrency = 6, topN = 15 } = {}) {
   if (!apiKey || !model || !report?.products?.length) return report;
   const allNames = report.products.map((p) => p.name);
-  const thin = report.products.filter((p) => (p.cons || []).length < minCons);
+  // Only enrich the TOP-ranked thin products — enriching a 24-item list would fire too
+  // many LLM calls and time out the queue consumer. The tail keeps its deterministic cons.
+  const thin = report.products.filter((p) => (p.cons || []).length < minCons && (typeof p.rank !== 'number' || p.rank <= topN));
   let idx = 0;
   const worker = async () => {
     while (idx < thin.length) {

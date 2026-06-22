@@ -145,16 +145,26 @@ export async function persistEngineResult(env, reportId, query, facets, topicalC
         return { status: failWon ? 'failed' : 'noop' };
     }
 
+    // Per-product ASIN + image resolution is one Serper lookup EACH and runs
+    // sequentially — on a comprehensive 24-item list that is ~48 serial subrequests,
+    // which times out the queue consumer. Bound the expensive enrichment to the TOP
+    // products (the ones with conversion value); the tail still shows (name/rating/
+    // pros/cons), just without a resolved image/affiliate link.
+    const ENRICH_TOP = 16;
+    const head = result.products.slice(0, ENRICH_TOP);
+    const tail = result.products.slice(ENRICH_TOP);
+
     // Recover direct Amazon /dp/ links for products missing/redirect-hidden URLs.
     // Skipped when the classifier says this category isn't sold on Amazon.
     const amazonViable = facets?.sold_on_amazon !== false && facets?.is_service !== true;
+    let enriched = head;
     if (amazonViable) {
         await report('Resolving Amazon product links...');
-        result.products = await resolveAsins(env, result.products, report);
+        enriched = await resolveAsins(env, enriched, report);
     }
-
     // Fill product photos synthesis didn't attach (one Serper Images query each).
-    result.products = await resolveImages(env, result.products, report);
+    enriched = await resolveImages(env, enriched, report);
+    result.products = [...enriched, ...tail];
 
     const affiliateIds = {
         amazonTag: env.AMAZON_AFFILIATE_TAG || env.AMAZON_ASSOCIATE_TAG || DEFAULT_AFFILIATE_TAG,
