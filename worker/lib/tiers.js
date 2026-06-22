@@ -28,6 +28,11 @@ const ENGINE_CONFIG = {
   // The agent loop is tool-ROUTING, not deep reasoning — cap thinking tokens per
   // turn. Biggest accuracy-safe wall-clock lever on the sequential MAX_TURNS path.
   plannerReasoning: { effort: 'low' },
+  // Hybrid con-SELECTOR model (used only when the engine runs SYNTH_ENGINE=extract):
+  // a cheap model PICKS criticism from real source spans for products the deterministic
+  // pass left thin; its groundedness gate drops anything not verbatim, so it adds con
+  // recall without a fabrication surface. flash-lite is plenty for selection.
+  conSelectorModel: 'google/gemini-2.5-flash-lite',
   // NO provider object for the planner: gemini-2.5-flash is served by a SINGLE
   // provider (Google) on OpenRouter that does not expose a quantization tag, so a
   // `quantizations` filter 404s ("no endpoints"), and sort/max_price can only hurt

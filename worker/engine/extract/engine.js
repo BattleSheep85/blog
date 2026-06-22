@@ -492,4 +492,40 @@ export function analyze(query, notes, sources) {
   return capped;
 }
 
+// Candidate con SPANS for the hybrid LLM con-selector: every credible-BODY sentence
+// (+ its 1-2 sentence proximity window, stopping at a rival) that mentions a product.
+// Returns clean verbatim spans — positive, neutral, AND negative — so the LLM selector
+// can identify criticism the lexicon missed; the selector's output is then gated to be
+// a substring of THESE spans, so nothing can be invented.
+export function conCandidateSpans(productName, aliases, sources, rivalNames = [], cap = 14) {
+  const matchers = [String(productName || '').toLowerCase(), ...(aliases || []).map((a) => String(a).toLowerCase())].filter((m) => m && m.length > 2);
+  const code = modelToken(String(productName || '').split(/\s+/));
+  if (code && code.length >= 3) matchers.push(code);
+  const rivals = (rivalNames || []).map((n) => String(n).toLowerCase()).filter((r) => r && !matchers.includes(r) && r.length > 3);
+  const selfIn = (t) => matchers.some((m) => t.toLowerCase().includes(m));
+  const otherIn = (t) => rivals.some((m) => t.toLowerCase().includes(m));
+  const spans = []; const seen = new Set();
+  for (const s of sources || []) {
+    if ((s.credibility?.score ?? 0) < MIN_CREDIBLE_SCORE) continue;
+    if ((s.credibility?.tags || []).length && (s.credibility.tags).every((t) => NONCREDIBLE_GENRES.has(t))) continue;
+    const body = stripMarkdown(s.content || '');
+    if (body.length < 400) continue;
+    const sents = sentences(body);
+    for (let i = 0; i < sents.length; i++) {
+      if (!selfIn(sents[i])) continue;
+      for (let j = i; j <= i + 2 && j < sents.length; j++) {
+        if (j > i && otherIn(sents[j]) && !selfIn(sents[j])) break;
+        const clean = tidyClause(sents[j]).slice(0, 220);
+        if (clean.length < 24 || looksLikeListing(clean) || looksLikeHeadline(clean)) continue;
+        if (otherIn(clean) && !selfIn(clean)) continue;
+        const key = clean.toLowerCase();
+        if (!seen.has(key)) { seen.add(key); spans.push(clean); }
+      }
+      if (spans.length >= cap) break;
+    }
+    if (spans.length >= cap) break;
+  }
+  return spans.slice(0, cap);
+}
+
 export { sentences, sentencePolarity, MARKETING };

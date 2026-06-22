@@ -6,7 +6,7 @@ import { buildAgentTools, executeTool } from './tools.js';
 import { buildAgentPrompt, buildSynthesisPrompt } from './prompts.js';
 import { callLLM, callLLMStreaming, pruneMessages } from './llm.js';
 import { validateResearchResult } from './validate.js';
-import { synthesizeExtractive } from './extract/index.js';
+import { synthesizeExtractive, enrichConsLLM } from './extract/index.js';
 
 // ─── Event emission ────────────────────────────────────────────────────────
 //
@@ -242,6 +242,18 @@ export async function runEngine(
   if (env?.SYNTH_ENGINE === 'extract') {
     await emitEvent(onEvent, state, 'synthesize', 'Extracting report from sources (no generative model)...');
     const extracted = synthesizeExtractive(query, state.notes, state.sources, facets, topicalCategory);
+    // HYBRID: gated LLM con-SELECTOR fills cons for thin products by PICKING criticism
+    // from real source spans (its groundedness gate drops anything not verbatim) — adds
+    // recall without a fabrication surface. Off unless config.conSelectorModel is set.
+    if (config.conSelectorModel) {
+      await emitEvent(onEvent, state, 'synthesize', 'Selecting criticism from sources...');
+      try {
+        const r = await enrichConsLLM(extracted, state.sources, openrouterKey, config.conSelectorModel);
+        // attribute the selector's token spend (cheap flash-lite) is folded by callLLM's
+        // usage on each call; we don't double-count here (calls are fire-and-forget cheap).
+        void r;
+      } catch (e) { console.log('[engine] con-selector skipped:', e?.message); }
+    }
     const result = validateResearchResult(extracted);
     await emitEvent(onEvent, state, 'status', `Report complete: ${result.products.length} products ranked.`);
     return {
