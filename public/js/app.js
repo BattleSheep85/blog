@@ -74,6 +74,40 @@
         });
     }
 
+    // Parse a response as JSON, but fail CLEARLY when the body isn't JSON. A
+    // Cloudflare challenge/error page, an edge 5xx, or a rate-limit block all come
+    // back as HTML — calling res.json() on those throws a cryptic
+    // "Unexpected token '<'". We detect that up front and raise an actionable,
+    // already-friendly message instead.
+    function readJson(res) {
+        var ct = (res.headers.get('content-type') || '').toLowerCase();
+        if (ct.indexOf('application/json') !== -1) return res.json();
+        return res.text().then(function () {
+            var e = new Error(
+                res.status === 429
+                    ? 'Too many requests right now. Please wait a minute and try again.'
+                    : res.status >= 500
+                        ? 'The server is briefly busy. Please try again in a moment.'
+                        : 'The request was interrupted (a security check or network hiccup). Please refresh and try again.'
+            );
+            e.handled = true; // message is already user-ready
+            throw e;
+        });
+    }
+
+    // Turn any thrown error into something a human can act on.
+    function friendlyError(err, fallback) {
+        var m = (err && err.message) || '';
+        if (err && err.handled) return m;
+        if (/Failed to fetch|NetworkError|Load failed|network/i.test(m)) {
+            return 'Couldn’t reach the server. Check your connection and try again.';
+        }
+        if (/Unexpected token|JSON|DOCTYPE/i.test(m)) {
+            return 'The server returned an unexpected response. Please try again in a moment.';
+        }
+        return fallback + (m ? ' (' + m + ')' : '');
+    }
+
     function startResearch(query) {
         setFormsBusy(true);
         showSection('progress');
@@ -87,7 +121,7 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ query: query }),
         })
-            .then(function (res) { return res.json(); })
+            .then(readJson)
             .then(function (data) {
                 if (data.error) { showError(data.error); return; }
                 if (data.cached && data.slug) {
@@ -99,7 +133,7 @@
                 connectSSE(data.id, data.slug);
             })
             .catch(function (err) {
-                showError('Could not start the research: ' + err.message);
+                showError(friendlyError(err, 'Could not start the research.'));
             });
     }
 
@@ -146,7 +180,7 @@
     function pollForResults(reportId, attempts, slug) {
         if (attempts > 120) { showError('Research timed out. Please try again.'); return; }
         fetch('/api/research/' + reportId)
-            .then(function (res) { return res.json(); })
+            .then(readJson)
             .then(function (data) {
                 if (data.status === 'completed') {
                     var dest = data.slug || slug;

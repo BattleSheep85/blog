@@ -1,6 +1,18 @@
 # Issues
 
-Last updated: 2026-06-18
+Last updated: 2026-06-21
+
+## 2026-06-21 — UX: "Unexpected token '<'" on research submit (HTML instead of JSON)
+
+User report: "Could not start the research: Unexpected token '<', "<!DOCTYPE "... is not valid JSON".
+- [x] HIGH (UX): public/js/app.js blindly called res.json() on the /api/research POST. The
+      backend is healthy (verified: full submit path returns 200 JSON, zero worker
+      exceptions in tail) — the HTML came from a TRANSIENT Cloudflare edge response
+      (challenge / 5xx / rate-limit block page), which res.json() crashes on with the cryptic
+      "Unexpected token '<'". Added readJson() (content-type guard → friendly message for
+      429/5xx/other non-JSON) + friendlyError() (network vs parse vs generic), wired into the
+      submit + poll paths. Now a transient non-JSON response shows an actionable "please
+      retry", not a parse crash.
 
 ## 2026-06-18 — Integration coverage: engine + pages + handlers (R11–R13)
 
