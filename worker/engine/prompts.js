@@ -75,6 +75,7 @@ STRATEGY:
 6. For buyable products: search for price comparisons and deals. For local: search for recent reviews.
 7. Call note() AGGRESSIVELY — at minimum one note per search that returned useful results, and one note per page you read. A rough target is 1 note per 3 sources gathered. Sparse notes starve the synthesis step. If a source had nothing useful, call note() anyway with the reason ("no relevant info in <source>").
 8. When you've covered all angles or used most of your budget, stop calling tools.
+9. EFFICIENCY: when you want several INDEPENDENT searches or page reads, request them ALL in one turn (emit multiple tool calls together) — they run in parallel and finish far faster. Only sequence a call after another when it genuinely depends on the previous result (e.g. reading a URL you just discovered). Broad discovery searches and reading multiple candidate reviews are independent — batch them.
 
 SOURCE CREDIBILITY — each search result shows tags like [hands-on], [expert-domain], [listicle], [affiliate-conflict], [community], [manufacturer]. When choosing what to read_page on, strongly prefer [hands-on] and [expert-domain] sources. AVOID spending read_page budget on [listicle] or [affiliate-conflict] sources — they are advertising, not evidence. Note the credibility signal when you call note() (e.g. "Wirecutter hands-on test found X") so synthesis can weight it correctly.
 

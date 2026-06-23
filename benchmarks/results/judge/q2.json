@@ -1,0 +1,440 @@
+{
+ "query": "best self-hosted photo backup software",
+ "sources": [
+  {
+   "title": "Digital Photo Management : r/selfhosted - Reddit",
+   "cred": 55,
+   "snippet": "Title: \n\nURL Source: https://www.reddit.com/r/selfhosted/comments/1mpgl3j/digital_photo_management/\n\nWarning: Target URL returned error 403: Forbidden\n\nMarkdown Content:\n![Image 1](blob:http://localhost/7c466567fbe25390de55d6f3b6eed7c5)\n\nYou've been blocked by network security.\n\nTo continue, log in to your Reddit account or use your developer token\n\nIf you think you've been blocked by mistake, file a ticket below and we'll look into it.\n\n[Log in](https://www.reddit.com/login/)[File a ticket](https://support.reddithelp.com/hc/en-us/requests/new?ticket_form_id=21879292693140)\n"
+  },
+  {
+   "title": "I (finally) ditched Google Photos for self-hosted; here's how it went",
+   "cred": 50,
+   "snippet": "[Jan 10, 2026]\nIf you want a set-and-forget, self-hosted photo library manager, then Immich does that perfectly. The user, metadata, and library handling options are ..."
+  },
+  {
+   "title": "I finally found the best photo management app - YouTube",
+   "cred": 50,
+   "snippet": "[Oct 13, 2025]\nShare your videos with friends, family, and the world."
+  },
+  {
+   "title": "The Best Photo-Organizing Software in 2026 (for Mac and Windows)",
+   "cred": 20,
+   "snippet": "[Feb 9, 2026]\nThe Best Photo-Organizing Software in 2026 (for Mac and Windows) \u00b7 1. Excire Foto 2025: The Best Dedicated Photo-Management Program \u00b7 2. Capture One Pro: The Best ..."
+  },
+  {
+   "title": "10 Self-Hosted Apps You Need to Try - NetBird",
+   "cred": 20,
+   "snippet": "[May 27, 2026]\nAfter five years running a home lab, here are the 10 self-hosted apps I keep coming back to - from password managers and photo backup to local AI and media"
+  },
+  {
+   "title": "Self-Hosting a Photo Server the Whole Family Can Use",
+   "cred": 50,
+   "snippet": "[Dec 24, 2025]\nI want complete control over managing the files on disk. I use several pieces of software (more below) that help manage albums, photo edits, metadata, etc..."
+  },
+  {
+   "title": "Ditch the Cloud: 5 Best Self-Hosted Photo-Video Gallery Options",
+   "cred": 20,
+   "snippet": "[3 days ago]\nLibrePhotos is a free, open-source, self-hosted photo management service for storing, organizing, and accessing your photo library across devices and operating ..."
+  },
+  {
+   "title": "Best Self-Hosted Photo Solution: Why I Chose Immich",
+   "cred": 50,
+   "snippet": "[Aug 25, 2025]\nFor my needs, Immich is the best self-hosted photo solution because it feels closer to a modern Google Photos replacement than a simple file browser. It offers ..."
+  },
+  {
+   "title": "Immich Photo Manager (Self-Hosted) - Page 3 - Tool Suggestions",
+   "cred": 50,
+   "snippet": "[Oct 3, 2025]\nImmich is a feature rich and privacy respecting solution for self-hosting photos and videos. It is very capable and meets all the required criteria for ..."
+  },
+  {
+   "title": "Recommendations for self hosted photo drive setup? - Facebook",
+   "cred": 50,
+   "snippet": "[Jan 7, 2026]\nTailscale, Twingate, and Cloudflare tunnel are recommended for secure access, with Plex supporting photo storage and Filebrowser as an option. Scott Hardie."
+  },
+  {
+   "title": "Photoprism vs immich vs nextcloud memories : r/selfhosted - Reddit",
+   "cred": 55,
+   "snippet": "Title: \n\nURL Source: https://www.reddit.com/r/selfhosted/comments/11a5wpn/photoprism_vs_immich_vs_nextcloud_memories/\n\nWarning: Target URL returned error 403: Forbidden\n\nMarkdown Content:\n![Image 1](blob:http://localhost/7c466567fbe25390de55d6f3b6eed7c5)\n\nYou've been blocked by network security.\n\nTo continue, log in to your Reddit account or use your developer token\n\nIf you think you've been blocked by mistake, file a ticket below and we'll look into it.\n\n[Log in](https://www.reddit.com/login/)[File a ticket](https://support.reddithelp.com/hc/en-us/requests/new?ticket_form_id=21879292693140)\n"
+  },
+  {
+   "title": "Jellyfin vs Immich vs Photoprism vs Nextcloud Photos 2026: Complete ...",
+   "cred": 50,
+   "snippet": "Jellyfin vs Immich vs Photoprism vs Nextcloud Photos: AI features, mobile upload, RAW support, and which to choose in 2026."
+  },
+  {
+   "title": "Best Self-Hosted Photo Manager in 2026: Immich vs PhotoPrism vs ...",
+   "cred": 20,
+   "snippet": "This comparison covers the four most practical self-hosted photo managers right now: Immich, PhotoPrism, Nextcloud Memories, and LibrePhotos. I ran all four on the same hardware over several months, tested mobile apps, ingested the same 40,000-photo library, and pushed each one for sharing and multi-user workflows."
+  },
+  {
+   "title": "I ditched iCloud for Immich, and my photo library finally feels like it ...",
+   "cred": 50,
+   "snippet": "A completely self-hosted photo library with virtually all the same bells and whistles"
+  },
+  {
+   "title": "Photoprism vs Immich vs Nextcloud vs Filerun (2025) - YouTube",
+   "cred": 50,
+   "snippet": "Looking for the best photo management platform in 2025? In this detailed comparison, we break down Photoprism, Immich, Nextcloud, and Filerun to help you find the perfect solution for organizing ..."
+  },
+  {
+   "title": "Immich vs PhotoPrism: Which Self-Hosted Photo Manager for Your Family?",
+   "cred": 50,
+   "snippet": "The Bottom Line Pick Immich if: You want a true Google Photos replacement with automatic phone backup, native mobile apps, excellent face recognition, and a polished UI your whole family can use. It's the fastest-growing self-hosted project for a reason (98K GitHub stars and climbing)."
+  },
+  {
+   "title": "Self-Hosted Photo Library 2026: Immich vs PhotoPrism vs Ente",
+   "cred": 50,
+   "snippet": "Picking one self-hosted photo library to replace Google Photos in 2026. Real version numbers, hardware footprints, license costs, and a verdict per use case."
+  },
+  {
+   "title": "Self-Hosted Media Server Guide 2026: Jellyfin vs Plex + Full Stack ...",
+   "cred": 50,
+   "snippet": "The complete 2026 guide to self-hosting your media: Jellyfin vs Plex (with Plex's 2025 paywall), Immich vs PhotoPrism for photos, Navidrome for music, Audiobookshelf, Komga, PinePods and more."
+  },
+  {
+   "title": "Photo Backup Bakeoff: PhotoPrism vs Immich \u00b7 Mike Lapidakis",
+   "cred": 50,
+   "snippet": "Photo Backup Bakeoff: PhotoPrism vs Immich Which self-hosted photo and video platform is right for you? PhotoPrism and Immich both offer robust open source options for backing up, searching, and sharing your photographs on your own hardware. This is a review of the two options, from first hand experience."
+  },
+  {
+   "title": "Immich Vs PhotoPrism (2025) | Which Is The Best Photo Management Tool?",
+   "cred": 50,
+   "snippet": "This article compares two open-source photo management tools, Image and Photo Prism, highlighting their strengths and weaknesses in user interface, AI capabilities, performance, setup, and community support. Image is favored for its speed, ease of use, and mobile optimization, while Photo Prism excels in advanced AI features and search functionalities. The choice between the two depends on ..."
+  },
+  {
+   "title": "Immich, the self-hosted Google Photos alternative!",
+   "cred": 55,
+   "snippet": "Title: - YouTube\n\nURL Source: https://www.youtube.com/watch?v=q-VKAJABi5I\n\nWarning: Target URL returned error 403: Forbidden\n\nMarkdown Content:\n[Video 1](https://www.youtube.com/watch?v=q-VKAJABi5I)\n\n[](https://www.youtube.com/watch?v=q-VKAJABi5I)\n\n[](https://www.youtube.com/watch?v=q-VKAJABi5I)\n\n[](https://www.youtube.com/watch?v=q-VKAJABi5I)\n\n[](https://www.youtube.com/watch?v=q-VKAJABi5I)\n\nTap to unmute\n\n2x\n\n[![Image 1](https://www.youtube.com/watch?v=q-VKAJABi5I)](https://www.youtube.com/watch?v=q-VKAJABi5I)\n\n[](https://www.youtube.com/watch?v=q-VKAJABi5I)\n\nCopy link\n\nInfo\n\nShopping\n\n![Ima"
+  },
+  {
+   "title": "Ditch Google Photos Today | Deploy Immich with One Click",
+   "cred": 55,
+   "snippet": "Title: - YouTube\n\nURL Source: https://www.youtube.com/watch?v=o4xaX4bPiKE\n\nWarning: Target URL returned error 403: Forbidden\n\nMarkdown Content:\n[Video 1](https://www.youtube.com/watch?v=o4xaX4bPiKE)\n\n[](https://www.youtube.com/watch?v=o4xaX4bPiKE)\n\n[](https://www.youtube.com/watch?v=o4xaX4bPiKE)\n\n[](https://www.youtube.com/watch?v=o4xaX4bPiKE)\n\n[](https://www.youtube.com/watch?v=o4xaX4bPiKE)\n\nTap to unmute\n\n2x\n\n[![Image 1](https://www.youtube.com/watch?v=o4xaX4bPiKE)](https://www.youtube.com/watch?v=o4xaX4bPiKE)\n\n[](https://www.youtube.com/watch?v=o4xaX4bPiKE)\n\nCopy link\n\nInfo\n\nShopping\n\n![Ima"
+  },
+  {
+   "title": "I Moved to Immich\u2026 Can It Really Replace Google Photos?",
+   "cred": 55,
+   "snippet": "[Dec 6, 2025]\nImmich supports external machine learning servers, so I just spun up a docker image on my desktop (immich-machine-learning) and used my rtx ..."
+  },
+  {
+   "title": "Best Private Google Photos Alternatives in 2026 (Open ...",
+   "cred": 25,
+   "snippet": "[4 weeks ago]\nLooking for the best Google Photos alternatives in 2026? Google Photos is brilliant and convenient \u2014 and quietly scanning every single photo ..."
+  },
+  {
+   "title": "Immich: The Self-Hosted #googlephotos Alternative| Full ...",
+   "cred": 55,
+   "snippet": "Title: - YouTube\n\nURL Source: https://www.youtube.com/watch?v=NwI4W77vLXY\n\nWarning: Target URL returned error 403: Forbidden\n\nMarkdown Content:\n[Video 1](https://www.youtube.com/watch?v=NwI4W77vLXY)\n\n[](https://www.youtube.com/watch?v=NwI4W77vLXY)\n\n[](https://www.youtube.com/watch?v=NwI4W77vLXY)\n\n[](https://www.youtube.com/watch?v=NwI4W77vLXY)\n\n[](https://www.youtube.com/watch?v=NwI4W77vLXY)\n\nTap to unmute\n\n2x\n\n[![Image 1](https://www.youtube.com/watch?v=NwI4W77vLXY)](https://www.youtube.com/watch?v=NwI4W77vLXY)\n\n[](https://www.youtube.com/watch?v=NwI4W77vLXY)\n\nCopy link\n\nInfo\n\nShopping\n\n![Ima"
+  },
+  {
+   "title": "Immich 2.0 is ready to replace Google Photos - Here's how to ...",
+   "cred": 55,
+   "snippet": "[Oct 3, 2025]\nThis project has quickly become one of the most impressive self-hosted apps around, offering a real alternative to Google Photos that puts ..."
+  },
+  {
+   "title": "Ultimate Immich Self-Hosting Guide - DITCH Google Photos/ ...",
+   "cred": 55,
+   "snippet": "[Dec 12, 2025]\nLearn how to self-host your photos with Immich, a feature-rich alternative to Google Photos and Amazon Photos."
+  },
+  {
+   "title": "I compared G-Photos to THIS self-hosted app. The result was ...",
+   "cred": 55,
+   "snippet": "[Aug 2, 2025]\nI uploaded 175000 photos of celebrities to both Google Photos and the self hosted open-source Immich application and the results were ..."
+  },
+  {
+   "title": "Immich Review Best Self Hosted Google Photos Alternative",
+   "cred": 55,
+   "snippet": "[1 month ago]\nThis video teaches you how to use Immich, the best self-hosted alternative to Google Photos for managing and backing up your photos securely ..."
+  },
+  {
+   "title": "Ente Photos vs Immich: Which Google Photos Alternative Is ...",
+   "cred": 55,
+   "snippet": "[Apr 25, 2026]\n... self-hosted photo libraries. If this helped you decide, subscribe ... Keywords: ente photos vs immich, ente photos review 2026, immich review ..."
+  },
+  {
+   "title": "What's the best self-hosted alternative to Google Photos these days?",
+   "cred": 55,
+   "snippet": "[Dec 11, 2025]\nI find Synology photos a good alternative but you need a Synology nas for that."
+  },
+  {
+   "title": "Does a photo storage service like this exist? (and that can be self hosted)",
+   "cred": 55,
+   "snippet": "[Oct 17, 2025]\nI've run immich, nextcloud, and photoprism. Personally photoprism is the one I always come back too. One con is you have to use a 3rd party app to do auto ..."
+  },
+  {
+   "title": "Self-hosted image/file sharing? : r/selfhosted - Reddit",
+   "cred": 55,
+   "snippet": "[Jul 5, 2025]\nEveryone recommends Immich, but Immich is more geared toward backups. You have to backup entire folders at a time. You can select which photos from your folder ..."
+  },
+  {
+   "title": "Finally ditched Google Photos and Spotify - my self-hosted setup after ...",
+   "cred": 55,
+   "snippet": "[Feb 2, 2026]\nImmich for photo backup (replacing Google Photos). Navidrome for music streaming (replacing Spotify). Jellyfin for movies/TV shows. Vaultwarden for password ..."
+  },
+  {
+   "title": "Pic-O: A simple, self-hosted photo gallery (looking for feedback) - Reddit",
+   "cred": 55,
+   "snippet": "[Jan 5, 2026]\nIn the past period I have developed Pic-O, a lightweight self-hosted photo gallery focused on simplicity and core features required to expose photos."
+  }
+ ],
+ "models": [
+  {
+   "model": "ML-extraction",
+   "products": [
+    {
+     "name": "Synology Photos 2025 Which",
+     "rating": 3.5,
+     "pros": [
+      "Immich Vs PhotoPrism Vs Synology Photos (2025) Which One Is The Best?."
+     ],
+     "cons": [],
+     "verdict": "Backed by 11 credible sources, with no consistent drawback in our sources. What reviewers liked: Immich Vs PhotoPrism Vs Synology Photos (2025) Which One Is The Best?."
+    }
+   ],
+   "summary": "We compared 1 photo backup software using only credibility-weighted sources (real hands-on and expert reviews, discounting marketing and affiliate listicles). The strongest evidence backs the Synology Photos 2025 Which. Every claim below links to the source it came from \u2014 nothing here is invented."
+  },
+  {
+   "model": "kimi-k2.6",
+   "products": [
+    {
+     "name": "Immich",
+     "rating": 4.5,
+     "pros": [
+      "Fully open-source (GPL-3.0) with active development and clear v1.0 stability roadmap",
+      "Native iOS and Android apps with automatic background backup, including live photos and video",
+      "ML-powered features: face recognition, duplicate detection, smart search, and external ML server support for GPU acceleration",
+      "Multi-user support with shared albums and partner sharing features"
+     ],
+     "cons": [
+      "High RAM requirements: minimum 6GB, recommended 8GB+; initial library indexing is CPU-intensive and slow on modest hardware",
+      "Still pre-1.0 software with breaking changes historically; database migrations require attention during updates",
+      "No built-in chunked upload for large videos (on roadmap as of late 2025), causing mobile upload failures over cellular"
+     ],
+     "verdict": "The hands-down best self-hosted photo backup option for most users in 2026, backed by extensive hands-on testing from How-To Geek, Notebookcheck, and a thriving community. The catch: it demands real s"
+    },
+    {
+     "name": "PhotoPrism",
+     "rating": 4,
+     "pros": [
+      "Significantly lower resource requirements: runs on 64-bit systems with 2+ cores and 3GB RAM minimum",
+      "Strong AI-powered classification and search using Google TensorFlow without requiring GPU",
+      "Broad NAS compatibility: official QNAP, Unraid, Synology packages and Docker support",
+      "Pure browse-focused philosophy: no forced album organization, works with existing folder structures"
+     ],
+     "cons": [
+      "No native mobile backup app; relies on third-party sync tools (PhotoSync, FolderSync) or manual workflows",
+      "User interface less polished than Immich; community feedback notes slower development velocity",
+      "No real-time multi-user collaboration features like partner sharing or shared album comments"
+     ],
+     "verdict": "The better choice for users on constrained hardware or who prefer minimal server footprint over mobile-native experience. [expert-domain] source Notebookcheck and [hands-on] Linux users confirm reliab"
+    },
+    {
+     "name": "Nextcloud Photos",
+     "rating": 3.5,
+     "pros": [
+      "Integrated with full Nextcloud ecosystem: files, calendar, contacts, notes in one self-hosted platform",
+      "Mature mobile clients (iOS/Android) with auto-upload and selective sync",
+      "Extremely broad hosting flexibility: Raspberry Pi to enterprise, with active security auditing"
+     ],
+     "cons": [
+      "Photos app is a secondary feature, not purpose-built for photo management; browsing and search lag behind dedicated solutions",
+      "No native face recognition or AI tagging in core; relies on optional apps with varying quality",
+      "Heavier overall resource usage for the full Nextcloud stack; overkill if you only need photo backup"
+     ],
+     "verdict": "Honest pick for users already running Nextcloud who want 'good enough' photo backup without adding another service. [community] sources note it's reliable but uninspiring for photo-specific workflows."
+    }
+   ],
+   "summary": "Immich dominates self-hosted photo backup software in 2026 as the most mature open-source Google Photos alternative, with active development, mobile apps, and ML-powered features. PhotoPrism remains a viable alternative for users prioritizing AI tagging and lower resource requirements. Most competit"
+  },
+  {
+   "model": "glm-5",
+   "products": [
+    {
+     "name": "Immich",
+     "rating": 4.5,
+     "pros": [
+      "Native iOS and Android mobile apps with automatic background backup, closely replicating the Google Photos experience.",
+      "Actively developed with frequent updates, including a stabilization roadmap toward v1.0 tested against libraries of 360,000+ assets.",
+      "Multi-user support with per-user libraries and shared albums, suitable for family deployments."
+     ],
+     "cons": [
+      "Hardware requirements are significant\u2014minimum 6GB RAM recommended, with 8GB+ preferred for smooth operation.",
+      "Initial indexing of large libraries can take 24-48 hours on CPU-only systems.",
+      "Self-hosting requires technical knowledge: Docker deployment, reverse proxy setup, and ongoing maintenance."
+     ],
+     "verdict": "The strongest self-hosted Google Photos alternative available, with excellent mobile apps and rapid development pace. Hands-on testing by How-To Geek [2026-01-10] and Android Authority confirms it wor"
+    },
+    {
+     "name": "PhotoPrism",
+     "rating": 3.5,
+     "pros": [
+      "Mature AI-powered auto-tagging and face recognition, using TensorFlow for automatic photo organization.",
+      "Lower hardware barrier\u2014works well on systems with 3GB RAM and 2 CPU cores.",
+      "Broad NAS integration with documented guides for QNAP, Unraid, and other platforms."
+     ],
+     "cons": [
+      "No native mobile apps\u2014backup relies on third-party tools or web upload, lacking the seamless phone-to-server sync of Immich.",
+      "Development pace has slowed compared to Immich's rapid iteration.",
+      "Browser-centric interface feels less polished than modern mobile-first alternatives."
+     ],
+     "verdict": "A solid browser-focused option for desktop-centric users who prioritize AI organization over mobile convenience. Community discussions on r/selfhosted frequently mention it as a stable alternative. La"
+    },
+    {
+     "name": "Nextcloud",
+     "rating": 3,
+     "pros": [
+      "Full cloud storage suite\u2014photos are part of a larger platform including files, calendar, contacts, and more.",
+      "Native mobile apps support automatic photo upload alongside file sync.",
+      "Mature ecosystem with extensive documentation and enterprise support options."
+     ],
+     "cons": [
+      "Photo-specific features are less polished than dedicated solutions\u2014album management and search lag behind Immich.",
+      "Resource-heavy for photo-only use; deploying an entire cloud suite for just photos is overkill.",
+      "Sharing with external users requires server configuration that can be complex for casual users."
+     ],
+     "verdict": "Best if you want a full Google Drive replacement, not just photos. Community recommendations on r/selfhosted note it works well for automatic backup, but photo management is a secondary feature. Choos"
+    }
+   ],
+   "summary": "Immich is the clear leader in self-hosted photo backup software, with extensive recent hands-on coverage and community validation confirming it as the most capable Google Photos alternative. PhotoPrism remains a solid alternative for users who prioritize AI-driven organization over mobile app polish"
+  },
+  {
+   "model": "glm-5.2",
+   "products": [
+    {
+     "name": "Immich",
+     "rating": 4.5,
+     "pros": [
+      "Excellent mobile apps for iOS and Android with automatic background upload, closely replicating the Google Photos experience.",
+      "Open-source (GPL-3.0) with active development; community reports it handling 360,000+ assets and remaining 'surprisingly snappy' with 100k+ images.",
+      "Flexible storage architecture supports local disks, NAS via SMB, and S3-compatible object storage for large libraries."
+     ],
+     "cons": [
+      "Resource-intensive: official docs require minimum 6GB RAM (8GB recommended), and users report 4GB systems require disabling machine learning to function.",
+      "Initial upload and indexing is slow: users report 8-10 hours for 35k assets from an iPhone, and 24-48 hours for 10,000+ photos on CPU-only systems.",
+      "Mobile app upload reliability has been hit-or-miss for some iOS users, with reports of some videos not uploading without manual intervention."
+     ],
+     "verdict": "Immich is the strongest self-hosted photo backup option in 2026, backed by extensive community hands-on usage and expert-domain coverage confirming its capability as a Google Photos replacement. The m"
+    },
+    {
+     "name": "PhotoPrism",
+     "rating": 4,
+     "pros": [
+      "AI-powered tagging and facial recognition work out of the box, with straightforward Docker installation guides for most operating systems.",
+      "Lower hardware barrier to entry than Immich: QNAP deployment docs suggest 2 cores and 3GB RAM minimum for a good user experience.",
+      "Mature project with broad NAS compatibility, including documented installation for QNAP, Unraid, and generic Docker environments."
+     ],
+     "cons": [
+      "Lacks a native mobile app with seamless background auto-upload comparable to Immich, making it weaker as a direct Google Photos replacement for phone backups.",
+      "Community sentiment and comparison videos frequently position it as secondary to Immich for users prioritizing the mobile backup workflow.",
+      "Data freshness is a concern: while the SourceForge mirror and install docs are current, hands-on performance testing data from expert sources was not accessible in this research run due to 403 errors."
+     ],
+     "verdict": "PhotoPrism is a capable, AI-powered self-hosted gallery that shines for users who want web-based photo organization and already have a workflow for getting files onto a server. It is a solid #2 pick, "
+    },
+    {
+     "name": "Synology Photos",
+     "rating": 3.5,
+     "pros": [
+      "Integrated solution: if you own a Synology NAS, Photos is included and requires no Docker knowledge or command-line setup.",
+      "Community recommendations on r/selfhosted specifically name it as a 'good alternative' to Google Photos for ease of use.",
+      "Comparison videos against Immich confirm it remains a competitive, user-friendly option for NAS owners."
+     ],
+     "cons": [
+      "Requires Synology hardware: this is not a general self-hosted solution and locks you into the Synology ecosystem.",
+      "Less flexible and less frequently updated than open-source alternatives like Immich; feature roadmap is controlled by Synology, not a community.",
+      "No standalone Docker image for non-Synology hardware, limiting its use for self-hosters running custom servers."
+     ],
+     "verdict": "Synology Photos is the best 'appliance' solution for users who already own a Synology NAS and want zero-setup photo backup. However, it is not a true open-source self-hosted option and carries hardwar"
+    }
+   ],
+   "summary": "The self-hosted photo backup software landscape in 2026 is dominated by two open-source projects: Immich and PhotoPrism. Immich is the clear leader for users seeking a true Google Photos replacement with mobile auto-upload, while PhotoPrism remains a solid alternative for those focused on AI-driven "
+  },
+  {
+   "model": "deepseek-v3.2",
+   "products": [
+    {
+     "name": "Immich",
+     "rating": 4.5,
+     "pros": [
+      "Comprehensive Google Photos alternative with mobile apps for iOS and Android enabling automatic backup",
+      "Active development and strong community support, with a clear roadmap towards a stable v1.0.0 release",
+      "Feature-rich including multi-user support, shared albums, advanced search, facial recognition, and map view",
+      "Scalable architecture supporting libraries with over 360,000 assets according to community testing"
+     ],
+     "cons": [
+      "Requires significant system resources: minimum 6GB RAM (recommended 8GB) and a multi-core CPU for good performance",
+      "Initial indexing of large libraries (10,000+ photos) can be very slow, taking 24-48 hours on CPU-only systems",
+      "Self-hosting complexity requires knowledge of Docker, server administration, and potentially reverse proxy setup for remote access"
+     ],
+     "verdict": "Immich is the current front-runner for a full-featured, self-hosted Google Photos replacement, backed by hands-on and expert-domain sources from 2026. Its active development, rich feature set, and pro"
+    },
+    {
+     "name": "PhotoPrism",
+     "rating": 4,
+     "pros": [
+      "AI-powered photo app with strong automatic tagging and search capabilities for the decentralized web",
+      "Mature project with straightforward Docker installation guides for various NAS platforms like QNAP and Unraid",
+      "Lower minimum hardware requirements than Immich, running on systems with 3GB of RAM and 2 cores",
+      "Focus on a clean, modern user interface and photo discovery experience"
+     ],
+     "cons": [
+      "Mobile app experience and automatic backup may not be as seamless or polished as Immich's dedicated apps",
+      "Some users report it is better suited as a gallery for already-organized photos rather than a primary backup ingestion tool",
+      "Community discussion and recent development momentum appears less prominent than around Immich in 2025-2026 sources"
+     ],
+     "verdict": "PhotoPrism is a powerful and established AI-focused photo management platform ideal for users who prioritize organization and discovery of an existing library. It is a strong alternative, particularly"
+    },
+    {
+     "name": "digiKam",
+     "rating": 3.5,
+     "pros": [
+      "Mature, powerful open-source photo management desktop software with decades of development",
+      "Offers complete control and extensive pro-level features for metadata, tagging, and batch processing without subscriptions",
+      "Can manage libraries stored on network drives, making it compatible with a NAS-based storage setup",
+      "Very lightweight on server resources as it primarily runs as a desktop application"
+     ],
+     "cons": [
+      "Not a true \"self-hosted server\" with a web interface or dedicated mobile backup app; it's desktop software",
+      "Lacks the automated, always-on backup flow from mobile devices that server-based solutions provide",
+      "Steeper learning curve due to its vast array of features, which can be overwhelming for casual users"
+     ],
+     "verdict": "digiKam is an excellent free and open-source photo manager for power users on the desktop, but it does not fit the classic 'self-hosted backup server' model. It's best for photographers who want deep "
+    }
+   ],
+   "summary": "Based on recent sources, Immich emerges as the leading self-hosted photo backup software, with PhotoPrism and digiKam as notable alternatives. Immich offers a comprehensive Google Photos-like experience with mobile app integration, AI-powered search, and robust multi-user support. These FOSS solutio"
+  },
+  {
+   "model": "qwen3-max",
+   "products": [
+    {
+     "name": "Immich",
+     "rating": 4.5,
+     "pros": [
+      "Actively developed open-source project with frequent updates (v1.0 stabilization underway as of Apr 2026)",
+      "Full-featured mobile apps for iOS and Android with background upload and selective sync",
+      "Built-in database backup/restore, multi-user support, and external machine learning server integration"
+     ],
+     "cons": [
+      "High RAM usage\u2014minimum 6GB recommended; 4GB setups require disabling ML and expect slow indexing",
+      "Initial library import can take 24\u201348 hours for 10k+ photos on CPU-only systems"
+     ],
+     "verdict": "Immich is the most mature, community-backed self-hosted photo backup solution in 2026, offering near-complete Google Photos parity for technically competent users. Requires dedicated hardware but deli"
+    },
+    {
+     "name": "PhotoPrism",
+     "rating": 4,
+     "pros": [
+      "AI-powered automatic tagging and facial recognition using TensorFlow",
+      "Supports a wide range of NAS platforms (QNAP, Unraid) with documented installation guides",
+      "Lighter resource footprint than Immich on modest hardware (3GB RAM minimum)"
+     ],
+     "cons": [
+      "Mobile experience less polished\u2014no official iOS/Android apps, relies on browser or WebDAV",
+      "Slower development cadence and fewer community troubleshooting resources compared to Immich"
+     ],
+     "verdict": "PhotoPrism is a capable AI-enhanced photo manager suitable for users prioritizing automatic organization over mobile convenience. Lacks Immich\u2019s seamless app ecosystem but runs on lower-end hardware."
+    }
+   ],
+   "summary": "Based on 2025\u20132026 sources, Immich emerges as the leading self-hosted photo backup solution, with strong community adoption, mobile apps, and active development. PhotoPrism is a credible alternative with AI-based tagging but fewer recent hands-on comparisons. No commercial cloud-based photo backup s"
+  }
+ ]
+}

@@ -36,14 +36,8 @@ function reasoningEffortOf(r) {
   return typeof r === 'string' ? r : (r && r.effort) || undefined;
 }
 
-export async function callLLMStreaming(
-  apiKey,
-  model,
-  messages,
-  onToken,
-  reasoning,
-  maxTokens,
-) {
+export async function callLLMStreaming(apiKey, model, messages, onToken, opts = {}) {
+  const { reasoning, maxTokens, provider, responseFormat, models } = opts;
   const { hardMs, chunkMs } = llmBudgetMs(reasoningEffortOf(reasoning));
   const controller = new AbortController();
   const hardTimer = setTimeout(() => controller.abort('hard'), hardMs);
@@ -66,7 +60,7 @@ export async function callLLMStreaming(
         Accept: 'text/event-stream',
       },
       body: JSON.stringify({
-        model,
+        ...(Array.isArray(models) && models.length ? { models } : { model }),
         messages,
         stream: true,
         max_tokens: maxTokens ?? 8192,
@@ -75,6 +69,10 @@ export async function callLLMStreaming(
         // for research.cost_usd accounting.
         stream_options: { include_usage: true },
         ...(normalizeReasoning(reasoning) ? { reasoning: normalizeReasoning(reasoning) } : {}),
+        // Provider routing (e.g. {sort:'throughput'} for the synth stream) +
+        // optional strict structured outputs — both off unless the caller sets them.
+        ...(provider ? { provider } : {}),
+        ...(responseFormat ? { response_format: responseFormat } : {}),
       }),
     });
 
@@ -123,18 +121,11 @@ export async function callLLMStreaming(
   }
 }
 
-export async function callLLM(
-  apiKey,
-  model,
-  messages,
-  tools,
-  reasoning,
-  maxTokens,
-) {
-  const body = {
-    model,
-    messages,
-  };
+export async function callLLM(apiKey, model, messages, opts = {}) {
+  const { tools, reasoning, maxTokens, provider, responseFormat, models, hardMsOverride } = opts;
+  const body = { messages };
+  // model vs models[] fallback chain are mutually exclusive (OpenRouter 400s on both).
+  if (Array.isArray(models) && models.length) body.models = models; else body.model = model;
   if (tools && tools.length > 0) {
     body.tools = tools;
     body.tool_choice = 'auto';
@@ -142,13 +133,17 @@ export async function callLLM(
   const rz = normalizeReasoning(reasoning);
   if (rz) body.reasoning = rz;
   if (maxTokens) body.max_tokens = maxTokens;
+  if (provider) body.provider = provider;
+  if (responseFormat) body.response_format = responseFormat;
 
-  // Scale timeout to reasoning effort — medium/high thinking phases alone can run 60-180s.
-  const { hardMs } = llmBudgetMs(reasoningEffortOf(reasoning));
+  // Scale timeout to reasoning effort — medium/high thinking phases alone can run
+  // 60-180s. A caller can pass hardMsOverride to cap a fast routing turn tighter.
+  const { hardMs: budgetHardMs } = llmBudgetMs(reasoningEffortOf(reasoning));
+  const hardMs = hardMsOverride || budgetHardMs;
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), hardMs);
 
-  console.log(`[llm] calling model=${model} effort=${reasoningEffortOf(reasoning) ?? 'none'} tools=${tools?.length ?? 0}`);
+  console.log(`[llm] calling model=${body.models ? body.models.join('>') : model} effort=${reasoningEffortOf(reasoning) ?? 'none'} tools=${tools?.length ?? 0}`);
   try {
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',

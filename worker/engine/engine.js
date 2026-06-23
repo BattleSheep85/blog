@@ -6,6 +6,7 @@ import { buildAgentTools, executeTool } from './tools.js';
 import { buildAgentPrompt, buildSynthesisPrompt } from './prompts.js';
 import { callLLM, callLLMStreaming, pruneMessages } from './llm.js';
 import { validateResearchResult } from './validate.js';
+import { synthesizeExtractive, enrichConsLLM } from './extract/index.js';
 
 // ─── Event emission ────────────────────────────────────────────────────────
 //
@@ -112,7 +113,12 @@ export async function runEngine(
     try {
       subrequestsUsed++; // LLM call = 1 subrequest
       console.log(`[engine] LLM call turn ${turn} (${subrequestsUsed} subs, ${state.toolCallCount} tools)`);
-      response = await callLLM(openrouterKey, config.plannerModel, prunedMessages, agentTools);
+      response = await callLLM(openrouterKey, config.plannerModel, prunedMessages, {
+        tools: agentTools,
+        reasoning: config.plannerReasoning,   // {effort:'low'} — tool-routing, not deep reasoning
+        provider: config.plannerProvider,     // latency-sort + fp8+ accuracy guard
+        hardMsOverride: config.plannerHardMs, // cap a hung routing turn
+      });
       if (typeof response.usage?.cost === 'number' && Number.isFinite(response.usage.cost)) {
         state.totalCostUsd += response.usage.cost;
       }
@@ -162,45 +168,64 @@ export async function runEngine(
       tool_calls: toolCalls,
     });
 
-    // Execute each tool call
+    // Execute the turn's tool calls CONCURRENTLY (the dominant latency lever — a
+    // 4-tool turn drops from sum-of-latencies to max-of-latencies). A synchronous
+    // PRE-PASS admits each call against ALL budgets first — tool budget, subrequest
+    // ceiling (reserving each tool's worst-case subs), and the per-kind search/fetch
+    // caps — because searchCount/fetchCount increment INSIDE executeTool, so a
+    // concurrent batch would otherwise race past maxSearches/maxFetches.
+    const outcome = new Map();   // tc.id → tool-message content (skip-stub or result)
+    const admitted = [];
+    let projSearch = 0, projFetch = 0, projSubs = 0;
+    const worstSubs = (nm) => (nm === 'web_search' ? 6 : nm === 'read_page' ? 1 : 0); // rss/video web_search fan to ~6
     for (const tc of toolCalls) {
+      const nm = tc.function.name;
       if (state.toolCallCount >= config.maxToolCalls) {
-        messages.push({
-          role: 'tool',
-          tool_call_id: tc.id,
-          content: 'Tool budget exhausted.',
-        });
-        continue;
+        outcome.set(tc.id, 'Tool budget exhausted.'); continue;
       }
-
-      // Check subrequest budget BETWEEN individual tool calls (not just between LLM turns)
-      // This prevents a single batch of 5 RSS calls (30 subs) from blowing the limit.
-      if (subrequestsUsed >= SUBREQUEST_BUDGET - SUBREQUEST_RESERVE_FOR_SYNTHESIS) {
-        console.log(`[engine] subrequest budget hit mid-batch (${subrequestsUsed}/${SUBREQUEST_BUDGET}), skipping remaining tools`);
-        messages.push({
-          role: 'tool',
-          tool_call_id: tc.id,
-          content: 'Platform subrequest limit reached. Synthesize from what you have.',
-        });
-        continue;
+      if (subrequestsUsed + projSubs >= SUBREQUEST_BUDGET - SUBREQUEST_RESERVE_FOR_SYNTHESIS) {
+        outcome.set(tc.id, 'Platform subrequest limit reached. Synthesize from what you have.'); continue;
       }
-
+      if (nm === 'web_search' && state.searchCount + projSearch >= config.maxSearches) {
+        outcome.set(tc.id, 'Search budget exhausted. Use note() to record findings or stop.'); continue;
+      }
+      if (nm === 'read_page' && state.fetchCount + projFetch >= config.maxFetches) {
+        outcome.set(tc.id, 'Fetch budget exhausted.'); continue;
+      }
       state.toolCallCount++;
+      if (nm === 'web_search') projSearch++;
+      if (nm === 'read_page') projFetch++;
+      projSubs += worstSubs(nm);
+      admitted.push(tc);
+    }
 
-      // Write event for the activity feed
+    // Activity-feed events for admitted calls, in order (cheap, sequential).
+    for (const tc of admitted) {
       const toolArgs = safeParseArgs(tc.function.arguments);
       const eventMsg = formatToolEvent(tc.function.name, toolArgs);
       await emitEvent(onEvent, state, tc.function.name === 'note' ? 'note' : tc.function.name === 'read_page' ? 'fetch' : 'search', eventMsg, tc.function.arguments);
+    }
 
-      // Execute the tool
-      const [result, subs] = await executeTool(tc, state, config, toolCtx);
+    // Run admitted calls concurrently (capped pool); fold actual subs + results.
+    const settled = await runPool(admitted.map((tc) => () => executeTool(tc, state, config, toolCtx)), config.maxConcurrency || 6);
+    for (let i = 0; i < admitted.length; i++) {
+      const [result, subs] = settled[i] || ['Tool error.', 0];
       subrequestsUsed += subs;
+      outcome.set(admitted[i].id, result);
+    }
 
-      messages.push({
-        role: 'tool',
-        tool_call_id: tc.id,
-        content: result,
-      });
+    // Neutralize the in-flight source-dedup race: collapse state.sources by url so
+    // the corpus synthesis/extraction sees is identical to a sequential run.
+    if (state.sources.length) {
+      const byUrl = new Map();
+      for (const s of state.sources) if (s && s.url && !byUrl.has(s.url)) byUrl.set(s.url, s);
+      state.sources = [...byUrl.values()];
+    }
+
+    // Append every tool message in ORIGINAL tool_calls order (id pairing intact —
+    // the API requires one tool message per tool_call_id).
+    for (const tc of toolCalls) {
+      messages.push({ role: 'tool', tool_call_id: tc.id, content: outcome.get(tc.id) ?? 'Tool produced no output.' });
     }
   }
 
@@ -208,6 +233,37 @@ export async function runEngine(
   await emitEvent(onEvent, state, 'status', `Gathered ${state.sources.length} sources with ${state.notes.length} findings. Synthesizing report...`);
 
   // ── Phase 2: Synthesis ──────────────────────────────────────────────────
+
+  // Experimental (dev-only): deterministic pure-extraction synthesizer. It is a
+  // drop-in for the LLM synth step — same inputs, same report JSON shape — but
+  // cannot fabricate (every field is a real source span) and ratings are derived
+  // by an auditable formula instead of an LLM. Gated by SYNTH_ENGINE=extract so
+  // production keeps the proven generative synth path untouched.
+  if (env?.SYNTH_ENGINE === 'extract') {
+    await emitEvent(onEvent, state, 'synthesize', 'Extracting report from sources (no generative model)...');
+    const extracted = synthesizeExtractive(query, state.notes, state.sources, facets, topicalCategory);
+    // HYBRID: gated LLM con-SELECTOR fills cons for thin products by PICKING criticism
+    // from real source spans (its groundedness gate drops anything not verbatim) — adds
+    // recall without a fabrication surface. Off unless config.conSelectorModel is set.
+    if (config.conSelectorModel) {
+      await emitEvent(onEvent, state, 'synthesize', 'Selecting criticism from sources...');
+      try {
+        const r = await enrichConsLLM(extracted, state.sources, openrouterKey, config.conSelectorModel);
+        // attribute the selector's token spend (cheap flash-lite) is folded by callLLM's
+        // usage on each call; we don't double-count here (calls are fire-and-forget cheap).
+        void r;
+      } catch (e) { console.log('[engine] con-selector skipped:', e?.message); }
+    }
+    const result = validateResearchResult(extracted);
+    await emitEvent(onEvent, state, 'status', `Report complete: ${result.products.length} products ranked.`);
+    return {
+      result,
+      sources: state.sources,
+      notes: state.notes,
+      totalCostUsd: state.totalCostUsd,
+      synthModel: 'extraction-v0',
+    };
+  }
 
   await emitEvent(onEvent, state, 'synthesize', 'Writing final report...');
 
@@ -248,8 +304,7 @@ export async function runEngine(
       config.synthModel,
       synthMessages,
       (_delta, accumulated) => announceProduct(accumulated),
-      config.synthReasoning,
-      config.synthMaxTokens,
+      { reasoning: config.synthReasoning, maxTokens: config.synthMaxTokens, provider: config.synthProvider },
     );
     synthContent = streamRes.content;
     if (typeof streamRes.usage?.cost === 'number' && Number.isFinite(streamRes.usage.cost)) {
@@ -263,9 +318,7 @@ export async function runEngine(
       openrouterKey,
       config.synthModel,
       synthMessages,
-      undefined,
-      config.synthReasoning,
-      config.synthMaxTokens,
+      { reasoning: config.synthReasoning, maxTokens: config.synthMaxTokens, provider: config.synthProvider },
     );
     if (typeof retry.usage?.cost === 'number' && Number.isFinite(retry.usage.cost)) {
       state.totalCostUsd += retry.usage.cost;
@@ -300,9 +353,7 @@ export async function runEngine(
         { role: 'system', content: synthPrompt },
         { role: 'user', content: `Write the research report for: "${query}". Respond ONLY with valid JSON.` },
       ],
-      undefined,
-      config.synthReasoning,
-      config.synthMaxTokens,
+      { reasoning: config.synthReasoning, maxTokens: config.synthMaxTokens, provider: config.synthProvider },
     );
     if (typeof retryResponse.usage?.cost === 'number' && Number.isFinite(retryResponse.usage.cost)) {
       state.totalCostUsd += retryResponse.usage.cost;
@@ -335,6 +386,23 @@ function safeParseArgs(argsStr) {
   } catch {
     return {};
   }
+}
+
+// Bounded-concurrency pool: run thunks with at most `limit` in flight, preserving
+// result order. A thrown thunk resolves to a tool-error tuple so one failure can't
+// reject the whole batch.
+async function runPool(thunks, limit) {
+  const results = new Array(thunks.length);
+  let next = 0;
+  const worker = async () => {
+    while (next < thunks.length) {
+      const idx = next++;
+      try { results[idx] = await thunks[idx](); }
+      catch (e) { results[idx] = [`Tool error: ${e instanceof Error ? e.message : String(e)}`, 0]; }
+    }
+  };
+  await Promise.all(Array.from({ length: Math.max(1, Math.min(limit, thunks.length)) }, worker));
+  return results;
 }
 
 function formatToolEvent(name, args) {

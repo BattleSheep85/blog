@@ -21,3 +21,6 @@ Thumbs.db
 # Node (should not exist, but just in case)
 node_modules/
 .cf-token
+
+# Dev-site Basic Auth credentials (never commit)
+.dev-auth

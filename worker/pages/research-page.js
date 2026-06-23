@@ -359,17 +359,62 @@ ${p.rating != null ? `<p class="product-rating"><span aria-hidden="true">${'★'
 </div>
 </div>
 ${p.best_for ? `<div class="product-bestfor">Best for: ${escapeHtml(p.best_for)}</div>` : ''}
+${ratingNote(p, cons)}
 ${metadataBlock}
 ${p.verdict ? `<p class="product-verdict">${escapeHtml(p.verdict)}</p>` : ''}
-${(pros.length > 0 || cons.length > 0) ? `<div class="pros-cons">
+${criticalReviewsBlock(p, cons)}
+${(pros.length > 0 || (cons.length > 0 && !isBelow4(p))) ? `<div class="pros-cons">
 ${pros.length > 0 ? `<div><h4 class="pro">Pros</h4><ul class="pro-list">${prosHtml}</ul></div>` : ''}
-${cons.length > 0 ? `<div><h4 class="con">Cons</h4><ul class="con-list">${consHtml}</ul></div>` : ''}
+${(cons.length > 0 && !isBelow4(p)) ? `<div><h4 class="con">Cons</h4><ul class="con-list">${consHtml}</ul></div>` : ''}
 </div>` : ''}
 ${specsHtml ? `<details><summary style="cursor:pointer;font-size:.85rem;color:var(--ink-3);font-weight:500">Specifications</summary>
 <dl style="display:grid;grid-template-columns:1fr 1fr;gap:.3rem .75rem;font-size:.85rem;margin-top:.75rem;background:var(--surface-2);padding:.75rem;border-radius:8px">${specsHtml}</dl></details>` : ''}
 ${links.length > 0 ? `<div class="product-links">${links.join('')}</div>` : ''}
 ${amazonCtaBlock}
 </article>`;
+}
+
+// A one-line, plain-English explanation of WHY a product earned its rating — so a
+// score (especially a low one) never appears without its reason. Built at render
+// time from the rating band + the top con, so it works for BOTH the extraction
+// engine and the live synth output. Honest about thin evidence (null rating).
+function ratingNote(p, cons) {
+  if (p.rating == null) {
+    return `<p class="rating-why">Not enough independent reviews to score this confidently — shown for context, not as a strong pick.</p>`;
+  }
+  const r = Number(p.rating);
+  const con = (cons && cons[0]) ? String(cons[0]).replace(/^[\s"'“”]+|[\s"'“”.]+$/g, '') : '';
+  let lead;
+  if (r >= 4.5) lead = 'Strong, consistent praise across our credible sources';
+  else if (r >= 4) lead = 'Well-reviewed overall, with only minor trade-offs';
+  else if (r >= 3.5) lead = 'A solid, usable pick — but not the best in its class';
+  else if (r >= 3) lead = 'Recommended only if it fits a specific need';
+  else lead = 'Low marks from reviewers — included only because it suits a particular need';
+  const why = con
+    ? ` Main caveat reviewers raised: ${escapeHtml(con)}.`
+    : (r >= 4.5 ? ' No recurring complaint surfaced in our sources.' : '');
+  return `<p class="rating-why"><strong>Why ${escapeHtml(String(r))}/5:</strong> ${escapeHtml(lead)}.${why}</p>`;
+}
+
+// A buyer often won't purchase a sub-4★ pick WITHOUT reading the actual criticism
+// first (real user feedback). For products rated below 4 (or unrated) we surface the
+// critical points PROMINENTLY and framed as "here's why some passed — judge for
+// yourself"; when no credible criticism was found we say so honestly instead of
+// hiding the gap. Render-time, so it works for both the extraction + synth output.
+function isBelow4(p) { return p.rating != null && Number(p.rating) < 4; }
+function criticalReviewsBlock(p, cons) {
+  const r = p.rating == null ? null : Number(p.rating);
+  if (r != null && r >= 4) return ''; // 4★+ : criticism stays in the normal Cons grid
+  const items = (cons || []).map((c) => `<li>${escapeHtml(String(c))}</li>`).join('');
+  const intro = r == null
+    ? 'We didn’t find enough independent reviews to score this confidently — read the criticism we did find before buying:'
+    : 'This scores below 4★. Here’s the criticism reviewers actually raised — read it and decide whether any of it is a dealbreaker for you:';
+  const body = items
+    ? `<p class="crit-intro">${intro}</p><ul class="crit-list">${items}</ul>`
+    : '<p class="crit-intro">This scores below 4★ and we couldn’t surface specific, credible criticism — treat the rating cautiously and read recent buyer reviews before purchasing.</p>';
+  return `<section class="critical-reviews" aria-label="Critical reviews">
+<h4 class="crit-head"><span aria-hidden="true">&#9888;</span> Why some reviewers rated it low</h4>
+${body}</section>`;
 }
 
 // "Our pick" box: a high-visibility card for the rank-1 product, shown above the
@@ -398,7 +443,9 @@ function renderOurPick(p, ids, isService, slug, cleanLinks, webOnly) {
 <div class="ourpick-eyebrow">Our pick</div>
 <h2 class="ourpick-name">${escapeHtml(p.name)}</h2>
 ${(ratingHtml || priceHtml) ? `<div class="ourpick-meta">${ratingHtml}${priceHtml}</div>` : ''}
+${ratingNote(p, Array.isArray(p.cons) ? p.cons : [])}
 ${p.verdict ? `<p class="ourpick-verdict">${escapeHtml(p.verdict)}</p>` : ''}
+${isBelow4(p) ? criticalReviewsBlock(p, Array.isArray(p.cons) ? p.cons : []) : ''}
 ${ctaHtml}
 </div>`;
 }

@@ -58,6 +58,18 @@ export async function runResearchPipeline(env, reportId, query) {
             query, config, env.OPENROUTER_API_KEY, env, onEvent, facets, topicalCategory, clarifications,
         );
 
+        // Dev-only: stash the raw extractor input (notes + full source text) so we
+        // can build regression fixtures from authentic messy pages. No-op in prod.
+        if (env.ENVIRONMENT === 'dev') {
+            try {
+                await env.KV.put(`debug:extract-input:${reportId}`, JSON.stringify({
+                    query, facets, topicalCategory,
+                    notes: engine.notes || [],
+                    sources: (engine.sources || []).map((s) => ({ url: s.url, title: s.title, credibility: s.credibility, content: s.content })),
+                }), { expirationTtl: 7 * 86400 });
+            } catch (e) { console.log('[dev] extract-input stash failed:', e?.message); }
+        }
+
         await persistEngineResult(env, reportId, query, facets, topicalCategory, engine, row.slug, progress);
     } catch (err) {
         console.error('Pipeline error:', err);
@@ -133,16 +145,26 @@ export async function persistEngineResult(env, reportId, query, facets, topicalC
         return { status: failWon ? 'failed' : 'noop' };
     }
 
+    // Per-product ASIN + image resolution is one Serper lookup EACH and runs
+    // sequentially — on a comprehensive 24-item list that is ~48 serial subrequests,
+    // which times out the queue consumer. Bound the expensive enrichment to the TOP
+    // products (the ones with conversion value); the tail still shows (name/rating/
+    // pros/cons), just without a resolved image/affiliate link.
+    const ENRICH_TOP = 16;
+    const head = result.products.slice(0, ENRICH_TOP);
+    const tail = result.products.slice(ENRICH_TOP);
+
     // Recover direct Amazon /dp/ links for products missing/redirect-hidden URLs.
     // Skipped when the classifier says this category isn't sold on Amazon.
     const amazonViable = facets?.sold_on_amazon !== false && facets?.is_service !== true;
+    let enriched = head;
     if (amazonViable) {
         await report('Resolving Amazon product links...');
-        result.products = await resolveAsins(env, result.products, report);
+        enriched = await resolveAsins(env, enriched, report);
     }
-
     // Fill product photos synthesis didn't attach (one Serper Images query each).
-    result.products = await resolveImages(env, result.products, report);
+    enriched = await resolveImages(env, enriched, report);
+    result.products = [...enriched, ...tail];
 
     const affiliateIds = {
         amazonTag: env.AMAZON_AFFILIATE_TAG || env.AMAZON_ASSOCIATE_TAG || DEFAULT_AFFILIATE_TAG,

@@ -4,6 +4,45 @@
 
 const CLASSIFIER_MODEL = 'google/gemini-2.5-flash-lite';
 const CLASSIFIER_TIMEOUT_MS = 8_000;
+
+// Strict structured-output schema — makes the classifier JSON schema-guaranteed
+// on the cache-miss path (no prose-wrapped JSON leaning on extractJson). Strict
+// mode requires every property in `required` + additionalProperties:false;
+// nullable fields use ["string","null"]. validate() still runs as the net.
+const CLASSIFIER_SCHEMA = {
+  type: 'object',
+  additionalProperties: false,
+  required: ['accept', 'reject_reason', 'topical_category', 'facets', 'suggested_refinement', 'clarifying_questions'],
+  properties: {
+    accept: { type: 'boolean' },
+    reject_reason: { type: ['string', 'null'] },
+    topical_category: { type: ['string', 'null'] },
+    facets: {
+      type: 'object',
+      additionalProperties: false,
+      required: ['needs_location', 'is_buyable', 'is_experience', 'is_content', 'is_service', 'is_comparative', 'sold_on_amazon', 'recency_sensitive'],
+      properties: {
+        needs_location: { type: 'boolean' }, is_buyable: { type: 'boolean' }, is_experience: { type: 'boolean' },
+        is_content: { type: 'boolean' }, is_service: { type: 'boolean' }, is_comparative: { type: 'boolean' },
+        sold_on_amazon: { type: 'boolean' }, recency_sensitive: { type: 'boolean' },
+      },
+    },
+    suggested_refinement: { type: ['string', 'null'] },
+    clarifying_questions: {
+      type: 'array',
+      items: {
+        type: 'object',
+        additionalProperties: false,
+        required: ['key', 'question', 'suggested_answers'],
+        properties: {
+          key: { type: 'string' },
+          question: { type: 'string' },
+          suggested_answers: { type: 'array', items: { type: 'string' } },
+        },
+      },
+    },
+  },
+};
 // v5: added the sold_on_amazon facet (routes Amazon vs Google CTAs on report
 // pages). Bump so cached v4 classifications — which lack the key — get re-run.
 const CACHE_VERSION = 'v5';
@@ -204,8 +243,8 @@ export async function classifyQuery(env, query, canonical) {
           { role: 'system', content: CLASSIFIER_SYSTEM_PROMPT },
           { role: 'user', content: query },
         ],
-        response_format: { type: 'json_object' },
-        max_tokens: 400,
+        response_format: { type: 'json_schema', json_schema: { name: 'classification', strict: true, schema: CLASSIFIER_SCHEMA } },
+        max_tokens: 500,
       }),
     }).finally(() => clearTimeout(timer));
 

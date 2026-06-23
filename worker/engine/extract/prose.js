@@ -5,6 +5,7 @@
 
 import { CUES, MARKETING } from './lexicon.js';
 import { sentences } from './engine.js';
+import { STOPWORDS } from './gazetteer.js';
 
 const trimQuote = (s) => String(s || '').replace(/\s+/g, ' ').replace(/^["“”']|["“”']$/g, '').trim();
 
@@ -14,17 +15,31 @@ export function buildVerdict(p) {
   const con = p.cons[0] ? trimQuote(p.cons[0]) : '';
   const support = `Backed by ${p._credibleCount} credible source${p._credibleCount === 1 ? '' : 's'}`;
   if (pro && con) return `${support}. What reviewers liked: ${pro} The main drawback they noted: ${con}`;
-  if (pro) return `${support}, with no consistent drawback in our sources. What reviewers liked: ${pro}`;
+  if (pro) return `${support}. What reviewers liked: ${pro} No specific criticism surfaced in the sources we read — not proof none exists, so check recent reviews before buying.`;
   if (con) return `${support}. Reviewers' main reservation: ${con} We found no strong positive consensus to balance it.`;
   return `${support}; reviewers' commentary was mixed and we did not find a clear consensus.`;
 }
 
-// bestFor: pull a "for <use>" / "best for <x>" phrase from the product's pro quotes; else template.
+// bestFor: pull a grounded "for <use>" phrase from the product's quotes; else fall
+// back to an honest price/template. NEVER emits a bare stopword/price-qualifier
+// (the old code returned "under" from "for under $100").
 export function buildBestFor(p) {
+  // 1) A grounded USE-CASE that literally appears after "for" wins (e.g. "for travel").
   for (const s of [...p.pros, ...p.cons]) {
     const m = String(s).match(/\b(?:best |ideal |great |good )?for ([a-z][a-z0-9 ,'-]{3,40})/i);
-    if (m) return m[1].replace(/[.,].*$/, '').trim();
+    if (!m) continue;
+    let toks = m[1].replace(/[.,].*$/, '').trim().toLowerCase().split(/\s+/).filter(Boolean);
+    while (toks.length && STOPWORDS.has(toks[0])) toks.shift();
+    while (toks.length && STOPWORDS.has(toks[toks.length - 1])) toks.pop();
+    const phrase = toks.join(' ');
+    // require a real use-phrase: ≥4 chars and not entirely stopwords (kills "under").
+    if (phrase.length >= 4 && !toks.every((t) => STOPWORDS.has(t))) return phrase;
   }
+  // 2) An explicit sub-$X constraint in a quote → honest paraphrase (not the bare word).
+  for (const s of [...p.pros, ...p.cons]) {
+    if (/\bfor (?:less than|under|below|up to)\s*\$?\d/i.test(String(s))) return 'budget buyers';
+  }
+  // 3) Honest generic template.
   return p.rank === 1 ? 'most buyers in this category' : 'buyers prioritizing specific tradeoffs';
 }
 

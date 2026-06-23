@@ -4,8 +4,45 @@
 // It cannot fabricate: every field is extracted from, or templated around, real
 // source spans. No deps; runs in the Worker in ~tens of ms.
 
-import { analyze } from './engine.js';
+import { analyze, conCandidateSpans } from './engine.js';
 import { buildVerdict, buildBestFor, buildSummary, buildBuyersGuide } from './prose.js';
+import { selectCons } from './con-selector.js';
+
+const _k = (s) => String(s || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+
+// HYBRID con enrichment (opt-in): for products the deterministic pass left thin on
+// cons, ask the GATED LLM con-selector to pick criticism from real source spans. The
+// selector can only return verbatim source substrings (its own groundedness gate), so
+// this adds recall WITHOUT adding a fabrication surface. Mutates report in place; safe
+// no-op without a model/key. Runs only on thin products, concurrency-capped, cheap.
+export async function enrichConsLLM(report, sources, apiKey, model, { minCons = 2, maxCons = 3, concurrency = 6, topN = 15 } = {}) {
+  if (!apiKey || !model || !report?.products?.length) return report;
+  const allNames = report.products.map((p) => p.name);
+  // Only enrich the TOP-ranked thin products — enriching a 24-item list would fire too
+  // many LLM calls and time out the queue consumer. The tail keeps its deterministic cons.
+  const thin = report.products.filter((p) => (p.cons || []).length < minCons && (typeof p.rank !== 'number' || p.rank <= topN));
+  let idx = 0;
+  const worker = async () => {
+    while (idx < thin.length) {
+      const p = thin[idx++];
+      const spans = conCandidateSpans(p.name, [], sources, allNames.filter((n) => n !== p.name));
+      if (spans.length < 2) continue;
+      let picked = [];
+      try { picked = await selectCons(p.name, spans, apiKey, model, maxCons); } catch { picked = []; }
+      const have = new Set((p.cons || []).map(_k));
+      let gained = false;
+      for (const c of picked) {
+        if ((p.cons || []).length >= maxCons) break;
+        const k = _k(c);
+        if (k && !have.has(k)) { (p.cons ||= []).push(c); have.add(k); gained = true; }
+      }
+      // Rebuild the verdict so it no longer claims "no specific criticism" once cons exist.
+      if (gained) p.verdict = buildVerdict({ pros: p.pros || [], cons: p.cons || [], _credibleCount: Number(p.metadata?.sources) || 1 });
+    }
+  };
+  await Promise.all(Array.from({ length: Math.min(concurrency, thin.length || 1) }, worker));
+  return report;
+}
 
 export function synthesizeExtractive(query, notes, sources, facets = {}, topicalCategory = '') {
   const ranked = analyze(query, notes || [], sources || []);
