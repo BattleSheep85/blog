@@ -248,10 +248,12 @@ export async function runEngine(
     if (config.conSelectorModel) {
       await emitEvent(onEvent, state, 'synthesize', 'Selecting criticism from sources...');
       try {
-        const r = await enrichConsLLM(extracted, state.sources, openrouterKey, config.conSelectorModel);
-        // attribute the selector's token spend (cheap flash-lite) is folded by callLLM's
-        // usage on each call; we don't double-count here (calls are fire-and-forget cheap).
-        void r;
+        // Hard cap: a slow/hung flash-lite con-selector call must NEVER stall the run.
+        // On timeout we ship the deterministic cons we already have.
+        await Promise.race([
+          enrichConsLLM(extracted, state.sources, openrouterKey, config.conSelectorModel),
+          new Promise((resolve) => setTimeout(resolve, 30000)),
+        ]);
       } catch (e) { console.log('[engine] con-selector skipped:', e?.message); }
     }
     const result = validateResearchResult(extracted);

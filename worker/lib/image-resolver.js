@@ -93,24 +93,24 @@ export async function resolveImages(env, products, onProgress) {
   const apiKey = env?.SERPER_API_KEY;
   if (!apiKey) return products;
 
-  let budget = MAX_RESOLVE;
-  let resolved = 0;
-  const out = [];
-  for (const product of products) {
-    const hasImage = typeof product?.imageUrl === 'string' && product.imageUrl.startsWith('https://');
-    if (hasImage || budget <= 0) { out.push(product); continue; }
-    const query = buildImageQuery(product);
-    if (!query) { out.push(product); continue; }
-    budget--;
-    let updated = product;
-    try {
-      const url = await searchImage(query, apiKey);
-      if (url) { updated = { ...product, imageUrl: url }; resolved++; }
-    } catch (err) {
-      console.log(`[image-resolver] failed for "${product?.name}": ${err instanceof Error ? err.message : String(err)}`);
-    }
-    out.push(updated);
+  // Pick up to MAX_RESOLVE products needing an image, then resolve them CONCURRENTLY
+  // (each is one Serper call; sequential resolution blew the queue-consumer wall-clock on
+  // rich comprehensive result sets and left runs stuck 'processing').
+  const out = products.slice();
+  const targets = [];
+  for (let i = 0; i < out.length && targets.length < MAX_RESOLVE; i++) {
+    const hasImage = typeof out[i]?.imageUrl === 'string' && out[i].imageUrl.startsWith('https://');
+    if (!hasImage && buildImageQuery(out[i])) targets.push(i);
   }
+  let resolved = 0;
+  await Promise.all(targets.map(async (i) => {
+    try {
+      const url = await searchImage(buildImageQuery(out[i]), apiKey);
+      if (url) { out[i] = { ...out[i], imageUrl: url }; resolved++; }
+    } catch (err) {
+      console.log(`[image-resolver] failed for "${out[i]?.name}": ${err instanceof Error ? err.message : String(err)}`);
+    }
+  }));
 
   if (resolved > 0 && typeof onProgress === 'function') {
     try { await onProgress(`Found product photos for ${resolved} item${resolved === 1 ? '' : 's'}.`); } catch { /* best-effort */ }

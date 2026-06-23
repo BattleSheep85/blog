@@ -55,33 +55,27 @@ export async function resolveAsins(env, products, onProgress) {
 
   const affiliateIds = affiliateIdsFromEnv(env);
 
-  // Identify products that lack a usable direct /dp/ Amazon link, capped.
+  // Identify up to MAX_RESOLVE products lacking a usable direct /dp/ link, then resolve
+  // them CONCURRENTLY (each is one Serper call; sequential resolution blew the queue-
+  // consumer wall-clock on rich result sets and left runs stuck 'processing').
   let resolvedCount = 0;
-  const out = [];
-  let budget = MAX_RESOLVE;
-
-  for (const product of products) {
-    if (budget <= 0 || !needsResolution(product)) {
-      out.push(product);
-      continue;
-    }
-    budget--;
-
-    let updated = product;
+  const out = products.slice();
+  const targets = [];
+  for (let i = 0; i < out.length && targets.length < MAX_RESOLVE; i++) {
+    if (needsResolution(out[i])) targets.push(i);
+  }
+  await Promise.all(targets.map(async (i) => {
     try {
-      const url = await resolveOne(product, apiKey, affiliateIds);
+      const url = await resolveOne(out[i], apiKey, affiliateIds);
       if (url) {
         const affiliateUrl = buildAffiliateUrl(url, affiliateIds);
-        // Immutable update — never mutate the engine's product object.
-        updated = { ...product, productUrl: url, affiliateUrl: affiliateUrl || product.affiliateUrl };
+        out[i] = { ...out[i], productUrl: url, affiliateUrl: affiliateUrl || out[i].affiliateUrl };
         resolvedCount++;
       }
     } catch (err) {
-      // Per-product graceful degradation: log and leave product unchanged.
-      console.log(`[asin-resolver] resolve failed for "${product?.name}": ${err instanceof Error ? err.message : String(err)}`);
+      console.log(`[asin-resolver] resolve failed for "${out[i]?.name}": ${err instanceof Error ? err.message : String(err)}`);
     }
-    out.push(updated);
-  }
+  }));
 
   if (resolvedCount > 0 && typeof onProgress === 'function') {
     try {
