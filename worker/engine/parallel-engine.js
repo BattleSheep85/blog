@@ -101,8 +101,12 @@ async function extractNotes(query, batch, key, plannerModel, plannerOpts = {}) {
   } catch { return { notes: [], cost: 0 }; }
 }
 
-// ── Main ────────────────────────────────────────────────────────────────────
-export async function runParallelEngine(query, config, openrouterKey, env, onEvent, facets, topicalCategory, clarifications) {
+// ── Gather only (no synth) ──────────────────────────────────────────────────
+// The rich parallel gatherer: decompose → parallel search burst → read → extract notes.
+// Returns RAW {sources, notes, totalCostUsd}. The honest synth runs separately (CF-side in
+// handleComplete, or in runParallelEngine below for the legacy/bench path) so the off-CF
+// worker can never synthesize on its own.
+export async function gatherParallel(query, config, openrouterKey, env, onEvent, facets, topicalCategory, clarifications) {
   const recency = facets?.recency_sensitive ?? true;
   const toolEnv = env;
   let totalCostUsd = 0;
@@ -150,7 +154,7 @@ export async function runParallelEngine(query, config, openrouterKey, env, onEve
     // products → persistEngineResult marks the run 'failed' (no published guess),
     // and we skip a wasted synthesis call.
     await emit(onEvent, 'status', 'No sources found — recording an honest non-result.');
-    return { result: { summary: '', category: topicalCategory || '', products: [], methodology: 'No sources found for this query.' }, sources, notes: [], totalCostUsd, synthModel: config.synthModel };
+    return { sources, notes: [], totalCostUsd };
   }
   await emit(onEvent, 'status', `Gathered ${sources.length} sources. Reading the most credible pages...`);
 
@@ -168,6 +172,20 @@ export async function runParallelEngine(query, config, openrouterKey, env, onEve
   const notes = [];
   for (const r of noteRes) { if (!r) continue; totalCostUsd += r.cost || 0; for (const n of r.notes) notes.push(n); }
   console.log(`[parallel] ${aspects.length} aspects, ${tasks.length} searches, ${sources.length} sources, ${readOk.length} read, ${notes.length} notes`);
+
+  return { sources, notes, totalCostUsd };
+}
+
+// ── Legacy / benchmark path: gather + the kimi LLM synth ──────────────────────
+// NOT used by prod anymore (prod gathers via gatherParallel and synthesizes the HONEST
+// extraction report CF-side in handleComplete). Kept as a drop-in with the original
+// signature/return shape for benchmarks and any caller that wants a one-shot synth.
+export async function runParallelEngine(query, config, openrouterKey, env, onEvent, facets, topicalCategory, clarifications) {
+  const { sources, notes, totalCostUsd: gatherCost } = await gatherParallel(query, config, openrouterKey, env, onEvent, facets, topicalCategory, clarifications);
+  let totalCostUsd = gatherCost;
+  if (sources.length === 0) {
+    return { result: { summary: '', category: topicalCategory || '', products: [], methodology: 'No sources found for this query.' }, sources, notes, totalCostUsd, synthModel: config.synthModel };
+  }
 
   // 5. Synthesis (kimi, reasoning off — see tiers.js).
   await emit(onEvent, 'synthesize', 'Writing final report...');

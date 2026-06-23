@@ -15,7 +15,7 @@
 //   MAX_CONCURRENCY parallel sub-researchers per job (default 16 — no CF cap here)
 //   MAX_SEARCHES    override per-run search budget (default 0 = use the job's config)
 
-import { runParallelEngine } from './worker/engine/parallel-engine.js';
+import { gatherParallel } from './worker/engine/parallel-engine.js';
 
 const CF_BASE = process.env.CF_BASE_URL || 'https://chrisputer.tech';
 const SECRET = process.env.WORKER_SECRET;
@@ -79,16 +79,18 @@ async function processJob(job) {
     // the worker's concurrent jobs (each writes its own progress_log:{reportId}).
     let step = 0;
     const onEvent = (_type, message) => { postProgress(job.reportId, ++step, message); };
-    const engine = await runParallelEngine(
+    // GATHER ONLY. The honest extraction synth runs CF-side in handleComplete (single
+    // honest path — the worker can never synthesize/fabricate on its own).
+    const gathered = await gatherParallel(
       job.query, config, OPENROUTER_API_KEY, { SERPER_API_KEY }, onEvent,
       job.facets, job.topicalCategory, job.clarifications || {},
     );
-    log(`  engine: ${((Date.now() - t0) / 1000).toFixed(1)}s, ${engine.result?.products?.length ?? 0} products, ${engine.sources.length} sources, $${(engine.totalCostUsd || 0).toFixed(4)}`);
+    log(`  gather: ${((Date.now() - t0) / 1000).toFixed(1)}s, ${gathered.sources.length} sources, ${gathered.notes.length} notes, $${(gathered.totalCostUsd || 0).toFixed(4)}`);
     await complete({
       reportId: job.reportId, query: job.query, slug: job.slug,
       facets: job.facets, topicalCategory: job.topicalCategory,
-      result: engine.result, sources: engine.sources,
-      totalCostUsd: engine.totalCostUsd, synthModel: engine.synthModel,
+      sources: gathered.sources, notes: gathered.notes,
+      totalCostUsd: gathered.totalCostUsd,
     });
   } catch (err) {
     console.error(`  engine FAILED: ${err?.message || err}`);

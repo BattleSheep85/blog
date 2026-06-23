@@ -75,3 +75,21 @@ export function synthesizeExtractive(query, notes, sources, facets = {}, topical
     methodology: `${credibleSourceCount} credible source(s) analyzed by extraction (no generative model). Products are ranked by the weight of credibility-weighted evidence; ratings are editorial estimates derived from that evidence, and any product backed only by affiliate listicles, sponsored posts, or manufacturer pages was excluded as unverified. Every price, spec, pro, and con is a span taken directly from a source — nothing is invented.`,
   };
 }
+
+// THE single honest synthesis path: deterministic extraction + the gated LLM con-selector
+// (timeout-bounded so it can never stall a run). Called by BOTH runEngine (CF-side direct)
+// AND handleComplete (when the off-CF gatherer hands back raw sources) so the honesty-critical
+// logic lives in exactly ONE place and the blackbox can never synthesize on its own. Returns
+// the enriched report; the CALLER validates (trust boundary stays at each call site).
+export async function synthesizeHonest({ query, notes, sources, facets, topicalCategory, openrouterKey, conSelectorModel } = {}) {
+  const report = synthesizeExtractive(query, notes || [], sources || [], facets || {}, topicalCategory || '');
+  if (conSelectorModel && openrouterKey) {
+    try {
+      await Promise.race([
+        enrichConsLLM(report, sources || [], openrouterKey, conSelectorModel),
+        new Promise((resolve) => setTimeout(resolve, 30000)),
+      ]);
+    } catch (e) { console.log('[synthesizeHonest] con-selector skipped:', e?.message); }
+  }
+  return report;
+}

@@ -13,6 +13,8 @@
 
 import { claimNextPendingJob, persistEngineResult, incrementMonthlyCost } from '../pipeline/orchestrator.js';
 import { validateResearchResult } from '../engine/validate.js';
+import { synthesizeHonest } from '../engine/extract/index.js';
+import { getTierConfig } from '../lib/tiers.js';
 
 // Constant-time string comparison. Hash both sides to fixed-length SHA-256
 // digests so the byte-compare loop runs the full length regardless of where
@@ -111,6 +113,47 @@ export async function handleComplete(request, env) {
       // forwards it as body.totalCostUsd) so the monthly governor stays accurate.
       await incrementMonthlyCost(env, Number(body.totalCostUsd) || 0);
       return json({ status: 'failed' });
+    }
+
+    // SINGLE HONEST SYNTH PATH: the off-CF worker is a pure GATHERER — it posts raw
+    // {sources, notes} with NO pre-synthesized result. Synthesize the honest extraction
+    // report CF-side here so the blackbox can never fabricate. (Legacy workers that still
+    // post a `result` fall through to the validate-and-persist path below.)
+    if (!body.result && Array.isArray(body.sources)) {
+      const config = getTierConfig('full');
+      let report;
+      try {
+        report = await synthesizeHonest({
+          query,
+          notes: Array.isArray(body.notes) ? body.notes : [],
+          sources: body.sources,
+          facets: facets || {},
+          topicalCategory: topicalCategory || '',
+          openrouterKey: env.OPENROUTER_API_KEY,
+          conSelectorModel: config.conSelectorModel,
+        });
+      } catch (e) {
+        console.error('[internal] CF-side synth failed:', e instanceof Error ? e.message : String(e));
+        await env.DB.prepare(`UPDATE research SET status = 'failed', result = ?1, completed_at = ?2 WHERE id = ?3 AND status = 'processing'`)
+          .bind(JSON.stringify({ error: 'CF-side synthesis failed.' }), Math.floor(Date.now() / 1000), reportId).run();
+        await incrementMonthlyCost(env, Number(body.totalCostUsd) || 0);
+        return json({ status: 'failed' });
+      }
+      let synthValidated;
+      try { synthValidated = validateResearchResult(report); }
+      catch {
+        await env.DB.prepare(`UPDATE research SET status = 'failed', result = ?1, completed_at = ?2 WHERE id = ?3 AND status = 'processing'`)
+          .bind(JSON.stringify({ error: 'Invalid synthesized result.' }), Math.floor(Date.now() / 1000), reportId).run();
+        return json({ status: 'failed' });
+      }
+      const engine = {
+        result: synthValidated,
+        sources: body.sources,
+        totalCostUsd: typeof body.totalCostUsd === 'number' ? body.totalCostUsd : 0,
+        synthModel: 'extraction-v0',
+      };
+      const r = await persistEngineResult(env, reportId, query, facets || null, topicalCategory || null, engine, slug || null, null);
+      return json(r || { status: 'ok' });
     }
 
     // Re-validate the worker-supplied result on the CF side so the trust boundary

@@ -6,7 +6,7 @@ import { buildAgentTools, executeTool } from './tools.js';
 import { buildAgentPrompt, buildSynthesisPrompt } from './prompts.js';
 import { callLLM, callLLMStreaming, pruneMessages } from './llm.js';
 import { validateResearchResult } from './validate.js';
-import { synthesizeExtractive, enrichConsLLM } from './extract/index.js';
+import { synthesizeHonest } from './extract/index.js';
 
 // ─── Event emission ────────────────────────────────────────────────────────
 //
@@ -241,21 +241,12 @@ export async function runEngine(
   // production keeps the proven generative synth path untouched.
   if (env?.SYNTH_ENGINE === 'extract') {
     await emitEvent(onEvent, state, 'synthesize', 'Extracting report from sources (no generative model)...');
-    const extracted = synthesizeExtractive(query, state.notes, state.sources, facets, topicalCategory);
-    // HYBRID: gated LLM con-SELECTOR fills cons for thin products by PICKING criticism
-    // from real source spans (its groundedness gate drops anything not verbatim) — adds
-    // recall without a fabrication surface. Off unless config.conSelectorModel is set.
-    if (config.conSelectorModel) {
-      await emitEvent(onEvent, state, 'synthesize', 'Selecting criticism from sources...');
-      try {
-        // Hard cap: a slow/hung flash-lite con-selector call must NEVER stall the run.
-        // On timeout we ship the deterministic cons we already have.
-        await Promise.race([
-          enrichConsLLM(extracted, state.sources, openrouterKey, config.conSelectorModel),
-          new Promise((resolve) => setTimeout(resolve, 30000)),
-        ]);
-      } catch (e) { console.log('[engine] con-selector skipped:', e?.message); }
-    }
+    // Single honest synth path (shared with the off-CF gatherer's CF-side synth in
+    // handleComplete): deterministic extraction + gated, timeout-bounded con-selector.
+    const extracted = await synthesizeHonest({
+      query, notes: state.notes, sources: state.sources, facets, topicalCategory,
+      openrouterKey, conSelectorModel: config.conSelectorModel,
+    });
     const result = validateResearchResult(extracted);
     await emitEvent(onEvent, state, 'status', `Report complete: ${result.products.length} products ranked.`);
     return {
