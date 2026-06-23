@@ -34,27 +34,30 @@ Last updated: 2026-06-23
       signals) and drops a product whose brand belongs only to other clusters (fail-open when
       either side unknown). ASICS-in-keyboards leak ELIMINATED (0 leaks both queries); fixture
       legit_recall held 1.0; desk/earbuds survivors all legit. (Phase 1 of the comprehensiveness plan)
-- [x] PHASE 2 DONE (comprehensiveness): blackbox worker → pure GATHERER; single CF-side honest
-      synth. parallel-engine split into gatherParallel() (raw sources) + legacy runParallelEngine
-      (benches); research-worker.mjs posts {sources,notes}; handleComplete synthesizes via shared
-      synthesizeHonest() → extraction-v0. Validated: dev e2e on real CF (tr-dev: extraction-v0, 3
-      clean keyboards, con-selector ran), unit + 128 integration + fixtures green, 6-dimension
-      adversarial review workflow. NOT yet rolled out to prod (ship-gate pending). (commit a8c1884)
-- [x] HIGH (review-caught, fixed): handleComplete validation-failure path skipped incrementMonthlyCost
-      while its two sibling failure paths call it → gather spend (~$0.10) leaked from the budget
-      governor when CF-side synth output fails validation. Added the call.
-- [x] MED (review-caught, fixed): wrangler.toml EXTERNAL_WORKER_ENABLED comment said "true = rollback"
-      — INVERTED after Phase 2 (true = forward cutover; false = safe rollback to CF-side runEngine).
-      Following it during an incident would break every off-CF run. Comment rewritten.
+- [x] PHASE 2 (comprehensiveness) — REVISED to BLACKBOX-SIDE honest synth (user-steered pivot,
+      see memory blackbox-honest-synth-architecture). First built "blackbox=gatherer, CF
+      synthesizes" (commit a8c1884), but the adversarial review flagged that CF-side synth on
+      unbounded worker sources can blow the 300s Worker CPU limit (verifier benchmarked 200
+      full-body sources = 227s). Rather than cap (which cost ~25% of products), moved the synth
+      to the idle homelab: research-worker.mjs now gather + synthesizeHonest → posts finished
+      {result,extraction-v0}; handleComplete reverts to validate+persist (no CF synth, no caps).
+      Honesty unchanged (extraction is deterministic → can't fabricate wherever it runs; CF
+      re-validates structure). Live worker-flow validated: 183 sources UNLIMITED, synth 1.2s, 7
+      clean keyboards. unit + 126 integration + fixtures green. NOT yet rolled out to prod (ship-gate).
+- [x] HIGH/MED (review-caught) — RESOLVED BY THE PIVOT: the CF-side-synth CPU-exhaustion risk and
+      the incrementMonthlyCost-on-validation-failure leak both lived in the CF gather-only branch
+      that the pivot REMOVED (CF no longer synthesizes). The untrusted-input boundary is also gone
+      (the homelab synthesizes its own gathered sources). wrangler.toml comment updated for the pivot.
 - [ ] LOW (review-noted, pre-existing): research-worker.mjs complete() swallows a failed /complete POST
-      (logs, no re-throw) → the outer processJob catch never fires → no requeue/cost-record; the row
-      orphans in 'processing' until the cron reaper flips it to 'failed' (never re-queued). Identical
-      before/after Phase 2 (not a regression) but worth a retry/requeue on POST failure.
-- [ ] MEDIUM (comprehensiveness watch-item): the CF-side honest engine gathers fewer sources than
-      the old off-CF parallel-engine did (CF subrequest/time budget), so niche queries can return
-      thin sets (one live keyboard run = 4 products; same query offline via parallel-engine = 15-18).
-      Honest-but-thinner is the accepted trade-off of the kimi→ML cutover. To restore depth without
-      losing honesty: raise CF-side gather depth, or wire the ML synth into parallel-engine.
+      (logs, no re-throw) → the row orphans in 'processing' until the cron reaper flips it to 'failed'
+      (never re-queued). Worth a retry/requeue on POST failure.
+- [x] MEDIUM (comprehensiveness watch-item) — RESOLVED: the synth source-count limit is gone (the
+      homelab has no CF CPU ceiling → unlimited mining). Kept the sentence-memoization (perf) +
+      MAX_CANDIDATES=250 cap (cheap runaway-loop safety) regardless.
+- [ ] MEDIUM (next quality lever): gather DEPTH, not synth. A live worker run gathered 183 sources
+      but only read ~8 pages → 8 notes → 7 thin products (many 0 cons). The synth is now unlimited;
+      product/con richness is bottlenecked on how many credible pages the gather READS (Jina/read
+      success). Raise reads + improve note extraction to convert the 183 sources into more products.
 
 ## 2026-06-22 — PROD CUTOVER: honest ML extraction engine shipped to chrisputer.tech
 

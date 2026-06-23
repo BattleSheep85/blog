@@ -47,15 +47,26 @@ const MIN_CREDIBLE_SCORE = 45; // a product needs ≥1 supporting source at/abov
 
 // ── text utils ───────────────────────────────────────────────────────────────
 let _seg;
+// Memoize segmentation by content string. analyzeProduct() re-segments the SAME source
+// bodies once PER candidate (M times), so without this the cost is O(M x N x segment) and a
+// large source set blows the Worker CPU budget. Caching collapses it to one segment per
+// distinct body. Bounded so it can't grow unbounded across many runs in a warm isolate.
+const _sentCache = new Map();
 function sentences(text) {
   const t = String(text || '').trim();
   if (!t) return [];
+  const hit = _sentCache.get(t);
+  if (hit) return hit;
+  let out;
   try {
     _seg = _seg || new Intl.Segmenter('en', { granularity: 'sentence' });
-    return [..._seg.segment(t)].map((s) => s.segment.trim()).filter(Boolean);
+    out = [..._seg.segment(t)].map((s) => s.segment.trim()).filter(Boolean);
   } catch {
-    return t.split(/(?<=[.!?])\s+/).map((s) => s.trim()).filter(Boolean);
+    out = t.split(/(?<=[.!?])\s+/).map((s) => s.trim()).filter(Boolean);
   }
+  if (_sentCache.size > 800) _sentCache.clear(); // bound memory; segmentation is deterministic
+  _sentCache.set(t, out);
+  return out;
 }
 const words = (s) => String(s || '').toLowerCase().match(/[a-z0-9'’#-]+/g) || [];
 const norm = (s) => String(s || '').toLowerCase().replace(/[^a-z0-9 ]+/g, ' ').replace(/\s+/g, ' ').trim();
@@ -614,7 +625,16 @@ export function analyze(query, notes, sources, facets = {}, topicalCategory = ''
   // tools, apps) ARE legitimately one word (Brevo, Notion), so only require ≥2 tokens
   // when the query is for a buyable physical product.
   const physical = facets?.sold_on_amazon !== false && facets?.is_service !== true && facets?.is_content !== true;
-  const harvested = resolveCandidates(harvestCandidates(cleanSources, cleanNotes, { physical }));
+  // Cap the candidate set before the per-candidate analysis. analyzeProduct() runs for EVERY
+  // candidate and re-scans every source, so cost is ~O(candidates x sources x sentences). A
+  // legit query yields well under this cap; the limit bounds a pathological/adversarial source
+  // payload (many distinct Title-Case strings) from exploding CPU. Keep the best-supported
+  // candidates (most source mentions) — real products are corroborated, noise is one-off.
+  const MAX_CANDIDATES = 250;
+  let harvested = resolveCandidates(harvestCandidates(cleanSources, cleanNotes, { physical }));
+  if (harvested.length > MAX_CANDIDATES) {
+    harvested = harvested.slice().sort((a, b) => ((b.srcIdx?.size || 0) - (a.srcIdx?.size || 0)) || ((b.sents?.length || 0) - (a.sents?.length || 0))).slice(0, MAX_CANDIDATES);
+  }
   const allMatch = harvested.map((c) => ({ c, m: aliasMatchers(c) }));
   const seen = new Set(); // a given clause is used as a pro/con for at most ONE product
   const products = [];

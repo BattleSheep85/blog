@@ -7,7 +7,6 @@ import { beforeAll, describe, it, expect } from 'vitest';
 import { applySchema } from './_schema.js';
 import { handleNextJob, handleProgress, handleComplete } from '../../worker/handlers/internal.js';
 import { generateId, insertResearch, updateResearchStatus } from '../../worker/lib/db.js';
-import gatherFixture from './gather-fixture.json'; // real keyboard sources → yields products
 
 const SECRET = 'test-worker-secret-123';
 const authedReq = (body) => new Request('https://x/api/internal/x', {
@@ -102,41 +101,5 @@ describe('handleComplete failure paths', () => {
     // result is not a valid object → validateResearchResult throws → row failed
     const res = await handleComplete(authedReq({ reportId: id, query: 'q', result: 'not-an-object' }), env);
     expect((await res.json()).status).toBe('failed');
-  });
-});
-
-// The single-honest-synth path: the off-CF GATHERER posts raw {sources, notes} (no result),
-// and handleComplete synthesizes the honest extraction report CF-side. OPENROUTER/SERPER are
-// unset in the test env, so the con-selector + ASIN/image resolvers are no-ops (deterministic,
-// offline). The fixture is a real 12-source keyboard slice that yields products via extraction.
-describe('handleComplete gather-only (CF-side honest synth)', () => {
-  it('synthesizes raw worker sources CF-side → complete + extraction-v0 + products', async () => {
-    const id = generateId();
-    await insertResearch(env.DB, { id, slug: 's-' + id, query: gatherFixture.query, canonicalQuery: 'kbdgather' });
-    await updateResearchStatus(env.DB, id, 'processing');
-    const res = await handleComplete(authedReq({
-      reportId: id, query: gatherFixture.query, slug: 's-' + id,
-      facets: gatherFixture.facets, topicalCategory: gatherFixture.cat,
-      sources: gatherFixture.sources, notes: gatherFixture.notes, totalCostUsd: 0.012,
-    }), env);
-    expect(res.status).toBe(200);
-    const row = await env.DB.prepare('SELECT status, synth_model FROM research WHERE id = ?').bind(id).first();
-    expect(row.status).toBe('complete');
-    expect(row.synth_model).toBe('extraction-v0'); // proves the NEW branch ran, not the legacy result path
-    const cnt = await env.DB.prepare('SELECT COUNT(*) c FROM products WHERE research_id = ?').bind(id).first();
-    expect(cnt.c).toBeGreaterThan(0);
-  });
-
-  it('gather-only payload with zero sources is an honest non-result, not a crash', async () => {
-    const id = generateId();
-    await insertResearch(env.DB, { id, slug: 's-' + id, query: 'best obscure nothing', canonicalQuery: 'emptygather' });
-    await updateResearchStatus(env.DB, id, 'processing');
-    const res = await handleComplete(authedReq({
-      reportId: id, query: 'best obscure nothing', slug: 's-' + id, sources: [], notes: [], totalCostUsd: 0,
-    }), env);
-    expect(res.status).toBe(200);
-    // no products → persisted as an honest failure, never left stuck in 'processing'
-    const row = await env.DB.prepare('SELECT status FROM research WHERE id = ?').bind(id).first();
-    expect(row.status).not.toBe('processing');
   });
 });

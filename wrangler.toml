@@ -29,17 +29,16 @@ MONTHLY_BUDGET_USD = "60"
 # Programmatic-SEO flywheel: max keyword research runs the cron will start per
 # UTC day. The flywheel also stays dormant until SERPER_API_KEY is set.
 FLYWHEEL_DAILY_MAX = "6"
-# EXTERNAL_WORKER_ENABLED routes research processing. BOTH paths are HONEST now (the synth
-# is the CF-side extraction engine in either case — see Phase 2 / handleComplete):
+# EXTERNAL_WORKER_ENABLED routes research processing. BOTH paths run the SAME honest
+# deterministic extraction synth (synthesizeHonest) — it cannot fabricate wherever it runs:
 #   "false" (DEFAULT + SAFE ROLLBACK): the CF-side runEngine (SYNTH_ENGINE=extract below)
-#           processes every job. Self-contained, no homelab dependency. Thinner gather.
+#           gathers + synthesizes on Cloudflare. Self-contained, no homelab dependency, but
+#           bounded by the Worker 300s CPU limit (capped source mining → thinner).
 #   "true"  (FORWARD CUTOVER, comprehensive): hands jobs to the off-CF "blackbox" worker,
-#           which now GATHERS ONLY and posts raw sources; handleComplete synthesizes the
-#           SAME honest extraction report CF-side. Richer 200+ source gather.
+#           which GATHERS + SYNTHESIZES on the idle homelab (no CPU ceiling → unlimited source
+#           mining). It posts a finished result; CF just re-validates structure + persists.
 # ROLLBACK during an incident = set this to "false" (NOT "true"). Only set "true" AFTER the
-# gather-only research-worker.mjs is deployed to the homelab AND this CF build (with the
-# handleComplete gather-only branch) is live — else the worker posts sources an old CF can't
-# synthesize and every off-CF run fails.
+# updated research-worker.mjs (gather + synth) is deployed to the homelab.
 EXTERNAL_WORKER_ENABLED = "false"
 # Synthesis engine: 'extract' = the deterministic, can't-fabricate ML engine + gated
 # LLM con-selector (grounding 0.80 vs the LLM synth's 0.30 on real pages). Unset/any
