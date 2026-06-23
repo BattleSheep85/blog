@@ -43,6 +43,12 @@ const json = (obj, status = 200) =>
 // topicalCategory, clarifications, config} | null }
 export async function handleNextJob(request, env) {
   if (!(await authed(request, env))) return json({ error: 'unauthorized' }, 401);
+  // When the off-CF worker is DISABLED, refuse to hand out jobs — otherwise the blackbox
+  // poller keeps claiming pending rows and processing them with the FABRICATING LLM synth,
+  // racing ahead of the CF-side queue consumer that runs the honest extraction engine.
+  // With this gate the blackbox polls and gets nothing, so the CF consumer processes all.
+  const extEnabled = env.EXTERNAL_WORKER_ENABLED === true || env.EXTERNAL_WORKER_ENABLED === 'true' || env.EXTERNAL_WORKER_ENABLED === '1';
+  if (!extEnabled) return json({ job: null });
   try {
     const job = await claimNextPendingJob(env);
     return json({ job: job || null });
