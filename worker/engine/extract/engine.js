@@ -95,6 +95,32 @@ const stripMarkdown = (t) => decodeEntities(String(t || ''))
   .replace(/\][([)\]]*/g, ' ')             // stray bracket/paren debris
   .replace(/\s+/g, ' ').trim();
 
+// Category-relevance terms from the topical category + query head nouns. A real product
+// for the query is discussed IN its category ("keyboard", "switches"); a cross-category
+// entity that leaked from a mixed listicle (a laptop/shoe/vacuum in a keyboard query) is
+// not. Used to drop those. Numbers, sizes, and generic qualifiers are excluded.
+const CAT_STOP = new Set(['best', 'the', 'and', 'for', 'with', 'under', 'top', 'over', 'from', 'your', 'our', 'full', 'sized', 'size', 'layout', 'review', 'reviews', 'guide', 'cheap', 'budget', 'good', 'great', 'new', 'this', 'that', 'percent', 'inch', 'inches']);
+function categoryTerms(cat, query) {
+  const terms = new Set();
+  const add = (w) => {
+    const l = String(w).toLowerCase().replace(/[^a-z]/g, '');
+    if (l.length >= 4 && !CAT_STOP.has(l)) { terms.add(l); terms.add(l.endsWith('s') ? l.slice(0, -1) : l + 's'); }
+  };
+  for (const w of `${cat || ''} ${query || ''}`.split(/\s+/)) add(w);
+  return terms;
+}
+const inCategory = (c, support, terms) => {
+  if (!terms.size) return true;
+  // Include the SUPPORTING SOURCE TITLES — a legit pick's review page is titled for the
+  // category ("Best Noise Cancelling Headphones - RTINGS") even when an individual
+  // sentence about it doesn't repeat the noun; a cross-category leak's source is titled
+  // for its OWN category (a shoe review), so it still fails the gate.
+  const titles = (support || []).map((s) => s.source?.title || '').join(' ');
+  const ctx = `${c.name} ${titles} ${(c.sents || []).map((s) => s.sentence).join(' ')}`.toLowerCase();
+  for (const t of terms) if (ctx.includes(t)) return true;
+  return false;
+};
+
 // ── candidate harvest ─────────────────────────────────────────────────────────
 // Pull Title-Case product-name candidates from notes + source titles/content.
 const TITLECASE_RUN = /\b([A-Z][A-Za-z]*(?:[''-][A-Za-z]+)?(?:\s+(?:[A-Z][A-Za-z0-9]*|[A-Z]{1,6}[-]?[A-Za-z0-9]*\d[A-Za-z0-9-]*|\d[A-Za-z0-9-]*|\([A-Za-z]+\)))*)\b/g;
@@ -113,11 +139,14 @@ const isBoilerplate = (name) => {
     || /^(?:bluetooth|displayport|hdmi|usb|wi-?fi|android|ios|version|chapter|step|figure|table|page|vol|gen|win|macos|category|section)\s+\d+$/i.test(t)
     || /\d{1,2}:\d{2}/.test(n)
     || /\b(?:january|february|march|april|may|june|july|august|september|october|november|december)\s+\d{1,2}\b/i.test(n)
+    || /^(?:january|february|march|april|may|june|july|august|september|october|november|december)\s+(?:19|20)\d\d$/i.test(t) // "July 2026" date fragment
     || /^(?:over|under|up to|from|about|around|approx|nearly|almost|less than|more than|at|with|for|the|a|an)\s+\$?\d/i.test(t) // "At 52g", "Over 100"
     || /^\d+(?:\.\d+)?\s*(?:k|m|g|kg|mm|cm|hz|mah|wh|w|gb|tb|ms|nits|lbs?|oz|fps|hrs?|hours?)$/i.test(t)                       // bare spec/measure "52g", "144K"
     || /\b(\w+)\s+\1\b/i.test(n)
     || ((n.match(/\b(facebook|google|microsoft|meta|twitter|youtube|reddit|instagram|tiktok|linkedin|wikipedia|netflix)\b/gi) || []).length >= 2) // company-list sentence fragment
     || /\b(wwdc|black friday|cyber monday|prime day|ces \d|computex|ifa \d|gdc|e3 \d|keynote|live blog)\b/i.test(n) // event / chrome fragment
+    || /\bpty\s*\.?\s*ltd\b|\bgmbh\b|\bllc\b|\bplc\b|incorporated\b|\bholdings\b|\bs\.?a\.?r\.?l\b/i.test(n) // a CORPORATE ENTITY, not a product ("Blue Connect Technology Pty Ltd")
+    || /\b(inc|ltd|corp|llp|co)\.?$/i.test(t)
     || /\b(privacy|cookies?|terms of|subscribe|newsletter|sign in|log in|skip to|table of contents|all rights)\b/i.test(n);
 };
 // Distinct known brands in a token list — 3+ is a company LIST ("Apple Facebook Google
@@ -166,7 +195,18 @@ const cleanTok = (t) => t.replace(/^[("'“]+|[)"'”.,;:]+$/g, '');
 // boundary below catches "4.0"/"2nd" structurally instead.
 const NAME_TAIL_DENY = new Set(['appears', 'delivers', 'offers', 'features', 'comes', 'makes', 'looks', 'sounds', 'tested', 'review', 'reviews', 'rated', 'ranked', 'seems', 'remains', 'stays', 'provides', 'brings', 'adds', 'impresses', 'the', 'a', 'an', 'and', 'or', 'but', 'with', 'for',
   // chrome/listicle words that bleed off real pages ("Qrevo Curv Review Pros", "Jet Bot … Yes")
-  'pros', 'cons', 'yes', 'no', 'which', 'source', 'sources', 'dimensions', 'while', 'specifications', 'specs', 'price', 'prices', 'deal', 'deals', 'guide', 'vs', 'versus', 'exposed', 'pick', 'picks', 'kit', 'assembly', 'failures', 'here', 'now', 'today', 'update', 'updated', 'list', 'ranking', 'comparison', 'best', 'top', 'buy', 'shop', 'verdict', 'rating', 'score', 'overview', 'summary']);
+  'pros', 'cons', 'yes', 'no', 'which', 'source', 'sources', 'dimensions', 'while', 'specifications', 'specs', 'price', 'prices', 'deal', 'deals', 'guide', 'vs', 'versus', 'exposed', 'pick', 'picks', 'kit', 'assembly', 'failures', 'here', 'now', 'today', 'update', 'updated', 'list', 'ranking', 'comparison', 'best', 'top', 'buy', 'shop', 'verdict', 'rating', 'score', 'overview', 'summary',
+  // descriptive bleed common in apparel/no-model-code names ("Quince Linen Clothes Worth
+  // Buying", "Banana Republic Standard-Fit Texture") — NOT category nouns (shirt/pants kept).
+  'clothes', 'clothing', 'worth', 'buying', 'texture', 'tested', 'reviewed', 'recommended', 'roundup', 'edition', 'item', 'items', 'options', 'choices', 'finds', 'outfit', 'outfits', 'collection', 'wardrobe', 'essentials', 'staples', 'looks', 'styles',
+  // software / spec / descriptive bleed ("Keychron Q5 Max Operating Environment", "Keychron
+  // Launcher" (software), "Ducky Zero 6108 Image") — these are not part of the product name.
+  'launcher', 'image', 'images', 'environment', 'operating', 'software', 'app', 'apps', 'driver', 'drivers', 'firmware', 'technology', 'technologies', 'connect', 'hub', 'manual', 'setup', 'support', 'download', 'downloads', 'gallery', 'photo', 'photos', 'video', 'unboxing',
+  'bottom', 'line', 'url', 'see', 'complete', 'direct', 'amazon', 'walmart', 'target', 'newegg', 'options', 'tiktok', 'web', 'twitter', 'instagram', 'youtube', 'facebook', 'reddit']);
+// Product-type nouns that pin a DIFFERENT category — if one appears in a name and it is
+// NOT one of the query's category terms, the product belongs to another category (an
+// "Apple TV" / "Sony Playstation" leaking into a keyboard query).
+const FOREIGN_CATEGORY = new Set(['tv', 'television', 'playstation', 'xbox', 'nintendo', 'console', 'macbook', 'laptop', 'notebook', 'chromebook', 'iphone', 'ipad', 'tablet', 'smartphone', 'sneaker', 'sneakers', 'treadmill', 'mattress', 'sofa', 'couch', 'blender', 'microwave', 'refrigerator', 'fridge', 'dishwasher', 'games', 'mobile']);
 // Strip review-score/version/ordinal noise and trailing verbs that bled into a name.
 // Returns a NEW token array; tail-only, order-preserving, and never trims away the
 // brand+model code (which would cause a false merge in resolveCandidates).
@@ -216,7 +256,7 @@ function extractNames(sent) {
   return out;
 }
 
-function harvestCandidates(sources, notes) {
+function harvestCandidates(sources, notes, opts = {}) {
   const units = [];
   notes.forEach((n) => units.push({ text: n.content || '', src: null }));
   sources.forEach((s, i) => { units.push({ text: `${s.title || ''}. ${s.content || ''}`, src: i }); });
@@ -243,6 +283,7 @@ function harvestCandidates(sources, notes) {
         // ("Bluetooth 6", "Over 100", "Supportive Shoe 3") is chrome/spec noise, not a
         // product — drop it. (Brand present → keep regardless, "Motion 300" is fine.)
         if (!brand && !hasStrongCode(name)) continue;
+        if (opts.physical && toks.length === 1 && !hasStrongCode(name)) continue; // bare brand for a physical product = noise ("flair")
         if (isBoilerplate(name)) continue; // license footers, CTAs, timestamps, nav
         // Real-markdown noise rejects (clean fixtures never had these):
         if (toks.length > 5) continue;                          // concatenated headings/lists
@@ -525,11 +566,17 @@ function rate(pros, cons, credibleCount) {
   return Math.round(Math.max(0, Math.min(5, rating)) * 2) / 2; // 0..5 in 0.5 steps
 }
 
-export function analyze(query, notes, sources) {
+export function analyze(query, notes, sources, facets = {}, topicalCategory = '') {
   // Strip jina markdown FIRST so link/image/url/heading syntax can't leak anywhere.
   const cleanSources = (sources || []).map((s) => ({ ...s, title: stripMarkdown(s.title), content: stripMarkdown(s.content) }));
   const cleanNotes = (notes || []).map((n) => ({ ...n, content: stripMarkdown(n.content) }));
-  const harvested = resolveCandidates(harvestCandidates(cleanSources, cleanNotes));
+  const catTerms = categoryTerms(topicalCategory, query);
+  // Physical products are always "Brand Model" — a single bare brand token ("flair",
+  // "rigid", "Armani") is collision/sentence-fragment noise. Services/software (email
+  // tools, apps) ARE legitimately one word (Brevo, Notion), so only require ≥2 tokens
+  // when the query is for a buyable physical product.
+  const physical = facets?.sold_on_amazon !== false && facets?.is_service !== true && facets?.is_content !== true;
+  const harvested = resolveCandidates(harvestCandidates(cleanSources, cleanNotes, { physical }));
   const allMatch = harvested.map((c) => ({ c, m: aliasMatchers(c) }));
   const seen = new Set(); // a given clause is used as a pro/con for at most ONE product
   const products = [];
@@ -543,6 +590,12 @@ export function analyze(query, notes, sources) {
     // Real pages flood the harvester with one-off brand mentions; corroboration prunes them.
     const credible = a.support.filter((s) => s.score >= MIN_CREDIBLE_SCORE && !s.tags.every((t) => NONCREDIBLE_GENRES.has(t)));
     if (a.pros.length === 0 && a.cons.length === 0) { _zeroPC++; continue; }
+    // CATEGORY GATE: the product must be discussed in the query's category. A laptop /
+    // running shoe / vacuum that leaked from a mixed listicle into a keyboard query never
+    // mentions a keyboard term → dropped. (No-op when no category terms were derivable.)
+    if (!inCategory(c, a.support, catTerms)) { _corrob++; continue; }
+    // foreign-category noun in the name (not a query term) → it's another category's product
+    if (c.name.toLowerCase().split(/\s+/).some((w) => FOREIGN_CATEGORY.has(w) && !catTerms.has(w))) { _corrob++; continue; }
     // INCLUSION: require ≥1 CREDIBLE source (non-listicle/affiliate/manufacturer) — this
     // is the fabricated-trap suppressor (a trap has only promotional support → 0 credible
     // → dropped). We deliberately DO NOT require extra corroboration anymore: the goal is

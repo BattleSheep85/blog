@@ -1,6 +1,29 @@
 # Issues
 
-Last updated: 2026-06-22
+Last updated: 2026-06-23
+
+## 2026-06-23 — Keyboard results were garbage (user report) + followups resolved
+
+- [x] HIGH (DIAGNOSE): live keyboard searches returned junk — #1 was "Blue Connect Technology
+      Pty Ltd" (a company), plus "flair"/"rigid" (collision brands), and WRONG-CATEGORY products
+      (ASICS running shoe, Apple MacBook, Shark vacuum, Apple TV, Sony Playstation) surfacing in
+      a keyboard query because the comprehensive net had ZERO category filtering. Fixed:
+      (1) corporate-entity drop (Pty Ltd/LLC/Inc/Ltd/GmbH); (2) physical-product queries reject
+      single-token brand-only names ("flair") while services keep theirs (Brevo); (3) CATEGORY
+      GATE — a product's name + supporting-source TITLES + sentences must mention a category term
+      (from topical_category + query nouns), else dropped; (4) FOREIGN_CATEGORY noun drop (tv/
+      playstation/laptop/sneaker…); (5) date-fragment drop ("July 2026"); (6) more name-tail
+      bleed words (Operating Environment, Launcher, TikTok, Web, Bottom Line). Verified on the
+      two real queries: garbage gone, query2 = 0 wrong-cat, query1 = 1 residual leak (ASICS).
+      Fixture legit_recall held at 1.0; all gates + unit green.
+- [x] HIGH (search resilience, was task #21): Serper-outage fallback. DDG is blocked from CF, so
+      added Brave Search API (CF-reachable) as the primary fallback (Serper→Brave→DDG). BRAVE_API_KEY
+      set on prod+dev. Verified: 10 sources gathered with the Serper key empty.
+- [x] entity followups: pruned collision brands (summer/blue/ridge/flair/rigid); apparel
+      descriptive-tail trim (Clothes/Worth/Buying/Texture).
+- [ ] MEDIUM (deeper follow-up): brand→category mapping. Residual leak: a footwear/other-category
+      BRAND (ASICS) can still surface in a tech query via an omni-listicle whose title mentions the
+      category. Needs per-brand category tags in the gazetteer to fully exclude.
 
 ## 2026-06-22 — PROD CUTOVER: honest ML extraction engine shipped to chrisputer.tech
 

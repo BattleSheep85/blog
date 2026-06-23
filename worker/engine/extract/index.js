@@ -45,7 +45,7 @@ export async function enrichConsLLM(report, sources, apiKey, model, { minCons = 
 }
 
 export function synthesizeExtractive(query, notes, sources, facets = {}, topicalCategory = '') {
-  const ranked = analyze(query, notes || [], sources || []);
+  const ranked = analyze(query, notes || [], sources || [], facets || {}, topicalCategory || '');
 
   const products = ranked.map((p) => ({
     name: p.name,
