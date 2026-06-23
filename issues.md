@@ -20,10 +20,22 @@ Last updated: 2026-06-23
       added Brave Search API (CF-reachable) as the primary fallback (Serper→Brave→DDG). BRAVE_API_KEY
       set on prod+dev. Verified: 10 sources gathered with the Serper key empty.
 - [x] entity followups: pruned collision brands (summer/blue/ridge/flair/rigid); apparel
-      descriptive-tail trim (Clothes/Worth/Buying/Texture).
+      descriptive-tail trim (Clothes/Worth/Buying/Texture); trailing review-adjective trim
+      (Exceptional/Swappable/Amazing…). (commit 7e03f9e)
+- [x] HIGH (reliability regression found during verification): a rich keyboard query hung in
+      'processing' (zombie row, synth_model never written). Cause: per-product ASIN+image
+      resolution ran SEQUENTIALLY (~16 serial Serper calls) in persist + a slow con-selector
+      could stall. Fixed: resolveAsins/resolveImages resolve concurrently (Promise.all);
+      con-selector wrapped in a 30s timeout. Re-run completed in 166s, extraction-v0, all
+      keyboards. (commit 82dba4e)
 - [ ] MEDIUM (deeper follow-up): brand→category mapping. Residual leak: a footwear/other-category
       BRAND (ASICS) can still surface in a tech query via an omni-listicle whose title mentions the
       category. Needs per-brand category tags in the gazetteer to fully exclude.
+- [ ] MEDIUM (comprehensiveness watch-item): the CF-side honest engine gathers fewer sources than
+      the old off-CF parallel-engine did (CF subrequest/time budget), so niche queries can return
+      thin sets (one live keyboard run = 4 products; same query offline via parallel-engine = 15-18).
+      Honest-but-thinner is the accepted trade-off of the kimi→ML cutover. To restore depth without
+      losing honesty: raise CF-side gather depth, or wire the ML synth into parallel-engine.
 
 ## 2026-06-22 — PROD CUTOVER: honest ML extraction engine shipped to chrisputer.tech
 
