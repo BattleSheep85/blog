@@ -48,11 +48,22 @@ describe('handleNextJob', () => {
     // pre-set facets so ensureClassified skips the (network) classifier call
     await env.DB.prepare("UPDATE research SET facets = ?, topical_category = 'NAS' WHERE id = ?")
       .bind(JSON.stringify({ is_buyable: true, sold_on_amazon: true }), id).run();
-    const job = (await (await handleNextJob(authedReq(), env)).json()).job;
+    // next-job only serves jobs when the off-CF worker is ENABLED.
+    const extEnv = { ...env, EXTERNAL_WORKER_ENABLED: 'true' };
+    const job = (await (await handleNextJob(authedReq(), extEnv)).json()).job;
     expect(job.reportId).toBe(id);
     expect(job.query).toBe('best nas');
     // row is now 'processing' (claimed)
     expect((await env.DB.prepare('SELECT status FROM research WHERE id = ?').bind(id).first()).status).toBe('processing');
+  });
+
+  it('refuses to hand out jobs when the off-CF worker is disabled', async () => {
+    const id = generateId();
+    await insertResearch(env.DB, { id, slug: 's-' + id, query: 'best ssd', canonicalQuery: 'ssdclaim' });
+    const disabledEnv = { ...env, EXTERNAL_WORKER_ENABLED: 'false' };
+    expect((await (await handleNextJob(authedReq(), disabledEnv)).json()).job).toBeNull();
+    // the pending row is untouched (left for the CF-side consumer to process)
+    expect((await env.DB.prepare('SELECT status FROM research WHERE id = ?').bind(id).first()).status).toBe('pending');
   });
 });
 
