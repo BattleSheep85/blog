@@ -29,10 +29,16 @@ MONTHLY_BUDGET_USD = "60"
 # Programmatic-SEO flywheel: max keyword research runs the cron will start per
 # UTC day. The flywheel also stays dormant until SERPER_API_KEY is set.
 FLYWHEEL_DAILY_MAX = "6"
-# Phase B: route all research processing to the off-Cloudflare blackbox worker.
-# Queue consumer defers; a cron fallback covers worker-down. Set "false" to
-# instantly revert to CF-side (sequential) processing.
-EXTERNAL_WORKER_ENABLED = "true"
+# 2026-06-22: prod now runs the HONEST pure-ML extraction synth CF-side (SYNTH_ENGINE
+# below). EXTERNAL_WORKER_ENABLED=false routes processing to the CF-side runEngine (which
+# carries the extraction branch + gated con-selector); the off-CF blackbox worker still
+# runs the FABRICATING LLM synth, so it must stay disabled. Set "true" to revert to the
+# old off-CF path (rollback).
+EXTERNAL_WORKER_ENABLED = "false"
+# Synthesis engine: 'extract' = the deterministic, can't-fabricate ML engine + gated
+# LLM con-selector (grounding 0.80 vs the LLM synth's 0.30 on real pages). Unset/any
+# other value falls back to the kimi LLM synth.
+SYNTH_ENGINE = "extract"
 # METRICS_TOKEN is intentionally NOT in [vars] — it is a secret, set via
 # `npx wrangler secret put METRICS_TOKEN`. /metrics returns 503 until it exists.
 ADSENSE_PUBLISHER_ID = "pub-6952672558994325"
