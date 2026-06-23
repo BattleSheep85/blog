@@ -82,6 +82,51 @@ async function serperSearch(query, apiKey, opts = {}) {
   }
 }
 
+// Brave Search API — the CF-reachable fallback when Serper is exhausted/unavailable.
+// (The DuckDuckGo HTML scraper is blocked from Cloudflare edge IPs, so it can't be the
+// real fallback.) Same result shape as serperSearch; returns null on auth/quota failure
+// so the caller can degrade further (to DDG as a last resort).
+async function braveSearch(query, apiKey, opts = {}) {
+  if (!apiKey) return null;
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 8000);
+  try {
+    const params = new URLSearchParams({ q: query, count: '10' });
+    if (opts.timeRange === 'y') params.set('freshness', 'py'); // past year, matches serper recency
+    const response = await fetch(`https://api.search.brave.com/res/v1/web/search?${params.toString()}`, {
+      signal: controller.signal,
+      headers: { 'X-Subscription-Token': apiKey, Accept: 'application/json' },
+    });
+    if (!response.ok) {
+      const text = await response.text().catch(() => '');
+      console.log(`[brave] HTTP ${response.status} q="${query}" body=${text.slice(0, 150)}`);
+      if (response.status === 401 || response.status === 403 || response.status === 429) return null;
+      return [];
+    }
+    const data = await response.json();
+    const results = data?.web?.results ?? [];
+    const label = opts.sourceLabel ?? 'web';
+    console.log(`[brave] q="${query}" → ${results.length}`);
+    return results.map((r) => {
+      let publishedAt;
+      const dt = r.page_age || r.age;
+      if (dt) { const ms = Date.parse(dt); if (!Number.isNaN(ms)) publishedAt = Math.floor(ms / 1000); }
+      return {
+        url: r.url,
+        title: r.title,
+        content: [r.age ? `[${r.age}]` : '', r.description ?? ''].filter(Boolean).join('\n'),
+        source: label,
+        publishedAt,
+      };
+    });
+  } catch (err) {
+    console.log(`[brave] ERROR q="${query}": ${err instanceof Error ? err.message : String(err)}`);
+    return [];
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Serper.dev Video Search — https://serper.dev/videos
 // Returns YouTube (and other) video results. Used by the `video` provider so
@@ -309,7 +354,7 @@ export async function executeTool(
 
   switch (name) {
     case 'web_search':
-      return executeSearch(args, state, config, ctx.env?.SERPER_API_KEY, ctx.recencySensitive ?? true);
+      return executeSearch(args, state, config, ctx.env, ctx.recencySensitive ?? true);
     case 'read_page':
       return executeReadPage(args, state, config);
     case 'note':
@@ -323,7 +368,7 @@ async function executeSearch(
   args,
   state,
   config,
-  serperApiKey,
+  env,
   recencySensitive,
 ) {
   if (state.searchCount >= config.maxSearches) {
@@ -335,6 +380,9 @@ async function executeSearch(
 
   if (!query) return ['Error: query is required', 0];
 
+  const serperApiKey = env?.SERPER_API_KEY;
+  const braveApiKey = env?.BRAVE_API_KEY;
+
   state.searchCount++;
   let results;
   let subs = 0;
@@ -345,35 +393,32 @@ async function executeSearch(
   // still-valid older coverage. News always filters by year regardless.
   const tr = recencySensitive ? 'y' : undefined;
   // serperSearch returns null when the provider is unavailable (no key, or
-  // auth/quota rejection). In that case the `web`/`news` providers degrade to
-  // the free DuckDuckGo scraper so the agent's primary search workflow still
-  // yields real sources in a key-less environment instead of returning 0 hits
-  // and starving synthesis. This mirrors the reference engine, which always has
-  // a working primary web provider (Tavily); here that guarantee is restored
-  // via free fallback rather than a paid key.
+  // auth/quota rejection). The fallback chain is Brave (CF-reachable, real web search)
+  // → DuckDuckGo (HTML scrape, usually blocked at the CF edge — last resort). This keeps
+  // the agent's primary search workflow yielding real sources through a Serper outage
+  // instead of starving synthesis.
+  const webFallback = async (q) => {
+    const brave = braveApiKey ? await braveSearch(q, braveApiKey, { timeRange: tr }) : null;
+    return brave !== null ? brave : await duckduckgoSearch(q);
+  };
   switch (provider) {
     case 'web': {
       const serp = await serperSearch(query, serperApiKey, { sourceLabel: 'web', timeRange: tr });
-      if (serp === null) {
-        results = await duckduckgoSearch(query);
-      } else {
-        results = serp;
-      }
+      results = serp === null ? await webFallback(query) : serp;
       subs = 1;
       break;
     }
     case 'news': {
       const serp = await serperSearch(query, serperApiKey, { topic: 'news', timeRange: 'y', sourceLabel: 'news' });
-      results = serp === null ? await duckduckgoSearch(query) : serp;
+      results = serp === null ? await webFallback(query) : serp;
       subs = 1;
       break;
     }
     case 'video': {
-      // Serper /videos surfaces YouTube review videos. If the provider is
-      // unavailable (no key / auth-quota reject) fall back to a domain-scoped
-      // DuckDuckGo query so the agent still gets video-adjacent results.
+      // Serper /videos surfaces YouTube review videos. If unavailable, fall back to a
+      // youtube-scoped web search (Brave → DDG) so the agent still gets video-adjacent results.
       const vids = await serperVideos(query, serperApiKey);
-      results = vids === null ? await duckduckgoSearch(`${query} review youtube`) : vids;
+      results = vids === null ? await webFallback(`${query} review youtube`) : vids;
       subs = 1;
       break;
     }
@@ -391,7 +436,7 @@ async function executeSearch(
       break;
     default: {
       const serp = await serperSearch(query, serperApiKey, { sourceLabel: 'web', timeRange: tr });
-      results = serp === null ? await duckduckgoSearch(query) : serp;
+      results = serp === null ? await webFallback(query) : serp;
       subs = 1;
       break;
     }
