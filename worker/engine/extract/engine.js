@@ -4,7 +4,41 @@
 // exists in a source — fabrication is impossible by construction.
 
 import { VALENCE, NEGATORS, INTENSIFIERS, MARKETING } from './lexicon.js';
-import { BRANDS, PUBLISHERS, STOPWORDS } from './gazetteer.js';
+import { BRANDS, BRAND_CLUSTERS, PUBLISHERS, STOPWORDS } from './gazetteer.js';
+
+// Reverse index brand → Set(cluster keys), for the cross-category brand gate. A brand
+// in multiple clusters (Nike = APPAREL_FOOTWEAR+OUTDOOR) maps to all of them.
+const BRAND_TO_CLUSTERS = (() => {
+  const m = new Map();
+  for (const [cluster, brands] of Object.entries(BRAND_CLUSTERS)) {
+    for (const b of brands) { if (!m.has(b)) m.set(b, new Set()); m.get(b).add(cluster); }
+  }
+  return m;
+})();
+
+// Keyword → cluster signals for mapping a query/topical_category to a cluster. First
+// cluster with the most keyword hits wins; no hits → null (gate stays OFF, fail-open).
+const CLUSTER_KEYWORDS = {
+  TECH: ['keyboard', 'keycap', 'switch', 'mouse', 'monitor', 'laptop', 'desktop', 'pc', 'headphone', 'headphones', 'earbud', 'earbuds', 'speaker', 'soundbar', 'ssd', 'hdd', 'storage', 'gpu', 'graphics', 'cpu', 'camera', 'webcam', 'router', 'modem', 'mesh', 'wifi', 'software', 'app', 'saas', 'phone', 'smartphone', 'tablet', 'tv', 'projector', 'vacuum', 'robot', 'smartwatch', 'charger', 'powerbank', 'microphone', 'mic', 'gaming', 'console', 'drone', 'printer', 'nas', 'electronic', 'electronics'],
+  APPAREL_FOOTWEAR: ['shirt', 'shirts', 'tshirt', 'pants', 'trousers', 'jeans', 'denim', 'dress', 'skirt', 'jacket', 'coat', 'hoodie', 'sweater', 'sweatshirt', 'shoe', 'shoes', 'sneaker', 'sneakers', 'boot', 'boots', 'sandal', 'sandals', 'loafer', 'clothing', 'clothes', 'apparel', 'sock', 'socks', 'underwear', 'bra', 'leggings', 'shorts', 'suit', 'blazer', 'linen', 'cotton', 'wardrobe', 'outfit'],
+  HOME_KITCHEN: ['mattress', 'bed', 'desk', 'chair', 'sofa', 'couch', 'recliner', 'cookware', 'pan', 'pans', 'skillet', 'pot', 'knife', 'knives', 'blender', 'coffee', 'espresso', 'kettle', 'toaster', 'sheets', 'bedding', 'pillow', 'duvet', 'comforter', 'furniture', 'sofa', 'dresser', 'fridge', 'refrigerator', 'dishwasher', 'microwave', 'airfryer', 'cutlery', 'dinnerware', 'mug'],
+  BEAUTY: ['skincare', 'makeup', 'serum', 'moisturizer', 'cleanser', 'sunscreen', 'spf', 'foundation', 'concealer', 'lipstick', 'mascara', 'fragrance', 'perfume', 'cologne', 'shampoo', 'conditioner', 'razor', 'shaving', 'cosmetic', 'cosmetics', 'retinol', 'toner', 'moisturiser'],
+  OUTDOOR: ['tent', 'backpack', 'backpacking', 'hiking', 'camping', 'cooler', 'bike', 'bicycle', 'cycling', 'fishing', 'kayak', 'sleeping', 'climbing', 'trail', 'ski', 'snowboard', 'hydration', 'flask', 'outdoor'],
+  TOOLS: ['drill', 'saw', 'tool', 'tools', 'wrench', 'driver', 'mower', 'ladder', 'paint', 'plumbing', 'sander', 'grinder', 'impact', 'cordless', 'hammer', 'screwdriver', 'wood', 'workshop', 'generator', 'compressor'],
+  PET: ['dog', 'cat', 'pet', 'puppy', 'kitten', 'litter', 'leash', 'kibble', 'aquarium', 'collar'],
+  BABY: ['stroller', 'carseat', 'baby', 'infant', 'toddler', 'diaper', 'crib', 'bassinet', 'nursery', 'toy', 'toys', 'monitor'],
+  BAGS_TRAVEL: ['luggage', 'suitcase', 'carryon', 'wallet', 'watch', 'watches', 'briefcase', 'duffel', 'tote', 'purse', 'handbag', 'travel'],
+};
+function queryCluster(topicalCategory, query) {
+  const text = `${topicalCategory || ''} ${query || ''}`.toLowerCase();
+  const words = new Set(text.split(/[^a-z]+/).filter(Boolean));
+  let best = null, bestN = 0;
+  for (const [cluster, kws] of Object.entries(CLUSTER_KEYWORDS)) {
+    const n = kws.reduce((s, k) => s + (words.has(k) ? 1 : 0), 0);
+    if (n > bestN) { bestN = n; best = cluster; }
+  }
+  return best; // null when nothing matched → gate disabled
+}
 
 // Genres that can NEVER be the sole basis for a recommendation (mirrors the
 // deterministic version of the synthesis prompt's credibility rules).
@@ -574,6 +608,7 @@ export function analyze(query, notes, sources, facets = {}, topicalCategory = ''
   const cleanSources = (sources || []).map((s) => ({ ...s, title: stripMarkdown(s.title), content: stripMarkdown(s.content) }));
   const cleanNotes = (notes || []).map((n) => ({ ...n, content: stripMarkdown(n.content) }));
   const catTerms = categoryTerms(topicalCategory, query);
+  const qCluster = queryCluster(topicalCategory, query); // null = gate off (fail-open)
   // Physical products are always "Brand Model" — a single bare brand token ("flair",
   // "rigid", "Armani") is collision/sentence-fragment noise. Services/software (email
   // tools, apps) ARE legitimately one word (Brevo, Notion), so only require ≥2 tokens
@@ -599,6 +634,14 @@ export function analyze(query, notes, sources, facets = {}, topicalCategory = ''
     if (!inCategory(c, a.support, catTerms)) { _corrob++; continue; }
     // foreign-category noun in the name (not a query term) → it's another category's product
     if (c.name.toLowerCase().split(/\s+/).some((w) => FOREIGN_CATEGORY.has(w) && !catTerms.has(w))) { _corrob++; continue; }
+    // BRAND-CLUSTER gate: when the query maps to a cluster and the product's brand is known
+    // to belong ONLY to other clusters (ASICS=APPAREL_FOOTWEAR in a TECH keyboard query),
+    // drop it. Catches omni-listicle leaks the title gate misses. Fail-open when either side
+    // is unknown (unmapped query, or a brand not in the gazetteer) to protect recall.
+    if (qCluster && c.brand) {
+      const bc = BRAND_TO_CLUSTERS.get(String(c.brand).toLowerCase());
+      if (bc && bc.size && !bc.has(qCluster)) { _corrob++; continue; }
+    }
     // INCLUSION: require ≥1 CREDIBLE source (non-listicle/affiliate/manufacturer) — this
     // is the fabricated-trap suppressor (a trap has only promotional support → 0 credible
     // → dropped). We deliberately DO NOT require extra corroboration anymore: the goal is

@@ -28,9 +28,12 @@ Last updated: 2026-06-23
       could stall. Fixed: resolveAsins/resolveImages resolve concurrently (Promise.all);
       con-selector wrapped in a 30s timeout. Re-run completed in 166s, extraction-v0, all
       keyboards. (commit 82dba4e)
-- [ ] MEDIUM (deeper follow-up): brand→category mapping. Residual leak: a footwear/other-category
-      BRAND (ASICS) can still surface in a tech query via an omni-listicle whose title mentions the
-      category. Needs per-brand category tags in the gazetteer to fully exclude.
+- [x] MEDIUM → DONE (brand→category mapping): gazetteer flat Set → 9 BRAND_CLUSTERS (TECH/
+      APPAREL_FOOTWEAR/HOME_KITCHEN/BEAUTY/OUTDOOR/TOOLS/PET/BABY/BAGS_TRAVEL), all 982 brands
+      preserved (0 lost), multi-cluster brands in each. analyze() maps query→cluster (keyword
+      signals) and drops a product whose brand belongs only to other clusters (fail-open when
+      either side unknown). ASICS-in-keyboards leak ELIMINATED (0 leaks both queries); fixture
+      legit_recall held 1.0; desk/earbuds survivors all legit. (Phase 1 of the comprehensiveness plan)
 - [ ] MEDIUM (comprehensiveness watch-item): the CF-side honest engine gathers fewer sources than
       the old off-CF parallel-engine did (CF subrequest/time budget), so niche queries can return
       thin sets (one live keyboard run = 4 products; same query offline via parallel-engine = 15-18).
