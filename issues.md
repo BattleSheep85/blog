@@ -34,6 +34,22 @@ Last updated: 2026-06-23
       signals) and drops a product whose brand belongs only to other clusters (fail-open when
       either side unknown). ASICS-in-keyboards leak ELIMINATED (0 leaks both queries); fixture
       legit_recall held 1.0; desk/earbuds survivors all legit. (Phase 1 of the comprehensiveness plan)
+- [x] PHASE 2 DONE (comprehensiveness): blackbox worker → pure GATHERER; single CF-side honest
+      synth. parallel-engine split into gatherParallel() (raw sources) + legacy runParallelEngine
+      (benches); research-worker.mjs posts {sources,notes}; handleComplete synthesizes via shared
+      synthesizeHonest() → extraction-v0. Validated: dev e2e on real CF (tr-dev: extraction-v0, 3
+      clean keyboards, con-selector ran), unit + 128 integration + fixtures green, 6-dimension
+      adversarial review workflow. NOT yet rolled out to prod (ship-gate pending). (commit a8c1884)
+- [x] HIGH (review-caught, fixed): handleComplete validation-failure path skipped incrementMonthlyCost
+      while its two sibling failure paths call it → gather spend (~$0.10) leaked from the budget
+      governor when CF-side synth output fails validation. Added the call.
+- [x] MED (review-caught, fixed): wrangler.toml EXTERNAL_WORKER_ENABLED comment said "true = rollback"
+      — INVERTED after Phase 2 (true = forward cutover; false = safe rollback to CF-side runEngine).
+      Following it during an incident would break every off-CF run. Comment rewritten.
+- [ ] LOW (review-noted, pre-existing): research-worker.mjs complete() swallows a failed /complete POST
+      (logs, no re-throw) → the outer processJob catch never fires → no requeue/cost-record; the row
+      orphans in 'processing' until the cron reaper flips it to 'failed' (never re-queued). Identical
+      before/after Phase 2 (not a regression) but worth a retry/requeue on POST failure.
 - [ ] MEDIUM (comprehensiveness watch-item): the CF-side honest engine gathers fewer sources than
       the old off-CF parallel-engine did (CF subrequest/time budget), so niche queries can return
       thin sets (one live keyboard run = 4 products; same query offline via parallel-engine = 15-18).

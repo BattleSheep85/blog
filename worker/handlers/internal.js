@@ -144,6 +144,9 @@ export async function handleComplete(request, env) {
       catch {
         await env.DB.prepare(`UPDATE research SET status = 'failed', result = ?1, completed_at = ?2 WHERE id = ?3 AND status = 'processing'`)
           .bind(JSON.stringify({ error: 'Invalid synthesized result.' }), Math.floor(Date.now() / 1000), reportId).run();
+        // Gather already spent real OpenRouter $ — record it so the monthly governor stays
+        // accurate even when CF-side synth output fails validation (mirrors the siblings above).
+        await incrementMonthlyCost(env, Number(body.totalCostUsd) || 0);
         return json({ status: 'failed' });
       }
       const engine = {
