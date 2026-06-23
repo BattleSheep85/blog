@@ -117,6 +117,7 @@ const isBoilerplate = (name) => {
     || /^\d+(?:\.\d+)?\s*(?:k|m|g|kg|mm|cm|hz|mah|wh|w|gb|tb|ms|nits|lbs?|oz|fps|hrs?|hours?)$/i.test(t)                       // bare spec/measure "52g", "144K"
     || /\b(\w+)\s+\1\b/i.test(n)
     || ((n.match(/\b(facebook|google|microsoft|meta|twitter|youtube|reddit|instagram|tiktok|linkedin|wikipedia|netflix)\b/gi) || []).length >= 2) // company-list sentence fragment
+    || /\b(wwdc|black friday|cyber monday|prime day|ces \d|computex|ifa \d|gdc|e3 \d|keynote|live blog)\b/i.test(n) // event / chrome fragment
     || /\b(privacy|cookies?|terms of|subscribe|newsletter|sign in|log in|skip to|table of contents|all rights)\b/i.test(n);
 };
 // Distinct known brands in a token list — 3+ is a company LIST ("Apple Facebook Google
@@ -136,6 +137,17 @@ function brandTruncate(toks) {
   // stopwords with no model token ("Apple Facebook", "Anker Soundcore" alone).
   const allBrandOrStop = out.length >= 2 && out.every((t) => { const l = cleanTok(t).toLowerCase(); return BRANDS.has(l) || STOPWORDS.has(l); });
   return { toks: out, drop: seen.size >= 3 || allBrandOrStop };
+}
+// Strip LEADING non-product words that bleed before the brand ("Home Keyboard Reviews
+// Keychron Q6" → "Keychron Q6", "Public Keychron Q5" → "Keychron Q5"). Only fires when a
+// brand appears after position 0 AND nothing before it carries a model code (so a real
+// model prefix is never cut).
+function trimNameLead(toks) {
+  let firstBrand = -1;
+  for (let k = 0; k < toks.length; k++) { if (BRANDS.has(cleanTok(toks[k]).toLowerCase())) { firstBrand = k; break; } }
+  if (firstBrand <= 0) return toks;
+  if (toks.slice(0, firstBrand).some((t) => hasStrongCode(t))) return toks; // don't cut a model prefix
+  return toks.slice(firstBrand);
 }
 const firstBrand = (toks) => {
   const l = toks.map((t) => t.toLowerCase());
@@ -219,7 +231,7 @@ function harvestCandidates(sources, notes) {
         while (toks.length && (STOPWORDS.has(toks[toks.length - 1].toLowerCase()) || YEAR_RE.test(toks[toks.length - 1]))) toks.pop();
         const bt = brandTruncate(toks); // split a 2-product merge; flag a 3+ brand list
         if (bt.drop) continue;
-        toks = trimNameTail(bt.toks); // strip bled rating/version/ordinal + trailing verbs
+        toks = trimNameTail(trimNameLead(bt.toks)); // strip leading non-product words + trailing bleed
         if (!toks.length) continue;
         const name = toks.join(' ');
         const low = name.toLowerCase();
@@ -314,6 +326,10 @@ const CON_CUE = /\b(lacks?|lacking|missing|doesn'?t have|does not have|don'?t ha
 // A neutral META/category statement (not a product-specific con) — guards the
 // strong-negative branch against "...whose models range from inexpensive to pricey".
 const META_STMT = /\b(brands?|models?|range from|evaluates?|generally|category|options|overall|most of|many of|whose models|the lineup|across the board)\b/i;
+// Feature-presence / praise cues — let the proximity miner accept a positive clause
+// even when the VADER score is only mildly positive ("hot-swappable PCB", "great
+// battery life", "comfortable for long sessions"). High-precision to avoid generic fluff.
+const PRO_CUE = /\b(excellent|outstanding|impressive|standout|superb|fantastic|comfortable|durable|reliable|sturdy|responsive|crisp|punchy|premium|well.?built|top.?notch|class.?leading|best.?in.?class|hot.?swap\w*|gasket|wireless|long battery|great battery|excellent battery|easy to|love (?:the|how|that)|highly recommend|worth (?:it|the)|great value|best value|customizable|versatile|seamless|powerful|lightweight|portable|rugged|gorgeous|sleek)\b/i;
 // A source TITLE / product-listing line ("Review NuPhy Air75 V3 … 84 Keys 75% Custom"),
 // not a sentence of criticism — title-case heavy with spec/listing tokens and no verb.
 function looksLikeListing(clean) {
@@ -446,6 +462,42 @@ function analyzeProduct(c, sources, otherMatchers = [], seen = new Set()) {
         if (hits && score >= 0.8) { pros.push({ text: clean, score, cred: ps.cred }); seen.add(clean.toLowerCase()); done = true; break; }
       }
       if (done) break;
+    }
+  }
+
+  // PROXIMITY pro-mining over credible BODIES (mirror of the con miner): the same-
+  // sentence pass misses praise stated a sentence after the product name, so most
+  // thinly-mentioned-but-real products end up with ≤1 pro and get dropped. Scan a
+  // 3-sentence window around each mention and accept grounded POSITIVE clauses. This
+  // both RESCUES real products (so they survive the ≥1-evidence inclusion gate) and
+  // gives the comprehensive tail substance. Every pro stays a verbatim source span.
+  if (pros.length < 3) {
+    const bodies = support.filter((s) => s.score >= MIN_CREDIBLE_SCORE
+      && !(s.tags || []).every((t) => NONCREDIBLE_GENRES.has(t))
+      && String(s.source.content || '').length >= 400);
+    outerPro:
+    for (const s of bodies) {
+      const sents = sentences(s.source.content);
+      for (let i = 0; i < sents.length; i++) {
+        if (!selfIn(sents[i])) continue;
+        for (let j = i; j <= i + 2 && j < sents.length; j++) {
+          if (j > i && otherIn(sents[j]) && !selfIn(sents[j])) break; // rival → stop window
+          for (const cl of clausesWithContrast(sents[j])) {
+            const clean = tidyClause(cl.text);
+            if (clean.length < 14 || clean.length > 220 || looksLikeHeadline(clean) || looksLikeListing(clean)) continue;
+            if (otherIn(clean) && !selfIn(clean)) continue;
+            const key = clean.toLowerCase();
+            if (seen.has(key)) continue;
+            const { score } = sentencePolarity(clean);
+            // a clearly-positive clause, or a pre-contrast clause with a feature/praise cue.
+            const isPro = score >= 0.8 || (!cl.afterContrast && score >= 0.2 && PRO_CUE.test(clean));
+            if (!isPro) continue;
+            pros.push({ text: clean, score: Math.max(score, 0.8), cred: s.score });
+            seen.add(key);
+            if (pros.length >= 3) break outerPro;
+          }
+        }
+      }
     }
   }
   return { support, price, specs, pros, cons }; // pros/cons are RAW scored clauses
