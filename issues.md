@@ -42,8 +42,16 @@ Last updated: 2026-06-23
       to the idle homelab: research-worker.mjs now gather + synthesizeHonest → posts finished
       {result,extraction-v0}; handleComplete reverts to validate+persist (no CF synth, no caps).
       Honesty unchanged (extraction is deterministic → can't fabricate wherever it runs; CF
-      re-validates structure). Live worker-flow validated: 183 sources UNLIMITED, synth 1.2s, 7
-      clean keyboards. unit + 126 integration + fixtures green. NOT yet rolled out to prod (ship-gate).
+      re-validates structure). unit + 126 integration + fixtures green.
+      ROLLED OUT TO PROD 2026-06-23: rsynced worker/ + research-worker.mjs to blackbox
+      (chris@192.168.5.10:/mnt/pods/truerank-research-worker/src, sudo for the root-owned entry
+      file) + restarted the container; CF deployed; EXTERNAL_WORKER_ENABLED=true. Verified LIVE:
+      a canary processed ON the blackbox — [job] log + "Planning 12 angles" parallel-engine +
+      281 sources gathered UNLIMITED + synth on the homelab + synth_model=extraction-v0, $0.0146.
+      **GOTCHA: first canary failed — `sleep 2` after the flag deploy was too short, so the queue
+      consumer fired on a not-yet-propagated edge (flag still false) and processed CF-side + stuck.
+      Fix: wait ~30s for global propagation before submitting after a flag flip.** Rollback =
+      EXTERNAL_WORKER_ENABLED=false (CF-side runEngine, verified healthy: extraction-v0, 8 products).
 - [x] HIGH/MED (review-caught) — RESOLVED BY THE PIVOT: the CF-side-synth CPU-exhaustion risk and
       the incrementMonthlyCost-on-validation-failure leak both lived in the CF gather-only branch
       that the pivot REMOVED (CF no longer synthesizes). The untrusted-input boundary is also gone

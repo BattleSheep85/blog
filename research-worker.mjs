@@ -74,7 +74,7 @@ async function processJob(job) {
   const config = { ...job.config, maxConcurrency: MAX_CONCURRENCY };
   if (MAX_SEARCHES > 0) config.maxSearches = MAX_SEARCHES;
   const t0 = Date.now();
-  log(`[job ${job.reportId}] "${job.query}" (conc=${config.maxConcurrency}, searches=${config.maxSearches}, synth=${config.synthModel})`);
+  log(`[job ${job.reportId}] "${job.query}" (conc=${config.maxConcurrency}, searches=${config.maxSearches}, synth=extraction-v0)`);
   try {
     // Per-job monotonic step so the SSE feed orders beats correctly even across
     // the worker's concurrent jobs (each writes its own progress_log:{reportId}).

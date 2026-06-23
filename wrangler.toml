@@ -39,7 +39,7 @@ FLYWHEEL_DAILY_MAX = "6"
 #           mining). It posts a finished result; CF just re-validates structure + persists.
 # ROLLBACK during an incident = set this to "false" (NOT "true"). Only set "true" AFTER the
 # updated research-worker.mjs (gather + synth) is deployed to the homelab.
-EXTERNAL_WORKER_ENABLED = "false"
+EXTERNAL_WORKER_ENABLED = "true"
 # Synthesis engine: 'extract' = the deterministic, can't-fabricate ML engine + gated
 # LLM con-selector (grounding 0.80 vs the LLM synth's 0.30 on real pages). Unset/any
 # other value falls back to the kimi LLM synth.
