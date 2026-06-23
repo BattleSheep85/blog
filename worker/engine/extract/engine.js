@@ -202,7 +202,10 @@ const NAME_TAIL_DENY = new Set(['appears', 'delivers', 'offers', 'features', 'co
   // software / spec / descriptive bleed ("Keychron Q5 Max Operating Environment", "Keychron
   // Launcher" (software), "Ducky Zero 6108 Image") — these are not part of the product name.
   'launcher', 'image', 'images', 'environment', 'operating', 'software', 'app', 'apps', 'driver', 'drivers', 'firmware', 'technology', 'technologies', 'connect', 'hub', 'manual', 'setup', 'support', 'download', 'downloads', 'gallery', 'photo', 'photos', 'video', 'unboxing',
-  'bottom', 'line', 'url', 'see', 'complete', 'direct', 'amazon', 'walmart', 'target', 'newegg', 'options', 'tiktok', 'web', 'twitter', 'instagram', 'youtube', 'facebook', 'reddit']);
+  'bottom', 'line', 'url', 'see', 'complete', 'direct', 'amazon', 'walmart', 'target', 'newegg', 'options', 'tiktok', 'web', 'twitter', 'instagram', 'youtube', 'facebook', 'reddit',
+  // trailing review-adjective bleed ("Keychron Q6 Max Exceptional", "Q5 Max Swappable") —
+  // evaluative words that are never part of a real product name.
+  'exceptional', 'swappable', 'amazing', 'incredible', 'fantastic', 'impressive', 'excellent', 'superb', 'outstanding', 'awesome', 'stunning', 'gorgeous', 'flawless']);
 // Product-type nouns that pin a DIFFERENT category — if one appears in a name and it is
 // NOT one of the query's category terms, the product belongs to another category (an
 // "Apple TV" / "Sony Playstation" leaking into a keyboard query).
