@@ -2,6 +2,21 @@
 
 Last updated: 2026-06-22
 
+## 2026-06-22 — PROD CUTOVER: honest ML extraction engine shipped to chrisputer.tech
+
+- [x] Merged `tr-dev-quality-speed-ux` → main; prod `wrangler.toml` set SYNTH_ENGINE=extract +
+      EXTERNAL_WORKER_ENABLED=false; deployed `truerank`. Live: honest ML synth (no fabrication),
+      "Why X/5" + "read the low ratings", inquisitive clarify UX, OpenRouter speed, comprehensive
+      ~24-product coverage, 987-brand gazetteer. Verified: fresh prod run synth_model=extraction-v0,
+      $0.02, products with grounded cons.
+- [x] HIGH (bug found+fixed during cutover): flipping EXTERNAL_WORKER_ENABLED=false did NOT stop the
+      off-CF blackbox worker — it polls /api/internal/next-job independently and kept claiming jobs
+      (first prod run came back synth_model=kimi-k2.6). Fixed: handleNextJob returns no job when the
+      off-CF worker is disabled, so the CF-side consumer (honest engine) processes all. Test added.
+- [ ] LOW (follow-up): apparel/no-model-number categories produce rougher names (descriptive
+      fragments, a few gazetteer collisions like "getaway"); residual sentence-fragment stragglers.
+      Rollback if needed: EXTERNAL_WORKER_ENABLED=true + redeploy (blackbox still running, idle).
+
 ## 2026-06-22 — Dev-box work (on tr-dev only; NOT prod, NOT committed)
 
 User testing of the password-protected dev box (tr-dev.chrisputer.tech, extraction engine) drove these.
