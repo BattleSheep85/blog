@@ -12,6 +12,7 @@ import {
     getResearchById, getResearchBySlug,
 } from '../lib/db.js';
 import { generateSlug, canonicalizeQuery, parseJsonSafe } from '../lib/utils.js';
+import { screenQuery, rejectionMessage } from '../lib/safety.js';
 import { PUBLIC_TIERS } from '../lib/tiers.js';
 import { budgetExhausted } from '../pipeline/orchestrator.js';
 import { getSessionUser, recordUserSearch } from '../lib/auth.js';
@@ -35,6 +36,13 @@ export async function handleStartResearch(request, env) {
     }
     if (query.length > 500) {
         return jsonResponse({ error: 'Query must be under 500 characters' }, 400);
+    }
+
+    // CONTENT SAFETY: reject adult/illegal queries at submit — never create a row, enqueue,
+    // research, or index them. Deterministic + fail-closed (ahead of the LLM classifier).
+    const screen = screenQuery(query);
+    if (screen.blocked) {
+        return jsonResponse({ error: rejectionMessage(screen.reason), rejected: true, reason: screen.reason }, 422);
     }
 
     const normalizedQuery = query.toLowerCase();

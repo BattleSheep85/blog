@@ -25,6 +25,7 @@ import { resolveImages } from '../lib/image-resolver.js';
 import { getResearchById, generateId } from '../lib/db.js';
 import { sanitizeUrl, slugify } from '../lib/utils.js';
 import { submitToIndexNow } from '../lib/indexnow.js';
+import { screenQuery, rejectionMessage, classifierRejectToReason } from '../lib/safety.js';
 
 const DEFAULT_AFFILIATE_TAG = 'battlesheep0a-20';
 // Monthly spend ceiling default; overridden by env.MONTHLY_BUDGET_USD.
@@ -48,7 +49,9 @@ export async function runResearchPipeline(env, reportId, query) {
 
         const tier = row.tier || 'full';
         const config = getTierConfig(tier) || getTierConfig('full');
-        const { facets, topicalCategory, clarifications } = await ensureClassified(env, reportId, query, row, progress);
+        const cls = await ensureClassified(env, reportId, query, row, progress);
+        if (cls.blocked) { await markRejected(env, reportId, cls.blockReason); return; }
+        const { facets, topicalCategory, clarifications } = cls;
 
         // onEvent bridges the engine's typed events to the KV progress updater.
         const onEvent = async (_type, message, _detail) => { await progress(message); };
@@ -94,6 +97,11 @@ export async function runResearchPipeline(env, reportId, query) {
  * category context. Returns { facets, topicalCategory, clarifications }.
  */
 export async function ensureClassified(env, reportId, query, row, progress) {
+    // CONTENT SAFETY layer 1 (deterministic, fail-closed): block clear adult/illegal queries
+    // before any research. Runs even on cached-facet rows (flywheel/cron paths).
+    const screen = screenQuery(query);
+    if (screen.blocked) return { facets: null, topicalCategory: null, clarifications: {}, blocked: true, blockReason: screen.reason };
+
     let facets = parseJsonSafe(row.facets, null);
     let topicalCategory = row.topical_category || null;
     const clarifications = parseJsonSafe(row.clarifications, {}) || {};
@@ -101,13 +109,29 @@ export async function ensureClassified(env, reportId, query, row, progress) {
     if (!facets) {
         if (progress) await progress('Classifying query...');
         const classification = await classifyQuery(env, query, row.canonical_query || null);
+        // SAFETY layer 2: ENFORCE the LLM classifier's reject (previously the accept flag was
+        // computed but ignored — adult/illegal queries got researched anyway).
+        if (classification.accept === false) {
+            return { facets: null, topicalCategory: null, clarifications, blocked: true, blockReason: classifierRejectToReason(classification.reject_reason) };
+        }
         facets = classification.facets;
         topicalCategory = classification.topical_category;
         await env.DB.prepare(
             'UPDATE research SET facets = ?1, topical_category = ?2 WHERE id = ?3'
         ).bind(JSON.stringify(facets), topicalCategory, reportId).run();
     }
-    return { facets, topicalCategory, clarifications };
+    return { facets, topicalCategory, clarifications, blocked: false, blockReason: null };
+}
+
+// Mark a research row as policy-rejected (adult/illegal) so it is never researched, published,
+// or indexed. Uses 'failed' status (excluded from sitemap/browse) with a clear message.
+async function markRejected(env, reportId, reason) {
+    const msg = rejectionMessage(reason);
+    const result = { rejected: true, reason, message: msg, summary: msg, products: [], category: '', methodology: '' };
+    await env.DB.prepare(
+        `UPDATE research SET status = 'failed', result = ?1, completed_at = ?2 WHERE id = ?3 AND status = 'processing'`
+    ).bind(JSON.stringify(result), nowEpoch(), reportId).run();
+    try { await setFinalReport(env.KV, reportId, result); } catch { /* best-effort */ }
 }
 
 /**
@@ -258,7 +282,9 @@ export async function claimNextPendingJob(env) {
     ).first();
     if (!claimed) return null;
 
-    const { facets, topicalCategory, clarifications } = await ensureClassified(env, claimed.id, claimed.query, claimed, null);
+    const cls = await ensureClassified(env, claimed.id, claimed.query, claimed, null);
+    if (cls.blocked) { await markRejected(env, claimed.id, cls.blockReason); return null; }
+    const { facets, topicalCategory, clarifications } = cls;
     const config = getTierConfig(claimed.tier || 'full') || getTierConfig('full');
     return { reportId: claimed.id, query: claimed.query, slug: claimed.slug, facets, topicalCategory, clarifications, config };
 }

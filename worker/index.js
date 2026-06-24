@@ -15,6 +15,7 @@ import { runResearchPipeline, monthlySpendUsd, monthlyBudgetUsd } from './pipeli
 import { renderResearchResult } from './pages/research-page.js';
 import { renderClarifyPage, extractClarifications } from './pages/clarify.js';
 import { classifyQuery, userFacingRejection } from './lib/classifier.js';
+import { screenQuery, rejectionMessage } from './lib/safety.js';
 import { renderBrowse } from './pages/browse.js';
 import { renderCategoryHub } from './pages/category.js';
 import { handleSubscribe } from './handlers/subscribe.js';
@@ -113,6 +114,9 @@ export default {
                 const cq = String(cbody.query || '').trim();
                 const jres = (obj) => new Response(JSON.stringify(obj), { headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } });
                 if (cq.length < 3 || cq.length > 500) return jres({ accept: true, clarifying_questions: [] });
+                // Deterministic safety screen first (fail-closed, can't be jailbroken/fail-opened).
+                const s = screenQuery(cq);
+                if (s.blocked) return jres({ accept: false, reject_message: rejectionMessage(s.reason), clarifying_questions: [] });
                 try {
                     const c = await classifyQuery(env, cq, null);
                     if (!c.accept) return jres({ accept: false, reject_message: userFacingRejection(c.reject_reason), clarifying_questions: [] });
