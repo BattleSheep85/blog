@@ -174,6 +174,15 @@ const hasModelCode = (s) => /\b[A-Za-z]*\d[A-Za-z0-9-]*\b/.test(s) || /\b[A-Z]{2
 // P20i) — a real product code, NOT a bare integer ("Bluetooth 6", "Over 100",
 // "Supportive Shoe 3"). A no-brand candidate needs one; a bare number is chrome.
 const hasStrongCode = (s) => /[A-Za-z]\d|\d[A-Za-z]/.test(String(s)) || /\b[A-Z]{2,}-?\d/.test(String(s));
+// A pure MEASUREMENT spec ("1350W", "58mm", "0.6L") is a number+unit, NOT a model code.
+const MEASUREMENT_SPEC = /^\d+(?:\.\d+)?(?:mm|cm|m|w|kw|kg|g|oz|lb|lbs|in|ft|ml|l|hz|khz|mhz|ghz|bar|psi|rpm|wh|mah|gb|tb|mp|fps|nit|nits|cd|lm|db)$/i;
+// A brandless candidate is only a real product if it has a MODEL-ish code (strong code that
+// is NOT just a measurement spec). Otherwise it's a review-page spec callout/fragment, not a
+// product ("Compact 1350W", "Enthusiasts 58mm Upgradability", "While 51mm").
+const hasModelishCode = (name) => String(name).split(/\s+/).some((t) => {
+  const ct = cleanTok(t);
+  return hasStrongCode(ct) && !MEASUREMENT_SPEC.test(ct);
+});
 // Boilerplate / chrome / non-product fragments that the Title-Case harvester picks up
 // from real pages: license footers, CTAs, timestamps, dates, bare tech-term+number,
 // quantifier phrases, repeated words, nav. None of these are products.
@@ -392,7 +401,7 @@ function harvestCandidates(sources, notes, opts = {}) {
         // adjacent to a digit). A no-brand name whose only "code" is a bare integer
         // ("Bluetooth 6", "Over 100", "Supportive Shoe 3") is chrome/spec noise, not a
         // product — drop it. (Brand present → keep regardless, "Motion 300" is fine.)
-        if (!brand && !hasStrongCode(name)) continue;
+        if (!brand && !hasModelishCode(name)) continue;
         if (opts.physical && toks.length === 1 && !hasStrongCode(name)) continue; // bare brand for a physical product = noise ("flair")
         if (isBoilerplate(name)) continue; // license footers, CTAs, timestamps, nav
         // Real-markdown noise rejects (clean fixtures never had these):
