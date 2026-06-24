@@ -64,6 +64,7 @@ ${list}`,
     kept.push({ ...p, name });
   }
   if (!kept.length) return report; // never empty the report on a bad LLM response
+  console.log(`[name-cleaner] ${report.products.length} → ${kept.length} products`);
   report.products = kept.map((p, i) => ({ ...p, rank: i + 1 }));
   return report;
 }

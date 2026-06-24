@@ -91,7 +91,7 @@ export async function synthesizeHonest({ query, notes, sources, facets, topicalC
     try {
       await Promise.race([
         cleanProducts(report, query, topicalCategory || '', openrouterKey, cleanupModel),
-        new Promise((resolve) => setTimeout(resolve, 25000)),
+        new Promise((resolve) => setTimeout(resolve, 45000)),
       ]);
     } catch (e) { console.log('[synthesizeHonest] name-cleanup skipped:', e?.message); }
   }
