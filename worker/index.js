@@ -33,7 +33,7 @@ import { GUIDES_LASTMOD } from './lib/guides.js';
 
 // Bump when the page template/schema shape changes in a way that should
 // invalidate every KV-cached HTML blob. Old keys age out on their own TTL.
-const CACHE_VERSION = 'tr8';
+const CACHE_VERSION = 'tr9';
 
 // Phase-B cutover flag: when 'true', the off-Cloudflare research worker is the
 // primary processor — the queue consumer defers (acks without processing,

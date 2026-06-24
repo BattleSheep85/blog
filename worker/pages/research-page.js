@@ -105,7 +105,10 @@ export function renderItemImage(imageUrl, name, productId) {
   // Broken images degrade gracefully: emit img + sibling fallback; a page-
   // level script swaps them on 'error'. Replaces the old inline onerror= that
   // was incompatible with nonce-based CSP.
-  const hiddenFallback = fallback.replace('class="item-image-fallback"', 'class="item-image-fallback" hidden');
+  // NB: hide via inline display:none, NOT the [hidden] attribute — the fallback's own
+  // inline `display:flex` OVERRIDES [hidden]'s UA display:none, so the letter-block was
+  // rendering on top of a perfectly good picture. The onerror handler restores display:flex.
+  const hiddenFallback = fallback.replace('display:flex', 'display:none');
   return `<img class="item-image-photo" src="${escapeHtml(src)}" alt="${safeName}" loading="lazy" referrerpolicy="no-referrer" style="width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:8px;margin-bottom:.75rem;background:var(--surface-1)">
 ${hiddenFallback}`;
 }
@@ -932,7 +935,7 @@ ${entry.status === 'complete' ? `<div class="notify-footer" style="margin-top:2r
       img.addEventListener('error',function(){
         img.hidden=true;
         var fb=img.nextElementSibling;
-        if(fb&&fb.classList.contains('item-image-fallback'))fb.hidden=false;
+        if(fb&&fb.classList.contains('item-image-fallback'))fb.style.display='flex';
       });
     });
   }
