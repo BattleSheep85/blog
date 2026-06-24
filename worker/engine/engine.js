@@ -245,7 +245,7 @@ export async function runEngine(
     // handleComplete): deterministic extraction + gated, timeout-bounded con-selector.
     const extracted = await synthesizeHonest({
       query, notes: state.notes, sources: state.sources, facets, topicalCategory,
-      openrouterKey, conSelectorModel: config.conSelectorModel, cleanupModel: config.cleanupModel,
+      openrouterKey, conSelectorModel: config.conSelectorModel, cleanupModel: config.cleanupModel, recallModel: config.recallModel,
     });
     const result = validateResearchResult(extracted);
     await emitEvent(onEvent, state, 'status', `Report complete: ${result.products.length} products ranked.`);

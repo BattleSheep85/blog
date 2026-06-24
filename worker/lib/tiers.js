@@ -37,6 +37,10 @@ const ENGINE_CONFIG = {
   // platforms/dupes over the ML candidate set, groundedness-gated. Stronger than flash-lite
   // (needs product/category understanding), still cheap (~$0.01/run).
   cleanupModel: 'google/gemini-2.5-flash',
+  // Recall-supplement model (engine-shootout-v2 "C win"): proposes category leaders the harvest
+  // missed; grounding-gated downstream (the name must appear in the gathered sources with credible
+  // evidence, else it's dropped). Knowledge task → gemini-2.5-flash, ~$0.01/run.
+  recallModel: 'google/gemini-2.5-flash',
   // NO provider object for the planner: gemini-2.5-flash is served by a SINGLE
   // provider (Google) on OpenRouter that does not expose a quantization tag, so a
   // `quantizations` filter 404s ("no endpoints"), and sort/max_price can only hurt

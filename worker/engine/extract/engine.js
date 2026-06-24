@@ -417,6 +417,29 @@ function harvestCandidates(sources, notes, opts = {}) {
       }
     }
   }
+  // RECALL SUPPLEMENT: seed candidates for LLM-proposed leader names the Title-Case harvest
+  // missed (lowercase/prose mentions, or filtered by the brand/code KEEP rule). Grounding is
+  // automatic — we scan the real sentences for the name; if it appears nowhere, NO candidate
+  // is seeded, and even when seeded it only becomes a product if analyzeProduct() later finds
+  // credible pros/cons for it. So a hallucinated leader contributes nothing.
+  for (const extra of (opts.extraNames || [])) {
+    const nm = String(extra || '').trim();
+    if (nm.length < 3) continue;
+    const key = norm(nm);
+    if (cands.has(key)) continue; // already harvested normally
+    const low = nm.toLowerCase();
+    const toks = nm.split(/\s+/).map(cleanTok).filter(Boolean);
+    const c = { name: nm, toks, brand: firstBrand(toks), hasCode: hasModelCode(nm), srcIdx: new Set(), sents: [] };
+    for (const u of units) {
+      for (const sent of sentences(u.text)) {
+        if (sent.toLowerCase().includes(low)) {
+          if (u.src != null) c.srcIdx.add(u.src);
+          c.sents.push({ idx: u.src, sentence: sent });
+        }
+      }
+    }
+    if (c.sents.length) cands.set(key, c); // only when actually present in sources
+  }
   return [...cands.values()];
 }
 
@@ -685,7 +708,7 @@ function rate(pros, cons, credibleCount) {
   return Math.round(Math.max(0, Math.min(5, rating)) * 2) / 2; // 0..5 in 0.5 steps
 }
 
-export function analyze(query, notes, sources, facets = {}, topicalCategory = '') {
+export function analyze(query, notes, sources, facets = {}, topicalCategory = '', extraNames = []) {
   // Strip jina markdown FIRST so link/image/url/heading syntax can't leak anywhere.
   const cleanSources = (sources || []).map((s) => ({ ...s, title: stripMarkdown(s.title), content: stripMarkdown(s.content) }));
   const cleanNotes = (notes || []).map((n) => ({ ...n, content: stripMarkdown(n.content) }));
@@ -702,7 +725,7 @@ export function analyze(query, notes, sources, facets = {}, topicalCategory = ''
   // payload (many distinct Title-Case strings) from exploding CPU. Keep the best-supported
   // candidates (most source mentions) — real products are corroborated, noise is one-off.
   const MAX_CANDIDATES = 250;
-  let harvested = resolveCandidates(harvestCandidates(cleanSources, cleanNotes, { physical }));
+  let harvested = resolveCandidates(harvestCandidates(cleanSources, cleanNotes, { physical, extraNames }));
   if (harvested.length > MAX_CANDIDATES) {
     harvested = harvested.slice().sort((a, b) => ((b.srcIdx?.size || 0) - (a.srcIdx?.size || 0)) || ((b.sents?.length || 0) - (a.sents?.length || 0))).slice(0, MAX_CANDIDATES);
   }
