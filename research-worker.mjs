@@ -93,7 +93,7 @@ async function processJob(job) {
     const result = await synthesizeHonest({
       query: job.query, notes: gathered.notes, sources: gathered.sources,
       facets: job.facets, topicalCategory: job.topicalCategory,
-      openrouterKey: OPENROUTER_API_KEY, conSelectorModel: config.conSelectorModel,
+      openrouterKey: OPENROUTER_API_KEY, conSelectorModel: config.conSelectorModel, cleanupModel: config.cleanupModel,
     });
     log(`  gather+synth: ${((Date.now() - t0) / 1000).toFixed(1)}s, ${result.products?.length ?? 0} products, ${gathered.sources.length} sources, $${(gathered.totalCostUsd || 0).toFixed(4)}`);
     await complete({

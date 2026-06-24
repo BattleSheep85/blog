@@ -1,0 +1,435 @@
+[
+  {
+    "query": "best wireless earbuds under $100",
+    "cat": "wireless earbuds",
+    "A": {
+      "metrics": {
+        "products": 19,
+        "name_ungrounded": 1,
+        "num_ungrounded": 0,
+        "names": [
+          "Sony WF-1000XM5 Truly Wireless",
+          "Anker SoundCore Liberty 4 Pro",
+          "Beats Powerbeats Pro 2",
+          "Audio-Technica ATH-SQ1TW Jabra Elite",
+          "SoundPEATS Capsule3 Pro",
+          "Anker Soundcore Sport X10",
+          "Affordable IPX7",
+          "JBL Vibe Beam True Wireless",
+          "Tozo NC3",
+          "Sony WF-C710N",
+          "Sony Wf-c510 Truly Wireless",
+          "Anker Soundcore X20",
+          "Anker Soundcore Life A1",
+          "Aesthetic AL 15K",
+          "Soundcore P30i Earbuds",
+          "Soundcore P20i ✓10mm",
+          "Tozo NC9 Earbuds",
+          "Anker Soundcore Space A40",
+          "Apple AirPods"
+        ]
+      }
+    },
+    "B": {
+      "metrics": {
+        "products": 16,
+        "name_ungrounded": 0,
+        "num_ungrounded": 0,
+        "names": [
+          "Sony WF-1000XM5",
+          "Anker SoundCore Liberty 4 Pro",
+          "Beats Powerbeats Pro 2",
+          "SoundPEATS Capsule3 Pro",
+          "Anker Soundcore Sport X10",
+          "JBL Vibe Beam",
+          "Tozo NC3",
+          "Sony WF-C710N",
+          "Sony Wf-c510",
+          "Anker Soundcore X20",
+          "Anker Soundcore Life A1",
+          "Soundcore P30i Earbuds",
+          "Soundcore P20i",
+          "Tozo NC9 Earbuds",
+          "Anker Soundcore Space A40",
+          "Apple AirPods"
+        ]
+      }
+    },
+    "C": {
+      "metrics": {
+        "products": 3,
+        "name_ungrounded": 0,
+        "num_ungrounded": 0,
+        "names": [
+          "EarFun Air Pro 4+",
+          "Soundcore Liberty 4 NC",
+          "Tribit FlyBuds 3"
+        ]
+      }
+    }
+  },
+  {
+    "query": "best linen shirts for men",
+    "cat": "men's linen shirts",
+    "A": {
+      "metrics": {
+        "products": 0,
+        "name_ungrounded": 0,
+        "num_ungrounded": 0,
+        "names": []
+      }
+    },
+    "B": {
+      "metrics": {
+        "products": 0,
+        "name_ungrounded": 0,
+        "num_ungrounded": 0,
+        "names": []
+      }
+    },
+    "C": {
+      "metrics": {
+        "products": 3,
+        "name_ungrounded": 0,
+        "num_ungrounded": 0,
+        "names": [
+          "Standard-Fit Linen Shirt",
+          "Premium Linen Shirt",
+          "Baird McNutt Irish Linen Shirt"
+        ]
+      }
+    }
+  },
+  {
+    "query": "best self-hosted photo backup software",
+    "cat": "photo backup software",
+    "A": {
+      "metrics": {
+        "products": 5,
+        "name_ungrounded": 0,
+        "num_ungrounded": 0,
+        "names": [
+          "Synology Photos 2025",
+          "Google Photos Alternatives",
+          "Synology Photos Immich",
+          "Synology NAS Before",
+          "Synology Filerun PhotoManagement"
+        ]
+      }
+    },
+    "B": {
+      "metrics": {
+        "products": 2,
+        "name_ungrounded": 0,
+        "num_ungrounded": 0,
+        "names": [
+          "Synology Photos",
+          "FileRun PhotoManagement"
+        ]
+      }
+    },
+    "C": {
+      "metrics": {
+        "products": 2,
+        "name_ungrounded": 0,
+        "num_ungrounded": 0,
+        "names": [
+          "Immich",
+          "PhotoPrism"
+        ]
+      }
+    }
+  },
+  {
+    "query": "best robot vacuum for pet hair",
+    "cat": "robot vacuums",
+    "A": {
+      "metrics": {
+        "products": 24,
+        "name_ungrounded": 2,
+        "num_ungrounded": 0,
+        "names": [
+          "TP-Link Tapo RV30 Max Plus",
+          "Shark AI Self-Empty XL",
+          "iRobot Roomba j9+",
+          "Kit Glasses",
+          "Amazon See",
+          "Mova V50 JustADadApproved",
+          "Roomba 405's",
+          "Samsung Jet Bot VR7MD96514G",
+          "iRobot Roomba Max 705",
+          "Eufy C10 T2292 Eureka",
+          "Roborock Qrevo Curv 2 Flow",
+          "Dyson 360 Vis Nav",
+          "Mova P10 Pro",
+          "iRobot Roomba Plus 505",
+          "Roborock Saros 10RMOVA P50",
+          "Dreame X50 Ultra",
+          "Eufy L60",
+          "Eureka NERE10SW",
+          "Samsung It’s",
+          "iRobot If",
+          "eufy Omni C28",
+          "Eufy Omni c20",
+          "Roborock Q8 Max",
+          "Roomba S9"
+        ]
+      }
+    },
+    "B": {
+      "metrics": {
+        "products": 20,
+        "name_ungrounded": 1,
+        "num_ungrounded": 0,
+        "names": [
+          "TP-Link Tapo RV30 Max Plus",
+          "Shark AI Self-Empty XL",
+          "iRobot Roomba j9+",
+          "Mova V50",
+          "Roomba 405",
+          "Samsung Jet Bot VR7MD96514G",
+          "iRobot Roomba Max 705",
+          "Eufy C10 T2292",
+          "Roborock Qrevo Curv 2 Flow",
+          "Dyson 360 Vis Nav",
+          "Mova P10 Pro",
+          "iRobot Roomba Plus 505",
+          "Roborock Saros 10RMOVA P50",
+          "Dreame X50 Ultra",
+          "Eufy L60",
+          "Eureka NERE10SW",
+          "Eufy Omni C28",
+          "Eufy Omni c20",
+          "Roborock Q8 Max",
+          "Roomba S9"
+        ]
+      }
+    },
+    "C": {
+      "metrics": {
+        "products": 3,
+        "name_ungrounded": 0,
+        "num_ungrounded": 0,
+        "names": [
+          "Ecovacs Deebot X8 Pro Omni",
+          "MOVA V50 Ultra",
+          "Dyson 360 Vis Nav"
+        ]
+      }
+    }
+  },
+  {
+    "query": "best mechanical keyboard for programming",
+    "cat": "mechanical keyboards",
+    "A": {
+      "metrics": {
+        "products": 14,
+        "name_ungrounded": 2,
+        "num_ungrounded": 0,
+        "names": [
+          "Corsair K70 RGB Pro",
+          "Logitech Wave Keys Wireless",
+          "Logitech's Ergo K860",
+          "ASUS ROG Falcata 7 N",
+          "Logitech MX Keys S",
+          "NuPhy Field75 HE V2",
+          "Gamakay TK75HE V2",
+          "Gamakay TK75 V2",
+          "Node SeriesAULA F99",
+          "Keychron Q1 Series",
+          "NuPhy Air75 V3 Hot",
+          "Keychron V3 Max",
+          "Wooting 80HE",
+          "Evoworks Evo75"
+        ]
+      }
+    },
+    "B": {
+      "metrics": {
+        "products": 11,
+        "name_ungrounded": 2,
+        "num_ungrounded": 0,
+        "names": [
+          "Corsair K70 RGB Pro",
+          "ASUS ROG Falcata 7 N",
+          "NuPhy Field75 HE V2",
+          "Gamakay TK75HE V2",
+          "Gamakay TK75 V2",
+          "Node SeriesAULA F99",
+          "Keychron Q1 Series",
+          "NuPhy Air75 V3",
+          "Keychron V3 Max",
+          "Wooting 80HE",
+          "Evoworks Evo75"
+        ]
+      }
+    },
+    "C": {
+      "metrics": {
+        "products": 4,
+        "name_ungrounded": 0,
+        "num_ungrounded": 0,
+        "names": [
+          "Evoworks Evo75",
+          "Dry Studio ATM98",
+          "Keychron Q5 Max",
+          "Keychron Q2 Pro"
+        ]
+      }
+    }
+  },
+  {
+    "query": "best standing desk for a home office",
+    "cat": "standing desks",
+    "A": {
+      "metrics": {
+        "products": 9,
+        "name_ungrounded": 0,
+        "num_ungrounded": 0,
+        "names": [
+          "Uplift V3 Standing Desk",
+          "Flexispot Standing Desk",
+          "Flexispot EW8 Electric Standing Desk",
+          "Sihoo Doro C300",
+          "Uplift v2 4-leg Deskhaus",
+          "UPLIFT Desk Bamboo Standing Desk",
+          "FlexiSpot E7 PRO Standing Desk",
+          "IKEA Standing Desk Stability Issues",
+          "IKEA Bekant Standing Desk"
+        ]
+      }
+    },
+    "B": {
+      "metrics": {
+        "products": 7,
+        "name_ungrounded": 0,
+        "num_ungrounded": 0,
+        "names": [
+          "Uplift V3 Standing Desk",
+          "Flexispot Standing Desk",
+          "Flexispot EW8 Electric Standing Desk",
+          "Uplift v2 4-leg Deskhaus",
+          "UPLIFT Desk Bamboo Standing Desk",
+          "FlexiSpot E7 PRO Standing Desk",
+          "IKEA Bekant Standing Desk"
+        ]
+      }
+    },
+    "C": {
+      "metrics": {
+        "products": 2,
+        "name_ungrounded": 0,
+        "num_ungrounded": 0,
+        "names": [
+          "Ergo Electric Standing Desk 54x26",
+          "IKEA Bekant Standing Desk"
+        ]
+      }
+    }
+  },
+  {
+    "query": "best budget espresso machine under $500",
+    "cat": "espresso machines",
+    "A": {
+      "metrics": {
+        "products": 10,
+        "name_ungrounded": 0,
+        "num_ungrounded": 0,
+        "names": [
+          "Gaggia Classic Pro Espresso Machine",
+          "Profitec 500",
+          "Breville Bambino Plus Espresso Machine",
+          "Rancilio Silvia PID Espresso Machine",
+          "Baratza Encore Coffee Grinder",
+          "Gaggia Classic EVO Espresso Machine",
+          "Casabrews CM5418 Either",
+          "Gaggia Water",
+          "Stilosa EC230",
+          "Bambino Flair Pro 2"
+        ]
+      }
+    },
+    "B": {
+      "metrics": {
+        "products": 5,
+        "name_ungrounded": 0,
+        "num_ungrounded": 0,
+        "names": [
+          "Gaggia Classic Pro",
+          "Breville Bambino Plus",
+          "Gaggia Classic EVO",
+          "Casabrews CM5418",
+          "Stilosa EC230"
+        ]
+      }
+    },
+    "C": {
+      "metrics": {
+        "products": 4,
+        "name_ungrounded": 0,
+        "num_ungrounded": 0,
+        "names": [
+          "Gaggia Classic Pro",
+          "Breville Bambino Plus",
+          "Breville Bambino (non-Plus)",
+          "Flair Pro 2"
+        ]
+      }
+    }
+  },
+  {
+    "query": "best running shoes for flat feet",
+    "cat": "running shoes",
+    "A": {
+      "metrics": {
+        "products": 10,
+        "name_ungrounded": 0,
+        "num_ungrounded": 4,
+        "names": [
+          "Asics Novablast 5 Men’s",
+          "NIKE Structure 26 Mens",
+          "Brooks Adrenaline GTS 24 Men",
+          "Balance 860 V14",
+          "ASICS Gel-Kayano New Balance",
+          "Saucony Tempus Guide 14",
+          "Mizuno Wave Horizon 8",
+          "Adidas Supernova Solution 3",
+          "ASICS Men's Gel-Kayano 30",
+          "Hoka Gaviota 6 Mens"
+        ]
+      }
+    },
+    "B": {
+      "metrics": {
+        "products": 9,
+        "name_ungrounded": 0,
+        "num_ungrounded": 4,
+        "names": [
+          "Asics Novablast 5",
+          "NIKE Structure 26",
+          "Brooks Adrenaline GTS 24",
+          "Balance 860 V14",
+          "Saucony Tempus Guide 14",
+          "Mizuno Wave Horizon 8",
+          "Adidas Supernova Solution 3",
+          "ASICS Gel-Kayano 30",
+          "Hoka Gaviota 6"
+        ]
+      }
+    },
+    "C": {
+      "metrics": {
+        "products": 5,
+        "name_ungrounded": 0,
+        "num_ungrounded": 0,
+        "names": [
+          "Brooks Adrenaline GTS 25",
+          "ASICS Gel-Kayano 32",
+          "New Balance Fresh Foam X 860v14",
+          "HOKA Arahi 8",
+          "Saucony Hurricane 24"
+        ]
+      }
+    }
+  }
+]

@@ -7,6 +7,7 @@
 import { analyze, conCandidateSpans } from './engine.js';
 import { buildVerdict, buildBestFor, buildSummary, buildBuyersGuide } from './prose.js';
 import { selectCons } from './con-selector.js';
+import { cleanProducts } from './name-cleaner.js';
 
 const _k = (s) => String(s || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
 
@@ -81,8 +82,19 @@ export function synthesizeExtractive(query, notes, sources, facets = {}, topical
 // AND handleComplete (when the off-CF gatherer hands back raw sources) so the honesty-critical
 // logic lives in exactly ONE place and the blackbox can never synthesize on its own. Returns
 // the enriched report; the CALLER validates (trust boundary stays at each call site).
-export async function synthesizeHonest({ query, notes, sources, facets, topicalCategory, openrouterKey, conSelectorModel } = {}) {
+export async function synthesizeHonest({ query, notes, sources, facets, topicalCategory, openrouterKey, conSelectorModel, cleanupModel } = {}) {
   const report = synthesizeExtractive(query, notes || [], sources || [], facets || {}, topicalCategory || '');
+  // Gated LLM name-cleanup FIRST (engine-shootout-v2 winner): clean names, drop junk/platforms/
+  // dupes, all constrained to the candidate set + groundedness-gated. Then the con-selector
+  // enriches cons on the cleaned set. Both timeout-bounded so neither can stall a run.
+  if (cleanupModel && openrouterKey) {
+    try {
+      await Promise.race([
+        cleanProducts(report, query, topicalCategory || '', openrouterKey, cleanupModel),
+        new Promise((resolve) => setTimeout(resolve, 25000)),
+      ]);
+    } catch (e) { console.log('[synthesizeHonest] name-cleanup skipped:', e?.message); }
+  }
   if (conSelectorModel && openrouterKey) {
     try {
       await Promise.race([

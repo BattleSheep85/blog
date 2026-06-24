@@ -33,6 +33,10 @@ const ENGINE_CONFIG = {
   // pass left thin; its groundedness gate drops anything not verbatim, so it adds con
   // recall without a fabrication surface. flash-lite is plenty for selection.
   conSelectorModel: 'google/gemini-2.5-flash-lite',
+  // Gated LLM name-cleanup model (engine-shootout-v2 winner): cleans names + drops junk/
+  // platforms/dupes over the ML candidate set, groundedness-gated. Stronger than flash-lite
+  // (needs product/category understanding), still cheap (~$0.01/run).
+  cleanupModel: 'google/gemini-2.5-flash',
   // NO provider object for the planner: gemini-2.5-flash is served by a SINGLE
   // provider (Google) on OpenRouter that does not expose a quantization tag, so a
   // `quantizations` filter 404s ("no endpoints"), and sort/max_price can only hurt
