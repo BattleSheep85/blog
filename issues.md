@@ -62,10 +62,16 @@ Last updated: 2026-06-23
 - [x] MEDIUM (comprehensiveness watch-item) — RESOLVED: the synth source-count limit is gone (the
       homelab has no CF CPU ceiling → unlimited mining). Kept the sentence-memoization (perf) +
       MAX_CANDIDATES=250 cap (cheap runaway-loop safety) regardless.
-- [ ] MEDIUM (next quality lever): gather DEPTH, not synth. A live worker run gathered 183 sources
-      but only read ~8 pages → 8 notes → 7 thin products (many 0 cons). The synth is now unlimited;
-      product/con richness is bottlenecked on how many credible pages the gather READS (Jina/read
-      success). Raise reads + improve note extraction to convert the 183 sources into more products.
+- [x] MEDIUM (gather depth lever) — DONE: raised MAX_READ 24→50 in parallel-engine.js (blackbox
+      has no CF cap), note-extraction concurrency 6→8. Live: a keyboard query went 7→16 products
+      (8→12 notes). Deployed to blackbox + CF. Also added JINA_API_KEY support (fetchPageContent
+      Authorization bearer, threaded from env) — a free Jina key lifts the keyless 429 cap for even
+      more successful reads (NOT YET SET; get a free key at jina.ai → wrangler secret put JINA_API_KEY
+      on prod + Portainer env on the blackbox → bigger read yield). Date-fragment regex now catches
+      ordinals ("December 9th"). Pushed to GitHub (988d579..7e6b4c4).
+- [ ] LOW (residual name bleed): a second keyboard brand can still tail-bleed ("Keychron V5 Max
+      Glorious" — Glorious is a brand; brandTruncate should cut a non-adjacent 2nd brand but missed
+      this case). Regex whack-a-mole; low priority now that names are ~90% clean.
 
 ## 2026-06-22 — PROD CUTOVER: honest ML extraction engine shipped to chrisputer.tech
 
