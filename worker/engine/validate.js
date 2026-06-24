@@ -150,10 +150,14 @@ export function validateResearchResult(data) {
   });
 
   // Drop items missing essential fields. Brand is optional (restaurants, trails,
-  // services often have no "brand") — require name + ≥1 pro + ≥1 con + 10+ char verdict.
-  // Never drop below 3 items to preserve the comparison experience.
+  // services often have no "brand"). Require name + real evidence (≥1 pro OR ≥1 con) +
+  // 10+ char verdict. NB: the honest extraction synth ABSTAINS on cons when the sources
+  // carry no criticism (it never fabricates), so requiring ≥1 con (the old LLM-synth
+  // assumption, which always invented cons) wrongly dropped ~20 legit pros-only products
+  // — that collapsed comprehensiveness. A pros-only product ships with its honest
+  // "no criticism surfaced" verdict. Never drop below 3 items to preserve the comparison.
   const complete = products.filter(
-    (p) => p.name && p.pros.length >= 1 && p.cons.length >= 1 && p.verdict.length >= 10,
+    (p) => p.name && (p.pros.length >= 1 || p.cons.length >= 1) && p.verdict.length >= 10,
   );
   const filtered = complete.length >= 3 ? complete : products;
 
