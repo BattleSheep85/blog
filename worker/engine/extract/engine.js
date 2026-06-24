@@ -192,21 +192,73 @@ const isBoilerplate = (name) => {
     || /\b(wwdc|black friday|cyber monday|prime day|ces \d|computex|ifa \d|gdc|e3 \d|keynote|live blog)\b/i.test(n) // event / chrome fragment
     || /\bpty\s*\.?\s*ltd\b|\bgmbh\b|\bllc\b|\bplc\b|incorporated\b|\bholdings\b|\bs\.?a\.?r\.?l\b/i.test(n) // a CORPORATE ENTITY, not a product ("Blue Connect Technology Pty Ltd")
     || /\b(inc|ltd|corp|llp|co)\.?$/i.test(t)
-    || /\b(privacy|cookies?|terms of|subscribe|newsletter|sign in|log in|skip to|table of contents|all rights)\b/i.test(n);
+    || /\b(privacy|cookies?|terms of|subscribe|newsletter|sign in|log in|skip to|table of contents|all rights)\b/i.test(n)
+    // NON-PRODUCT FRAGMENTS: coupons, warranty/returns pages, and unrelated-category
+    // service merges that deeper reads surface as Title-Case "names". None is a product.
+    || /^coupon\b/i.test(t)                                                  // "Coupon LEVELUP2026"
+    || /\b(?:promo|coupon|discount)\s+code\b/i.test(n)                       // "Promo Code SAVE20"
+    || /\b[A-Z]{4,}\d{2,}\b/.test(n)                                         // promo-code token (4+ caps + 2+ digits); real model codes (WF-1000XM5, TK75HE) don't match
+    || /\b(?:warranty|returns?|refunds?|replacements?)\b/i.test(n)           // "IKEA Warranty Replacements" — returns/warranty page chrome
+    || /\bmeal\s+(?:delivery|kit|kits|plan|plans)\b/i.test(n)                // "Fitbit Garmin Meal Delivery" — foreign-category service merge
+    || /\bdeploy(?:ed|ing|ment)?\b/i.test(n);                               // "Google Photos Today Deploy Immich" — how-to imperative bleed
 };
 // Distinct known brands in a token list — 3+ is a company LIST ("Apple Facebook Google
 // Microsoft"), not a product; a 2nd NON-ADJACENT brand is two products merged
 // ("Apple AirPods | Sony XM6") and the name should be truncated at it.
+// Bounded Levenshtein (cap 2) for near-duplicate brand detection ("Roborock"<->"Roborcok"
+// is a transposition → distance 2). Returns 3 for anything farther so callers can early-out.
+function lev2(a, b) {
+  if (Math.abs(a.length - b.length) > 2) return 3;
+  const m = a.length, n = b.length; let prev = Array.from({ length: n + 1 }, (_, j) => j);
+  for (let i = 1; i <= m; i++) {
+    const cur = [i]; let rowMin = i;
+    for (let j = 1; j <= n; j++) {
+      const c = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+      cur[j] = c; if (c < rowMin) rowMin = c;
+    }
+    if (rowMin > 2) return 3; // whole row already past the cap — bail
+    prev = cur;
+  }
+  return prev[n];
+}
 function brandTruncate(toks) {
-  let first = -1, cut = toks.length; const seen = new Set();
-  for (let k = 0; k < toks.length; k++) {
-    if (BRANDS.has(cleanTok(toks[k]).toLowerCase())) {
-      seen.add(cleanTok(toks[k]).toLowerCase());
+  // (0) Collapse a near-duplicate brand token — an OCR/typo echo of an earlier gazetteer
+  //     brand ("Roborock QRevo Curv Roborcok" → drop trailing "Roborcok"). Fires only for a
+  //     non-brand token (len ≥ 5) within edit-distance 1-2 of an EARLIER real brand (len ≥ 5).
+  let work = toks;
+  for (let k = work.length - 1; k >= 1; k--) {
+    const tl = cleanTok(work[k]).toLowerCase();
+    if (tl.length < 5 || BRANDS.has(tl)) continue;
+    let dup = false;
+    for (let j = 0; j < k && !dup; j++) {
+      const bl = cleanTok(work[j]).toLowerCase();
+      if (BRANDS.has(bl) && bl.length >= 5 && tl !== bl && lev2(tl, bl) <= 2) dup = true;
+    }
+    if (dup) work = work.slice(0, k).concat(work.slice(k + 1));
+  }
+  let first = -1, cut = work.length; const seen = new Set(); let codeSeen = false;
+  for (let k = 0; k < work.length; k++) {
+    const tk = cleanTok(work[k]); const lc = tk.toLowerCase();
+    const isBrand = BRANDS.has(lc);
+    if (isBrand) {
+      seen.add(lc);
       if (first < 0) first = k;
       else if (k > first + 1) { cut = k; break; } // non-adjacent 2nd brand → cut (merge)
     }
+    // SECOND-PRODUCT BOUNDARY: once product 1 has carried a strong model code, a later
+    // gazetteer brand OR a Title-Case word heading a brand+model product (next token is a
+    // strong code) begins a second product — cut there. The "code already seen" gate
+    // protects adjacent same-product brands (Anker Soundcore / iRobot Roomba / Breville
+    // Bambino), whose 2nd brand precedes any code; the all-caps exclusion keeps "HE" in
+    // "NuPhy Field75 HE V2" from triggering.
+    if (k > 0 && codeSeen) {
+      const titleCase = /^[A-Z][a-z]{3,}$/.test(tk);
+      const nextCode = hasStrongCode(cleanTok(work[k + 1] || ''));
+      if (isBrand || (titleCase && nextCode)) { cut = k; break; }
+    }
+    if (hasStrongCode(tk)) codeSeen = true;
   }
-  const out = toks.slice(0, cut);
+  const out = work.slice(0, cut);
   // Drop if 3+ distinct brands (a company LIST), or the result is ENTIRELY brands/
   // stopwords with no model token ("Apple Facebook", "Anker Soundcore" alone).
   const allBrandOrStop = out.length >= 2 && out.every((t) => { const l = cleanTok(t).toLowerCase(); return BRANDS.has(l) || STOPWORDS.has(l); });
@@ -250,7 +302,10 @@ const NAME_TAIL_DENY = new Set(['appears', 'delivers', 'offers', 'features', 'co
   'bottom', 'line', 'url', 'see', 'complete', 'direct', 'amazon', 'walmart', 'target', 'newegg', 'options', 'tiktok', 'web', 'twitter', 'instagram', 'youtube', 'facebook', 'reddit',
   // trailing review-adjective bleed ("Keychron Q6 Max Exceptional", "Q5 Max Swappable") —
   // evaluative words that are never part of a real product name.
-  'exceptional', 'swappable', 'amazing', 'incredible', 'fantastic', 'impressive', 'excellent', 'superb', 'outstanding', 'awesome', 'stunning', 'gorgeous', 'flawless']);
+  'exceptional', 'swappable', 'amazing', 'incredible', 'fantastic', 'impressive', 'excellent', 'superb', 'outstanding', 'awesome', 'stunning', 'gorgeous', 'flawless',
+  // trailing chrome/review/spec bleed: "IKEA Bekant Electronic", "IKEA Standing Desk Stability",
+  // "Soundcore Space A40 Nothing", "Google Photos Alternative Is", "Baratza Encore ESP Budget-Friendly".
+  'stability', 'electronic', 'nothing', 'strong', 'alternative', 'is', 'budget-friendly']);
 // Product-type nouns that pin a DIFFERENT category — if one appears in a name and it is
 // NOT one of the query's category terms, the product belongs to another category (an
 // "Apple TV" / "Sony Playstation" leaking into a keyboard query).
@@ -264,10 +319,17 @@ function trimNameTail(toks) {
   //    left alone (usually model numbers, e.g. "Motion 300").
   let cut = toks.length;
   for (let k = 1; k < toks.length; k++) {
-    const t = cleanTok(toks[k]);
+    const raw = toks[k];
+    const t = cleanTok(raw);
     // bare rating/version "4.0", ordinal "2nd", a price "$749.99", or a timestamp
     // "02:32" are never part of a name — the name ends before them.
     if (/^\d+\.\d+$/.test(t) || /^\d+(?:st|nd|rd|th)$/i.test(t) || /^\$\d/.test(t) || /^\d{1,2}:\d{2}$/.test(t)) { cut = k; break; }
+    // SPEC/PRICE JUNK chrome embedded in a name — cut at the junk: "Price:$399-$499
+    // Type:Semi-Auto" (key:value spec label), "$399-$499" (any $), "Specifications 03" /
+    // "Review 400" / "Review 2" (spec/review word + bare integer). Never matches real model
+    // codes (no embedded "$" or "Word:value"); the struct() guard below restores if a code was cut.
+    if (/^[A-Za-z][A-Za-z]*:\S/.test(raw) || raw.includes('$')) { cut = k; break; }
+    if (/^(?:specifications?|reviews?)$/i.test(t) && /^\d+$/.test(cleanTok(toks[k + 1] || ''))) { cut = k; break; }
   }
   let out = toks.slice(0, cut);
   // 2) drop trailing sentence-continuation/review words, but never below 2 tokens
