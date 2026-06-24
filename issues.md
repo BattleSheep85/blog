@@ -85,6 +85,12 @@ Last updated: 2026-06-23
       fragments. 0 false positives, legit_recall=1.0, name_dirty_rate=0. Corpus dropped 6 non-product
       fragments (Coupon/Warranty/Meal-Delivery). Residual: a few edge variants ("…Eureka" tail) — not
       chased (gates clean, chasing risks false positives).
+- [x] LOW (deeper-read residual) — DONE: the Jina key + MAX_READ=50 surfaced brandless MEASUREMENT-
+      SPEC callouts as names ("Compact 1350W", "Enthusiasts 58mm Upgradability", "While 51mm") — they
+      passed the no-brand KEEP rule because a spec (1350W/58mm) reads as a strong code. Added
+      hasModelishCode (brandless candidate needs a real MODEL code, not just number+unit). Live
+      espresso run after: clean ("Breville BES870XL Barista Express", "Gaggia Anima", "CASABREWS
+      CM5418"), spec-fragments gone. JINA effect confirmed: reads 17→45, notes 12→173, products 3→20.
 
 ## 2026-06-22 — PROD CUTOVER: honest ML extraction engine shipped to chrisputer.tech
 
