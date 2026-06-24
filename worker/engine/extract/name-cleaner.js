@@ -27,10 +27,14 @@ export async function cleanProducts(report, query, topicalCategory, apiKey, mode
   const list = report.products.map((p, i) => `${i}: ${p.name}`).join('\n');
   const messages = [{
     role: 'user',
-    content: `Query: "${query}" (category: ${topicalCategory || ''}).
-Below are candidate product names extracted verbatim from review sources. For EVERY index decide:
-- keep=false ONLY if it is clearly NOT a real, distinct product for THIS query: a spec/feature fragment ("Standard E26 Base", "Affordable IPX7", "White 800 2200K", "Kit Glasses", "Amazon See"), a platform/ecosystem rather than a product ("Apple HomeKit Alexa", "Amazon Alexa"), an obvious duplicate of another row, or off-topic for the category (a coffee GRINDER in an espresso-MACHINE query). When you are UNSURE, keep=true — never drop a plausibly real product.
-- keep=true otherwise, with clean_name = the real product name with any two-product merge split off and chrome/review words removed.
+    content: `The user wants: "${query}" — i.e. a "${topicalCategory || ''}" (a specific PRODUCT TYPE).
+Below are candidate product names extracted verbatim from review sources. For EVERY index decide keep/drop:
+DROP (keep=false) if the item is NOT an actual "${topicalCategory || 'product'}" unit, specifically:
+  (a) a DIFFERENT product type — a hub / bridge / gateway / controller / coordinator / chip / dongle / sensor / switch / plug, software / app / firmware / protocol, a platform or voice assistant, or an accessory / part — EVEN IF it is compatible with or part of the same ecosystem. The user wants the "${topicalCategory}" itself, not the things around it. (e.g. for "smart light bulbs": drop "Home Assistant Zigbee2MQTT", "Philips Hue Bridge", "Texas Instruments CC2652". For "espresso machines": drop a coffee GRINDER.)
+  (b) a spec/feature fragment or non-product phrase ("Standard E26 Base", "Affordable IPX7", "White 800 2200K", "Kit Glasses", "Amazon See", "Avoid CC2531").
+  (c) an obvious DUPLICATE of another row.
+KEEP (keep=true) every actual "${topicalCategory}" unit. When you are UNSURE whether something is a real product OF THIS TYPE, keep=true — never drop a plausibly-real "${topicalCategory}".
+For kept rows, clean_name = the real product name with any two-product merge split off and chrome/review words removed.
 HARD RULE: clean_name may use ONLY words that already appear in that row's original name; do NOT add, translate, or invent words. Return one entry per index.
 
 ${list}`,
