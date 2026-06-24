@@ -1,6 +1,6 @@
 # Issues
 
-Last updated: 2026-06-23
+Last updated: 2026-06-24
 
 ## 2026-06-24 — Content safety + UI fixes
 
@@ -16,11 +16,23 @@ Last updated: 2026-06-23
 - [x] HIGH (UI, user report): the letter-block fallback rendered OVER working product pictures —
       its inline display:flex overrode the [hidden] attribute's UA display:none. Hide via inline
       display:none; onerror restores display:flex. CACHE_VERSION tr8→tr9. Fixed + live. (commit b046a4b7)
-- [ ] MEDIUM (user report): smart-home queries surface unrelated entries — PLATFORMS ("Apple HomeKit
-      Alexa", "Amazon Alexa") + spec/base fragments ("Standard E26 Base", "White 800 2200K") + adjacent
-      products (smart plugs/strips in a bulb query). Same category-relevance class as the keyboard fix;
-      needs a focused round (platform-name drop + brandless spec-fragment tightening + tighter cluster/
-      category gate for smart-home).
+- [x] ENGINE (benchmark verdict → user "benchmark all three, then decide"): settled ML-vs-LLM with
+      benchmarks/bench-engine-v2.mjs on 8 real corpora. Honesty is NOT the differentiator (grounding-
+      ungrounded names A=5/B=3/C=0 — the gate works for all); full-LLM loses the long tail (26 vs 91
+      products); gated-LLM-cleanup (B) wins. SHIPPED worker/engine/extract/name-cleaner.js (cleanProducts):
+      LLM (tiers.cleanupModel=gemini-2.5-flash) cleans each ML name + drops junk/platforms/dupes,
+      CONSTRAINED to the candidate set + per-name groundedness gate + "keep when unsure" (Profitec/Rancilio
+      survive) + product-TYPE filter (drops hubs/chips/software in a bulbs query). Wired into synthesizeHonest
+      (blackbox), before the con-selector, 45s timeout. (commits 31578a6, 9060006)
+- [x] MEDIUM (user report): smart-home queries surfaced PLATFORMS ("Apple HomeKit Alexa", "Amazon Alexa")
+      + spec fragments + adjacent products. Addressed by the hybrid cleanup above (product-TYPE filter).
+      DEPLOY GOTCHA found + fixed: the cleanup didn't fire for ~4 live re-runs because rsync of worker/
+      does NOT cover research-worker.mjs (repo root, blackbox entrypoint) — needs a separate
+      `rsync --inplace` (src/ is root-owned). See memory blackbox-deploy-entrypoint-gap.
+- [ ] FOLLOW-UP (engine recall, the C win): ML harvest MISSES the category's real best when they don't
+      surface as clean Title-Case spans (Immich/PhotoPrism for self-hosted photos; nothing for linen).
+      Add a gated LLM RECALL-SUPPLEMENT — LLM proposes missing leaders, source-gated so it can only add
+      products present in the gathered pages, then the ML extracts their evidence. The natural next round.
 
 ## 2026-06-23 — Keyboard results were garbage (user report) + followups resolved
 
