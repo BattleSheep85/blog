@@ -2,6 +2,26 @@
 
 Last updated: 2026-06-23
 
+## 2026-06-24 — Content safety + UI fixes
+
+- [x] HIGH (content safety): adult/illegal queries were NOT suppressed — the classifier had the
+      reject categories but ensureClassified ignored accept=false, so they got researched + indexed.
+      Added worker/lib/safety.js (deterministic, fail-CLOSED, phrase/\b-anchored; 35/35 test cases)
+      + screened at EVERY entry (handleStartResearch 422, /api/classify, ensureClassified which now
+      ENFORCES the LLM reject too → runResearchPipeline + claimNextPendingJob markRejected). Live:
+      "best porn sites"→422, "how to make a bomb"→reject, "best mechanical keyboard"→200. (commit 87739717)
+- [ ] LOW (safety follow-up): red-team the denylist for obfuscation bypasses (leetspeak/spacing);
+      LLM classifier is the backstop. Firearms = LEGAL products, intentionally NOT blocked (only illegal
+      weapon-making/acquisition).
+- [x] HIGH (UI, user report): the letter-block fallback rendered OVER working product pictures —
+      its inline display:flex overrode the [hidden] attribute's UA display:none. Hide via inline
+      display:none; onerror restores display:flex. CACHE_VERSION tr8→tr9. Fixed + live. (commit b046a4b7)
+- [ ] MEDIUM (user report): smart-home queries surface unrelated entries — PLATFORMS ("Apple HomeKit
+      Alexa", "Amazon Alexa") + spec/base fragments ("Standard E26 Base", "White 800 2200K") + adjacent
+      products (smart plugs/strips in a bulb query). Same category-relevance class as the keyboard fix;
+      needs a focused round (platform-name drop + brandless spec-fragment tightening + tighter cluster/
+      category gate for smart-home).
+
 ## 2026-06-23 — Keyboard results were garbage (user report) + followups resolved
 
 - [x] HIGH (DIAGNOSE): live keyboard searches returned junk — #1 was "Blue Connect Technology
