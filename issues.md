@@ -69,9 +69,18 @@ Last updated: 2026-06-23
       more successful reads (NOT YET SET; get a free key at jina.ai → wrangler secret put JINA_API_KEY
       on prod + Portainer env on the blackbox → bigger read yield). Date-fragment regex now catches
       ordinals ("December 9th"). Pushed to GitHub (988d579..7e6b4c4).
-- [ ] LOW (residual name bleed): a second keyboard brand can still tail-bleed ("Keychron V5 Max
-      Glorious" — Glorious is a brand; brandTruncate should cut a non-adjacent 2nd brand but missed
-      this case). Regex whack-a-mole; low priority now that names are ~90% clean.
+- [x] HIGH (comprehensiveness leaked at VALIDATE, not gather) — FIXED: the deeper reads made the
+      synth produce 22 products but validateResearchResult kept only 3, because applyQualityGate's
+      completeness filter required ≥1 pro AND ≥1 con — built for the old LLM synth that always
+      fabricated cons. The honest extraction synth ABSTAINS on cons (no criticism in sources), so
+      ~20 legit pros-only products were dropped. Loosened to ≥1 pro OR ≥1 con (validate.js:155).
+      LIVE PROD result: a wireless-mouse query went 3 → 13 products (extraction-v0, $0.016). The
+      full chain (unlimited mining → MAX_READ=50 → keep pros-only) now delivers comprehensiveness.
+- [ ] MEDIUM (next quality lever — name hygiene): deeper reads surface more LISTICLE-TITLE fragments
+      as product names ("LOGITECH MOUSE FASTEST SECRET", "Logitech Wireless Mice 2026 How", "MX
+      Master 4 5"). ~3 of 13 names are rough, rest clean. Tighten looksLikeHeadline/isBoilerplate +
+      trimNameTail for clickbait/headline runs + brandTruncate for a tail 2nd brand ("…Max Glorious").
+      More visible now BECAUSE comprehensiveness works.
 
 ## 2026-06-22 — PROD CUTOVER: honest ML extraction engine shipped to chrisputer.tech
 
