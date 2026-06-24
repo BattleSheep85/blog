@@ -29,10 +29,23 @@ Last updated: 2026-06-24
       DEPLOY GOTCHA found + fixed: the cleanup didn't fire for ~4 live re-runs because rsync of worker/
       does NOT cover research-worker.mjs (repo root, blackbox entrypoint) — needs a separate
       `rsync --inplace` (src/ is root-owned). See memory blackbox-deploy-entrypoint-gap.
-- [ ] FOLLOW-UP (engine recall, the C win): ML harvest MISSES the category's real best when they don't
-      surface as clean Title-Case spans (Immich/PhotoPrism for self-hosted photos; nothing for linen).
-      Add a gated LLM RECALL-SUPPLEMENT — LLM proposes missing leaders, source-gated so it can only add
-      products present in the gathered pages, then the ML extracts their evidence. The natural next round.
+- [x] ENGINE (recall-supplement, the C win — SHIPPED): the dominant corpus problem is THINNESS (42% of
+      live reviews <=3 products, per scripts/quality-monitor.mjs). worker/engine/extract/recall-supplement.js
+      proposeMissingLeaders() asks an LLM (tiers.recallModel=gemini-2.5-flash) which category leaders the
+      Title-Case harvest missed; harvestCandidates SEEDS those names so they pass the SAME analyzeProduct +
+      credible-source gate. Grounding automatic — absent-from-sources ⇒ no candidate ⇒ no fabrication.
+      Validated: photo-backup 5→9 (recovered PhotoPrism/Nextcloud/Plex); linen 0→0 (proposals ungrounded,
+      all dropped). Runs in synthesizeHonest before cleanup. (commit 79f83994 era)
+- [x] MONITOR (user "monitor quality"): scripts/quality-monitor.mjs audits EVERY live review via prod D1
+      — status mix, product-count buckets, junk-name scan (platform/fragment/specfrag/merge), worst
+      offenders, single HEALTH SCORE (>=4 products AND 0 junk; exits non-zero <45% for cron/CI gating).
+      Baseline 2026-06-24: 323 complete, 42% thin, 38 junk/15 reviews, health 53.9%.
+- [ ] FOLLOW-UP (corpus backfill): the 135 thin + 15 junk + 11 empty EXISTING reviews predate recall+cleanup.
+      Batch re-run the worst (worst-offender list from quality-monitor) through the new engine, then re-run
+      the monitor to confirm the health score climbs. Watch MONTHLY_BUDGET_USD (~$0.05/run).
+- [ ] FOLLOW-UP (linen-class gather gap): some queries return 0 products because the GATHER found no usable
+      sources (linen shirts). Recall-supplement can't help (nothing to ground against). Needs better
+      apparel/retail source providers or a query-rewrite, not an engine change.
 
 ## 2026-06-23 — Keyboard results were garbage (user report) + followups resolved
 
