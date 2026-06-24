@@ -43,6 +43,11 @@ Last updated: 2026-06-24
 - [ ] FOLLOW-UP (corpus backfill): the 135 thin + 15 junk + 11 empty EXISTING reviews predate recall+cleanup.
       Batch re-run the worst (worst-offender list from quality-monitor) through the new engine, then re-run
       the monitor to confirm the health score climbs. Watch MONTHLY_BUDGET_USD (~$0.05/run).
+- [ ] FOLLOW-UP (harvester merges): two adjacent products get harvested as ONE candidate ("Synology Photos
+      Immich", "Synology Filerun PhotoManagement"). The name-cleaner cleans a name but can't SPLIT one row
+      into two, so the merged entry survives + a recall-seeded "Immich" starves of pros/cons (the `seen`
+      clause-allocation gave them to the merged row first). Fix: split-aware harvesting OR let cleanup emit
+      a split. Low-frequency; surfaced on self-hosted-photo. (engine.js brandTruncate handles SOME merges.)
 - [ ] FOLLOW-UP (linen-class gather gap): some queries return 0 products because the GATHER found no usable
       sources (linen shirts). Recall-supplement can't help (nothing to ground against). Needs better
       apparel/retail source providers or a query-rewrite, not an engine change.
