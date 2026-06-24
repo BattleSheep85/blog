@@ -66,9 +66,10 @@ Last updated: 2026-06-23
       has no CF cap), note-extraction concurrency 6→8. Live: a keyboard query went 7→16 products
       (8→12 notes). Deployed to blackbox + CF. Also added JINA_API_KEY support (fetchPageContent
       Authorization bearer, threaded from env) — a free Jina key lifts the keyless 429 cap for even
-      more successful reads (NOT YET SET; get a free key at jina.ai → wrangler secret put JINA_API_KEY
-      on prod + Portainer env on the blackbox → bigger read yield). Date-fragment regex now catches
-      ordinals ("December 9th"). Pushed to GitHub (988d579..7e6b4c4).
+      more successful reads. JINA_API_KEY now SET (2026-06-24) on prod CF (wrangler secret) AND the
+      blackbox (added to Portainer stack 138 env via the REST API: GET stack/file → add env line +
+      Env entry → PUT → redeploys; token in BWS "Portainer-API"; blackbox SSH chris@192.168.5.10).
+      Date-fragment regex now catches ordinals ("December 9th"). Pushed to GitHub.
 - [x] HIGH (comprehensiveness leaked at VALIDATE, not gather) — FIXED: the deeper reads made the
       synth produce 22 products but validateResearchResult kept only 3, because applyQualityGate's
       completeness filter required ≥1 pro AND ≥1 con — built for the old LLM synth that always
@@ -76,11 +77,14 @@ Last updated: 2026-06-23
       ~20 legit pros-only products were dropped. Loosened to ≥1 pro OR ≥1 con (validate.js:155).
       LIVE PROD result: a wireless-mouse query went 3 → 13 products (extraction-v0, $0.016). The
       full chain (unlimited mining → MAX_READ=50 → keep pros-only) now delivers comprehensiveness.
-- [ ] MEDIUM (next quality lever — name hygiene): deeper reads surface more LISTICLE-TITLE fragments
-      as product names ("LOGITECH MOUSE FASTEST SECRET", "Logitech Wireless Mice 2026 How", "MX
-      Master 4 5"). ~3 of 13 names are rough, rest clean. Tighten looksLikeHeadline/isBoilerplate +
-      trimNameTail for clickbait/headline runs + brandTruncate for a tail 2nd brand ("…Max Glorious").
-      More visible now BECAUSE comprehensiveness works.
+- [x] MEDIUM (name hygiene) — DONE: a name-hygiene workflow (parallel design by bad-name category +
+      INDEPENDENT adversarial verification against a real 99-name corpus) produced 4 false-positive-
+      safe rules, all applied (commit e6ea0c2): brandTruncate cuts a 2nd product after a model code +
+      collapses near-dup brand echoes (lev2); trimNameTail +denylist + spec/price-junk cut ("Price:$…",
+      "Review NN", "Specifications NN"); isBoilerplate drops coupon/promo/warranty/meal-delivery/deploy
+      fragments. 0 false positives, legit_recall=1.0, name_dirty_rate=0. Corpus dropped 6 non-product
+      fragments (Coupon/Warranty/Meal-Delivery). Residual: a few edge variants ("…Eureka" tail) — not
+      chased (gates clean, chasing risks false positives).
 
 ## 2026-06-22 — PROD CUTOVER: honest ML extraction engine shipped to chrisputer.tech
 
