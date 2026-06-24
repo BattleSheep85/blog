@@ -15,14 +15,18 @@ const MAX_CONTENT_LENGTH = 15_000;
  * capped at MAX_CONTENT_LENGTH). The graceful empty-string failure remains the final
  * fallback; this function never throws.
  */
-export async function fetchPageContent(url) {
+export async function fetchPageContent(url, apiKey) {
   try {
+    // A Jina API key (free signup, generous limits) lifts the keyless rate cap that
+    // otherwise 429s most concurrent reads → far more pages actually return body text.
+    const headers = {
+      Accept: 'text/markdown',
+      'X-Return-Format': 'markdown',
+    };
+    if (apiKey) headers.Authorization = `Bearer ${apiKey}`;
     const response = await fetch(`https://r.jina.ai/${url}`, {
       signal: AbortSignal.timeout(JINA_TIMEOUT_MS),
-      headers: {
-        Accept: 'text/markdown',
-        'X-Return-Format': 'markdown',
-      },
+      headers,
     });
 
     if (!response.ok) {

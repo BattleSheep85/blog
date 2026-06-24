@@ -183,7 +183,7 @@ const isBoilerplate = (name) => {
     || /\b(check (?:latest |the )?price|buy now|shop now|view deal|add to cart|see price|best price|guaranteed|read more|learn more)\b/i.test(n)
     || /^(?:bluetooth|displayport|hdmi|usb|wi-?fi|android|ios|version|chapter|step|figure|table|page|vol|gen|win|macos|category|section)\s+\d+$/i.test(t)
     || /\d{1,2}:\d{2}/.test(n)
-    || /\b(?:january|february|march|april|may|june|july|august|september|october|november|december)\s+\d{1,2}\b/i.test(n)
+    || /\b(?:january|february|march|april|may|june|july|august|september|october|november|december)\s+\d{1,2}(?:st|nd|rd|th)?\b/i.test(n) // "December 9th"
     || /^(?:january|february|march|april|may|june|july|august|september|october|november|december)\s+(?:19|20)\d\d$/i.test(t) // "July 2026" date fragment
     || /^(?:over|under|up to|from|about|around|approx|nearly|almost|less than|more than|at|with|for|the|a|an)\s+\$?\d/i.test(t) // "At 52g", "Over 100"
     || /^\d+(?:\.\d+)?\s*(?:k|m|g|kg|mm|cm|hz|mah|wh|w|gb|tb|ms|nits|lbs?|oz|fps|hrs?|hours?)$/i.test(t)                       // bare spec/measure "52g", "144K"

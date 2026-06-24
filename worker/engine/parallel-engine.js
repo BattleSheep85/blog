@@ -18,7 +18,11 @@ const PER_ASPECT_QUERIES = 5;
 const PROVIDERS = ['web', 'web', 'duckduckgo', 'rss', 'video', 'news'];
 const SEARCH_CONCURRENCY = 24;
 const READ_CONCURRENCY = 16;
-const MAX_READ = 24;
+// Off-CF homelab has no subrequest/CPU cap, so read DEEP — this is the comprehensiveness
+// lever (more read pages → more notes → more products survive the credible-evidence gate).
+// Keyless Jina 429s a chunk of these; the fetchDirect fallback + JINA_API_KEY (when set)
+// recover most. 24→50 roughly doubled real reads in testing.
+const MAX_READ = 50;
 const READ_MIN_SCORE = 45;     // read [community]/[hands-on]/[expert] incl. hands-on+expert that
                                // also monetize (base50+hands-on25+expert15-affiliate45=45); synth
                                // still discounts affiliate-conflicted verdicts. Pure affiliate
@@ -168,7 +172,7 @@ export async function gatherParallel(query, config, openrouterKey, env, onEvent,
   // 4. Batched finding extraction from the pages that actually returned body text.
   const readOk = toRead.filter((s) => (s.content?.length ?? 0) > 300);
   await emit(onEvent, 'status', `Extracting findings from ${readOk.length} pages...`);
-  const noteRes = await runPool(chunk(readOk, NOTE_BATCH).map((b) => () => extractNotes(query, b, openrouterKey, config.plannerModel, plannerOpts)), 6);
+  const noteRes = await runPool(chunk(readOk, NOTE_BATCH).map((b) => () => extractNotes(query, b, openrouterKey, config.plannerModel, plannerOpts)), 8);
   const notes = [];
   for (const r of noteRes) { if (!r) continue; totalCostUsd += r.cost || 0; for (const n of r.notes) notes.push(n); }
   console.log(`[parallel] ${aspects.length} aspects, ${tasks.length} searches, ${sources.length} sources, ${readOk.length} read, ${notes.length} notes`);

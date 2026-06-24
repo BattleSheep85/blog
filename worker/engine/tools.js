@@ -356,7 +356,7 @@ export async function executeTool(
     case 'web_search':
       return executeSearch(args, state, config, ctx.env, ctx.recencySensitive ?? true);
     case 'read_page':
-      return executeReadPage(args, state, config);
+      return executeReadPage(args, state, config, ctx.env);
     case 'note':
       return [executeNote(args, state), 0];
     default:
@@ -503,6 +503,7 @@ async function executeReadPage(
   args,
   state,
   config,
+  env,
 ) {
   if (state.fetchCount >= config.maxFetches) {
     return ['Page-read budget exhausted. Use note() to record findings from snippets or stop.', 0];
@@ -512,7 +513,7 @@ async function executeReadPage(
   if (!url || !url.startsWith('http')) return ['Error: valid URL is required', 0];
 
   state.fetchCount++;
-  const content = await fetchPageContent(url);
+  const content = await fetchPageContent(url, env?.JINA_API_KEY);
 
   if (!content) {
     return [`Could not read ${url} — page may be paywalled, JS-only, or blocked. Use the snippet instead.`, 1];
