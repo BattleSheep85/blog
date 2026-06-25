@@ -2,6 +2,20 @@
 
 Last updated: 2026-06-24
 
+## 2026-06-25 — ROOT CAUSE: blackbox Serper key was corrupted (search was broken)
+
+- [x] CRITICAL (DIAGNOSE): the blackbox's SERPER_API_KEY was a wrong key with the Jina key
+      concatenated (121 chars; `<badkey> - jina_...`) → EVERY Serper call 403'd → gather silently fell
+      back to DuckDuckGo (times out from the datacenter) → ~4 sources/review instead of ~182. This was a
+      major hidden driver of the 42% "thin" corpus (blamed on ML recall). Fixed by recreating the docker
+      container with the clean 40-char Serper key + JINA_API_KEY as its own var (old container kept as
+      `-bak`). Verified: serper 403 count 0, 182 sources, review succeeds. See memory
+      blackbox-serper-key-corruption.
+- [~] RECOVERY (in progress): the earlier backfill failed 88 reviews because it ran while search was
+      broken (it ALSO burned the old free Serper quota). With search fixed + 50k credits topped up, re-run
+      the 88 failed + the thin complete reviews through the engine; products survived so nothing was lost.
+      scripts/backfill-reviews.mjs now targets failed + thin.
+
 ## 2026-06-24 — Engine quality pass (review all reviews) + rate-limit removal
 
 - [x] API (by request): removed the per-IP rate limit on /api/research (was 5/hr) — the public
