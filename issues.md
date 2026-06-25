@@ -2,6 +2,13 @@
 
 Last updated: 2026-06-24
 
+## 2026-06-24 — Engine quality pass (review all reviews) + rate-limit removal
+
+- [x] API (by request): removed the per-IP rate limit on /api/research (was 5/hr) — the public
+      research endpoint is now unthrottled. MONTHLY_BUDGET_USD governor is the sole cost backstop
+      (503 at the cap). Auth login + chat limits unchanged (lib/rate-limit.js kept for those).
+      (commit 613cdcc, deploy e44ac774)
+
 ## 2026-06-24 — Content safety + UI fixes
 
 - [x] HIGH (content safety): adult/illegal queries were NOT suppressed — the classifier had the
