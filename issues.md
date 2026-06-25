@@ -11,10 +11,11 @@ Last updated: 2026-06-24
       container with the clean 40-char Serper key + JINA_API_KEY as its own var (old container kept as
       `-bak`). Verified: serper 403 count 0, 182 sources, review succeeds. See memory
       blackbox-serper-key-corruption.
-- [~] RECOVERY (in progress): the earlier backfill failed 88 reviews because it ran while search was
-      broken (it ALSO burned the old free Serper quota). With search fixed + 50k credits topped up, re-run
-      the 88 failed + the thin complete reviews through the engine; products survived so nothing was lost.
-      scripts/backfill-reviews.mjs now targets failed + thin.
+- [x] RECOVERY + IMPROVEMENT (done): with search fixed, backfilled 135 reviews (failed + thin), 79 lifted.
+      Quality-monitor BEFORE → AFTER: health 53.9% → 86.0%; thin 42% → 14%; empty 11 → 0; junk 38 → 0;
+      products 1399 → 1873 (+474). The corrupted Serper key was the dominant quality bottleneck — fixing it
+      + recall-supplement + name-cleanup together transformed the corpus. Residual ~25 failed = genuinely
+      niche/vague queries (re-run final pass).
 
 ## 2026-06-24 — Engine quality pass (review all reviews) + rate-limit removal
 
