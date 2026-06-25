@@ -182,9 +182,9 @@ Last updated: 2026-06-25
       the incrementMonthlyCost-on-validation-failure leak both lived in the CF gather-only branch
       that the pivot REMOVED (CF no longer synthesizes). The untrusted-input boundary is also gone
       (the homelab synthesizes its own gathered sources). wrangler.toml comment updated for the pivot.
-- [ ] LOW (review-noted, pre-existing): research-worker.mjs complete() swallows a failed /complete POST
+- [x] LOW (review-noted, pre-existing): research-worker.mjs complete() swallows a failed /complete POST
       (logs, no re-throw) → the row orphans in 'processing' until the cron reaper flips it to 'failed'
-      (never re-queued). Worth a retry/requeue on POST failure.
+      (never re-queued). Fixed: one retry with 10s backoff. (2026-06-25)
 - [x] MEDIUM (comprehensiveness watch-item) — RESOLVED: the synth source-count limit is gone (the
       homelab has no CF CPU ceiling → unlimited mining). Kept the sentence-memoization (perf) +
       MAX_CANDIDATES=250 cap (cheap runaway-loop safety) regardless.
