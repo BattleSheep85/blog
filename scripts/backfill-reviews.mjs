@@ -46,9 +46,9 @@ function isLegitQuery(q) {
   return true;
 }
 
-// Build the target set: thin or junk-carrying complete reviews.
-const rows = d1("SELECT r.id, r.query, COUNT(p.id) pc, GROUP_CONCAT(p.name, '||') names FROM research r LEFT JOIN products p ON p.research_id=r.id WHERE r.status IN ('complete','completed') GROUP BY r.id");
-const candidates = rows.filter((r) => r.pc <= 3 || String(r.names || '').split('||').some(isJunk));
+// Build the target set: FAILED reviews (recovery) + thin/junk-carrying complete reviews (improve).
+const rows = d1("SELECT r.id, r.query, r.status st, COUNT(p.id) pc, GROUP_CONCAT(p.name, '||') names FROM research r LEFT JOIN products p ON p.research_id=r.id WHERE r.status IN ('complete','completed','failed') GROUP BY r.id");
+const candidates = rows.filter((r) => r.st === 'failed' || r.pc <= 3 || String(r.names || '').split('||').some(isJunk));
 const junkQueries = candidates.filter((r) => !isLegitQuery(r.query));
 const targets = candidates.filter((r) => isLegitQuery(r.query)).sort((a, b) => a.pc - b.pc).slice(0, LIMIT);
 
