@@ -15,8 +15,7 @@
 //   MAX_CONCURRENCY parallel sub-researchers per job (default 16 — no CF cap here)
 //   MAX_SEARCHES    override per-run search budget (default 0 = use the job's config)
 
-import { gatherParallel } from './worker/engine/parallel-engine.js';
-import { synthesizeHonest } from './worker/engine/extract/index.js';
+import { runParallelEngine } from './worker/engine/parallel-engine.js';
 
 const CF_BASE = process.env.CF_BASE_URL || 'https://chrisputer.tech';
 const SECRET = process.env.WORKER_SECRET;
@@ -80,33 +79,20 @@ async function processJob(job) {
   const config = { ...job.config, maxConcurrency: MAX_CONCURRENCY };
   if (MAX_SEARCHES > 0) config.maxSearches = MAX_SEARCHES;
   const t0 = Date.now();
-  log(`[job ${job.reportId}] "${job.query}" (conc=${config.maxConcurrency}, searches=${config.maxSearches}, synth=extraction-v0)`);
+  log(`[job ${job.reportId}] "${job.query}" (conc=${config.maxConcurrency}, searches=${config.maxSearches}, synth=kimi-k2.6)`);
   try {
-    // Per-job monotonic step so the SSE feed orders beats correctly even across
-    // the worker's concurrent jobs (each writes its own progress_log:{reportId}).
     let step = 0;
     const onEvent = (_type, message) => { postProgress(job.reportId, ++step, message); };
-    // GATHER (unlimited — no Cloudflare CPU ceiling on this homelab box) then run the HONEST
-    // extraction synth locally. The extraction engine is deterministic (verbatim spans →
-    // cannot fabricate), so synthesizing here is exactly as honest as on CF; CF re-validates
-    // structure on /complete. This lets us mine as many sources as we want without the Worker
-    // 300s limit, and keeps the heavy CPU off Cloudflare. Same synthesizeHonest() runEngine uses.
-    const gathered = await gatherParallel(
+    const { result, sources, totalCostUsd } = await runParallelEngine(
       job.query, config, OPENROUTER_API_KEY, { SERPER_API_KEY }, onEvent,
       job.facets, job.topicalCategory, job.clarifications || {},
     );
-    onEvent('synthesize', `Synthesizing the report from ${gathered.sources.length} sources...`);
-    const result = await synthesizeHonest({
-      query: job.query, notes: gathered.notes, sources: gathered.sources,
-      facets: job.facets, topicalCategory: job.topicalCategory,
-      openrouterKey: OPENROUTER_API_KEY, conSelectorModel: config.conSelectorModel, cleanupModel: config.cleanupModel, recallModel: config.recallModel,
-    });
-    log(`  gather+synth: ${((Date.now() - t0) / 1000).toFixed(1)}s, ${result.products?.length ?? 0} products, ${gathered.sources.length} sources, $${(gathered.totalCostUsd || 0).toFixed(4)}`);
+    log(`  gather+synth: ${((Date.now() - t0) / 1000).toFixed(1)}s, ${result.products?.length ?? 0} products, ${sources.length} sources, $${(totalCostUsd || 0).toFixed(4)}`);
     await complete({
       reportId: job.reportId, query: job.query, slug: job.slug,
       facets: job.facets, topicalCategory: job.topicalCategory,
-      result, sources: gathered.sources,
-      totalCostUsd: gathered.totalCostUsd, synthModel: 'extraction-v0',
+      result, sources,
+      totalCostUsd, synthModel: config.synthModel,
     });
   } catch (err) {
     console.error(`  engine FAILED: ${err?.message || err}`);
