@@ -6,7 +6,6 @@
  * GET /api/research/:slug/events — activity-feed poll for the server-rendered page
  */
 
-import { checkRateLimit } from '../lib/rate-limit.js';
 import {
     generateId, insertResearch, findResearchByCanonicalQuery,
     getResearchById, getResearchBySlug,
@@ -20,7 +19,7 @@ import { apiStatus } from '../lib/status.js';
 
 /**
  * Handle POST /api/research
- * Validates input, clusters on canonical query, checks rate limit, enqueues job.
+ * Validates input, clusters on canonical query, checks the monthly budget, enqueues job.
  */
 export async function handleStartResearch(request, env) {
     let body;
@@ -97,20 +96,10 @@ export async function handleStartResearch(request, env) {
         }
     }
 
-    // Rate limit check
-    const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
-    const maxRequests = parseInt(env.RATE_LIMIT_MAX || '5', 10);
-    const windowSeconds = parseInt(env.RATE_LIMIT_WINDOW_SECONDS || '3600', 10);
-    const rateCheck = await checkRateLimit(env.KV, ip, maxRequests, windowSeconds);
-
-    if (!rateCheck.allowed) {
-        return jsonResponse({
-            error: 'Rate limit exceeded. Try again later.',
-            remaining: 0,
-            resetAt: new Date(rateCheck.resetAt).toISOString(),
-        }, 429);
-    }
-
+    // Per-IP rate limiting removed (2026-06-24, by request) — the public research endpoint is
+    // unthrottled. The MONTHLY_BUDGET_USD governor below is the sole cost backstop: it refuses
+    // new paid runs (503) once the month's spend hits the cap, so worst-case exposure is bounded
+    // by the budget, not by request rate.
     // Monthly budget governor — gate on MAX(KV soft counter, D1 completed-spend)
     // so a burst of in-flight runs OR the accurate completed total can refuse new
     // work (503). Closes the split-brain where intake trusted only the racy KV.
@@ -146,7 +135,6 @@ export async function handleStartResearch(request, env) {
         id,
         slug,
         status: 'pending',
-        remaining: rateCheck.remaining,
     });
 }
 
