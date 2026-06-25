@@ -55,10 +55,13 @@ SELF-HOSTED / OPEN-SOURCE COVERAGE (critical — do not skip): if the query is a
 
 Output ONLY JSON: {"aspects":[{"title":"<short>","queries":["q1","q2",...]}]}.`;
 
-async function decompose(query, key, plannerModel, nAspects, perAspect, plannerOpts = {}) {
+async function decompose(query, key, plannerModel, nAspects, perAspect, plannerOpts = {}, clarifications = {}) {
+  const clarBlock = clarifications && Object.keys(clarifications).length > 0
+    ? `\nUSER CONSTRAINTS (mandatory — bias every aspect and every search query to surface options satisfying these):\n${Object.entries(clarifications).map(([k, v]) => `- ${k}: ${v}`).join('\n')}\n`
+    : '';
   const messages = [
     { role: 'system', content: DECOMPOSE_SYSTEM },
-    { role: 'user', content: `Query: "${query}"\nProduce exactly ${nAspects} aspects, each with ${perAspect} search queries.` },
+    { role: 'user', content: `Query: "${query}"${clarBlock}\nProduce exactly ${nAspects} aspects, each with ${perAspect} search queries.` },
   ];
   let cost = 0;
   try {
@@ -121,7 +124,7 @@ export async function gatherParallel(query, config, openrouterKey, env, onEvent,
   const plannerOpts = { reasoning: config.plannerReasoning, provider: config.plannerProvider };
 
   await emit(onEvent, 'status', `Planning ${nAspects} research angles...`);
-  const { aspects, cost: dc } = await decompose(query, openrouterKey, config.plannerModel, nAspects, PER_ASPECT_QUERIES, plannerOpts);
+  const { aspects, cost: dc } = await decompose(query, openrouterKey, config.plannerModel, nAspects, PER_ASPECT_QUERIES, plannerOpts, clarifications || {});
   totalCostUsd += dc;
 
   // Guaranteed coverage for category-leading FOSS/self-hosted projects that

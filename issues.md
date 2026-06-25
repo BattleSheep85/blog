@@ -49,9 +49,11 @@ Last updated: 2026-06-25
       production — it bypasses the honest extraction pipeline and routes through the old
       LLM synth directly. Remove the export so it can't be accidentally pulled into the
       worker bundle. (Benchmarks that use it import from this file directly.)
-- [ ] MED (parallel-engine.js): `clarifications` accepted by `gatherParallel` but not
-      forwarded to `decompose` — the planner generates aspects blind to user constraints
+- [x] MED (parallel-engine.js): `clarifications` accepted by `gatherParallel` but not
+      forwarded to `decompose` — the planner generated aspects blind to user constraints
       ("budget: $200", "use-case: gaming"), silently degrading clarification-scoped output.
+      Fixed: `decompose` accepts `clarifications` and appends them as a mandatory constraint
+      block so search queries are biased toward the user's stated constraints.
 
 ## 2026-06-25 — ROOT CAUSE: blackbox Serper key was corrupted (search was broken)
 
