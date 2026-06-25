@@ -47,9 +47,14 @@ Last updated: 2026-06-24
       — status mix, product-count buckets, junk-name scan (platform/fragment/specfrag/merge), worst
       offenders, single HEALTH SCORE (>=4 products AND 0 junk; exits non-zero <45% for cron/CI gating).
       Baseline 2026-06-24: 323 complete, 42% thin, 38 junk/15 reviews, health 53.9%.
-- [ ] FOLLOW-UP (corpus backfill): the 135 thin + 15 junk + 11 empty EXISTING reviews predate recall+cleanup.
-      Batch re-run the worst (worst-offender list from quality-monitor) through the new engine, then re-run
-      the monitor to confirm the health score climbs. Watch MONTHLY_BUDGET_USD (~$0.05/run).
+- [~] CORPUS BACKFILL (IN PROGRESS): scripts/backfill-reviews.mjs re-runs the 138 legit thin/junk reviews
+      through recall+cleanup IN PLACE (status='pending' → blackbox re-claims → DELETE-then-insert keeps
+      id/slug). Validated: mechanism works, 2/6 worst lifted (the 4 that didn't are no-source vague queries).
+      Full run launched 2026-06-24 (~$7, budget-guarded). Re-run quality-monitor after to confirm the lift.
+- [ ] CLEANUP (delete candidates): 12 indexed GIBBERISH/test reviews pollute the corpus + sitemap —
+      "fdsjklfdsjkl" (×5), "test", "test gizmo xyzqq", "Here is the test prompt", "Stuff", "Gpu",
+      "{search_term_string}" (×2). Should be DELETED + de-indexed (destructive → needs a go-ahead). Not
+      re-run by the backfill (isLegitQuery filter skips them).
 - [ ] FOLLOW-UP (harvester merges): two adjacent products get harvested as ONE candidate ("Synology Photos
       Immich", "Synology Filerun PhotoManagement"). The name-cleaner cleans a name but can't SPLIT one row
       into two, so the merged entry survives + a recall-seeded "Immich" starves of pros/cons (the `seen`
