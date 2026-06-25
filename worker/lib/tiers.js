@@ -78,5 +78,5 @@ export function getTierConfig(tier) {
 }
 
 export function isValidTier(value) {
-  return value === 'instant' || value === 'full' || value === 'exhaustive' || value === 'unbound';
+  return PUBLIC_TIERS.includes(value);
 }

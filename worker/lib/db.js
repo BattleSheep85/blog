@@ -52,47 +52,7 @@ export async function updateResearchStatus(db, id, status) {
     await db.prepare('UPDATE research SET status = ? WHERE id = ?').bind(status, id).run();
 }
 
-/**
- * Finalize a research row: status 'complete' or 'failed', plus the report
- * payload. summary/category/result/sources may be null on failure.
- */
-export async function completeResearch(db, { id, status, summary, category, result, sources }) {
-    await db.prepare(
-        `UPDATE research
-         SET status = ?, summary = ?, category = ?, result = ?, sources = ?, completed_at = ?
-         WHERE id = ?`
-    ).bind(status, summary ?? null, category ?? null, result ?? null, sources ?? null, nowEpoch(), id).run();
-}
-
 // -- Products (v2 schema; pros/cons/specs/metadata are pre-serialized JSON text) --
-
-export async function insertProductV2(db, p) {
-    await db.prepare(
-        `INSERT INTO products (id, research_id, name, brand, price, currency, rating,
-            image_url, product_url, affiliate_url, manufacturer_url,
-            pros, cons, specs, verdict, rank, best_for, metadata)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
-    ).bind(
-        p.id || generateId(),
-        p.researchId,
-        p.name,
-        p.brand ?? null,
-        p.price ?? null,
-        p.currency ?? 'USD',
-        p.rating ?? null,
-        p.imageUrl ?? null,
-        p.productUrl ?? null,
-        p.affiliateUrl ?? null,
-        p.manufacturerUrl ?? null,
-        p.pros ?? '[]',
-        p.cons ?? '[]',
-        p.specs ?? '{}',
-        p.verdict ?? null,
-        p.rank ?? null,
-        p.bestFor ?? null,
-        p.metadata ?? null
-    ).run();
-}
 
 export async function getProductsByResearchId(db, researchId) {
     return db.prepare('SELECT * FROM products WHERE research_id = ? ORDER BY rank ASC')

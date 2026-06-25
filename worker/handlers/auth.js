@@ -35,6 +35,7 @@ async function readCredentials(request) {
     try { body = await request.json(); } catch { return null; }
     const email = String(body?.email || '').trim();
     const password = String(body?.password || '');
+    if (password.length > 1000) return null; // guard against DoS via expensive hash
     return { email, password };
 }
 
@@ -50,7 +51,18 @@ export async function handleSignup(request, env) {
     const existing = await findUserByEmail(env.DB, creds.email);
     if (existing) return jsonResponse({ error: 'An account with that email already exists. Sign in instead.' }, 409);
 
-    const userId = await createUser(env.DB, creds.email, creds.password);
+    let userId;
+    try {
+        userId = await createUser(env.DB, creds.email, creds.password);
+    } catch (err) {
+        // Two concurrent requests raced past the findUserByEmail check; the DB
+        // UNIQUE constraint caught the second one. Surface the same 409 instead of 500.
+        const msg = err instanceof Error ? err.message : String(err);
+        if (/UNIQUE constraint failed/i.test(msg)) {
+            return jsonResponse({ error: 'An account with that email already exists. Sign in instead.' }, 409);
+        }
+        throw err;
+    }
     const session = await createSession(env.DB, userId);
     return jsonResponse({ ok: true }, 200, { 'Set-Cookie': session.cookie });
 }

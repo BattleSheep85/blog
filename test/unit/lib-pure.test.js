@@ -31,8 +31,9 @@ export function runLibPureTests() {
   eq('tier unknown → default config', getTierConfig('zzz').synthModel, 'moonshotai/kimi-k2.6');
   ok('all tier keys share one config', TIER_CONFIGS.instant === TIER_CONFIGS.full && TIER_CONFIGS.full === TIER_CONFIGS.exhaustive);
   eq('public tiers', PUBLIC_TIERS, ['instant', 'full']);
-  for (const t of ['instant', 'full', 'exhaustive', 'unbound']) ok(`isValidTier ${t}`, isValidTier(t));
-  ok('isValidTier rejects', !isValidTier('bogus'));
+  for (const t of PUBLIC_TIERS) ok(`isValidTier ${t}`, isValidTier(t));
+  ok('isValidTier rejects exhaustive', !isValidTier('exhaustive'));
+  ok('isValidTier rejects bogus', !isValidTier('bogus'));
 
   // ads.js
   eq('adSlot no publisher → ""', adSlot({}, 'top', 'Ad'), '');

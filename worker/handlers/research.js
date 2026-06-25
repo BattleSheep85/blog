@@ -124,12 +124,22 @@ export async function handleStartResearch(request, env) {
         await recordUserSearch(env.DB, sessionUser.id, id, normalizedQuery);
     }
 
-    // Enqueue research job (message shape unchanged — queue consumer keys on it)
-    await env.RESEARCH_QUEUE.send({
-        reportId: id,
-        query: normalizedQuery,
-        tier,
-    });
+    // Enqueue research job (message shape unchanged — queue consumer keys on it).
+    // If the queue send throws (transient Queues outage, binding misconfiguration),
+    // flip the already-inserted row to failed so it doesn't orphan as 'pending'.
+    try {
+        await env.RESEARCH_QUEUE.send({
+            reportId: id,
+            query: normalizedQuery,
+            tier,
+        });
+    } catch (err) {
+        console.error('[research] queue send failed:', err instanceof Error ? err.message : String(err));
+        try {
+            await env.DB.prepare("UPDATE research SET status = 'failed' WHERE id = ?").bind(id).run();
+        } catch { /* best-effort cleanup */ }
+        return jsonResponse({ error: 'Could not enqueue research job — please retry' }, 503);
+    }
 
     return jsonResponse({
         id,
@@ -188,7 +198,7 @@ export async function handleResearchStatus(reportId, env) {
  * Client reconnects with Last-Event-ID to get new updates.
  */
 export async function handleResearchStream(reportId, env, request) {
-    const lastEventId = parseInt(request?.headers?.get('Last-Event-ID') || '0', 10);
+    const lastEventId = parseInt(request?.headers?.get('Last-Event-ID') || '0', 10) || 0;
     const encoder = new TextEncoder();
 
     const stream = new ReadableStream({
@@ -198,6 +208,12 @@ export async function handleResearchStream(reportId, env, request) {
             };
 
             const dbRow = await getResearchById(env.DB, reportId);
+
+            if (!dbRow) {
+                send(9997, { type: 'error', error: 'Report not found' });
+                controller.close();
+                return;
+            }
 
             // Completion comes from D1 (permanent), not the KV report: key
             // (TTL'd) — mirrors handleResearchStatus.

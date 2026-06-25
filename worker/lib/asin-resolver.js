@@ -66,7 +66,7 @@ export async function resolveAsins(env, products, onProgress) {
   }
   await Promise.all(targets.map(async (i) => {
     try {
-      const url = await resolveOne(out[i], apiKey, affiliateIds);
+      const url = await resolveOne(out[i], apiKey);
       if (url) {
         const affiliateUrl = buildAffiliateUrl(url, affiliateIds);
         out[i] = { ...out[i], productUrl: url, affiliateUrl: affiliateUrl || out[i].affiliateUrl };
@@ -98,14 +98,14 @@ function needsResolution(product) {
 
 // One Serper query for a single product. Returns a canonical
 // https://www.amazon.com/dp/ASIN URL on a confident match, else null.
-async function resolveOne(product, apiKey, _affiliateIds) {
+async function resolveOne(product, apiKey) {
   const brand = (product.brand || '').trim();
   const name = (product.name || '').trim();
   if (name.length < 2) return null;
 
-  const subject = brand && !name.toLowerCase().startsWith(brand.toLowerCase())
+  const subject = (brand && !name.toLowerCase().startsWith(brand.toLowerCase())
     ? `${brand} ${name}`
-    : name;
+    : name).replace(/"/g, ''); // strip double-quotes that break Serper phrase queries
   const query = `site:amazon.com "${subject}"`;
 
   const response = await fetch(SERPER_ENDPOINT, {

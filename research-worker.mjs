@@ -48,15 +48,21 @@ async function nextJob() {
 }
 
 async function complete(payload) {
-  try {
-    const r = await fetch(`${CF_BASE}/api/internal/complete`, {
-      method: 'POST', headers: { 'X-Worker-Secret': SECRET, 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload), signal: AbortSignal.timeout(60000),
-    });
-    log(`  complete -> ${r.status} ${(await r.text()).slice(0, 160)}`);
-  } catch (err) {
-    console.error(`  complete POST failed: ${err?.message || err}`);
+  for (let attempt = 1; attempt <= 2; attempt++) {
+    try {
+      const r = await fetch(`${CF_BASE}/api/internal/complete`, {
+        method: 'POST', headers: { 'X-Worker-Secret': SECRET, 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload), signal: AbortSignal.timeout(60000),
+      });
+      log(`  complete -> ${r.status} ${(await r.text()).slice(0, 160)}`);
+      return;
+    } catch (err) {
+      console.error(`  complete POST failed (attempt ${attempt}/2): ${err?.message || err}`);
+      if (attempt < 2) await new Promise((r) => setTimeout(r, 10000));
+    }
   }
+  // Both attempts failed — the cron reaper will flip the row from 'processing' to
+  // 'failed' after 20 min. Nothing more we can do here; the job result is lost.
 }
 
 // Push one live progress beat into CF's KV-backed SSE feed. Best-effort and

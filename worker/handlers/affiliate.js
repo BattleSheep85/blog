@@ -30,9 +30,24 @@ function isAmazonProductUrl(url) {
  * Handle GET /api/go/:productId
  * Logs the click and redirects to the affiliate URL.
  */
+// Hostnames we accept as non-Amazon redirect destinations. Mirrors BUY_HOSTS in
+// affiliate-links.js; kept inline so the handler can enforce the list without
+// importing it (and to catch any DB row written outside the normal pipeline).
+const KNOWN_RETAILER_HOSTS = new Set([
+    'amazon.com', 'walmart.com', 'bestbuy.com', 'newegg.com',
+    'target.com', 'bhphotovideo.com', 'adorama.com', 'costco.com', 'microcenter.com',
+]);
+function isKnownRetailerUrl(url) {
+    if (!url || !url.startsWith('https://')) return false;
+    try {
+        const host = new URL(url).hostname.replace(/^www\./, '').toLowerCase();
+        return KNOWN_RETAILER_HOSTS.has(host) || [...KNOWN_RETAILER_HOSTS].some((h) => host.endsWith(`.${h}`));
+    } catch { return false; }
+}
+
 export async function handleAffiliateClick(productId, request, env) {
-    const reportId = new URL(request.url).searchParams.get('ref') || '';
-    const network = new URL(request.url).searchParams.get('network') || 'amazon';
+    const reportId = (new URL(request.url).searchParams.get('ref') || '').slice(0, 64);
+    const network = (new URL(request.url).searchParams.get('network') || 'amazon').slice(0, 32);
     const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
 
     // Hash the IP for privacy (don't store raw IPs)
@@ -66,10 +81,7 @@ export async function handleAffiliateClick(productId, request, env) {
     if (isAmazonProductUrl(affiliateUrl)) {
         // (a) Real tagged Amazon /dp/ link from Phase 2 — use it directly.
         redirectUrl = affiliateUrl;
-    } else if (
-        affiliateUrl.startsWith('https://') &&
-        !/^https?:\/\/(www\.)?amazon\.com\//i.test(affiliateUrl)
-    ) {
+    } else if (isKnownRetailerUrl(affiliateUrl) && !/^https?:\/\/(www\.)?amazon\.com\//i.test(affiliateUrl)) {
         // A valid non-Amazon retailer affiliate link (Walmart, Best Buy, ...).
         // Honor it rather than fabricating an Amazon search for that product.
         redirectUrl = affiliateUrl;

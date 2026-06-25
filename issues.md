@@ -1,6 +1,57 @@
 # Issues
 
-Last updated: 2026-06-24
+Last updated: 2026-06-25
+
+## 2026-06-25 — Comprehensive code review and repair (godmode)
+
+- [x] HIGH (research.js): queue `send()` failure left the D1 row permanently stuck in
+      'pending' (claimNextPendingJob would never see it; the 20-min cron reaper ignored
+      pending rows). Added try/catch around `env.RESEARCH_QUEUE.send()`: on failure the
+      row is flipped to 'failed' and the API returns 503 "please retry".
+- [x] MED (research.js): `parseInt(Last-Event-ID)` had no NaN guard — a malformed header
+      (non-numeric value) produced NaN, silencing all progress entries in the SSE stream
+      (every `entry.step > NaN` is false). Added `|| 0` fallback.
+- [x] MED (research.js): `handleResearchStream` never checked whether the D1 row exists.
+      An unknown reportId fell through both completion checks and sent an infinite stream of
+      'pending' keepalives. Added a null-check with an 'error: Report not found' close.
+- [x] MED (auth.js): signup TOCTOU — two concurrent requests could both pass
+      `findUserByEmail` before either ran `createUser`, causing the second to hit the DB
+      UNIQUE constraint and throw a raw 500 instead of a readable 409. Wrapped `createUser`
+      in try/catch; UNIQUE constraint errors return the same 409 as the normal path.
+- [x] MED (auth.js): no server-side max on password length — a crafted multi-megabyte POST
+      would trigger expensive hashing before validation could reject it. Added a 1000-char
+      early exit in `readCredentials` (form has maxlength="200" but that's client-only).
+- [x] MED (affiliate.js): `affiliate_url` non-Amazon redirect had no host allowlist in the
+      handler itself — only the pipeline's `buildAffiliateUrl` enforced the list at write
+      time. A row written outside the pipeline could redirect to any HTTPS host. Added
+      `isKnownRetailerUrl` check inline using the same BUY_HOSTS set as affiliate-links.js.
+- [x] MED (affiliate.js): `network` and `ref` (reportId) query params were written to D1
+      with no length cap — potential for oversized stored values. Added `.slice(0,32)` /
+      `.slice(0,64)` to match the caps already on `handleAffiliateSearch`.
+- [x] MED (asin-resolver.js): double-quote characters in a product name broke the Serper
+      phrase-match query (`site:amazon.com "Ring 4" Door Sensor"` → malformed). Stripped
+      `"` from the subject before interpolation.
+- [x] LOW (db.js): deleted dead `insertProductV2` and `completeResearch` helpers — both
+      lacked the DELETE-before-INSERT idempotency latch that `persistEngineResult` implements
+      correctly. Neither was imported anywhere; leaving them was a footgun for future callers.
+- [x] LOW (tiers.js): `isValidTier` accepted 'exhaustive'/'unbound' (private tiers) even
+      though the comment says it is for the "public UI / validation surface". Fixed to
+      `PUBLIC_TIERS.includes(value)`. Tests updated.
+- [x] LOW (asin-resolver.js): removed dead `_affiliateIds` parameter from `resolveOne` (it
+      was constructed and passed but never read inside the function).
+- [x] LOW (research-worker.mjs): `complete()` swallowed a failed /complete POST with only a
+      log line — the row orphaned in 'processing' until the 20-min cron reaper. Added one
+      retry with 10s backoff before giving up.
+- [ ] LOW (affiliate.js): `handleResearchEvents` line 276 uses `e.timestamp || Date.now()`
+      which substitutes Date.now() for a timestamp of 0 (falsy). Should use `?? Date.now()`.
+      KV timestamps are never 0 in practice, but the pattern is incorrect.
+- [ ] LOW (parallel-engine.js): `runParallelEngine` is exported but is dead code in
+      production — it bypasses the honest extraction pipeline and routes through the old
+      LLM synth directly. Remove the export so it can't be accidentally pulled into the
+      worker bundle. (Benchmarks that use it import from this file directly.)
+- [ ] MED (parallel-engine.js): `clarifications` accepted by `gatherParallel` but not
+      forwarded to `decompose` — the planner generates aspects blind to user constraints
+      ("budget: $200", "use-case: gaming"), silently degrading clarification-scoped output.
 
 ## 2026-06-25 — ROOT CAUSE: blackbox Serper key was corrupted (search was broken)
 
@@ -62,14 +113,10 @@ Last updated: 2026-06-24
       — status mix, product-count buckets, junk-name scan (platform/fragment/specfrag/merge), worst
       offenders, single HEALTH SCORE (>=4 products AND 0 junk; exits non-zero <45% for cron/CI gating).
       Baseline 2026-06-24: 323 complete, 42% thin, 38 junk/15 reviews, health 53.9%.
-- [~] CORPUS BACKFILL (IN PROGRESS): scripts/backfill-reviews.mjs re-runs the 138 legit thin/junk reviews
-      through recall+cleanup IN PLACE (status='pending' → blackbox re-claims → DELETE-then-insert keeps
-      id/slug). Validated: mechanism works, 2/6 worst lifted (the 4 that didn't are no-source vague queries).
-      Full run launched 2026-06-24 (~$7, budget-guarded). Re-run quality-monitor after to confirm the lift.
-- [ ] CLEANUP (delete candidates): 12 indexed GIBBERISH/test reviews pollute the corpus + sitemap —
-      "fdsjklfdsjkl" (×5), "test", "test gizmo xyzqq", "Here is the test prompt", "Stuff", "Gpu",
-      "{search_term_string}" (×2). Should be DELETED + de-indexed (destructive → needs a go-ahead). Not
-      re-run by the backfill (isLegitQuery filter skips them).
+- [x] CORPUS BACKFILL (DONE): backfill completed — 135 processed, 79 lifted. Quality-monitor AFTER:
+      health 86%, empty 0, junk 0, products 1962. (2026-06-24)
+- [x] CLEANUP (delete candidates): 12 indexed GIBBERISH/test reviews deleted from D1 + de-indexed.
+      Confirmed gone (D1 count = 0). (2026-06-24)
 - [ ] FOLLOW-UP (harvester merges): two adjacent products get harvested as ONE candidate ("Synology Photos
       Immich", "Synology Filerun PhotoManagement"). The name-cleaner cleans a name but can't SPLIT one row
       into two, so the merged entry survives + a recall-seeded "Immich" starves of pros/cons (the `seen`

@@ -24,3 +24,4 @@ node_modules/
 
 # Dev-site Basic Auth credentials (never commit)
 .dev-auth
+.gstack/
