@@ -289,7 +289,7 @@ export async function handleResearchEvents(slug, url, env) {
             seq: e.step,
             event_type: 'status',
             message: e.message,
-            created_at: Math.floor((e.timestamp || Date.now()) / 1000),
+            created_at: Math.floor((e.timestamp ?? Date.now()) / 1000),
         }));
 
     return jsonResponse({ status: row.status, events, preview: row.preview ?? null });

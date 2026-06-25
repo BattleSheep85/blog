@@ -42,13 +42,13 @@ Last updated: 2026-06-25
 - [x] LOW (research-worker.mjs): `complete()` swallowed a failed /complete POST with only a
       log line — the row orphaned in 'processing' until the 20-min cron reaper. Added one
       retry with 10s backoff before giving up.
-- [ ] LOW (affiliate.js): `handleResearchEvents` line 276 uses `e.timestamp || Date.now()`
-      which substitutes Date.now() for a timestamp of 0 (falsy). Should use `?? Date.now()`.
-      KV timestamps are never 0 in practice, but the pattern is incorrect.
-- [ ] LOW (parallel-engine.js): `runParallelEngine` is exported but is dead code in
-      production — it bypasses the honest extraction pipeline and routes through the old
-      LLM synth directly. Remove the export so it can't be accidentally pulled into the
-      worker bundle. (Benchmarks that use it import from this file directly.)
+- [x] LOW (research.js): `handleResearchEvents` used `e.timestamp || Date.now()` which
+      substitutes Date.now() for a timestamp of exactly 0 (falsy). Changed to `??`.
+      KV timestamps are never 0 in practice, but the pattern was incorrect.
+- [x] LOW (parallel-engine.js): `runParallelEngine` export dead-export concern CLOSED —
+      `parallel-engine.js` is not imported by anything under `worker/` so it is never
+      in the CF Worker bundle. The export is legitimately used by 3 benchmark scripts and
+      the integration test suite. No change needed.
 - [x] MED (parallel-engine.js): `clarifications` accepted by `gatherParallel` but not
       forwarded to `decompose` — the planner generated aspects blind to user constraints
       ("budget: $200", "use-case: gaming"), silently degrading clarification-scoped output.
