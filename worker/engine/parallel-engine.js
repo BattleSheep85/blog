@@ -15,7 +15,12 @@ import { validateResearchResult } from './validate.js';
 import { fossLeadersFor } from '../lib/foss-leaders.js';
 
 const PER_ASPECT_QUERIES = 5;
-const PROVIDERS = ['web', 'web', 'duckduckgo', 'rss', 'video', 'news'];
+// Provider rotation across the flattened search queries (cycled for source
+// diversity). 'searxng' replaced 'duckduckgo' (2026-06-26): DDG serves CAPTCHA
+// to the datacenter IP, while the tuned self-hosted SearXNG returns broad, free
+// results from google/bing/startpage/mojeek. Two 'web' (Serper) slots keep
+// Google-fidelity primary; searxng adds free breadth (the UNION-recall win).
+const PROVIDERS = ['web', 'web', 'searxng', 'rss', 'video', 'news'];
 const SEARCH_CONCURRENCY = 24;
 const READ_CONCURRENCY = 16;
 // Off-CF homelab has no subrequest/CPU cap, so read DEEP — this is the comprehensiveness

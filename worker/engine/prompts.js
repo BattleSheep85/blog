@@ -84,6 +84,7 @@ PROVIDERS:
 - news: Recent news articles (best for new releases, announcements)
 - video: YouTube reviews (best for hands-on evaluations)
 - duckduckgo: Alternative web results (different index than web)
+- tavily: LLM-optimized web search with clean content snippets (good alternative index to web)
 - hackernews: Tech community discussions (best for technical opinions)
 - rss: Expert review sites — Wirecutter, RTINGS, Tom's Hardware, etc. (best for curated expert picks)
 

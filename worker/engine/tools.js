@@ -128,6 +128,120 @@ async function braveSearch(query, apiKey, opts = {}) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Tavily Search API — https://tavily.com (POST https://api.tavily.com/search)
+// The original bench-engine search provider, re-added as a selectable provider and
+// a fallback. Tavily returns LLM-optimized content snippets (cleaner than raw SERP),
+// is CF-reachable, and supports a one-year recency window. Same result shape as
+// serperSearch/braveSearch; returns null on auth/quota failure (or no key) so the
+// caller can degrade further, and [] on other (transient) errors.
+// ─────────────────────────────────────────────────────────────────────────────
+async function tavilySearch(query, apiKey, opts = {}) {
+  if (!apiKey) return null;
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
+  try {
+    const body = {
+      query,
+      search_depth: 'advanced',
+      topic: opts.topic === 'news' ? 'news' : 'general',
+      max_results: 10,
+    };
+    if (opts.timeRange === 'y') body.time_range = 'year'; // one-year recency, matches serper/brave
+    const response = await fetch('https://api.tavily.com/search', {
+      method: 'POST',
+      signal: controller.signal,
+      headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    if (!response.ok) {
+      const text = await response.text().catch(() => '');
+      console.log(`[tavily] HTTP ${response.status} q="${query}" body=${text.slice(0, 150)}`);
+      if (response.status === 401 || response.status === 403 || response.status === 429) return null;
+      return [];
+    }
+    const data = await response.json();
+    const results = data?.results ?? [];
+    const label = opts.sourceLabel ?? 'web';
+    console.log(`[tavily] q="${query}" → ${results.length}`);
+    return results.map((r) => {
+      let publishedAt;
+      if (r.published_date) {
+        const ms = Date.parse(r.published_date);
+        if (!Number.isNaN(ms)) publishedAt = Math.floor(ms / 1000);
+      }
+      return {
+        url: r.url,
+        title: r.title,
+        content: r.content ?? '',
+        source: label,
+        publishedAt,
+      };
+    });
+  } catch (err) {
+    console.log(`[tavily] ERROR q="${query}": ${err instanceof Error ? err.message : String(err)}`);
+    return [];
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SearXNG metasearch — self-hosted on blackbox (http://192.168.5.10:8095), tuned
+// to a curated engine set (google + startpage + bing + mojeek + brave). Free, no
+// quota, no key. Aggregates several indexes per call → high source breadth at $0,
+// which the provider benchmark showed matches paid providers on credibility.
+// Reads env.SEARXNG_URL. Returns null when the instance is unreachable / not
+// configured (e.g. from the CF edge, which can't reach the LAN host) so the
+// caller falls through to the next provider; [] on a transient query error.
+// ─────────────────────────────────────────────────────────────────────────────
+// SearXNG aggregates several engines per call, so it needs more headroom than a
+// single-API provider — give it a dedicated ceiling above the shared TIMEOUT_MS.
+const SEARXNG_TIMEOUT_MS = 11000;
+async function searxngSearch(query, baseUrl, opts = {}) {
+  if (!baseUrl) return null;
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), SEARXNG_TIMEOUT_MS);
+  try {
+    const params = new URLSearchParams({ q: query, format: 'json' });
+    if (opts.topic === 'news') params.set('categories', 'news');
+    if (opts.timeRange === 'y') params.set('time_range', 'year');
+    const response = await fetch(`${baseUrl.replace(/\/+$/, '')}/search?${params.toString()}`, {
+      signal: controller.signal,
+      headers: { Accept: 'application/json' },
+    });
+    if (!response.ok) {
+      console.log(`[searxng] HTTP ${response.status} q="${query}"`);
+      return null; // unreachable/blocked → let the caller degrade to another provider
+    }
+    const data = await response.json();
+    const results = data?.results ?? [];
+    const label = opts.sourceLabel ?? 'web';
+    console.log(`[searxng] q="${query}" → ${results.length}`);
+    // SearXNG merges many engines; cap to the top slice so one query can't flood
+    // the source pool. Results arrive pre-ranked by SearXNG's score.
+    return results.slice(0, 15).map((r) => {
+      let publishedAt;
+      if (r.publishedDate) {
+        const ms = Date.parse(r.publishedDate);
+        if (!Number.isNaN(ms)) publishedAt = Math.floor(ms / 1000);
+      }
+      return {
+        url: r.url,
+        title: r.title,
+        content: r.content ?? '',
+        source: label,
+        publishedAt,
+      };
+    });
+  } catch (err) {
+    console.log(`[searxng] ERROR q="${query}": ${err instanceof Error ? err.message : String(err)}`);
+    return null;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Serper.dev Video Search — https://serper.dev/videos
 // Returns YouTube (and other) video results. Used by the `video` provider so
 // hands-on review videos enter the source pool; their descriptions are then
@@ -252,8 +366,8 @@ export const AGENT_TOOLS = [
           query: { type: 'string', description: 'Search query. Be specific — include product names, model numbers, years.' },
           provider: {
             type: 'string',
-            enum: ['web', 'news', 'video', 'hackernews', 'duckduckgo', 'rss'],
-            description: 'Search provider. web=general web, news=recent articles, video=YouTube reviews, hackernews=tech discussions, duckduckgo=alternative web results, rss=expert review sites (Wirecutter/RTINGS/etc).',
+            enum: ['web', 'news', 'video', 'hackernews', 'duckduckgo', 'tavily', 'searxng', 'rss'],
+            description: 'Search provider. web=general web, news=recent articles, video=YouTube reviews, hackernews=tech discussions, duckduckgo=alternative web results, tavily=LLM-optimized web search (clean snippets), searxng=self-hosted metasearch aggregating google/bing/mojeek (free, broad), rss=expert review sites (Wirecutter/RTINGS/etc).',
           },
         },
         required: ['query'],
@@ -382,6 +496,8 @@ async function executeSearch(
 
   const serperApiKey = env?.SERPER_API_KEY;
   const braveApiKey = env?.BRAVE_API_KEY;
+  const tavilyApiKey = env?.TAVILY_API_KEY;
+  const searxngUrl = env?.SEARXNG_URL;
 
   state.searchCount++;
   let results;
@@ -393,13 +509,20 @@ async function executeSearch(
   // still-valid older coverage. News always filters by year regardless.
   const tr = recencySensitive ? 'y' : undefined;
   // serperSearch returns null when the provider is unavailable (no key, or
-  // auth/quota rejection). The fallback chain is Brave (CF-reachable, real web search)
-  // → DuckDuckGo (HTML scrape, usually blocked at the CF edge — last resort). This keeps
-  // the agent's primary search workflow yielding real sources through a Serper outage
-  // instead of starving synthesis.
+  // auth/quota rejection). The fallback chain is SearXNG (self-hosted, free, no quota,
+  // reachable on the blackbox engine host) → Brave (CF-reachable) → Tavily (LLM-tuned,
+  // keyed) → DuckDuckGo (HTML scrape, usually blocked — last resort). SearXNG leads the
+  // fallback because it's free and rate-limit-free; on the CF edge it's unreachable
+  // (LAN host) so it returns null and the chain degrades. Each link returns null only
+  // when genuinely unavailable, so we keep descending until a real provider answers.
   const webFallback = async (q) => {
+    const sx = searxngUrl ? await searxngSearch(q, searxngUrl, { timeRange: tr }) : null;
+    if (sx !== null) return sx;
     const brave = braveApiKey ? await braveSearch(q, braveApiKey, { timeRange: tr }) : null;
-    return brave !== null ? brave : await duckduckgoSearch(q);
+    if (brave !== null) return brave;
+    const tavily = tavilyApiKey ? await tavilySearch(q, tavilyApiKey, { timeRange: tr }) : null;
+    if (tavily !== null) return tavily;
+    return await duckduckgoSearch(q);
   };
   switch (provider) {
     case 'web': {
@@ -430,6 +553,24 @@ async function executeSearch(
       results = await duckduckgoSearch(query);
       subs = 1;
       break;
+    case 'tavily': {
+      // Tavily as an explicitly-selectable provider (LLM-optimized snippets). Falls back
+      // through the standard web chain (SearXNG → Brave → DDG) when Tavily is unavailable.
+      const tav = tavilyApiKey ? await tavilySearch(query, tavilyApiKey, { timeRange: tr }) : null;
+      results = tav === null ? await webFallback(query) : tav;
+      subs = 1;
+      break;
+    }
+    case 'searxng': {
+      // Self-hosted metasearch (free, broad). Falls back through the web chain
+      // (Brave → Tavily → DDG) when the SearXNG instance is unreachable.
+      const sx = searxngUrl ? await searxngSearch(query, searxngUrl, { sourceLabel: 'web', timeRange: tr }) : null;
+      if (sx !== null) { results = sx; subs = 1; break; }
+      const serp = await serperSearch(query, serperApiKey, { sourceLabel: 'web', timeRange: tr });
+      results = serp === null ? await webFallback(query) : serp;
+      subs = 1;
+      break;
+    }
     case 'rss':
       results = await rssSearch(query);
       subs = 6; // up to 6 RSS feeds fetched in parallel
