@@ -17,6 +17,22 @@
 
 import { runParallelEngine } from './worker/engine/parallel-engine.js';
 
+// ── A/B synth candidates ──────────────────────────────────────────────────────
+// Each job is randomly assigned one. synthModel is stored in D1 (research.synth_model)
+// so quality can be compared after N runs with:
+//   SELECT synth_model, COUNT(*) runs, AVG(json_array_length(result->'$.products')) avg_p
+//   FROM research WHERE status='complete' GROUP BY synth_model;
+const AB_SYNTH = [
+  // bench winner: most products (4.7), zero fabrication, 8/8 reliable, ~$0.024/synth
+  { synthModel: 'openai/gpt-5.4-mini',          synthReasoning: undefined,          synthProvider: null },
+  // current planner — deepest pros/cons (3.7/3.0), zero fab, 8/8, 14s, ~$0.025/synth
+  { synthModel: 'google/gemini-2.5-flash',       synthReasoning: { effort: 'none' }, synthProvider: null },
+  // fastest (10s), zero numeric fab, 8/8, ~$0.039/synth
+  { synthModel: 'x-ai/grok-4.20',               synthReasoning: undefined,          synthProvider: null },
+  // cheapest clean option (~$0.008/synth), 7/8, zero fabrication
+  { synthModel: 'google/gemini-2.5-flash-lite',  synthReasoning: { effort: 'none' }, synthProvider: null },
+];
+
 const CF_BASE = process.env.CF_BASE_URL || 'https://chrisputer.tech';
 const SECRET = process.env.WORKER_SECRET;
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
@@ -76,10 +92,11 @@ function postProgress(reportId, step, message) {
 }
 
 async function processJob(job) {
-  const config = { ...job.config, maxConcurrency: MAX_CONCURRENCY };
+  const ab = AB_SYNTH[Math.floor(Math.random() * AB_SYNTH.length)];
+  const config = { ...job.config, maxConcurrency: MAX_CONCURRENCY, ...ab };
   if (MAX_SEARCHES > 0) config.maxSearches = MAX_SEARCHES;
   const t0 = Date.now();
-  log(`[job ${job.reportId}] "${job.query}" (conc=${config.maxConcurrency}, searches=${config.maxSearches}, synth=kimi-k2.6)`);
+  log(`[job ${job.reportId}] "${job.query}" (conc=${config.maxConcurrency}, searches=${config.maxSearches}, synth=${ab.synthModel})`);
   try {
     let step = 0;
     const onEvent = (_type, message) => { postProgress(job.reportId, ++step, message); };

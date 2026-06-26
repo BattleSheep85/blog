@@ -1,0 +1,1799 @@
+[
+  {
+    "query": "best wireless earbuds un",
+    "model": "kimi-k2.6",
+    "ok": "✓",
+    "ms": 23109,
+    "ttft": 2528,
+    "cost_c": "$2.292¢",
+    "products": 4,
+    "name_ung": 0,
+    "num_ung": 0,
+    "avg_pros": 3,
+    "avg_cons": 3,
+    "has_verdict": 4,
+    "has_rating": 4,
+    "products_list": [
+      {
+        "name": "EarFun Air Pro 4+",
+        "rating": 4.5,
+        "pros": 3,
+        "cons": 3,
+        "verdict": "PCMag's hands-on expert testing names this an Editors' Choice winner with 'unbeatable noise cancellation' for the price "
+      },
+      {
+        "name": "Soundcore Liberty 4 NC",
+        "rating": 4,
+        "pros": 3,
+        "cons": 3,
+        "verdict": "The 98.5% noise reduction and LDAC support at $57 is compelling on paper, but we're downgrading this below the EarFun be"
+      },
+      {
+        "name": "Soundcore Space A40",
+        "rating": 4,
+        "pros": 3,
+        "cons": 3,
+        "verdict": "Multiple RTINGS listicles consistently rank the Space A40 as the best budget Bluetooth earbuds they've tested, with part"
+      },
+      {
+        "name": "Tribit FlyBuds 3",
+        "rating": 3.5,
+        "pros": 3,
+        "cons": 3,
+        "verdict": "A niche specialist at best—the PCMag workout recommendation is credible, but these are purpose-built for exercise durabi"
+      }
+    ],
+    "summary": "We analyzed over 100 sources for wireless earbuds under $100, focusing on expert reviews and hands-on testing. The EarFun Air Pro 4+ emerges as the clear standout with PCMag Editors' Choice recognitio"
+  },
+  {
+    "query": "best wireless earbuds un",
+    "model": "gemini-3.5-flash",
+    "ok": "✓",
+    "ms": 27122,
+    "ttft": 14251,
+    "cost_c": "$6.537¢",
+    "products": 4,
+    "name_ung": 0,
+    "num_ung": 0,
+    "avg_pros": 3,
+    "avg_cons": 2,
+    "has_verdict": 4,
+    "has_rating": 4,
+    "products_list": [
+      {
+        "name": "EarFun Air Pro 4+",
+        "rating": 4.8,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "The EarFun Air Pro 4+ is the benchmark for sub-$100 earbuds in 2026. Highly praised by experts at PCMag and SoundGuys, i"
+      },
+      {
+        "name": "Anker Soundcore Space A40 Truly Wireless",
+        "rating": 4.7,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "Backed by extensive hands-on benchmarking from RTINGS, the Soundcore Space A40 is an absolute powerhouse. It's the ideal"
+      },
+      {
+        "name": "Soundcore Liberty 4 NC",
+        "rating": 4.6,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "If raw battery life and robust high-res Bluetooth audio format support are top priorities, the Liberty 4 NC is unparalle"
+      },
+      {
+        "name": "Tribit FlyBuds 3",
+        "rating": 4.3,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "The Tribit FlyBuds 3 prioritize survival and fit over audiophile fidelity. If you need indestructible, waterproof, and b"
+      }
+    ],
+    "summary": "The sub-$100 wireless earbud market in 2026 offers features once exclusive to premium flagships. Led by brands like EarFun and Soundcore, budget-conscious buyers can now secure class-leading active no"
+  },
+  {
+    "query": "best wireless earbuds un",
+    "model": "gem-3.1-pro",
+    "ok": "✓",
+    "ms": 38812,
+    "ttft": 18683,
+    "cost_c": "$8.768¢",
+    "products": 5,
+    "name_ung": 0,
+    "num_ung": 0,
+    "avg_pros": 3,
+    "avg_cons": 2,
+    "has_verdict": 5,
+    "has_rating": 5,
+    "products_list": [
+      {
+        "name": "EarFun Air Pro 4+",
+        "rating": 4.5,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "With robust expert backing and an unbeatable noise cancellation setup for the price limit, the EarFun Air Pro 4+ stands "
+      },
+      {
+        "name": "Soundcore Liberty 4 NC",
+        "rating": 4.5,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "Anker's Soundcore Liberty 4 NC boasts lab-tested noise reduction and mammoth battery longevity, making it a technical ma"
+      },
+      {
+        "name": "Soundcore Space A40",
+        "rating": 4,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "The Soundcore Space A40 by Anker offers a warm, fatigue-free sound and highly effective adaptive noise cancellation, sec"
+      },
+      {
+        "name": "Nothing Ear (a)",
+        "rating": 4,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "Nothing Ear (a) serves as the bridge between budget bounds and premium aesthetic, delivering top-tier audio quality for "
+      },
+      {
+        "name": "Tribit FlyBuds 3",
+        "rating": 3.5,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "For only $35, the Tribit FlyBuds 3 are the undisputed champions for intense, sweaty workouts where you wouldn't risk bre"
+      }
+    ],
+    "summary": "The sub-$100 wireless earbud market in 2026 is highly competitive, offering features that were previously reserved for premium price tiers, such as Active Noise Cancellation (ANC), long battery life, "
+  },
+  {
+    "query": "best wireless earbuds un",
+    "model": "qwen3.7-max",
+    "ok": "✓",
+    "ms": 57071,
+    "ttft": 2059,
+    "cost_c": "$3.277¢",
+    "products": 4,
+    "name_ung": 0,
+    "num_ung": 0,
+    "avg_pros": 3,
+    "avg_cons": 2,
+    "has_verdict": 4,
+    "has_rating": 4,
+    "products_list": [
+      {
+        "name": "EarFun Air Pro 4+",
+        "rating": 4.5,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "Hands-on testing by PCMag confirms the EarFun Air Pro 4+ delivers unbeatable noise cancellation under $100, making it th"
+      },
+      {
+        "name": "Anker Soundcore Liberty 4 NC",
+        "rating": 4.5,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "At $56.99, the Liberty 4 NC offers measured 98.5% noise reduction and LDAC support that punches above its price class, p"
+      },
+      {
+        "name": "Anker Soundcore Space A40",
+        "rating": 4,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "RTINGS' repeated lab-tested endorsement of the Space A40 as best budget ANC earbuds makes it the most evidence-backed sa"
+      },
+      {
+        "name": "Tribit FlyBuds 3",
+        "rating": 4,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "For athletes and gym-goers, the Tribit FlyBuds 3 is the only sub-$40 earbud with PCMag's hands-on Editors' Choice endors"
+      }
+    ],
+    "summary": "The sub-$100 wireless earbud market in 2026 is dominated by three established value leaders: the EarFun Air Pro 4+ for ANC, the Anker Soundcore Liberty 4 NC for battery life and Hi-Res audio, and the "
+  },
+  {
+    "query": "best wireless earbuds un",
+    "model": "dsv4-pro",
+    "ok": "✓",
+    "ms": 44258,
+    "ttft": 1444,
+    "cost_c": "$1.572¢",
+    "products": 5,
+    "name_ung": 1,
+    "num_ung": 0,
+    "avg_pros": 3.4,
+    "avg_cons": 3,
+    "has_verdict": 5,
+    "has_rating": 5,
+    "products_list": [
+      {
+        "name": "Anker Soundcore Space A40 Truly Wireless",
+        "rating": 4.5,
+        "pros": 4,
+        "cons": 3,
+        "verdict": "The Soundcore Space A40 is the best all-around budget pick, earning consistent praise from RTINGS, Scarbir, and PCMag fo"
+      },
+      {
+        "name": "EarFun Air Pro 4+",
+        "rating": 4.5,
+        "pros": 4,
+        "cons": 3,
+        "verdict": "The EarFun Air Pro 4+ is the top choice for noise cancellation under $100, backed by PCMag's editors' choice award and s"
+      },
+      {
+        "name": "Soundcore Liberty 4 NC",
+        "rating": 4,
+        "pros": 3,
+        "cons": 3,
+        "verdict": "The Soundcore Liberty 4 NC is the best pick for Android users who want LDAC hi-res audio on a budget, delivering strong "
+      },
+      {
+        "name": "Tribit FlyBuds 3 True Wireless",
+        "rating": 4,
+        "pros": 3,
+        "cons": 3,
+        "verdict": "If you need earbuds that can survive sweat, rain, and the occasional puddle, the Tribit FlyBuds 3 are the undisputed bud"
+      },
+      {
+        "name": "OnePlus Buds 4",
+        "rating": 3.5,
+        "pros": 3,
+        "cons": 3,
+        "verdict": "The OnePlus Buds 4 are a strong choice for comfort and sound quality, but they're held back by a lack of durability feat"
+      }
+    ],
+    "summary": "After analyzing over 126 sources, the Anker Soundcore Space A40 stands out as the top overall pick under $100, with excellent ANC, long battery life, and a warm sound profile praised by multiple exper"
+  },
+  {
+    "query": "best wireless earbuds un",
+    "model": "grok-4.20",
+    "ok": "✓",
+    "ms": 9415,
+    "ttft": 579,
+    "cost_c": "$0.824¢",
+    "products": 3,
+    "name_ung": 0,
+    "num_ung": 0,
+    "avg_pros": 3,
+    "avg_cons": 2,
+    "has_verdict": 3,
+    "has_rating": 3,
+    "products_list": [
+      {
+        "name": "EarFun Air Pro 4+",
+        "rating": 4.5,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "PCMag hands-on testing named the EarFun Air Pro 4+ their Editors' Choice for best noise cancellation among budget earbud"
+      },
+      {
+        "name": "Soundcore Liberty 4 NC",
+        "rating": 4.5,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "Powersof10 testing showed the Soundcore Liberty 4 NC achieving an impressive 98.5% noise reduction along with 50-hour ba"
+      },
+      {
+        "name": "Soundcore Space A40",
+        "rating": 4,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "Multiple RTINGS.com expert-domain reviews from 2026 continue to rate the Soundcore Space A40 as the best earbuds under $"
+      }
+    ],
+    "summary": "For wireless earbuds under $100 in 2026, the EarFun Air Pro 4+ stands out as the top pick according to multiple expert hands-on tests from PCMag and SoundGuys, delivering strong ANC performance (Edito"
+  },
+  {
+    "query": "best wireless earbuds un",
+    "model": "gem-3-flash",
+    "ok": "✓",
+    "ms": 16401,
+    "ttft": 1103,
+    "cost_c": "$1.615¢",
+    "products": 4,
+    "name_ung": 0,
+    "num_ung": 0,
+    "avg_pros": 3,
+    "avg_cons": 2,
+    "has_verdict": 4,
+    "has_rating": 4,
+    "products_list": [
+      {
+        "name": "EarFun Air Pro 4+",
+        "rating": 5,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "The EarFun Air Pro 4+ is currently the gold standard for budget earbuds. Hands-on testing by PCMag and SoundGuys confirm"
+      },
+      {
+        "name": "Anker Soundcore Space A40",
+        "rating": 4.5,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "The Space A40 is the best choice for users who find standard earbuds bulky or uncomfortable. RTINGS expert domain review"
+      },
+      {
+        "name": "Soundcore Liberty 4 NC",
+        "rating": 4.5,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "A powerhouse in the budget segment, the Liberty 4 NC offers high-end noise reduction for nearly half the price of the Ai"
+      },
+      {
+        "name": "Tribit FlyBuds 3",
+        "rating": 4,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "The FlyBuds 3 are the definitive choice for athletes on a budget. While they lack the tech features of higher-ranked bud"
+      }
+    ],
+    "summary": "The sub-$100 wireless earbud market in 2026 is dominated by EarFun and Anker, which provide noise cancellation and battery life that previously required $200+ investments. Our research identifies the "
+  },
+  {
+    "query": "best wireless earbuds un",
+    "model": "dsv4-flash",
+    "ok": "✓",
+    "ms": 19512,
+    "ttft": 2772,
+    "cost_c": "$0.287¢",
+    "products": 4,
+    "name_ung": 0,
+    "num_ung": 0,
+    "avg_pros": 3,
+    "avg_cons": 2,
+    "has_verdict": 4,
+    "has_rating": 4,
+    "products_list": [
+      {
+        "name": "EarFun Air Pro 4+",
+        "rating": 4.5,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "The EarFun Air Pro 4+ is the best all-around budget earbud under $100, delivering premium ANC and solid sound quality. I"
+      },
+      {
+        "name": "Anker Soundcore Space A40 Truly Wireless",
+        "rating": 4.5,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "The Anker Soundcore Space A40 remains a top-tier budget pick in 2026, offering best-in-class ANC and great battery life."
+      },
+      {
+        "name": "Nothing Ear (a)",
+        "rating": 4,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "If sound quality is your absolute priority under $100, the Nothing Ear (a) delivers impressively balanced audio. However"
+      },
+      {
+        "name": "OnePlus Buds 4",
+        "rating": 4,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "The OnePlus Buds 4 are a great all-rounder for Android users, offering solid sound and ANC at the $100 limit. But it's b"
+      }
+    ],
+    "summary": "For budget-conscious shoppers seeking the best wireless earbuds under $100, two models consistently receive top marks from expert testers: the EarFun Air Pro 4+ and the Anker Soundcore Space A40. The "
+  },
+  {
+    "query": "best wireless earbuds un",
+    "model": "qwen3.7-plus",
+    "ok": "✓",
+    "ms": 53747,
+    "ttft": 2182,
+    "cost_c": "$0.911¢",
+    "products": 5,
+    "name_ung": 0,
+    "num_ung": 0,
+    "avg_pros": 3,
+    "avg_cons": 2,
+    "has_verdict": 5,
+    "has_rating": 5,
+    "products_list": [
+      {
+        "name": "Soundcore Space A40",
+        "rating": 4.5,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "The Soundcore Space A40 remains the safest and most well-rounded recommendation under $100. RTINGS and Wirecutter consis"
+      },
+      {
+        "name": "EarFun Air Pro 4+",
+        "rating": 4.5,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "The EarFun Air Pro 4+ is the top pick for pure noise cancellation performance under $100, earning PCMag's Editors' Choic"
+      },
+      {
+        "name": "Soundcore Liberty 4 NC",
+        "rating": 4,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "The Liberty 4 NC is a strong contender for Android users due to LDAC support and impressive measured noise reduction. Ho"
+      },
+      {
+        "name": "JLab Go Pods ANC",
+        "rating": 4,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "For buyers on the tightest budget, the JLab Go Pods ANC offer surprising value at $36. Tom's Guide highlights their abil"
+      },
+      {
+        "name": "SoundPEATS H3",
+        "rating": 4,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "The SoundPEATS H3 is recommended by Scarbir for sound quality under $100. While it lacks the ANC prowess of the EarFun A"
+      }
+    ],
+    "summary": "Based on expert hands-on testing and community consensus as of mid-2026, the wireless earbud market under $100 is dominated by Anker Soundcore, EarFun, and SoundPEATS. The EarFun Air Pro 4+ series lea"
+  },
+  {
+    "query": "best wireless earbuds un",
+    "model": "gpt-5.4-nano",
+    "ok": "✓",
+    "ms": 17599,
+    "ttft": 752,
+    "cost_c": "$0.592¢",
+    "products": 2,
+    "name_ung": 2,
+    "num_ung": 0,
+    "avg_pros": 3,
+    "avg_cons": 2,
+    "has_verdict": 2,
+    "has_rating": 2,
+    "products_list": [
+      {
+        "name": "EarFun Air Pro 4+ (true wireless noise-cancelling earbuds)",
+        "rating": 4.2,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "EarFun Air Pro 4+ is the best-supported “under $100” pick in the provided notes because multiple credible outlets explic"
+      },
+      {
+        "name": "Soundcore Liberty 4 NC (true wireless noise-cancelling earbuds)",
+        "rating": 3.7,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "Soundcore Liberty 4 NC looks attractive on price ($56.99) and the notes include specific claims for LDAC/Hi‑Res and stro"
+      }
+    ],
+    "summary": "The provided research notes include only partial, product-specific evidence for two budget wireless earbuds models: Soundcore Liberty 4 NC and EarFun Air Pro 4+. However, most high-credibility testing"
+  },
+  {
+    "query": "best wireless earbuds un",
+    "model": "gpt-5.4-mini",
+    "ok": "✓",
+    "ms": 14330,
+    "ttft": 1428,
+    "cost_c": "$1.990¢",
+    "products": 2,
+    "name_ung": 0,
+    "num_ung": 0,
+    "avg_pros": 3,
+    "avg_cons": 3,
+    "has_verdict": 2,
+    "has_rating": 2,
+    "products_list": [
+      {
+        "name": "EarFun Air Pro 4+",
+        "rating": 4.5,
+        "pros": 3,
+        "cons": 3,
+        "verdict": "This is the safest recommendation in the provided evidence because a hands-on, expert-domain review from PCMag gives it "
+      },
+      {
+        "name": "Soundcore Liberty 4 NC",
+        "rating": 4,
+        "pros": 3,
+        "cons": 3,
+        "verdict": "A plausible value pick with a very attractive street price and some appealing feature claims, but the evidence base is w"
+      }
+    ],
+    "summary": "The strongest 2026 pick in the provided evidence is the EarFun Air Pro 4+, backed by PCMag's hands-on, expert-domain Editor's Choice verdict for noise cancellation under $100. Soundcore Liberty 4 NC i"
+  },
+  {
+    "query": "best wireless earbuds un",
+    "model": "gpt-5.5",
+    "ok": "✓",
+    "ms": 99373,
+    "ttft": 60653,
+    "cost_c": "$29.989¢",
+    "products": 4,
+    "name_ung": 0,
+    "num_ung": 0,
+    "avg_pros": 4,
+    "avg_cons": 3,
+    "has_verdict": 4,
+    "has_rating": 4,
+    "products_list": [
+      {
+        "name": "EarFun Air Pro 4+",
+        "rating": 4.5,
+        "pros": 4,
+        "cons": 3,
+        "verdict": "This is the one I would buy first under $100 based on the evidence provided. The recommendation is supported by hands-on"
+      },
+      {
+        "name": "Anker Soundcore Space A40 Truly Wireless",
+        "rating": 4,
+        "pros": 4,
+        "cons": 3,
+        "verdict": "The Space A40 looks like the safest Anker/Soundcore ANC option under $100 in the provided sources. I rank it below the E"
+      },
+      {
+        "name": "Tribit FlyBuds 3",
+        "rating": 3.5,
+        "pros": 4,
+        "cons": 3,
+        "verdict": "Pick the FlyBuds 3 if your priority is cheap workout earbuds that stay put and tolerate water. I would not choose them o"
+      },
+      {
+        "name": "Soundcore Liberty 4 NC",
+        "rating": 3.5,
+        "pros": 4,
+        "cons": 3,
+        "verdict": "The Liberty 4 NC has very attractive specs on paper for the cited price, especially LDAC and the claimed noise reduction"
+      }
+    ],
+    "summary": "The strongest under-$100 pick in the provided evidence is the EarFun Air Pro 4+, because it has current expert-domain support from PCMag and SoundGuys and a cited sale price below $100. The rest of th"
+  },
+  {
+    "query": "best wireless earbuds un",
+    "model": "gpt-5.5-pro",
+    "ok": "✗",
+    "ms": 120001,
+    "ttft": "—",
+    "cost_c": "$0",
+    "error": "hard"
+  },
+  {
+    "query": "best wireless earbuds un",
+    "model": "gpt-5.4",
+    "ok": "✓",
+    "ms": 30695,
+    "ttft": 785,
+    "cost_c": "$7.350¢",
+    "products": 3,
+    "name_ung": 0,
+    "num_ung": 0,
+    "avg_pros": 4,
+    "avg_cons": 3,
+    "has_verdict": 3,
+    "has_rating": 3,
+    "products_list": [
+      {
+        "name": "EarFun Air Pro 4+",
+        "rating": 4.5,
+        "pros": 4,
+        "cons": 3,
+        "verdict": "This is the safest under-$100 pick in the provided evidence. It has recent expert-domain support from both PCMag and Sou"
+      },
+      {
+        "name": "Anker Soundcore Space A40",
+        "rating": 4,
+        "pros": 4,
+        "cons": 3,
+        "verdict": "If ANC is your priority and you want an established brand, the Space A40 is still one of the most credible names in this"
+      },
+      {
+        "name": "Tribit FlyBuds 3",
+        "rating": 3.5,
+        "pros": 4,
+        "cons": 3,
+        "verdict": "These make sense only if workout security and water resistance matter more to you than sound quality. PCMag's hands-on, "
+      }
+    ],
+    "summary": "The evidence is thinner than it should be for a fast-moving tech category in mid-2026, so this list is deliberately short. The strongest current support goes to EarFun Air Pro 4+ and Anker Soundcore S"
+  },
+  {
+    "query": "best wireless earbuds un",
+    "model": "gemini-flash",
+    "ok": "✓",
+    "ms": 8992,
+    "ttft": 755,
+    "cost_c": "$0.890¢",
+    "products": 3,
+    "name_ung": 0,
+    "num_ung": 0,
+    "avg_pros": 3.3,
+    "avg_cons": 2,
+    "has_verdict": 3,
+    "has_rating": 3,
+    "products_list": [
+      {
+        "name": "EarFun Air Pro 4+",
+        "rating": 4.5,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "The EarFun Air Pro 4+ stands out as the top pick for its exceptional noise cancellation, earning an Editors' Choice awar"
+      },
+      {
+        "name": "Soundcore Liberty 4 NC",
+        "rating": 4,
+        "pros": 4,
+        "cons": 2,
+        "verdict": "The Soundcore Liberty 4 NC offers a compelling blend of strong noise cancellation, Hi-Res audio, and an impressive 50-ho"
+      },
+      {
+        "name": "Tribit FlyBuds 3",
+        "rating": 3.5,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "The Tribit FlyBuds 3 are an excellent choice for fitness enthusiasts needing durable, waterproof earbuds for intense wor"
+      }
+    ],
+    "summary": "This report evaluates wireless earbuds priced under $100, focusing on performance in noise cancellation, sound quality, and workout suitability based on hands-on and expert reviews. Key recommendation"
+  },
+  {
+    "query": "best wireless earbuds un",
+    "model": "flash-lite",
+    "ok": "✓",
+    "ms": 6875,
+    "ttft": 814,
+    "cost_c": "$0.252¢",
+    "products": 2,
+    "name_ung": 0,
+    "num_ung": 0,
+    "avg_pros": 4,
+    "avg_cons": 2,
+    "has_verdict": 2,
+    "has_rating": 2,
+    "products_list": [
+      {
+        "name": "EarFun Air Pro 4+",
+        "rating": 4.5,
+        "pros": 4,
+        "cons": 2,
+        "verdict": "The EarFun Air Pro 4+ stands out for its excellent noise cancellation, earning it an Editors' Choice from PCMag. SoundGu"
+      },
+      {
+        "name": "Soundcore Liberty 4 NC",
+        "rating": 4,
+        "pros": 4,
+        "cons": 2,
+        "verdict": "The Soundcore Liberty 4 NC offers exceptional noise cancellation, achieving nearly 98.5% reduction in tests, and boasts "
+      }
+    ],
+    "summary": "After analyzing numerous reviews and hands-on tests, the EarFun Air Pro 4+ emerges as a strong contender for the best wireless earbuds under $100, balancing effective noise cancellation with a solid o"
+  },
+  {
+    "query": "best linen shirts for me",
+    "model": "kimi-k2.6",
+    "ok": "✓",
+    "ms": 17046,
+    "ttft": 1204,
+    "cost_c": "$2.029¢",
+    "products": 3,
+    "name_ung": 1,
+    "num_ung": 0,
+    "avg_pros": 3,
+    "avg_cons": 2,
+    "has_verdict": 3,
+    "has_rating": 3,
+    "products_list": [
+      {
+        "name": "Premium Linen Long-Sleeve Shirt",
+        "rating": 4,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "The honest budget pick—verified by community feedback that 2025's reformulation fixed prior scratchiness issues. Not exc"
+      },
+      {
+        "name": "Baird McNutt Irish Linen Shirt",
+        "rating": 4,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "Community-validated value play when on sale. The Irish mill sourcing is real, not marketing fiction. Requires patience f"
+      },
+      {
+        "name": "Standard-Fit Linen Shirt",
+        "rating": 3.5,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "Safe mainstream choice with editorial backing but premium pricing. The GQ pick carries weight though source has affiliat"
+      }
+    ],
+    "summary": "After analyzing available sources, we found that men's linen shirt recommendations cluster around established brands with genuine editorial and community coverage. The strongest picks with credible, r"
+  },
+  {
+    "query": "best linen shirts for me",
+    "model": "gemini-3.5-flash",
+    "ok": "✓",
+    "ms": 23470,
+    "ttft": 8450,
+    "cost_c": "$5.550¢",
+    "products": 4,
+    "name_ung": 1,
+    "num_ung": 0,
+    "avg_pros": 3,
+    "avg_cons": 2,
+    "has_verdict": 4,
+    "has_rating": 4,
+    "products_list": [
+      {
+        "name": "Banana Republic Standard-Fit Linen Shirt",
+        "rating": 4.5,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "Ranked as the top pick for its precise tailoring and exceptional skin comfort. Banana Republic has delivered a highly ve"
+      },
+      {
+        "name": "Uniqlo Premium Linen Shirt",
+        "rating": 4.5,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "Uniqlo's latest iterations solved the scratchiness of older release classes. It stands as the absolute best budget-frien"
+      },
+      {
+        "name": "J.Crew Baird McNutt Irish Linen Shirt",
+        "rating": 4,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "Featuring genuine heritage Irish linen, this shirt offers unmatched fabric character and slub texture. It is a favorite "
+      },
+      {
+        "name": "Bonobos Everyday Linen Shirt",
+        "rating": 4,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "Ideal for those who want a custom-feeling fit without visiting a tailor. Bonobos pairs its celebrated fit variety with a"
+      }
+    ],
+    "summary": "Our 2026 analysis of men's linen shirts evaluates the top-performing options of the season based on fabric weight, fit, raw material sourcing, and wash-and-wear durability. We compared leading brands "
+  },
+  {
+    "query": "best linen shirts for me",
+    "model": "gem-3.1-pro",
+    "ok": "✓",
+    "ms": 23960,
+    "ttft": 12147,
+    "cost_c": "$6.553¢",
+    "products": 3,
+    "name_ung": 1,
+    "num_ung": 0,
+    "avg_pros": 3,
+    "avg_cons": 2,
+    "has_verdict": 3,
+    "has_rating": 3,
+    "products_list": [
+      {
+        "name": "Banana Republic Standard-Fit Linen Shirt",
+        "rating": 4.5,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "Praised by fashion editors as 2026's top overall pick, this shirt offers a highly versatile fit and quality fabric that "
+      },
+      {
+        "name": "J.Crew Baird McNutt Irish Linen Shirt",
+        "rating": 4.2,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "By partnering with a storied Irish mill, J.Crew delivers a shirt with a premium pedigree at a highly accessible price po"
+      },
+      {
+        "name": "Uniqlo Premium Linen Shirt",
+        "rating": 4,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "The undisputed king of budget linen. Uniqlo offers genuine breathability and improved softness that punches far above it"
+      }
+    ],
+    "summary": "Based on 2026 men's style recommendations and hands-on reviews, the best linen shirts balance fabric quality, breathability, and fit. Banana Republic and Uniqlo dominate the premium and budget categor"
+  },
+  {
+    "query": "best linen shirts for me",
+    "model": "qwen3.7-max",
+    "ok": "✓",
+    "ms": 58900,
+    "ttft": 2009,
+    "cost_c": "$3.005¢",
+    "products": 4,
+    "name_ung": 2,
+    "num_ung": 0,
+    "avg_pros": 3,
+    "avg_cons": 2,
+    "has_verdict": 4,
+    "has_rating": 4,
+    "products_list": [
+      {
+        "name": "Banana Republic Standard-Fit Linen Shirt",
+        "rating": 4.5,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "GQ's May 2026 'Best Overall' pick with strong editorial backing; a safe, versatile first linen shirt if you want vetted "
+      },
+      {
+        "name": "Uniqlo Premium Linen Shirt",
+        "rating": 4.5,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "The best-documented budget option with both GQ endorsement and recent community validation of improved softness. Ideal f"
+      },
+      {
+        "name": "J.Crew Baird McNutt Irish Linen Shirt",
+        "rating": 4,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "The enthusiast's value pick with verifiable premium fabric (Baird McNutt) and community corroboration. Buy on sale for b"
+      },
+      {
+        "name": "Charles Tyrwhitt Linen Shirt",
+        "rating": 4,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "The only pick with explicit hands-on tactile feedback ('featherlight, slubby, tough') from a non-affiliate reviewer. Bes"
+      }
+    ],
+    "summary": "Based on 2026 editorial reviews and community consensus, the Uniqlo Premium Linen Shirt and Banana Republic Standard-Fit Linen Shirt emerge as the top verified picks for value and overall quality resp"
+  },
+  {
+    "query": "best linen shirts for me",
+    "model": "dsv4-pro",
+    "ok": "✓",
+    "ms": 30112,
+    "ttft": 983,
+    "cost_c": "$2.894¢",
+    "products": 3,
+    "name_ung": 1,
+    "num_ung": 0,
+    "avg_pros": 3,
+    "avg_cons": 3,
+    "has_verdict": 3,
+    "has_rating": 3,
+    "products_list": [
+      {
+        "name": "Banana Republic Standard-Fit Linen Shirt",
+        "rating": 4,
+        "pros": 3,
+        "cons": 3,
+        "verdict": "GQ's top pick for 2026, the Banana Republic Standard-Fit Linen Shirt is a safe bet for a well-made, classic linen shirt."
+      },
+      {
+        "name": "Uniqlo Premium Linen Shirt",
+        "rating": 4,
+        "pros": 3,
+        "cons": 3,
+        "verdict": "GQ's budget pick, the Uniqlo Premium Linen Shirt, offers good value, especially with the 2025 fabric upgrade that made i"
+      },
+      {
+        "name": "J.Crew Baird McNutt Irish Linen Shirt",
+        "rating": 3.5,
+        "pros": 3,
+        "cons": 3,
+        "verdict": "A strong community favorite, the J.Crew Baird McNutt Irish Linen Shirt combines known fabric provenance with sub-$100 pr"
+      }
+    ],
+    "summary": "Our analysis found the Banana Republic Standard-Fit Linen Shirt as the top overall pick based on GQ's expert recommendation. For budget-conscious buyers, Uniqlo's Premium Linen Shirt offers excellent "
+  },
+  {
+    "query": "best linen shirts for me",
+    "model": "grok-4.20",
+    "ok": "✓",
+    "ms": 10273,
+    "ttft": 497,
+    "cost_c": "$0.832¢",
+    "products": 4,
+    "name_ung": 2,
+    "num_ung": 0,
+    "avg_pros": 3,
+    "avg_cons": 2,
+    "has_verdict": 4,
+    "has_rating": 4,
+    "products_list": [
+      {
+        "name": "Banana Republic Standard-Fit Linen Shirt",
+        "rating": 4.5,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "GQ's top recommendation for men's linen shirts delivers solid breathability and a dependable fit that works for both cas"
+      },
+      {
+        "name": "Uniqlo Premium Linen Shirt",
+        "rating": 4,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "Uniqlo's Premium Linen Shirt stands out as the strongest budget option with recent improvements in softness per hands-on"
+      },
+      {
+        "name": "J.Crew Baird McNutt Irish Linen Shirt",
+        "rating": 4,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "J.Crew's collaboration with Irish linen specialist Baird McNutt delivers superior fabric texture and quality that stands"
+      },
+      {
+        "name": "Faherty Linen Shirt",
+        "rating": 4,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "Faherty's linen shirts earned positive mentions in hands-on tested linen clothing guides from Travel + Leisure. They off"
+      }
+    ],
+    "summary": "GQ recommends Banana Republic Standard-Fit Linen Shirt as best overall and Uniqlo Premium Linen Shirt as best budget option for men's linen shirts in 2026. Linen offers excellent breathability for sum"
+  },
+  {
+    "query": "best linen shirts for me",
+    "model": "gem-3-flash",
+    "ok": "✓",
+    "ms": 15373,
+    "ttft": 1140,
+    "cost_c": "$1.480¢",
+    "products": 4,
+    "name_ung": 3,
+    "num_ung": 0,
+    "avg_pros": 3,
+    "avg_cons": 2,
+    "has_verdict": 4,
+    "has_rating": 4,
+    "products_list": [
+      {
+        "name": "Banana Republic Standard-Fit Linen Shirt",
+        "rating": 4.5,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "Ranked as the top overall pick for 2026 by expert-domain sources, this shirt offers a professional silhouette that trans"
+      },
+      {
+        "name": "J.Crew Baird McNutt Irish Linen Shirt",
+        "rating": 4.5,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "This shirt is the enthusiast's choice for authentic Irish linen at a mass-market price. Its reputation for softening sig"
+      },
+      {
+        "name": "Uniqlo Premium Linen Shirt (2025/2026 Model)",
+        "rating": 4,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "The Uniqlo Premium Linen remains the gold standard for budget buyers. Recent hands-on reviews confirm the 'Premium' labe"
+      },
+      {
+        "name": "Faherty Everyday Linen Shirt",
+        "rating": 4,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "Faherty specializes in the 'already worn' comfort that many struggle to achieve with stiff new linen. While pricey, the "
+      }
+    ],
+    "summary": "Recent reviews and hands-on testing for 2026 highlight a shift toward 'premium' pre-washed linen that reduces the traditionally high 3-10% shrinkage rates. While luxury brands like Loro Piana lead in "
+  },
+  {
+    "query": "best linen shirts for me",
+    "model": "dsv4-flash",
+    "ok": "✓",
+    "ms": 23042,
+    "ttft": 1386,
+    "cost_c": "$0.278¢",
+    "products": 5,
+    "name_ung": 2,
+    "num_ung": 0,
+    "avg_pros": 3.2,
+    "avg_cons": 3,
+    "has_verdict": 5,
+    "has_rating": 5,
+    "products_list": [
+      {
+        "name": "Uniqlo Premium Linen Shirt",
+        "rating": 4,
+        "pros": 3,
+        "cons": 3,
+        "verdict": "Best value option per GQ's 2026 roundup, improved softness in 2025 version. Not thoroughly hands-on tested by major revi"
+      },
+      {
+        "name": "Banana Republic Standard-Fit Linen Shirt",
+        "rating": 4.5,
+        "pros": 3,
+        "cons": 3,
+        "verdict": "GQ's top pick for overall quality and fit. The standard-fit, 100% linen construction hits a sweet spot for versatility. "
+      },
+      {
+        "name": "J.Crew Baird McNutt Irish Linen Shirt",
+        "rating": 4,
+        "pros": 4,
+        "cons": 3,
+        "verdict": "A community-respected option under $50 on sale, backed by Wirecutter's methodology and Styleforum's experienced users. T"
+      },
+      {
+        "name": "Faherty Linen Shirt",
+        "rating": 4,
+        "pros": 3,
+        "cons": 3,
+        "verdict": "Verified by Travel + Leisure's hands-on testing — rare for this category. A solid premium pick for those valuing comfort"
+      },
+      {
+        "name": "Bonobos Everyday Linen Shirt",
+        "rating": 3.5,
+        "pros": 3,
+        "cons": 3,
+        "verdict": "A reputable entry from a well-known menswear brand, but lacks hands-on verification from independent reviewers. The Forb"
+      }
+    ],
+    "summary": "After analyzing 100+ sources from GQ, Wirecutter, Reddit, Men's Health, and others, the most consistently recommended men's linen shirts balance breathability (100% linen or high-linen blends), fit, a"
+  },
+  {
+    "query": "best linen shirts for me",
+    "model": "qwen3.7-plus",
+    "ok": "✓",
+    "ms": 46416,
+    "ttft": 1922,
+    "cost_c": "$0.782¢",
+    "products": 4,
+    "name_ung": 1,
+    "num_ung": 0,
+    "avg_pros": 3,
+    "avg_cons": 2,
+    "has_verdict": 4,
+    "has_rating": 4,
+    "products_list": [
+      {
+        "name": "Premium Linen Shirt",
+        "rating": 4.5,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "The best budget pick for everyday wear. Recent community feedback highlights a major improvement in fabric softness for "
+      },
+      {
+        "name": "Standard-Fit Linen Shirt",
+        "rating": 4,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "The best overall choice for most men. It strikes an ideal balance between price, fit, and fabric quality, earning top ma"
+      },
+      {
+        "name": "Baird McNutt Irish Linen Shirt",
+        "rating": 4.5,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "The best value during sales. While the retail price is high, the use of authentic Irish linen makes it a 'buy it for lif"
+      },
+      {
+        "name": "Non-Iron Linen Shirt",
+        "rating": 4,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "The best choice for low-maintenance care. Ideal for travelers or professionals who want the look of linen without the co"
+      }
+    ],
+    "summary": "Based on expert testing and community consensus, the best men's linen shirts balance breathability with structural integrity. Uniqlo and Banana Republic emerge as top picks for value and fit respectiv"
+  },
+  {
+    "query": "best linen shirts for me",
+    "model": "gpt-5.4-nano",
+    "ok": "✓",
+    "ms": 5410,
+    "ttft": 539,
+    "cost_c": "$0.354¢",
+    "products": 0,
+    "name_ung": 0,
+    "num_ung": 0,
+    "avg_pros": 0,
+    "avg_cons": 0,
+    "has_verdict": 0,
+    "has_rating": 0,
+    "products_list": [],
+    "summary": "I could not reliably identify or recommend specific “best men’s linen shirts” from the provided sources because most of the pages that presumably contained product lists and verdicts were blocked (403"
+  },
+  {
+    "query": "best linen shirts for me",
+    "model": "gpt-5.4-mini",
+    "ok": "✓",
+    "ms": 12685,
+    "ttft": 886,
+    "cost_c": "$1.782¢",
+    "products": 3,
+    "name_ung": 0,
+    "num_ung": 0,
+    "avg_pros": 3,
+    "avg_cons": 3,
+    "has_verdict": 3,
+    "has_rating": 3,
+    "products_list": [
+      {
+        "name": "Standard-Fit Linen Shirt",
+        "rating": 4.5,
+        "pros": 3,
+        "cons": 3,
+        "verdict": "This is the best-supported overall pick in the source set, but the evidence is still mostly editorial rather than labora"
+      },
+      {
+        "name": "Premium Linen Shirt",
+        "rating": 4,
+        "pros": 3,
+        "cons": 3,
+        "verdict": "This is the best budget option in the source set, and Uniqlo’s reputation makes it a more credible cheap buy than random"
+      },
+      {
+        "name": "Men’s Long-Sleeve Linen Shirt",
+        "rating": 3.5,
+        "pros": 3,
+        "cons": 3,
+        "verdict": "I would only consider this if you like the look and can verify the actual product page yourself. The evidence here is th"
+      }
+    ],
+    "summary": "The strongest evidence points to GQ’s 2026 shortlist: Banana Republic’s Standard-Fit Linen Shirt as the best overall and Uniqlo’s Premium Linen Shirt as the best budget option. However, the source set"
+  },
+  {
+    "query": "best linen shirts for me",
+    "model": "gpt-5.5",
+    "ok": "✗",
+    "ms": 120000,
+    "ttft": 88962,
+    "cost_c": "$0",
+    "error": "hard"
+  },
+  {
+    "query": "best linen shirts for me",
+    "model": "gpt-5.5-pro",
+    "ok": "✗",
+    "ms": 120000,
+    "ttft": "—",
+    "cost_c": "$0",
+    "error": "hard"
+  },
+  {
+    "query": "best linen shirts for me",
+    "model": "gpt-5.4",
+    "ok": "✓",
+    "ms": 37179,
+    "ttft": 942,
+    "cost_c": "$8.241¢",
+    "products": 5,
+    "name_ung": 3,
+    "num_ung": 0,
+    "avg_pros": 4,
+    "avg_cons": 3,
+    "has_verdict": 5,
+    "has_rating": 5,
+    "products_list": [
+      {
+        "name": "Uniqlo Premium Linen Shirt",
+        "rating": 4.5,
+        "pros": 4,
+        "cons": 3,
+        "verdict": "This is the safest budget pick in the notes. It has current editorial backing from GQ and at least one recent review cal"
+      },
+      {
+        "name": "Banana Republic Standard-Fit Linen Shirt",
+        "rating": 4,
+        "pros": 4,
+        "cons": 3,
+        "verdict": "If you want the most straightforward mainstream recommendation, this is it. The evidence is not deep, but GQ's 2026 best"
+      },
+      {
+        "name": "J.Crew Baird McNutt Irish Linen Shirt",
+        "rating": 4,
+        "pros": 4,
+        "cons": 3,
+        "verdict": "This is a reasonable value-leaning pick if you can catch it on sale. Confidence is decent but not top-tier, because the "
+      },
+      {
+        "name": "Charles Tyrwhitt Linen Line",
+        "rating": 4,
+        "pros": 4,
+        "cons": 3,
+        "verdict": "This is a credible upgrade pick for someone who prioritizes a shirt-focused brand and wants more than pure trend hype. T"
+      },
+      {
+        "name": "Faherty linen shirts",
+        "rating": 3.5,
+        "pros": 4,
+        "cons": 3,
+        "verdict": "Faherty looks plausible, but the sourcing here is too broad to justify ranking it higher. I would consider it only if yo"
+      }
+    ],
+    "summary": "Evidence quality for men's linen shirts is weak in these notes: most sources are fashion roundups, social videos, or blocked pages rather than rigorous hands-on reviews. Still, a few established brand"
+  },
+  {
+    "query": "best linen shirts for me",
+    "model": "gemini-flash",
+    "ok": "✓",
+    "ms": 4669,
+    "ttft": 774,
+    "cost_c": "$0.585¢",
+    "products": 0,
+    "name_ung": 0,
+    "num_ung": 0,
+    "avg_pros": 0,
+    "avg_cons": 0,
+    "has_verdict": 0,
+    "has_rating": 0,
+    "products_list": [],
+    "summary": "This report evaluates men's linen shirts based on breathability, comfort, quality, and style. The category is driven by seasonal demand for lightweight, comfortable apparel, especially in warm climate"
+  },
+  {
+    "query": "best linen shirts for me",
+    "model": "flash-lite",
+    "ok": "✓",
+    "ms": 11891,
+    "ttft": 1584,
+    "cost_c": "$0.281¢",
+    "products": 5,
+    "name_ung": 0,
+    "num_ung": 0,
+    "avg_pros": 3,
+    "avg_cons": 2,
+    "has_verdict": 5,
+    "has_rating": 5,
+    "products_list": [
+      {
+        "name": "Standard-Fit Linen Shirt",
+        "rating": 4.5,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "The Banana Republic Standard-Fit Linen Shirt is a top recommendation for its overall quality and fit, making it a reliab"
+      },
+      {
+        "name": "Premium Linen Shirt",
+        "rating": 4,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "The Uniqlo Premium Linen Shirt is an excellent budget-friendly choice, providing the essential comfort and breathability"
+      },
+      {
+        "name": "Broken-In Organic Cotton Oxford Shirt",
+        "rating": 3.5,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "While not a linen shirt, the J.Crew Broken-In Organic Cotton Oxford is a highly recommended button-up that provides exce"
+      },
+      {
+        "name": "Baird McNutt Irish Linen Shirt",
+        "rating": 4,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "The J.Crew Baird McNutt Irish Linen Shirt leverages a respected linen producer and is often available at a good price, m"
+      },
+      {
+        "name": "Everyday Linen Shirt",
+        "rating": 4,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "The Bonobos Everyday Linen Shirt is a solid choice from a well-regarded brand, offering the comfort and breathability ex"
+      }
+    ],
+    "summary": "The research for the best men's linen shirts indicates that while linen is a highly breathable and comfortable fabric ideal for warm weather, it is also prone to wrinkling. Brands like Banana Republic"
+  },
+  {
+    "query": "best self-hosted photo b",
+    "model": "kimi-k2.6",
+    "ok": "✗",
+    "ms": 120001,
+    "ttft": 854,
+    "cost_c": "$0",
+    "error": "hard"
+  },
+  {
+    "query": "best self-hosted photo b",
+    "model": "gemini-3.5-flash",
+    "ok": "✓",
+    "ms": 16259,
+    "ttft": 5632,
+    "cost_c": "$4.651¢",
+    "products": 3,
+    "name_ung": 0,
+    "num_ung": 0,
+    "avg_pros": 3,
+    "avg_cons": 2.3,
+    "has_verdict": 3,
+    "has_rating": 3,
+    "products_list": [
+      {
+        "name": "Immich",
+        "rating": 4.5,
+        "pros": 3,
+        "cons": 3,
+        "verdict": "Immich represents the absolute gold standard for users wanting to ditch proprietary cloud services. Despite its steep sy"
+      },
+      {
+        "name": "PhotoPrism",
+        "rating": 4,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "PhotoPrism is an exceptional choice for photographers who already have an organized library on a NAS and want high-fidel"
+      },
+      {
+        "name": "Nextcloud",
+        "rating": 3.5,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "Nextcloud is not a dedicated photo manager, but its rock-solid background upload capability and multi-functional ecosyst"
+      }
+    ],
+    "summary": "Self-hosted photo backup software has matured rapidly, offering legitimate privacy-first alternatives to Google Photos and iCloud. Immich leads the category for its near-identical feature set and perf"
+  },
+  {
+    "query": "best self-hosted photo b",
+    "model": "gem-3.1-pro",
+    "ok": "✓",
+    "ms": 29405,
+    "ttft": 12671,
+    "cost_c": "$6.783¢",
+    "products": 4,
+    "name_ung": 0,
+    "num_ung": 0,
+    "avg_pros": 3,
+    "avg_cons": 2.8,
+    "has_verdict": 4,
+    "has_rating": 4,
+    "products_list": [
+      {
+        "name": "Immich",
+        "rating": 4.5,
+        "pros": 3,
+        "cons": 3,
+        "verdict": "Immich is heavily recommended across enthusiast communities as the best true replacement for Google Photos, though its h"
+      },
+      {
+        "name": "PhotoPrism",
+        "rating": 4,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "A mature, stable option that excels at organizing existing photo libraries on NAS systems, though its mobile backup expe"
+      },
+      {
+        "name": "Synology Photos",
+        "rating": 4,
+        "pros": 3,
+        "cons": 3,
+        "verdict": "If you already use a Synology NAS, this is the most hands-off, dependable solution available without having to manage cu"
+      },
+      {
+        "name": "Nextcloud",
+        "rating": 3.5,
+        "pros": 3,
+        "cons": 3,
+        "verdict": "Nextcloud is a reliable 'jack of all trades' that handles secure photo syncing effectively, but photographers will find "
+      }
+    ],
+    "summary": "The self-hosted photo backup landscape in 2026 is heavily dominated by Immich, which has emerged as the premier open-source alternative to Google Photos. While high-performance machine learning featur"
+  },
+  {
+    "query": "best self-hosted photo b",
+    "model": "qwen3.7-max",
+    "ok": "✓",
+    "ms": 38483,
+    "ttft": 1682,
+    "cost_c": "$2.520¢",
+    "products": 2,
+    "name_ung": 0,
+    "num_ung": 0,
+    "avg_pros": 3,
+    "avg_cons": 2,
+    "has_verdict": 2,
+    "has_rating": 2,
+    "products_list": [
+      {
+        "name": "Immich",
+        "rating": 4.5,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "Hands-on community reports and detailed documentation confirm Immich as the most mature self-hosted Google Photos replac"
+      },
+      {
+        "name": "PhotoPrism",
+        "rating": 4,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "PhotoPrism remains a capable option for users who already have organized photo folders and prioritize AI tagging over mo"
+      }
+    ],
+    "summary": "Immich is the clear top recommendation for self-hosted photo backup in 2026, backed by active development, robust mobile apps, and extensive community validation as a Google Photos alternative. PhotoP"
+  },
+  {
+    "query": "best self-hosted photo b",
+    "model": "dsv4-pro",
+    "ok": "✓",
+    "ms": 33814,
+    "ttft": 1448,
+    "cost_c": "$1.177¢",
+    "products": 3,
+    "name_ung": 0,
+    "num_ung": 0,
+    "avg_pros": 4,
+    "avg_cons": 4,
+    "has_verdict": 3,
+    "has_rating": 3,
+    "products_list": [
+      {
+        "name": "Immich",
+        "rating": 4.5,
+        "pros": 4,
+        "cons": 4,
+        "verdict": "Immich is the best self-hosted Google Photos alternative by consensus of expert and community reviews, offering a polish"
+      },
+      {
+        "name": "PhotoPrism",
+        "rating": 4,
+        "pros": 4,
+        "cons": 4,
+        "verdict": "PhotoPrism excels at AI-driven photo organization and searching existing libraries, making it ideal for photographers wh"
+      },
+      {
+        "name": "Nextcloud",
+        "rating": 3.5,
+        "pros": 4,
+        "cons": 4,
+        "verdict": "Nextcloud is a jack-of-all-trades cloud platform that includes photo backup, but it's not a dedicated photo manager. Its"
+      }
+    ],
+    "summary": "After analyzing 218 sources with a focus on self-hosted photo backup solutions, Immich emerges as the clear category leader, backed by active community development and broad expert recognition. PhotoP"
+  },
+  {
+    "query": "best self-hosted photo b",
+    "model": "grok-4.20",
+    "ok": "✓",
+    "ms": 9275,
+    "ttft": 419,
+    "cost_c": "$0.675¢",
+    "products": 2,
+    "name_ung": 0,
+    "num_ung": 0,
+    "avg_pros": 3,
+    "avg_cons": 2,
+    "has_verdict": 2,
+    "has_rating": 2,
+    "products_list": [
+      {
+        "name": "Immich",
+        "rating": 4.5,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "Best overall self-hosted Google Photos replacement for users with adequate hardware. Hands-on community reports and 2026"
+      },
+      {
+        "name": "PhotoPrism",
+        "rating": 4,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "Solid alternative to Immich when hardware is limited or the priority is pure library organization and privacy rather tha"
+      }
+    ],
+    "summary": "Immich stands out as the top self-hosted photo backup solution in 2026, functioning as a capable Google Photos alternative with mobile apps for automatic backups, AI tagging, search, and multi-user su"
+  },
+  {
+    "query": "best self-hosted photo b",
+    "model": "gem-3-flash",
+    "ok": "✓",
+    "ms": 18520,
+    "ttft": 5906,
+    "cost_c": "$1.366¢",
+    "products": 3,
+    "name_ung": 0,
+    "num_ung": 0,
+    "avg_pros": 3,
+    "avg_cons": 2,
+    "has_verdict": 3,
+    "has_rating": 3,
+    "products_list": [
+      {
+        "name": "Immich",
+        "rating": 4.5,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "Immich is the gold standard for users wanting to ditch Google Photos without losing the 'app' experience. Hands-on repor"
+      },
+      {
+        "name": "PhotoPrism",
+        "rating": 4,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "PhotoPrism is the best choice for those who already have a curated folder structure on a NAS and want powerful AI search"
+      },
+      {
+        "name": "Synology Photos",
+        "rating": 3.5,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "While less customizable than open-source Docker options, Synology Photos is the most reliable 'set and forget' solution "
+      }
+    ],
+    "summary": "Recent findings from 2026 indicate that Immich has consolidated its position as the leading self-hosted alternative to Google Photos, though its high RAM requirements make it heavy for low-power hardw"
+  },
+  {
+    "query": "best self-hosted photo b",
+    "model": "dsv4-flash",
+    "ok": "✓",
+    "ms": 24327,
+    "ttft": 1923,
+    "cost_c": "$0.266¢",
+    "products": 4,
+    "name_ung": 1,
+    "num_ung": 0,
+    "avg_pros": 4.3,
+    "avg_cons": 3.5,
+    "has_verdict": 4,
+    "has_rating": 4,
+    "products_list": [
+      {
+        "name": "Immich",
+        "rating": 4.5,
+        "pros": 5,
+        "cons": 3,
+        "verdict": "Immich is the strongest open-source self-hosted photo backup solution, offering a feature set that genuinely rivals Goog"
+      },
+      {
+        "name": "PhotoPrism",
+        "rating": 4,
+        "pros": 4,
+        "cons": 3,
+        "verdict": "PhotoPrism is a polished, lightweight alternative that excels at AI tagging and works well on lower-end hardware. Its mo"
+      },
+      {
+        "name": "Piwigo",
+        "rating": 3.5,
+        "pros": 4,
+        "cons": 4,
+        "verdict": "Piwigo is an old, reliable workhorse for small photo galleries that need to be shared publicly. It lacks modern features"
+      },
+      {
+        "name": "Nextcloud (with Memories App)",
+        "rating": 3.5,
+        "pros": 4,
+        "cons": 4,
+        "verdict": "Nextcloud is the best all-in-one self-hosted cloud platform; if you already use it for file sync, the Memories app adds "
+      }
+    ],
+    "summary": "After analyzing dozens of sources, the clear top pick for self-hosted photo backup is Immich – a free, open-source, feature-rich solution that rivals Google Photos. It offers automatic mobile uploads,"
+  },
+  {
+    "query": "best self-hosted photo b",
+    "model": "qwen3.7-plus",
+    "ok": "✓",
+    "ms": 41218,
+    "ttft": 1826,
+    "cost_c": "$0.728¢",
+    "products": 3,
+    "name_ung": 0,
+    "num_ung": 0,
+    "avg_pros": 3,
+    "avg_cons": 3,
+    "has_verdict": 3,
+    "has_rating": 3,
+    "products_list": [
+      {
+        "name": "Immich",
+        "rating": 4.5,
+        "pros": 3,
+        "cons": 3,
+        "verdict": "Immich is the top recommendation for users seeking a true Google Photos replacement who possess the technical skills to "
+      },
+      {
+        "name": "PhotoPrism",
+        "rating": 4,
+        "pros": 3,
+        "cons": 3,
+        "verdict": "PhotoPrism is a strong contender for users who prioritize powerful AI tagging and desktop management over a seamless mob"
+      },
+      {
+        "name": "Synology Photos",
+        "rating": 4,
+        "pros": 3,
+        "cons": 3,
+        "verdict": "Synology Photos is the best choice for users who want a reliable, appliance-like experience and are willing to invest in"
+      }
+    ],
+    "summary": "Immich is the dominant self-hosted photo backup solution in 2026, offering a modern interface and feature set that closely mirrors Google Photos. It requires significant hardware resources (minimum 6G"
+  },
+  {
+    "query": "best self-hosted photo b",
+    "model": "gpt-5.4-nano",
+    "ok": "✓",
+    "ms": 14992,
+    "ttft": 506,
+    "cost_c": "$0.475¢",
+    "products": 2,
+    "name_ung": 2,
+    "num_ung": 0,
+    "avg_pros": 3,
+    "avg_cons": 3,
+    "has_verdict": 2,
+    "has_rating": 1,
+    "products_list": [
+      {
+        "name": "Immich (self-hosted photo and video management/backup platform)",
+        "rating": 4,
+        "pros": 3,
+        "cons": 3,
+        "verdict": "Immich is the only self-hosted photo backup/management option that can be supported with attributable, relatively curren"
+      },
+      {
+        "name": "PhotoPrism (self-hosted photo gallery)",
+        "rating": null,
+        "pros": 3,
+        "cons": 3,
+        "verdict": "PhotoPrism appears in the dataset as a self-hosted alternative, but the provided sources don’t include the kind of backu"
+      }
+    ],
+    "summary": "The provided research data is heavily incomplete: most source pages (including key self-hosting discussions and Reddit threads) returned 403/blocked content, so only general Immich-related claims coul"
+  },
+  {
+    "query": "best self-hosted photo b",
+    "model": "gpt-5.4-mini",
+    "ok": "✓",
+    "ms": 9743,
+    "ttft": 699,
+    "cost_c": "$1.622¢",
+    "products": 1,
+    "name_ung": 0,
+    "num_ung": 0,
+    "avg_pros": 3,
+    "avg_cons": 3,
+    "has_verdict": 1,
+    "has_rating": 1,
+    "products_list": [
+      {
+        "name": "Immich",
+        "rating": 4.5,
+        "pros": 3,
+        "cons": 3,
+        "verdict": "Immich is the only pick I would confidently put at the top from these sources. The 2026 docs and recent writeups support"
+      }
+    ],
+    "summary": "The only clearly supportable recommendation from the provided sources is Immich. It has fresh 2026 documentation and multiple recent writeups describing it as an open-source, self-hosted photo and vid"
+  },
+  {
+    "query": "best self-hosted photo b",
+    "model": "gpt-5.5",
+    "ok": "✓",
+    "ms": 85100,
+    "ttft": 49352,
+    "cost_c": "$26.894¢",
+    "products": 3,
+    "name_ung": 2,
+    "num_ung": 0,
+    "avg_pros": 5,
+    "avg_cons": 4,
+    "has_verdict": 3,
+    "has_rating": 3,
+    "products_list": [
+      {
+        "name": "Immich self-hosted photo and video management solution",
+        "rating": 4.5,
+        "pros": 5,
+        "cons": 4,
+        "verdict": "Immich is the one I would pick first for a serious self-hosted Google Photos-style backup setup. The evidence is much st"
+      },
+      {
+        "name": "PhotoPrism self-hosted photo library",
+        "rating": 3.5,
+        "pros": 5,
+        "cons": 4,
+        "verdict": "PhotoPrism is a respectable pick if your priority is browsing, tagging, and searching an existing self-hosted photo arch"
+      },
+      {
+        "name": "Nextcloud self-hosted file sync with mobile photo backup",
+        "rating": 3,
+        "pros": 5,
+        "cons": 4,
+        "verdict": "Nextcloud is worth considering only if you want general self-hosted file sync that also backs up phone photos. For a ded"
+      }
+    ],
+    "summary": "Immich is the clear top self-hosted photo backup pick in the available 2026 evidence: it is purpose-built for photo/video backup, has mobile upload support, documented backup/restore tooling, and far "
+  },
+  {
+    "query": "best self-hosted photo b",
+    "model": "gpt-5.5-pro",
+    "ok": "✗",
+    "ms": 120000,
+    "ttft": "—",
+    "cost_c": "$0",
+    "error": "hard"
+  },
+  {
+    "query": "best self-hosted photo b",
+    "model": "gpt-5.4",
+    "ok": "✓",
+    "ms": 24808,
+    "ttft": 681,
+    "cost_c": "$7.165¢",
+    "products": 3,
+    "name_ung": 0,
+    "num_ung": 0,
+    "avg_pros": 4.3,
+    "avg_cons": 4,
+    "has_verdict": 3,
+    "has_rating": 3,
+    "products_list": [
+      {
+        "name": "Immich",
+        "rating": 4.5,
+        "pros": 5,
+        "cons": 4,
+        "verdict": "Immich is the most convincing pick in this source set because it has current official docs, active development signals, "
+      },
+      {
+        "name": "PhotoPrism",
+        "rating": 3.5,
+        "pros": 4,
+        "cons": 4,
+        "verdict": "PhotoPrism looks like a credible alternative, especially if you want a lighter baseline footprint and established self-h"
+      },
+      {
+        "name": "Nextcloud Photos",
+        "rating": 3,
+        "pros": 4,
+        "cons": 4,
+        "verdict": "Nextcloud is credible enough to include because it is established and repeatedly suggested for self-hosted backups, but "
+      }
+    ],
+    "summary": "The strongest evidence in the provided 2025–2026 sources supports Immich as the best current self-hosted photo backup software for most people who are willing to run their own server. PhotoPrism and N"
+  },
+  {
+    "query": "best self-hosted photo b",
+    "model": "gemini-flash",
+    "ok": "✓",
+    "ms": 15725,
+    "ttft": 877,
+    "cost_c": "$1.032¢",
+    "products": 3,
+    "name_ung": 1,
+    "num_ung": 0,
+    "avg_pros": 4,
+    "avg_cons": 3.3,
+    "has_verdict": 3,
+    "has_rating": 3,
+    "products_list": [
+      {
+        "name": "Immich",
+        "rating": 4.5,
+        "pros": 4,
+        "cons": 4,
+        "verdict": "Immich is an excellent open-source, self-hosted alternative to Google Photos, offering powerful features for managing la"
+      },
+      {
+        "name": "PhotoPrism",
+        "rating": 4,
+        "pros": 4,
+        "cons": 3,
+        "verdict": "PhotoPrism offers a strong open-source solution for self-hosted photo management, leveraging AI for organization and emp"
+      },
+      {
+        "name": "Nextcloud (with Photos app)",
+        "rating": 3.5,
+        "pros": 4,
+        "cons": 3,
+        "verdict": "Nextcloud provides a versatile self-hosted cloud platform, and its photo capabilities offer a viable backup solution. Wh"
+      }
+    ],
+    "summary": "This report analyzes self-hosted photo backup software, focusing on open-source solutions that provide an alternative to cloud-based services like Google Photos. Immich stands out as the most frequent"
+  },
+  {
+    "query": "best self-hosted photo b",
+    "model": "flash-lite",
+    "ok": "✓",
+    "ms": 9354,
+    "ttft": 717,
+    "cost_c": "$0.259¢",
+    "products": 3,
+    "name_ung": 0,
+    "num_ung": 0,
+    "avg_pros": 5,
+    "avg_cons": 3,
+    "has_verdict": 3,
+    "has_rating": 3,
+    "products_list": [
+      {
+        "name": "Immich",
+        "rating": 4.5,
+        "pros": 5,
+        "cons": 3,
+        "verdict": "Immich is a leading open-source, self-hosted photo and video backup solution that provides a powerful alternative to clo"
+      },
+      {
+        "name": "PhotoPrism",
+        "rating": 4,
+        "pros": 5,
+        "cons": 3,
+        "verdict": "PhotoPrism is an excellent choice for users who prioritize AI-driven organization and search capabilities within a self-"
+      },
+      {
+        "name": "Nextcloud",
+        "rating": 3.5,
+        "pros": 5,
+        "cons": 3,
+        "verdict": "Nextcloud offers a complete self-hosted cloud solution, where photo backup is one of many integrated features. It's a go"
+      }
+    ],
+    "summary": "For self-hosted photo backup, Immich stands out as a robust, open-source solution that directly rivals Google Photos. While requiring a dedicated server environment and technical setup, it offers comp"
+  }
+]
