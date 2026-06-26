@@ -96,17 +96,17 @@ topical_category: a short freeform label describing what's being researched (e.g
 
 suggested_refinement (only when relevant): a short nudge helping an ambiguous or rejected query become answerable. For rejects, suggest an adjacent allowed query. For vague accepts, suggest a sharper phrasing. null if not needed.
 
-clarifying_questions: 0-3 questions the Full/Exhaustive tier will surface on an interstitial page BEFORE running the pipeline. Instant tier ignores these. Only ask when a specific answer would materially change the top pick — a $40 Redragon vs a $250 Keychron are both valid "best mechanical keyboard" picks depending on budget. If the query is already specific enough to land a good answer, return []. Each question has a STRUCTURED key (pick from: interpretation, budget, location, timeframe, platform, use_case, household_size, experience_level, or propose a new snake_case key), a human "question" string, and 2-5 "suggested_answers" quick-pick strings.
+clarifying_questions: 1-3 optional multiple-choice questions shown BEFORE research runs. Users can skip any or all — but we always offer at least one so we get constraints right the first time. Only return [] when the query already states 3+ specific constraints (budget + use case + location/size, etc.). Each question has a STRUCTURED key (pick from: interpretation, budget, location, timeframe, platform, use_case, household_size, experience_level, or propose a new snake_case key), a human "question" string, and 2-5 "suggested_answers" quick-pick strings.
 
 AMBIGUITY — this is critical. When a query is a bare noun or brand name that has multiple plausible interpretations (product vs company, product category vs specific brand, homophones), the FIRST clarifying question MUST use key="interpretation" and resolve the ambiguity. Examples: "best apple" (fruit vs Apple-the-company), "best mustang" (Ford car vs horse breed vs fighter plane), "best fire stick" (Amazon Fire TV vs actual fire-starting tool), "best tiger" (animal vs Tiger Woods vs martial arts). NEVER silently assume one interpretation — the report is useless if the user meant the other thing. When in doubt about ambiguity, ASK.
 
 Examples:
 - "best mesh wifi" → [{"key":"budget","question":"What's your budget?","suggested_answers":["Under $200","$200-500","$500+"]},{"key":"household_size","question":"Home size?","suggested_answers":["Apartment","Small house","Large house / multi-story"]}]
 - "best mechanical keyboard" → [{"key":"budget","question":"Budget?","suggested_answers":["Under $75","$75-150","$150-300","$300+"]},{"key":"use_case","question":"Primary use?","suggested_answers":["Programming / typing","Gaming","Both"]}]
-- "best pizza in Brooklyn" → []  (already specific — known cuisine, known location)
-- "best Thai restaurant in Portland Oregon" → []  (already specific)
-- "best gaming laptop under $1500" → [{"key":"use_case","question":"Primary game type?","suggested_answers":["AAA / high-settings","Esports / competitive","Indie + streaming"]}]  (budget already stated)
-- "best mesh wifi for a 3000 sqft house with 40 devices" → []  (size + device count already stated)
+- "best pizza in Brooklyn" → [{"key":"priority","question":"What matters most?","suggested_answers":["Best overall slice","Best value","Sit-down experience","Late-night option"]}]
+- "best Thai restaurant in Portland Oregon" → [{"key":"priority","question":"What are you optimizing for?","suggested_answers":["Most authentic","Best value","Date night / ambiance","Quick takeout"]}]
+- "best gaming laptop under $1500" → [{"key":"use_case","question":"Primary game type?","suggested_answers":["AAA / high-settings","Esports / competitive","Indie + streaming"]}]  (budget already stated — still ask one)
+- "best mesh wifi for a 3000 sqft house with 40 devices under $500 for gaming" → []  (3+ constraints already stated)
 - "best apple" → [{"key":"interpretation","question":"Which do you mean?","suggested_answers":["Apple variety to eat","Apple Inc. product (iPhone/Mac/etc)"]}]  (ambiguous — must resolve before research)
 - "best mustang" → [{"key":"interpretation","question":"Which mustang?","suggested_answers":["Ford Mustang (car)","Mustang horse breed","P-51 Mustang (aircraft)"]}]
 - "best fire stick" → [{"key":"interpretation","question":"Which fire stick?","suggested_answers":["Amazon Fire TV Stick","Fire-starting tool / ferro rod"]}]
@@ -143,6 +143,54 @@ function parseClarifyingQuestions(raw) {
     out.push({ key, question, suggested_answers: answers });
   }
   return out;
+}
+
+/** Fallback when the LLM returns no questions — always offer at least one skippable MCQ. */
+function ensureClarifyingQuestions(query, facets, existing) {
+  if (existing.length > 0) return existing;
+  const q = query.toLowerCase();
+  const out = [];
+
+  const hasBudget = /\$\d|under\s+\$|budget|cheap|affordable|price\s+range|\$\d+\s*-\s*\$?\d+/i.test(q);
+  const hasLocation = /\bin\s+[a-z]|near me|in my area|my city|local\b|,\s*[a-z]{2,}/i.test(q);
+  const hasUseCase = /\bfor\s+(a\s+)?\w{3,}|mainly|primary use|use case/i.test(q);
+
+  if (!hasBudget && facets.is_buyable) {
+    out.push({
+      key: 'budget',
+      question: 'What\u2019s your budget?',
+      suggested_answers: ['Under $50', '$50\u2013150', '$150\u2013300', '$300+', 'No strict budget'],
+    });
+  }
+  if (!hasLocation && (facets.needs_location || facets.is_experience || facets.is_service)) {
+    out.push({
+      key: 'location',
+      question: 'Where are you looking?',
+      suggested_answers: ['My city / area', 'United States (general)', 'Online only', 'No preference'],
+    });
+  }
+  if (!hasUseCase) {
+    out.push({
+      key: 'use_case',
+      question: 'What matters most to you?',
+      suggested_answers: ['Best overall quality', 'Best value for money', 'Easiest to use', 'Most durable'],
+    });
+  }
+  if (out.length === 0) {
+    out.push({
+      key: 'priority',
+      question: 'What should we optimize for?',
+      suggested_answers: ['Best overall pick', 'Best value', 'Premium / no compromise', 'Just show me the top one'],
+    });
+  }
+  return out.slice(0, 3);
+}
+
+function withDefaultQuestions(query, result) {
+  if (!result.accept) return result;
+  const questions = ensureClarifyingQuestions(query, result.facets, result.clarifying_questions);
+  if (questions === result.clarifying_questions) return result;
+  return { ...result, clarifying_questions: questions };
 }
 
 function validate(raw) {
@@ -211,6 +259,10 @@ const FAILOPEN_RESULT = {
   clarifying_questions: [],
 };
 
+export function defaultQuestionsForQuery(query) {
+  return ensureClarifyingQuestions(query, DEFAULT_FACETS, []);
+}
+
 export async function classifyQuery(env, query, canonical) {
   // Cache first — identical canonical queries skip the classifier.
   const cacheKey = `classifier:${CACHE_VERSION}:${canonical}`;
@@ -219,7 +271,7 @@ export async function classifyQuery(env, query, canonical) {
       const cached = await env.KV.get(cacheKey);
       if (cached) {
         const parsed = validate(JSON.parse(cached));
-        if (parsed) return parsed;
+        if (parsed) return withDefaultQuestions(query, parsed);
       }
     } catch { /* cache read failures are non-fatal */ }
   }
@@ -250,29 +302,31 @@ export async function classifyQuery(env, query, canonical) {
 
     if (!response.ok) {
       console.warn('[classifier] non-ok response:', response.status);
-      return FAILOPEN_RESULT;
+      return withDefaultQuestions(query, FAILOPEN_RESULT);
     }
     const data = await response.json();
     content = data.choices?.[0]?.message?.content ?? '';
   } catch (err) {
     console.warn('[classifier] request failed:', err instanceof Error ? err.message : String(err));
-    return FAILOPEN_RESULT;
+    return withDefaultQuestions(query, FAILOPEN_RESULT);
   }
 
   const parsed = validate(extractJson(content));
   if (!parsed) {
     console.warn('[classifier] unparseable response:', content.slice(0, 200));
-    return FAILOPEN_RESULT;
+    return withDefaultQuestions(query, FAILOPEN_RESULT);
   }
+
+  const result = withDefaultQuestions(query, parsed);
 
   // Cache the result — both accepts and rejects, so repeated bad-faith queries
   // are cheap to turn away too.
   if (canonical) {
     try {
-      await env.KV.put(cacheKey, JSON.stringify(parsed), { expirationTtl: CACHE_TTL_SECONDS });
+      await env.KV.put(cacheKey, JSON.stringify(result), { expirationTtl: CACHE_TTL_SECONDS });
     } catch { /* cache write failures are non-fatal */ }
   }
-  return parsed;
+  return result;
 }
 
 export function userFacingRejection(category) {

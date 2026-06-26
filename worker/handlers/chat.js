@@ -5,8 +5,9 @@
  *  - refine (no slug): help the visitor figure out WHAT to research before
  *    running the pipeline. May return suggested_query when the conversation
  *    converges on a researchable question.
- *  - report (slug): answer follow-up questions grounded in a completed
- *    research report (summary + ranked products + buyer's guide).
+ *  - report ask (slug): answer follow-up questions grounded in a completed report.
+ *  - report refine (slug + mode=refine): chat to reshape constraints and rerun
+ *    research via suggested_query + refinements map.
  *
  * Cheap by design: google/gemini-2.5-flash, ≤700 output tokens, 20 msgs/hr/IP,
  * and every call's real cost feeds the same monthly budget governor as
@@ -76,6 +77,39 @@ Rules:
 Respond ONLY with JSON: {"reply": string, "suggested_query": string | null}`;
 }
 
+function reportRefineSystemPrompt(entry, products, resultData, clarifications) {
+    const productLines = products.slice(0, 8).map((p) => {
+        const bits = [
+            `#${p.rank ?? '?'} ${p.name}`,
+            p.price != null ? `$${p.price}` : null,
+            p.best_for ? `best for: ${p.best_for}` : null,
+        ].filter(Boolean);
+        return `- ${bits.join(' | ')}`;
+    }).join('\n');
+
+    const clarifyText = Object.keys(clarifications).length > 0
+        ? Object.entries(clarifications).map(([k, v]) => `${k}: ${v}`).join('; ')
+        : '(none)';
+
+    return `You are TrueRank's research refinement assistant. The user already has a completed report and wants to REFINE or RERUN the research with different constraints — narrower budget, different use case, exclude certain picks, focus on a sub-category, etc.
+
+ORIGINAL QUERY: "${displayQuery(entry.query)}"
+PREVIOUS CLARIFICATIONS: ${clarifyText}
+SUMMARY: ${entry.summary || '(none)'}
+RANKED ITEMS:
+${productLines || '(none)'}
+
+Your job: help them figure out what to change. Ask at most ONE short question per turn until you have enough to propose a refined research run.
+
+Rules:
+- Plain text, under 100 words, no markdown.
+- Never invent new product rankings — only help reshape the question.
+- When ready, set suggested_query to a specific researchable query AND refinements to a map of snake_case constraint keys → short values (budget, use_case, location, etc.). Merge changed constraints with what they asked for.
+- If still clarifying, set suggested_query and refinements to null.
+
+Respond ONLY with JSON: {"reply": string, "suggested_query": string | null, "refinements": object | null}`;
+}
+
 function jsonResponse(data, status = 200) {
     return new Response(JSON.stringify(data), {
         status,
@@ -124,6 +158,7 @@ export async function handleChat(request, env) {
     // Build the system prompt for the requested mode.
     let systemPrompt = REFINE_SYSTEM_PROMPT;
     const slug = typeof body?.slug === 'string' ? body.slug.trim().slice(0, 200) : '';
+    const mode = body?.mode === 'refine' ? 'refine' : 'ask';
     if (slug) {
         if (!/^[a-z0-9-]+$/.test(slug)) return jsonResponse({ error: 'Invalid slug' }, 400);
         const entry = await getResearchBySlug(env.DB, slug);
@@ -136,7 +171,11 @@ export async function handleChat(request, env) {
             pros: parseJsonSafe(p.pros, []),
             cons: parseJsonSafe(p.cons, []),
         }));
-        systemPrompt = reportSystemPrompt(entry, products, parseJsonSafe(entry.result, {}));
+        const resultData = parseJsonSafe(entry.result, {});
+        const clarifications = parseJsonSafe(entry.clarifications, {});
+        systemPrompt = mode === 'refine'
+            ? reportRefineSystemPrompt(entry, products, resultData, clarifications)
+            : reportSystemPrompt(entry, products, resultData);
     }
 
     let content = '';
@@ -179,11 +218,31 @@ export async function handleChat(request, env) {
     const parsed = parseJsonSafe(content, null);
     const reply = typeof parsed?.reply === 'string' ? parsed.reply.trim().slice(0, 2000) : '';
     const suggested = typeof parsed?.suggested_query === 'string' ? parsed.suggested_query.trim().slice(0, 200) : null;
+
+    // Sanitize optional refinements map (refine mode only).
+    let refinements = null;
+    if (parsed?.refinements && typeof parsed.refinements === 'object') {
+        refinements = {};
+        let i = 0;
+        for (const [k, v] of Object.entries(parsed.refinements)) {
+            if (i >= 5) break;
+            if (typeof k !== 'string' || typeof v !== 'string') continue;
+            const key = k.trim().slice(0, 40).replace(/[^a-z0-9_]/gi, '_').toLowerCase();
+            const val = v.trim().slice(0, 80);
+            if (key && val) { refinements[key] = val; i++; }
+        }
+        if (Object.keys(refinements).length === 0) refinements = null;
+    }
+
     if (!reply) {
         // Model returned non-JSON or empty — degrade to raw text if plausible.
         const fallback = String(content || '').trim().slice(0, 2000);
         if (!fallback) return jsonResponse({ error: 'Empty response — try again.' }, 502);
-        return jsonResponse({ reply: fallback, suggestedQuery: null });
+        return jsonResponse({ reply: fallback, suggestedQuery: null, refinements: null });
     }
-    return jsonResponse({ reply, suggestedQuery: suggested && suggested.length >= 3 ? suggested : null });
+    return jsonResponse({
+        reply,
+        suggestedQuery: suggested && suggested.length >= 3 ? suggested : null,
+        refinements,
+    });
 }

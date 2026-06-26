@@ -121,6 +121,7 @@ ${extra_head}
 <nav class="flex items-center gap-6" aria-label="Main navigation">
 <a href="/" class="hidden text-body-sm text-ink-2 transition-colors hover:text-ink sm:inline">Home</a>
 <a href="/research" class="hidden text-body-sm text-ink-2 transition-colors hover:text-ink sm:inline">Browse</a>
+<a href="/history" class="hidden text-body-sm text-ink-2 transition-colors hover:text-ink sm:inline" title="Your past searches">Your searches</a>
 <a href="/reviews" class="hidden text-body-sm text-ink-2 transition-colors hover:text-ink sm:inline">Reviews</a>
 <a href="/best/" class="hidden text-body-sm text-ink-2 transition-colors hover:text-ink sm:inline">Guides</a>
 <a href="/about" class="hidden text-body-sm text-ink-2 transition-colors hover:text-ink sm:inline">About</a>

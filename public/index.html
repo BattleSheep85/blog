@@ -95,6 +95,7 @@
             <a href="/" class="text-lg font-semibold tracking-tight text-ink">True<span class="font-serif italic text-accent">Rank</span></a>
             <nav class="flex items-center gap-6">
                 <a href="/research" class="hidden text-body-sm text-ink-2 transition-colors hover:text-ink sm:inline">Browse</a>
+                <a href="/history" class="hidden text-body-sm text-ink-2 transition-colors hover:text-ink sm:inline" title="Your past searches">Your searches</a>
                 <a href="#how-it-works" class="hidden text-body-sm text-ink-2 transition-colors hover:text-ink sm:inline">How it works</a>
                 <a href="/reviews" class="hidden text-body-sm text-ink-2 transition-colors hover:text-ink sm:inline">Reviews</a>
                 <a href="/best/" class="hidden text-body-sm text-ink-2 transition-colors hover:text-ink sm:inline">Guides</a>
@@ -111,6 +112,12 @@
 
         <!-- Hero -->
         <section id="hero" class="py-20 text-center md:py-28">
+            <div class="mb-8 inline-flex rounded-xl border border-line bg-surface-1 p-1" role="tablist" aria-label="Home sections">
+                <button type="button" role="tab" id="home-tab-search" aria-selected="true" aria-controls="home-search-panel" data-home-tab="search" class="rounded-lg px-4 py-2 text-body-sm font-semibold text-ink bg-accent-quiet">New search</button>
+                <button type="button" role="tab" id="home-tab-history" aria-selected="false" aria-controls="home-history-panel" data-home-tab="history" class="rounded-lg px-4 py-2 text-body-sm font-semibold text-ink-3 transition-colors hover:text-ink">Your searches</button>
+            </div>
+
+            <div id="home-search-panel" role="tabpanel" aria-labelledby="home-tab-search">
             <span class="text-overline uppercase text-accent">Product research without the BS</span>
             <h1 class="mx-auto mt-4 max-w-3xl font-serif text-display font-semibold leading-tight text-ink">Find the best one. <span class="text-accent">Trust why.</span></h1>
             <p class="mx-auto mt-5 max-w-[52ch] text-lead text-ink-2">We read the real reviews on Reddit, forums, and independent testers, strip out the affiliate bait and marketing fluff, then hand you one honest ranking with a clickable receipt for every claim.</p>
@@ -163,6 +170,13 @@
                 <span class="inline-flex items-center gap-1.5"><span class="h-1.5 w-1.5 rounded-full bg-trust-high"></span>Reddit and forums</span>
                 <span class="inline-flex items-center gap-1.5"><span class="h-1.5 w-1.5 rounded-full bg-trust-high"></span>Affiliate bait filtered</span>
                 <span class="inline-flex items-center gap-1.5"><span class="h-1.5 w-1.5 rounded-full bg-trust-high"></span>Every claim sourced</span>
+            </div>
+            </div>
+
+            <div id="home-history-panel" role="tabpanel" aria-labelledby="home-tab-history" class="hidden text-left">
+                <h2 class="font-serif text-h2 font-semibold text-ink text-center">Your searches</h2>
+                <p class="mx-auto mt-2 max-w-md text-center text-body-sm text-ink-3">Everything you research on this device shows up here. <a href="/account" class="font-medium text-accent hover:text-accent-hover">Sign in</a> to sync across devices.</p>
+                <div id="home-history-list" class="mx-auto mt-8 max-w-4xl" aria-live="polite"></div>
             </div>
         </section>
 
@@ -390,6 +404,7 @@
                     <div class="flex flex-col gap-2">
                         <span class="text-overline uppercase text-ink-3">Explore</span>
                         <a href="/research" class="text-body-sm text-ink-2 hover:text-ink">Browse research</a>
+<a href="/history" class="text-body-sm text-ink-2 hover:text-ink">Your searches</a>
                         <a href="/reviews" class="text-body-sm text-ink-2 hover:text-ink">Reviews</a>
                         <a href="/best/" class="text-body-sm text-ink-2 hover:text-ink">Guides</a>
                         <a href="#how-it-works" class="text-body-sm text-ink-2 hover:text-ink">How it works</a>
@@ -410,6 +425,7 @@
         </div>
     </footer>
 
+    <script nonce="__CSP_NONCE__" src="/js/history.js"></script>
     <script nonce="__CSP_NONCE__" src="/js/app.js"></script>
 </body>
 </html>

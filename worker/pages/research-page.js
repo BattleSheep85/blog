@@ -584,6 +584,29 @@ export async function renderResearchResult(slug, env, fromQuery = null, cleanLin
   const shareText = encodeURIComponent(displayTitle);
   const shareUrl = encodeURIComponent(pageUrl);
 
+  const chatSection = `<section id="talk-about-it" class="report-chat-feature" style="margin:1.5rem 0;padding:1.15rem 1.25rem;background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 7%,var(--surface-1)),var(--surface-1));border:1px solid color-mix(in srgb,var(--accent) 30%,var(--line));border-left:3px solid var(--accent);border-radius:0.875rem;box-shadow:var(--card)">
+<div style="display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:.75rem;margin-bottom:.85rem">
+<div>
+<span style="display:inline-block;font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:.25rem">Interactive</span>
+<h2 style="font-size:1.15rem;font-weight:700;margin:0;color:var(--ink)">Talk about this research</h2>
+<p style="font-size:.88rem;color:var(--ink-2);margin:.35rem 0 0;max-width:42rem">Ask follow-up questions about the ranking, or refine the search and rerun it with new constraints.</p>
+</div>
+</div>
+<div style="display:flex;gap:.5rem;margin-bottom:.85rem" role="tablist" aria-label="Chat mode">
+<button type="button" id="chat-tab-ask" role="tab" aria-selected="true" aria-controls="chat-panel-ask" data-chat-tab="ask" class="btn" style="font-size:.82rem;padding:.45rem .85rem;background:var(--accent-quiet);border-color:var(--accent);color:var(--accent)">Ask about it</button>
+<button type="button" id="chat-tab-refine" role="tab" aria-selected="false" aria-controls="chat-panel-refine" data-chat-tab="refine" class="btn" style="font-size:.82rem;padding:.45rem .85rem">Refine this search</button>
+</div>
+<div class="chat-panel" style="background:var(--bg);border:1px solid var(--line);border-radius:0.75rem;padding:1rem">
+<div id="chat-messages" style="display:flex;flex-direction:column;gap:.6rem;max-height:16rem;overflow-y:auto;margin-bottom:.75rem" aria-live="polite"></div>
+<form id="chat-form" style="display:flex;gap:.5rem;margin:0">
+<label for="chat-input" class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Your message</label>
+<input id="chat-input" type="text" maxlength="2000" autocomplete="off" placeholder="e.g. Which one is best for a small apartment?" style="flex:1;min-width:0;padding:.6rem .75rem;background:var(--surface-1);border:1px solid var(--line);border-radius:8px;color:var(--ink);font-size:.9rem">
+<button type="submit" class="btn" style="font-size:.85rem;padding:.6rem 1rem;white-space:nowrap">Send</button>
+</form>
+<p id="chat-status" role="status" aria-live="polite" style="font-size:.78rem;color:var(--ink-3);margin-top:.5rem;min-height:1em"></p>
+</div>
+</section>`;
+
   const body = `<div class="container" style="max-width:64rem;padding:3rem 1.5rem">
 <nav aria-label="Breadcrumb" class="breadcrumb" style="font-size:.85rem;color:var(--ink-2);margin-bottom:1rem">
 <a href="/" style="color:var(--ink-2)">Home</a>
@@ -624,6 +647,8 @@ ${Object.entries(clarifications).map(([k, v]) => `<span class="card-badge" style
 </div>
 </div>` : ''}
 
+${entry.status === 'complete' ? chatSection : ''}
+
 ${isProcessing ? `<div id="processing" style="padding:1.5rem;background:var(--surface-1);border:1px solid color-mix(in srgb,var(--accent) 30%,transparent);border-radius:0.875rem;margin:2rem 0">
 <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1rem">
 <div class="spinner" style="width:1.5rem;height:1.5rem;border-width:2px;margin:0;flex-shrink:0"></div>
@@ -655,6 +680,7 @@ ${isFailed ? `<div style="padding:1.5rem;background:var(--trust-low-bg);border:1
 
 ${entry.status === 'complete' ? (() => {
   const tocItems = [];
+  tocItems.push({ id: 'talk-about-it', label: 'Ask or refine' });
   if (entry.summary) tocItems.push({ id: 'summary', label: 'Summary' });
   if (hasBuyersGuide) tocItems.push({ id: 'buyers-guide', label: "Buyer's guide" });
   if (products.length > 0) tocItems.push({ id: 'products', label: isService ? 'Recommendations' : 'Products compared' });
@@ -708,20 +734,6 @@ ${related.length > 0 ? `<section class="related-research" style="margin-top:3rem
 ${r.category ? `<div class="card-top"><span class="card-badge">${escapeHtml(r.category)}</span><span class="card-time">${timeAgo(r.created_at * 1000)}</span></div>` : `<div class="card-top"><span class="card-time">${timeAgo(r.created_at * 1000)}</span></div>`}
 <h3>${escapeHtml(displayQuery(r.query))}</h3>
 </a>`).join('')}</div>
-</section>` : ''}
-
-${entry.status === 'complete' ? `<section id="talk-about-it" style="margin-top:3rem;padding-top:2rem;border-top:1px solid var(--line)">
-<h2 style="font-size:1.1rem;font-weight:600;margin-bottom:.35rem">Talk about it</h2>
-<p style="font-size:.88rem;color:var(--ink-2);margin-bottom:1rem">Ask anything about this comparison — why one ranked above another, which fits your situation, what to watch out for.</p>
-<div class="chat-panel" style="background:var(--surface-1);border:1px solid var(--line);border-radius:0.875rem;padding:1rem">
-<div id="chat-messages" style="display:flex;flex-direction:column;gap:.6rem;max-height:22rem;overflow-y:auto;margin-bottom:.75rem" aria-live="polite"></div>
-<form id="chat-form" style="display:flex;gap:.5rem;margin:0">
-<label for="chat-input" class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Your question</label>
-<input id="chat-input" type="text" maxlength="2000" autocomplete="off" placeholder="e.g. Which one is best for a small apartment?" style="flex:1;min-width:0;padding:.6rem .75rem;background:var(--bg);border:1px solid var(--line);border-radius:8px;color:var(--ink);font-size:.9rem">
-<button type="submit" class="btn" style="font-size:.85rem;padding:.6rem 1rem;white-space:nowrap">Ask</button>
-</form>
-<p id="chat-status" role="status" aria-live="polite" style="font-size:.78rem;color:var(--ink-3);margin-top:.5rem;min-height:1em"></p>
-</div>
 </section>` : ''}
 
 <div style="margin-top:3rem;padding-top:2rem;border-top:1px solid var(--line)">
@@ -1057,9 +1069,7 @@ document.addEventListener('DOMContentLoaded',function(){
   window.__rewire=function(){if(typeof prev==='function')prev();wire()};
 })();
 </script>`;
-  // "Talk about it": grounded follow-up chat against this report via /api/chat.
-  // Transcript lives client-side (max 16 turns, matching the API cap); when the
-  // model suggests a fresh research query, render a one-click run button.
+  // Report chat: "Ask about it" Q&A + "Refine this search" re-run via /api/chat.
   const chatScript = `<script nonce="__CSP_NONCE__">
 (function(){
   function wire(){
@@ -1069,7 +1079,11 @@ document.addEventListener('DOMContentLoaded',function(){
     var box=document.getElementById('chat-messages');
     var status=document.getElementById('chat-status');
     var slug='${escapeHtml(slug)}';
-    var transcript=[];
+    var mode='ask';
+    var askTranscript=[];
+    var refineTranscript=[];
+    var seeded={ask:false,refine:false};
+
     function bubble(role,text){
       var div=document.createElement('div');
       div.style.cssText='max-width:85%;padding:.55rem .8rem;border-radius:10px;font-size:.9rem;line-height:1.5;white-space:pre-wrap;'+(role==='user'
@@ -1080,34 +1094,92 @@ document.addEventListener('DOMContentLoaded',function(){
       box.scrollTop=box.scrollHeight;
       return div;
     }
-    function suggestBtn(q){
-      var f=document.createElement('form');
-      f.method='POST';f.action='/research/new';
-      f.style.cssText='align-self:flex-start;margin:0';
-      var h=document.createElement('input');h.type='hidden';h.name='q';h.value=q;f.appendChild(h);
-      var b=document.createElement('button');b.type='submit';b.className='btn';
-      b.style.cssText='font-size:.82rem;padding:.5rem .85rem';
-      b.textContent='Research: '+q;
-      f.appendChild(b);box.appendChild(f);box.scrollTop=box.scrollHeight;
+
+    function seedIntro(){
+      if(mode==='ask'&&!seeded.ask){
+        bubble('assistant','Ask anything about this comparison \\u2014 why one ranked above another, which fits your situation, what to watch out for.');
+        seeded.ask=true;
+      }
+      if(mode==='refine'&&!seeded.refine){
+        bubble('assistant','Tell me what to change \\u2014 budget, use case, things to exclude \\u2014 and I\\u2019ll help you rerun the research with sharper constraints.');
+        seeded.refine=true;
+      }
     }
+
+    function runRefinedResearch(query,refinements){
+      if(status)status.textContent='Starting refined research\\u2026';
+      fetch('/api/research',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({query:query,clarifications:refinements||{},fresh:true})
+      }).then(function(r){return r.json()}).then(function(d){
+        if(d.error){if(status)status.textContent=d.error;return;}
+        if(d.slug){window.location.href='/research/'+d.slug;return;}
+        if(d.id){window.location.href='/research/'+d.id;return;}
+        if(status)status.textContent='Something went wrong. Try again.';
+      }).catch(function(){if(status)status.textContent='Network error. Try again.'});
+    }
+
+    function actionBtn(label,query,refinements){
+      var btn=document.createElement('button');
+      btn.type='button';btn.className='btn';
+      btn.style.cssText='align-self:flex-start;font-size:.82rem;padding:.5rem .85rem';
+      btn.textContent=label;
+      btn.addEventListener('click',function(){runRefinedResearch(query,refinements)});
+      box.appendChild(btn);box.scrollTop=box.scrollHeight;
+    }
+
+    document.querySelectorAll('[data-chat-tab]').forEach(function(tab){
+      tab.addEventListener('click',function(){
+        mode=tab.dataset.chatTab;
+        document.querySelectorAll('[data-chat-tab]').forEach(function(t){
+          var active=t.dataset.chatTab===mode;
+          t.setAttribute('aria-selected',active?'true':'false');
+          t.style.background=active?'var(--accent-quiet)':'';
+          t.style.borderColor=active?'var(--accent)':'';
+          t.style.color=active?'var(--accent)':'';
+        });
+        box.innerHTML='';
+        if(status)status.textContent='';
+        input.placeholder=mode==='refine'
+          ?'e.g. Narrow it to under $100, or focus on quiet models'
+          :'e.g. Which one is best for a small apartment?';
+        seedIntro();
+      });
+    });
+
     form.addEventListener('submit',function(ev){
       ev.preventDefault();
       var text=(input.value||'').trim();
       if(!text||form.__busy)return;
       form.__busy=true;input.value='';
-      if(transcript.length>=14)transcript=transcript.slice(transcript.length-13);
+      var transcript=mode==='refine'?refineTranscript:askTranscript;
+      if(transcript.length>=14)transcript.splice(0,transcript.length-13);
       transcript.push({role:'user',content:text});
       bubble('user',text);
       var thinking=bubble('assistant','\\u2026');
       if(status)status.textContent='';
-      fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({slug:slug,messages:transcript})})
+      var body={slug:slug,messages:transcript};
+      if(mode==='refine')body.mode='refine';
+      fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
         .then(function(r){return r.json().then(function(d){return{ok:r.ok,d:d}})})
         .then(function(res){
           form.__busy=false;
           if(res.ok&&res.d&&res.d.reply){
             thinking.textContent=res.d.reply;
             transcript.push({role:'assistant',content:res.d.reply});
-            if(res.d.suggestedQuery)suggestBtn(res.d.suggestedQuery);
+            if(mode==='refine'&&res.d.suggestedQuery){
+              actionBtn('Run refined research: '+res.d.suggestedQuery,res.d.suggestedQuery,res.d.refinements);
+            }else if(res.d.suggestedQuery){
+              var f=document.createElement('form');
+              f.method='POST';f.action='/research/new';
+              f.style.cssText='align-self:flex-start;margin:0';
+              var h=document.createElement('input');h.type='hidden';h.name='q';h.value=res.d.suggestedQuery;f.appendChild(h);
+              var b=document.createElement('button');b.type='submit';b.className='btn';
+              b.style.cssText='font-size:.82rem;padding:.5rem .85rem';
+              b.textContent='Research: '+res.d.suggestedQuery;
+              f.appendChild(b);box.appendChild(f);box.scrollTop=box.scrollHeight;
+            }
           }else{
             thinking.remove();transcript.pop();
             if(status)status.textContent=(res.d&&res.d.error)||'Something went wrong. Try again.';
@@ -1118,6 +1190,7 @@ document.addEventListener('DOMContentLoaded',function(){
           if(status)status.textContent='Network error. Try again.';
         });
     });
+    seedIntro();
   }
   if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',wire)}else{wire()}
   var prev=window.__rewire;

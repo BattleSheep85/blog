@@ -92,15 +92,15 @@
         if (!sec) { startResearch(query, null); return; }
         var h = '<div class="mx-auto max-w-2xl rounded-xl border border-line bg-surface-1 p-6 shadow-card text-left">';
         h += '<h2 class="font-serif text-h3 font-semibold text-ink mb-1">A couple quick questions</h2>';
-        h += '<p class="text-body-sm text-ink-3 mb-5">Your answers sharpen the pick — or skip them and just search it as-is.</p>';
+        h += '<p class="text-body-sm text-ink-3 mb-5">Optional — pick an answer or type your own, or skip and search as-is.</p>';
         h += '<form id="clarify-inline-form">';
         questions.forEach(function (q, i) {
-            h += '<fieldset class="clarify-q mb-4 border-0 p-0"><legend class="font-sans text-body-sm font-semibold text-ink mb-2">' + esc(q.question) + '</legend><div class="chip-row flex flex-wrap gap-2">';
+            h += '<fieldset class="clarify-q mb-4 border-0 p-0" data-qkey="' + esc(q.key) + '"><legend class="font-sans text-body-sm font-semibold text-ink mb-2">' + esc(q.question) + '</legend><div class="chip-row flex flex-wrap gap-2 mb-2">';
             (q.suggested_answers || []).forEach(function (a, j) {
                 var id = 'cq' + i + '_' + j;
-                h += '<label class="chip" for="' + id + '"><input type="radio" id="' + id + '" name="q_' + esc(q.key) + '" value="' + esc(a) + '"><span>' + esc(a) + '</span></label>';
+                h += '<label class="chip" for="' + id + '"><input type="radio" id="' + id + '" name="q_' + esc(q.key) + '" value="' + esc(a) + '" data-chip><span>' + esc(a) + '</span></label>';
             });
-            h += '</div></fieldset>';
+            h += '</div><input type="text" name="q_' + esc(q.key) + '_custom" placeholder="Or type your own answer" maxlength="80" data-custom aria-label="' + esc(q.question) + ' — custom answer" class="w-full rounded-lg border border-line bg-bg px-3 py-2 font-sans text-body-sm text-ink placeholder:text-ink-3 focus:border-line-strong focus:outline-none focus:ring-2 focus:ring-accent/25"></fieldset>';
         });
         h += '<div class="flex flex-wrap gap-2 mt-5">';
         h += '<button type="submit" class="inline-flex flex-1 items-center justify-center rounded-lg bg-accent-strong px-4 py-2 text-body-sm font-semibold text-white transition-colors hover:bg-accent-hover" style="min-width:9rem">Run research</button>';
@@ -110,10 +110,27 @@
         showSection('clarify');
         scrollToEl(sec);
         var form = document.getElementById('clarify-inline-form');
+        form.querySelectorAll('fieldset').forEach(function (fs) {
+            var custom = fs.querySelector('input[data-custom]');
+            if (!custom) return;
+            custom.addEventListener('input', function () {
+                if (custom.value.trim().length > 0) {
+                    fs.querySelectorAll('input[data-chip]').forEach(function (r) { r.checked = false; });
+                }
+            });
+            fs.querySelectorAll('input[data-chip]').forEach(function (r) {
+                r.addEventListener('change', function () {
+                    if (r.checked && custom.value.trim().length > 0) custom.value = '';
+                });
+            });
+        });
         form.addEventListener('submit', function (e) {
             e.preventDefault();
             var clar = {};
             questions.forEach(function (q) {
+                var custom = form.querySelector('input[name="q_' + (window.CSS && CSS.escape ? CSS.escape(q.key) : q.key) + '_custom"]');
+                var customVal = custom && custom.value.trim();
+                if (customVal) { clar[q.key] = customVal.slice(0, 80); return; }
                 var sel = form.querySelector('input[name="q_' + (window.CSS && CSS.escape ? CSS.escape(q.key) : q.key) + '"]:checked');
                 if (sel) clar[q.key] = sel.value;
             });
@@ -121,6 +138,12 @@
         });
         var skip = form.querySelector('[data-skip]');
         if (skip) skip.addEventListener('click', function () { startResearch(query, null); });
+    }
+
+    function recordHistory(slug, query) {
+        if (window.TrueRankHistory && slug && query) {
+            TrueRankHistory.record(slug, query);
+        }
     }
 
     function setFormsBusy(busy) {
@@ -175,11 +198,11 @@
         showSection('progress');
         clearProgress();
         addProgress('Submitting your question…');
-        // Scroll the working area into view (hero search may be far up).
         scrollToEl(document.getElementById('progress-section'));
 
         var reqBody = { query: query };
         if (clarifications && Object.keys(clarifications).length) reqBody.clarifications = clarifications;
+        var pendingQuery = query;
         fetch('/api/research', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -189,19 +212,20 @@
             .then(function (data) {
                 if (data.error) { showError(data.error); return; }
                 if (data.cached && data.slug) {
+                    recordHistory(data.slug, pendingQuery);
                     addProgress('Found existing research. Redirecting…');
                     window.location.href = '/research/' + data.slug;
                     return;
                 }
                 addProgress('Queued. Connecting to the live read…');
-                connectSSE(data.id, data.slug);
+                connectSSE(data.id, data.slug, pendingQuery);
             })
             .catch(function (err) {
                 showError(friendlyError(err, 'Could not start the research.'));
             });
     }
 
-    function connectSSE(reportId, slug) {
+    function connectSSE(reportId, slug, query) {
         var done = false;
         var errorCount = 0;
         var source = new EventSource('/api/research/' + reportId + '/stream');
@@ -218,6 +242,7 @@
                 source.close();
                 var dest = data.slug || slug;
                 if (dest) {
+                    recordHistory(dest, query || '');
                     addProgress('Done. Opening your report…');
                     window.location.href = '/research/' + dest;
                 } else {
@@ -236,29 +261,33 @@
             if (errorCount > 5) {
                 source.close();
                 addProgress('Connection unstable. Switching to polling…');
-                pollForResults(reportId, 0, slug);
+                pollForResults(reportId, 0, slug, query);
             }
         };
     }
 
-    function pollForResults(reportId, attempts, slug) {
+    function pollForResults(reportId, attempts, slug, query) {
         if (attempts > 120) { showError('Research timed out. Please try again.'); return; }
         fetch('/api/research/' + reportId)
             .then(readJson)
             .then(function (data) {
                 if (data.status === 'completed') {
                     var dest = data.slug || slug;
-                    if (dest) { window.location.href = '/research/' + dest; return; }
+                    if (dest) {
+                        recordHistory(dest, query || '');
+                        window.location.href = '/research/' + dest;
+                        return;
+                    }
                     showError('Something went wrong — try again');
                 } else if (data.status === 'error') {
                     showError(data.error || 'Research failed');
                 } else {
                     if (data.progress) addProgress(data.progress.message);
-                    setTimeout(function () { pollForResults(reportId, attempts + 1, slug); }, 2000);
+                    setTimeout(function () { pollForResults(reportId, attempts + 1, slug, query); }, 2000);
                 }
             })
             .catch(function () {
-                setTimeout(function () { pollForResults(reportId, attempts + 1, slug); }, 3000);
+                setTimeout(function () { pollForResults(reportId, attempts + 1, slug, query); }, 3000);
             });
     }
 
@@ -349,7 +378,7 @@
                 var qi = document.getElementById('query-input');
                 if (qi) qi.value = query;
                 section.classList.add('hidden');
-                startResearch(query);
+                beginResearch(query);
             });
             box.appendChild(btn);
             box.scrollTop = box.scrollHeight;
@@ -391,6 +420,34 @@
                     transcript.pop();
                     if (status) status.textContent = 'Network error. Try again.';
                 });
+        });
+    })();
+
+    // Home tabs: New search | Your searches
+    (function () {
+        var tabs = document.querySelectorAll('[data-home-tab]');
+        var searchPanel = document.getElementById('home-search-panel');
+        var historyPanel = document.getElementById('home-history-panel');
+        if (!tabs.length || !searchPanel || !historyPanel) return;
+
+        function showTab(name) {
+            var isSearch = name === 'search';
+            searchPanel.classList.toggle('hidden', !isSearch);
+            historyPanel.classList.toggle('hidden', isSearch);
+            tabs.forEach(function (tab) {
+                var active = tab.dataset.homeTab === name;
+                tab.setAttribute('aria-selected', active ? 'true' : 'false');
+                tab.classList.toggle('bg-accent-quiet', active);
+                tab.classList.toggle('text-ink', active);
+                tab.classList.toggle('text-ink-3', !active);
+            });
+            if (!isSearch && window.TrueRankHistory) {
+                TrueRankHistory.render(document.getElementById('home-history-list'));
+            }
+        }
+
+        tabs.forEach(function (tab) {
+            tab.addEventListener('click', function () { showTab(tab.dataset.homeTab); });
         });
     })();
 

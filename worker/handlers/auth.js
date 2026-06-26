@@ -13,7 +13,7 @@ import {
 } from '../lib/auth.js';
 import { checkRateLimit } from '../lib/rate-limit.js';
 import { layout } from '../lib/html.js';
-import { escapeHtml, timeAgo, displayQuery } from '../lib/utils.js';
+import { escapeHtml, displayQuery } from '../lib/utils.js';
 
 function jsonResponse(data, status = 200, extraHeaders = {}) {
     return new Response(JSON.stringify(data), {
@@ -166,22 +166,25 @@ export async function renderLoginPage(request, env) {
     return html;
 }
 
-const ACCOUNT_PAGE_SCRIPT = `<script nonce="__CSP_NONCE__">
+const ACCOUNT_PAGE_SCRIPT = `<script nonce="__CSP_NONCE__" src="/js/history.js"></script>
+<script nonce="__CSP_NONCE__">
 (function(){
   var btn=document.getElementById('logout-btn');
-  if(!btn)return;
-  btn.addEventListener('click',function(){
-    fetch('/api/auth/logout',{method:'POST'}).then(function(){window.location.href='/'}).catch(function(){window.location.href='/'});
-  });
+  if(btn){
+    btn.addEventListener('click',function(){
+      fetch('/api/auth/logout',{method:'POST'}).then(function(){window.location.href='/'}).catch(function(){window.location.href='/'});
+    });
+  }
+  var el=document.getElementById('account-history-list');
+  var raw=document.getElementById('account-history-data');
+  if(el&&raw&&window.TrueRankHistory){
+    try{
+      var items=JSON.parse(raw.textContent||'[]');
+      TrueRankHistory.render(el,{items:items,emptyMessage:'No searches yet. Run a research query from the home page and it will show up here.'});
+    }catch(e){}
+  }
 })();
 </script>`;
-
-function statusBadge(status) {
-    if (status === 'complete') return '<span class="card-badge" style="color:var(--trust-high)">Ready</span>';
-    if (status === 'failed') return '<span class="card-badge" style="color:var(--trust-low)">Failed</span>';
-    if (status === 'pending' || status === 'processing') return '<span class="card-badge">In progress</span>';
-    return '';
-}
 
 export async function renderAccountPage(request, env) {
     const user = await getSessionUser(request, env);
@@ -189,19 +192,17 @@ export async function renderAccountPage(request, env) {
         return Response.redirect(new URL('/login', request.url).toString(), 302);
     }
     const searches = await getUserSearches(env.DB, user.id, 50);
-    const items = searches.map((s) => {
-        const title = escapeHtml(displayQuery(s.query));
-        const when = timeAgo(s.created_at * 1000);
-        if (s.slug) {
-            return `<a class="card" href="/research/${escapeHtml(s.slug)}">
-<div class="card-top">${statusBadge(s.status)}<span class="card-time">${when}</span></div>
-<h3>${title}</h3>
-</a>`;
-        }
-        return `<div class="card"><div class="card-top"><span class="card-time">${when}</span></div><h3>${title}</h3></div>`;
-    }).join('');
+    const historyJson = JSON.stringify(
+        searches
+            .filter((s) => s.slug)
+            .map((s) => ({
+                slug: s.slug,
+                query: displayQuery(s.query),
+                ts: s.created_at * 1000,
+            })),
+    ).replace(/</g, '\\u003c');
 
-    const body = `<div class="container mx-auto max-w-4xl px-6 py-16">
+    const body = `<div class="container mx-auto max-w-5xl px-6 py-16">
 <div class="flex flex-wrap items-start justify-between gap-4">
 <div>
 <h1 class="font-serif text-h1 font-semibold text-ink">Your research</h1>
@@ -209,12 +210,8 @@ export async function renderAccountPage(request, env) {
 </div>
 <button id="logout-btn" type="button" class="rounded-lg border border-line bg-surface-1 px-4 py-2 text-body-sm font-semibold text-ink transition-colors hover:bg-surface-2">Sign out</button>
 </div>
-${searches.length > 0
-        ? `<div class="grid mt-8" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(16rem,1fr));gap:1rem">${items}</div>`
-        : `<div class="mt-8 rounded-xl border border-line bg-surface-1 p-8 text-center">
-<p class="text-body text-ink-2">No searches yet. Everything you research while signed in shows up here.</p>
-<a href="/" class="mt-4 inline-block rounded-lg bg-accent-strong px-4 py-2 text-body-sm font-semibold text-white transition-colors hover:bg-accent-hover">Start researching</a>
-</div>`}
+<script type="application/json" id="account-history-data">${historyJson}</script>
+<div id="account-history-list" class="mt-8" aria-live="polite"></div>
 </div>`;
     return layout('Your research', 'Your past TrueRank searches.', body, '<meta name="robots" content="noindex, follow">' + ACCOUNT_PAGE_SCRIPT, { canonical: 'https://chrisputer.tech/account' });
 }

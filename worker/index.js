@@ -14,9 +14,10 @@ import { handleProductImage } from './handlers/image.js';
 import { runResearchPipeline, monthlySpendUsd, monthlyBudgetUsd } from './pipeline/orchestrator.js';
 import { renderResearchResult } from './pages/research-page.js';
 import { renderClarifyPage, extractClarifications } from './pages/clarify.js';
-import { classifyQuery, userFacingRejection } from './lib/classifier.js';
+import { classifyQuery, userFacingRejection, defaultQuestionsForQuery } from './lib/classifier.js';
 import { screenQuery, rejectionMessage } from './lib/safety.js';
 import { renderBrowse } from './pages/browse.js';
+import { renderHistoryPage } from './pages/history.js';
 import { renderCategoryHub } from './pages/category.js';
 import { handleSubscribe } from './handlers/subscribe.js';
 import { handleChat } from './handlers/chat.js';
@@ -113,7 +114,7 @@ export default {
                 try { cbody = await request.json(); } catch { cbody = {}; }
                 const cq = String(cbody.query || '').trim();
                 const jres = (obj) => new Response(JSON.stringify(obj), { headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } });
-                if (cq.length < 3 || cq.length > 500) return jres({ accept: true, clarifying_questions: [] });
+                if (cq.length < 3 || cq.length > 500) return jres({ accept: true, clarifying_questions: defaultQuestionsForQuery(cq) });
                 // Deterministic safety screen first (fail-closed, can't be jailbroken/fail-opened).
                 const s = screenQuery(cq);
                 if (s.blocked) return jres({ accept: false, reject_message: rejectionMessage(s.reason), clarifying_questions: [] });
@@ -122,7 +123,7 @@ export default {
                     if (!c.accept) return jres({ accept: false, reject_message: userFacingRejection(c.reject_reason), clarifying_questions: [] });
                     return jres({ accept: true, clarifying_questions: c.clarifying_questions || [], suggested_refinement: c.suggested_refinement || null });
                 } catch {
-                    return jres({ accept: true, clarifying_questions: [] }); // fail-open
+                    return jres({ accept: true, clarifying_questions: defaultQuestionsForQuery(cq) }); // fail-open
                 }
             }
 
@@ -229,6 +230,10 @@ export default {
                         : await renderAccountPage(request, env);
                     if (page instanceof Response) return page; // auth redirect
                     return htmlPageResponse(page, env, { cacheControl: 'no-store' });
+                }
+
+                if (path === '/history' || path === '/history/') {
+                    return htmlPageResponse(renderHistoryPage(), env, { cacheControl: 'no-store' });
                 }
 
                 // Monetized Google hand-off for not-sold-on-Amazon categories.
