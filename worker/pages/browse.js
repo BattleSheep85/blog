@@ -2,6 +2,7 @@ import { layout, jsonLdScript } from '../lib/html.js';
 import { timeAgo, escapeHtml, escapeLikeWildcards, displayQuery, publicResearchFilter } from '../lib/utils.js';
 import { searchBar } from '../lib/search-bar.js';
 import { listCategories } from '../pages/category.js';
+import { jsonEmbed, listLayoutBoot } from '../lib/list-layout-boot.js';
 
 export async function renderBrowse(url, env) {
   const searchQuery = url.searchParams.get('q') ?? '';
@@ -59,15 +60,15 @@ export async function renderBrowse(url, env) {
     }
   }
 
-  const cards = results.map((r) => `<a href="/research/${escapeHtml(r.slug)}" class="flex flex-col rounded-xl border border-line bg-surface-1 p-5 shadow-card transition-all hover:-translate-y-0.5 hover:border-line-strong hover:shadow-lift">
-<div class="mb-2 flex items-center justify-between gap-3">
-${r.category ? `<span class="inline-flex items-center rounded-full bg-accent-quiet px-2.5 py-1 text-caption font-medium text-accent">${escapeHtml(r.category)}</span>` : '<span></span>'}
-<span class="text-caption text-ink-3">${timeAgo(r.created_at * 1000)}</span>
-</div>
-<h3 class="font-serif text-h3 font-semibold text-ink">${escapeHtml(displayQuery(r.query))}</h3>
-${r.summary ? `<p class="mt-2 line-clamp-2 text-body-sm text-ink-2">${escapeHtml(r.summary)}</p>` : ''}
-<div class="mt-4 flex gap-4 font-mono text-caption text-ink-3 num"><span>${r.product_count} products</span><span>${r.view_count} views</span></div>
-</a>`).join('');
+  const listItems = results.map((r) => ({
+    slug: r.slug,
+    query: displayQuery(r.query),
+    ts: r.created_at * 1000,
+    category: r.category || '',
+    summary: r.summary || '',
+    product_count: r.product_count,
+    view_count: r.view_count,
+  }));
 
   const qs = searchQuery ? `&q=${encodeURIComponent(searchQuery)}` : '';
 
@@ -91,7 +92,7 @@ ${searchQuery ? `<div class="mb-6 flex items-center gap-2 text-body-sm">
 <a href="/research" class="ml-1 text-caption text-ink-3 hover:text-ink">Clear</a>
 </div>` : ''}
 
-${cards ? `<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">${cards}</div>` : `<div class="py-20 text-center">
+${listItems.length ? `${jsonEmbed('research-list-data', listItems)}<div id="research-list"></div>` : `<div class="py-20 text-center">
 <div class="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-surface-2 text-ink-3"><svg width="32" height="32" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg></div>
 ${searchQuery ? `<h2 class="mb-2 font-serif text-h2 font-semibold text-ink">No matches for &ldquo;${escapeHtml(searchQuery)}&rdquo;</h2>
 <p class="mb-6 text-body text-ink-2">Try a broader search or start new research:</p>
@@ -152,5 +153,9 @@ ${hasMore ? `<a href="/research?page=${page + 1}${qs}" class="inline-flex items-
   const structuredData = jsonLdScript(breadcrumbLd) +
     (itemListLd ? jsonLdScript(itemListLd) : '');
 
-  return layout('Browse Research', 'Explore past AI-powered product research.', body, canonical + prevLink + nextLink + noindex + turnstileScript + structuredData, { ogUrl: 'https://chrisputer.tech/research' });
+  const listBoot = listItems.length > 0
+    ? listLayoutBoot({ dataId: 'research-list-data', containerId: 'research-list', kind: 'research' })
+    : '';
+
+  return layout('Browse Research', 'Explore past AI-powered product research.', body, canonical + prevLink + nextLink + noindex + turnstileScript + structuredData + listBoot, { ogUrl: 'https://chrisputer.tech/research' });
 }

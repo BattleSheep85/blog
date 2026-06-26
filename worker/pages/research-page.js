@@ -4,6 +4,7 @@ import { buildAffiliateUrl, buildAmazonSearchFallback, retailerLabel } from '../
 import { adSlot } from '../lib/ads.js';
 import { getResearchBySlug, getProductsByResearchId } from '../lib/db.js';
 import { searchBar } from '../lib/search-bar.js';
+import { jsonEmbed, productLayoutBoot } from '../lib/list-layout-boot.js';
 
 // inlined from src/types.ts for phase 1 (types.ts is erased in the port)
 const DEFAULT_AFFILIATE_TAG = 'battlesheep0a-20';
@@ -584,6 +585,16 @@ export async function renderResearchResult(slug, env, fromQuery = null, cleanLin
   const shareText = encodeURIComponent(displayTitle);
   const shareUrl = encodeURIComponent(pageUrl);
 
+  const productListItems = products.map((p, i) => ({
+    id: p.id,
+    rank: p.rank ?? i + 1,
+    name: p.name,
+    price: p.price,
+    rating: p.rating,
+    best_for: p.best_for || '',
+    href: `#product-${i + 1}`,
+  }));
+
   const chatSection = `<section id="talk-about-it" class="report-chat-feature" style="margin:1.5rem 0;padding:1.15rem 1.25rem;background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 7%,var(--surface-1)),var(--surface-1));border:1px solid color-mix(in srgb,var(--accent) 30%,var(--line));border-left:3px solid var(--accent);border-radius:0.875rem;box-shadow:var(--card)">
 <div style="display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:.75rem;margin-bottom:.85rem">
 <div>
@@ -714,10 +725,10 @@ ${(buyersGuide.marketingToIgnore?.length ?? 0) > 0 ? `<h3 style="font-size:.85re
 
 ${products.length > 0 ? `<h2 id="products" style="font-size:1.25rem;font-weight:700;margin-bottom:1.5rem">${isService ? 'Recommendations' : 'Products compared'}</h2>
 ${(!isService && products.some((p) => p.price != null)) ? `<p style="font-size:.8rem;color:var(--ink-3);margin:-0.9rem 0 1.25rem">Prices were last checked ${new Date(lastModifiedTs * 1000).toISOString().split('T')[0]} and can change — confirm the current price at the retailer before buying.</p>` : ''}
-<div class="product-grid">${products.map((p, i) => {
+${jsonEmbed('product-list-data', productListItems)}
+<div id="product-list"></div>
+<div id="product-grid-detail" style="display:none" class="product-grid">${products.map((p, i) => {
   const card = renderProduct(p, i, affiliateIds, isService, slug, cleanLinks, webOnly);
-  // Mid-list ad after rank 3 when there are 5+ items — keeps the ad out of
-  // the above-fold view on short comparisons but catches mid-scroll engagement.
   const midAd = (i === 2 && products.length >= 5) ? adSlot(env, 'mid', 'Advertisement') : '';
   return card + midAd;
 }).join('')}</div>
@@ -1197,7 +1208,7 @@ document.addEventListener('DOMContentLoaded',function(){
   window.__rewire=function(){if(typeof prev==='function')prev();wire()};
 })();
 </script>`;
-  const extra = pageBehaviorScript + subscribeScript + (entry.status === 'complete' ? chatScript : '') + (isProcessing ? activityFeedScript : '');
+  const extra = pageBehaviorScript + subscribeScript + (entry.status === 'complete' ? chatScript : '') + (isProcessing ? activityFeedScript : '') + (products.length > 0 ? productLayoutBoot() : '');
   // Canonical is emitted by layout() from layoutMeta.canonical — don't add a
   // second hand-built <link rel="canonical"> here.
   // Keep thin and failed pages out of the index (mirrors publicResearchFilter:

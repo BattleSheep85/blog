@@ -13,6 +13,7 @@ import { layout, jsonLdScript } from '../lib/html.js';
 import { escapeHtml, parseJsonSafe, isValidHttpsUrl, displayQuery } from '../lib/utils.js';
 import { renderItemImage, resolveProductCtas, isNonProductCategory } from './research-page.js';
 import { adSlot } from '../lib/ads.js';
+import { jsonEmbed, listLayoutBoot } from '../lib/list-layout-boot.js';
 import {
   PAGE_SIZE, PRICE_BANDS, RATING_OPTIONS, SORT_OPTIONS,
   parseProductFilters, isNarrowed, buildProductWhere, orderByClause, reviewsHref,
@@ -229,10 +230,19 @@ ${filters.page < totalPages ? `<a href="${escapeHtml(reviewsHref(filters, { page
   const categoryOnly = filters.category && !filters.brand && !filters.price && !filters.rating && !filters.q
     && filters.pmin == null && filters.pmax == null;
   const heading = categoryOnly ? `Product reviews: ${filters.category}` : 'Product reviews';
+  const reviewListItems = rows.map((r) => ({
+    slug: r.slug,
+    name: r.name,
+    brand: r.brand || '',
+    price: r.price,
+    rating: r.rating,
+    query: displayQuery(r.query),
+    category: r.category || '',
+    verdict: r.verdict || '',
+    ts: (r.completed_at || 0) * 1000,
+  }));
   const resultsHtml = rows.length
-    ? `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(15.5rem,1fr));gap:1.1rem">
-${rows.map((r) => renderReviewCard(r, affiliateIds)).join('')}
-</div>`
+    ? `${jsonEmbed('reviews-list-data', reviewListItems)}<div id="reviews-list"></div>`
     : `<p style="color:var(--ink-2);padding:2rem 0">No products match these filters. <a href="/reviews" style="color:var(--accent)">Clear all filters</a> and try again.</p>`;
 
   const body = `<div class="container" style="max-width:78rem;padding:2.5rem 1.5rem;margin:0 auto">
@@ -315,7 +325,10 @@ ${adSlot(env, 'bottom', 'Advertisement')}
   const desc = categoryOnly
     ? `Honest reviews of ${filters.category} — ratings, pros and cons, and verdicts synthesized from real user reviews. No paid placements.`
     : 'Every product TrueRank has reviewed, filterable by category, brand, price, and rating. Honest ratings, pros and cons, and verdicts synthesized from real user reviews. No paid placements.';
+  const reviewsListBoot = reviewListItems.length > 0
+    ? listLayoutBoot({ dataId: 'reviews-list-data', containerId: 'reviews-list', kind: 'review' })
+    : '';
   return layout(heading, desc, body,
-    jsonLdScript(itemListLd) + jsonLdScript(breadcrumbLd) + imgWireScript,
+    jsonLdScript(itemListLd) + jsonLdScript(breadcrumbLd) + imgWireScript + reviewsListBoot,
     { canonical, noindex: narrowed });
 }

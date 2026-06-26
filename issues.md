@@ -1,6 +1,16 @@
 # Issues
 
-Last updated: 2026-06-25
+Last updated: 2026-06-26
+
+## 2026-06-26 — Shared list layouts on browse + reviews (godmode R1)
+
+- [x] UX: layout toggles (Spreadsheet / Cards / Compact / Timeline) were only on the home
+      history tab — browse search results (/research) and the reviews directory (/reviews) still
+      used fixed card grids. Added `public/js/list-layouts.js` (shared renderer for history,
+      research, review, product kinds) + `worker/lib/list-layout-boot.js` (SSR JSON embed +
+      boot). Wired browse, reviews, account history, home tab, and report product section.
+      Preference persists in `truerank_list_layout` localStorage (migrates legacy
+      `truerank_history_layout`).
 
 ## 2026-06-25 — Comprehensive code review and repair (godmode)
 

@@ -5,7 +5,8 @@
 
 import { layout } from '../lib/html.js';
 
-const HISTORY_PAGE_SCRIPT = `<script nonce="__CSP_NONCE__" src="/js/history.js"></script>
+const HISTORY_PAGE_SCRIPT = `<script nonce="__CSP_NONCE__" src="/js/list-layouts.js"></script>
+<script nonce="__CSP_NONCE__" src="/js/history.js"></script>
 <script nonce="__CSP_NONCE__">
 document.addEventListener('DOMContentLoaded',function(){
   var el=document.getElementById('history-list');

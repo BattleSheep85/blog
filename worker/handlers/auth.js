@@ -166,7 +166,8 @@ export async function renderLoginPage(request, env) {
     return html;
 }
 
-const ACCOUNT_PAGE_SCRIPT = `<script nonce="__CSP_NONCE__" src="/js/history.js"></script>
+const ACCOUNT_PAGE_SCRIPT = `<script nonce="__CSP_NONCE__" src="/js/list-layouts.js"></script>
+<script nonce="__CSP_NONCE__" src="/js/history.js"></script>
 <script nonce="__CSP_NONCE__">
 (function(){
   var btn=document.getElementById('logout-btn');
