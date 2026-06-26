@@ -25,3 +25,9 @@ node_modules/
 # Dev-site Basic Auth credentials (never commit)
 .dev-auth
 .gstack/
+
+# Benchmark regenerable artifacts (large; re-created by the bench scripts)
+benchmarks/results/google-top50-corpus.json
+benchmarks/results/judge-bundles/
+benchmarks/results/judge-results-partial.json
+benchmarks/results/*.log

@@ -32,58 +32,38 @@ if (!KEY) { console.error('need OPENROUTER_API_KEY in .dev.vars'); process.exit(
 // reasoning: {effort:'none'} for Gemini (disables optional thinking)
 // reasoning: undefined      for models that don't support the param (Anthropic, Llama, etc.)
 
+// ── A/B finalists ─────────────────────────────────────────────────────────────
+// The 4 models now rotating live in research-worker.mjs. This run scores them
+// head-to-head on the SAME corpus per query (the live A/B only assigns one model
+// per job, so this controlled bench is the apples-to-apples comparison).
 const CANDIDATES = [
-  // ── prod baseline ──────────────────────────────────────────────────────────
-  // aa_intel=42.8, ifb=0.760, 25tok/s, $0.038/synth | slow, ctx=262k
-  { label: 'kimi-k2.6',       model: 'moonshotai/kimi-k2.6',           reasoning: { enabled: false } },
-
-  // ── top by intelligence (AA) ───────────────────────────────────────────────
-  // aa_intel=50.2, ifb=0.763, 216tok/s, $0.095/synth | mandatory reasoning — use low effort
-  { label: 'gemini-3.5-flash', model: 'google/gemini-3.5-flash',        reasoning: { effort: 'low' } },
-  // aa_intel=46.5, ifb=0.771, 140tok/s, $0.126/synth | mandatory reasoning — use low effort
-  { label: 'gem-3.1-pro',      model: 'google/gemini-3.1-pro-preview',  reasoning: { effort: 'low' } },
-  // aa_intel=46.0, ifb=0.805, 204tok/s, $0.049/synth | high ifb + fast + affordable
-  { label: 'qwen3.7-max',      model: 'qwen/qwen3.7-max',               reasoning: { enabled: false } },
-  // aa_intel=44.4, ifb=0.829, 76tok/s, $0.014/synth  | BEST ifbench; timed out 120s — SKIP for now
-  // { label: 'minimax-m3',    model: 'minimax/minimax-m3',             reasoning: undefined },
-  // aa_intel=44.3, ifb=0.765, 63tok/s, $0.014/synth  | near-kimi quality at 2.5x less
-  { label: 'dsv4-pro',         model: 'deepseek/deepseek-v4-pro',       reasoning: { enabled: false } },
-
-  // ── top by speed (>=100 tok/s, capable) ───────────────────────────────────
-  // aa_intel=37.0, ifb=0.812, 242tok/s, $0.039/synth | fastest OR model; top ifb
-  { label: 'grok-4.20',        model: 'x-ai/grok-4.20',                 reasoning: undefined },
-  // aa_intel=37.8, ifb=0.780, 226tok/s, $0.032/synth | gemini-3 flash variant
-  { label: 'gem-3-flash',      model: 'google/gemini-3-flash-preview',  reasoning: { effort: 'none' } },
-  // aa_intel=40.3, ifb=0.792, 115tok/s, $0.003/synth | extreme value; 12x cheaper than kimi
-  { label: 'dsv4-flash',       model: 'deepseek/deepseek-v4-flash',     reasoning: { enabled: false } },
-
-  // ── best value (<$0.02/synth, intel>=38) ──────────────────────────────────
-  // aa_intel=39.0, ifb=0.780, 50tok/s, $0.015/synth  | solid budget
-  { label: 'qwen3.7-plus',     model: 'qwen/qwen3.7-plus',              reasoning: { enabled: false } },
-  // aa_intel=38.2, ifb=0.759, 167tok/s, $0.013/synth | fast cheap; tau2 lower
-  { label: 'gpt-5.4-nano',     model: 'openai/gpt-5.4-nano',            reasoning: undefined },
-  // aa_intel=40.0, ifb=0.733, 178tok/s, $0.047/synth | mid-range openai
+  // aa_intel=40.0, ifb=0.733, 178tok/s, $0.047/synth | bench winner: most products, zero fab
   { label: 'gpt-5.4-mini',     model: 'openai/gpt-5.4-mini',            reasoning: undefined },
-
-  // ── OpenAI GPT-5.x full family ────────────────────────────────────────────
-  { label: 'gpt-5.5',         model: 'openai/gpt-5.5',                  reasoning: undefined },           // $0.315/synth — top-tier quality check
-  { label: 'gpt-5.5-pro',     model: 'openai/gpt-5.5-pro',              reasoning: undefined },           // $1.89/synth — ceiling reference only
-  { label: 'gpt-5.4',         model: 'openai/gpt-5.4',                  reasoning: undefined },           // $0.158/synth — missed in first pass
-  // ── current planner + classifier (free comparison points) ────────────────
-  { label: 'gemini-flash',     model: 'google/gemini-2.5-flash',        reasoning: { effort: 'none' } }, // planner model today
-  { label: 'flash-lite',       model: 'google/gemini-2.5-flash-lite',   reasoning: { effort: 'none' } }, // classifier model today
+  // current planner — deepest pros/cons, zero fab, 8/8 reliable, $0.025/synth
+  { label: 'gemini-flash',     model: 'google/gemini-2.5-flash',        reasoning: { effort: 'none' } },
+  // aa_intel=37.0, ifb=0.812, 242tok/s, $0.039/synth | fastest, clean grounding
+  { label: 'grok-4.20',        model: 'x-ai/grok-4.20',                 reasoning: undefined },
+  // cheapest clean option, $0.008/synth, 7/8 reliable
+  { label: 'flash-lite',       model: 'google/gemini-2.5-flash-lite',   reasoning: { effort: 'none' } },
 ];
 
 // ── CORPUS ────────────────────────────────────────────────────────────────────
 // Cached gather output. Re-gather with FRESH=1.
-const CORPUS_PATH = new URL('./results/corpus.json', import.meta.url);
-const QUERIES = [
-  { q: 'best wireless earbuds under $100',        facets: { is_buyable: true, sold_on_amazon: true, recency_sensitive: true }, cat: 'wireless earbuds' },
-  { q: 'best robot vacuum for pet hair',          facets: { is_buyable: true, sold_on_amazon: true, recency_sensitive: true }, cat: 'robot vacuums' },
-  { q: 'best standing desk for home office',      facets: { is_buyable: true, sold_on_amazon: true, recency_sensitive: true }, cat: 'standing desks' },
-  { q: 'best self-hosted photo backup software',  facets: { is_buyable: false, sold_on_amazon: false, recency_sensitive: false }, cat: 'photo backup software' },
-  { q: 'best budget espresso machine under $500', facets: { is_buyable: true, sold_on_amazon: true, recency_sensitive: true }, cat: 'espresso machines' },
-];
+const CORPUS_PATH = process.env.CORPUS_FILE
+  ? new URL(process.env.CORPUS_FILE, import.meta.url)
+  : new URL('./results/corpus.json', import.meta.url);
+// Default seed set. Override with QUERIES_FILE=<path> pointing at a JSON array of
+// { q, facets, cat } — e.g. the top-50 real Google product searches harvested via
+// the autocomplete suggest API (scripts/harvest-google.mjs).
+const QUERIES = process.env.QUERIES_FILE
+  ? JSON.parse(readFileSync(process.env.QUERIES_FILE, 'utf8'))
+  : [
+      { q: 'best wireless earbuds under $100',        facets: { is_buyable: true, sold_on_amazon: true, recency_sensitive: true }, cat: 'wireless earbuds' },
+      { q: 'best robot vacuum for pet hair',          facets: { is_buyable: true, sold_on_amazon: true, recency_sensitive: true }, cat: 'robot vacuums' },
+      { q: 'best standing desk for home office',      facets: { is_buyable: true, sold_on_amazon: true, recency_sensitive: true }, cat: 'standing desks' },
+      { q: 'best self-hosted photo backup software',  facets: { is_buyable: false, sold_on_amazon: false, recency_sensitive: false }, cat: 'photo backup software' },
+      { q: 'best budget espresso machine under $500', facets: { is_buyable: true, sold_on_amazon: true, recency_sensitive: true }, cat: 'espresso machines' },
+    ];
 // Limit to first N corpora for a quick run (set to Infinity for full run)
 const MAX_QUERIES = Number(process.env.MAX_Q) || Infinity;
 
@@ -96,18 +76,33 @@ if (!process.env.FRESH && existsSync(CORPUS_PATH)) {
 } else {
   if (!SERPER) { console.error('need SERPER_API_KEY in .dev.vars for gather'); process.exit(1); }
   process.stderr.write('gathering fresh corpus (this costs Serper quota)...\n');
+  // IMPORTANT: use gatherParallel (search + read + note), NOT runParallelEngine.
+  // The full engine runs a synth pass (kimi-k2.6, the slowest model) we'd only
+  // discard — corpus only needs sources+notes, which are synth-model-independent.
+  // We also gather GATHER_CONC queries concurrently to cut wall-clock ~Nx.
   const cfg = { ...getTierConfig('full'), maxConcurrency: 6 };
+  const GATHER_CONC = Number(process.env.GATHER_CONC) || 4;
+  const todo = QUERIES.slice(0, MAX_QUERIES);
   corpora = [];
-  for (const { q, facets, cat } of QUERIES) {
-    process.stderr.write(`  gathering: ${q}\n`);
-    try {
-      const r = await runParallelEngine(q, cfg, KEY, { SERPER_API_KEY: SERPER }, () => {}, facets, cat, {});
-      corpora.push({ query: q, facets, cat, sources: r.sources || [], notes: r.notes || [] });
-      process.stderr.write(`    → ${r.sources?.length} sources, ${r.notes?.length} notes\n`);
-    } catch (err) { process.stderr.write(`    FAILED: ${err.message}\n`); }
+  let gIdx = 0, gDone = 0;
+  async function gatherWorker() {
+    for (;;) {
+      const i = gIdx++;
+      if (i >= todo.length) return;
+      const { q, facets, cat } = todo[i];
+      const t0 = Date.now();
+      try {
+        const r = await gatherParallel(q, cfg, KEY, { SERPER_API_KEY: SERPER }, () => {}, facets, cat, {});
+        corpora.push({ query: q, facets, cat, sources: r.sources || [], notes: r.notes || [] });
+        process.stderr.write(`  [${++gDone}/${todo.length}] ${q} → ${r.sources?.length || 0} sources, ${r.notes?.length || 0} notes (${((Date.now() - t0) / 1000).toFixed(0)}s)\n`);
+      } catch (err) {
+        process.stderr.write(`  [${++gDone}/${todo.length}] ${q} FAILED: ${err.message}\n`);
+      }
+    }
   }
+  await Promise.all(Array.from({ length: GATHER_CONC }, () => gatherWorker()));
   writeFileSync(CORPUS_PATH, JSON.stringify(corpora, null, 2));
-  process.stderr.write(`cached → ${CORPUS_PATH.pathname}\n`);
+  process.stderr.write(`cached ${corpora.length} corpora → ${CORPUS_PATH.pathname}\n`);
 }
 corpora = corpora.slice(0, MAX_QUERIES).filter((c) => c.sources?.length);
 
@@ -221,18 +216,27 @@ for (const corpus of corpora) {
     rows.push({ ...base, ...s });
     dump.push({
       ...base, ...s,
+      // Full product objects so a downstream judge can verify grounding + quality
+      // against the corpus (the regex metrics above are only a coarse proxy).
+      products_full: (r.result?.products || []).map((p) => ({
+        name: p.name, brand: p.brand, price: p.price, rating: p.rating,
+        pros: p.pros || [], cons: p.cons || [], specs: p.specs || {},
+        verdict: p.verdict || '', best_for: p.best_for || '',
+      })),
       products_list: (r.result?.products || []).map((p) => ({
         name: p.name, rating: p.rating,
         pros: p.pros?.length, cons: p.cons?.length,
         verdict: (p.verdict || '').slice(0, 120),
       })),
-      summary: (r.result?.summary || '').slice(0, 200),
+      summary: r.result?.summary || '',
     });
   }
 }
 
 // ── OUTPUT ────────────────────────────────────────────────────────────────────
-const outPath = new URL('./results/synth-v2.json', import.meta.url);
+const outPath = process.env.OUT_FILE
+  ? new URL(process.env.OUT_FILE, import.meta.url)
+  : new URL('./results/synth-v2.json', import.meta.url);
 mkdirSync(new URL('./results/', import.meta.url), { recursive: true });
 writeFileSync(outPath, JSON.stringify(dump, null, 2));
 

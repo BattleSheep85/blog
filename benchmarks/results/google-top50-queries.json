@@ -1,0 +1,502 @@
+[
+  {
+    "q": "best drill for home use",
+    "n": 4,
+    "facets": {
+      "is_buyable": true,
+      "sold_on_amazon": true,
+      "recency_sensitive": true
+    },
+    "cat": "drill"
+  },
+  {
+    "q": "best laptop 2026",
+    "n": 3,
+    "facets": {
+      "is_buyable": true,
+      "sold_on_amazon": true,
+      "recency_sensitive": true
+    },
+    "cat": "laptop"
+  },
+  {
+    "q": "best earbuds 2026",
+    "n": 3,
+    "facets": {
+      "is_buyable": true,
+      "sold_on_amazon": true,
+      "recency_sensitive": true
+    },
+    "cat": "earbud"
+  },
+  {
+    "q": "best vacuum for pet hair",
+    "n": 3,
+    "facets": {
+      "is_buyable": true,
+      "sold_on_amazon": true,
+      "recency_sensitive": true
+    },
+    "cat": "vacuum"
+  },
+  {
+    "q": "best power supply for pc",
+    "n": 3,
+    "facets": {
+      "is_buyable": true,
+      "sold_on_amazon": true,
+      "recency_sensitive": true
+    },
+    "cat": "power supply"
+  },
+  {
+    "q": "best hiking boots for men",
+    "n": 3,
+    "facets": {
+      "is_buyable": true,
+      "sold_on_amazon": true,
+      "recency_sensitive": true
+    },
+    "cat": "hiking boot"
+  },
+  {
+    "q": "best phone case for iphone 17",
+    "n": 3,
+    "facets": {
+      "is_buyable": true,
+      "sold_on_amazon": true,
+      "recency_sensitive": true
+    },
+    "cat": "phone case"
+  },
+  {
+    "q": "best monitor arm for ultrawide",
+    "n": 3,
+    "facets": {
+      "is_buyable": true,
+      "sold_on_amazon": true,
+      "recency_sensitive": true
+    },
+    "cat": "monitor arm"
+  },
+  {
+    "q": "best electric shaver for women",
+    "n": 3,
+    "facets": {
+      "is_buyable": true,
+      "sold_on_amazon": true,
+      "recency_sensitive": true
+    },
+    "cat": "electric shaver"
+  },
+  {
+    "q": "best portable charger for iphone",
+    "n": 3,
+    "facets": {
+      "is_buyable": true,
+      "sold_on_amazon": true,
+      "recency_sensitive": true
+    },
+    "cat": "portable charger"
+  },
+  {
+    "q": "best cpu 2026",
+    "n": 2,
+    "facets": {
+      "is_buyable": true,
+      "sold_on_amazon": true,
+      "recency_sensitive": true
+    },
+    "cat": "cpu"
+  },
+  {
+    "q": "best air fryer",
+    "n": 2,
+    "facets": {
+      "is_buyable": true,
+      "sold_on_amazon": true,
+      "recency_sensitive": true
+    },
+    "cat": "air fryer"
+  },
+  {
+    "q": "best headphones",
+    "n": 2,
+    "facets": {
+      "is_buyable": true,
+      "sold_on_amazon": true,
+      "recency_sensitive": true
+    },
+    "cat": "headphone"
+  },
+  {
+    "q": "best ssd for pc",
+    "n": 2,
+    "facets": {
+      "is_buyable": true,
+      "sold_on_amazon": true,
+      "recency_sensitive": true
+    },
+    "cat": "ssd"
+  },
+  {
+    "q": "best webcam 2026",
+    "n": 2,
+    "facets": {
+      "is_buyable": true,
+      "sold_on_amazon": true,
+      "recency_sensitive": true
+    },
+    "cat": "webcam"
+  },
+  {
+    "q": "best router 2026",
+    "n": 2,
+    "facets": {
+      "is_buyable": true,
+      "sold_on_amazon": true,
+      "recency_sensitive": true
+    },
+    "cat": "router"
+  },
+  {
+    "q": "best sheets 2026",
+    "n": 2,
+    "facets": {
+      "is_buyable": true,
+      "sold_on_amazon": true,
+      "recency_sensitive": true
+    },
+    "cat": "sheet"
+  },
+  {
+    "q": "best air purifier",
+    "n": 2,
+    "facets": {
+      "is_buyable": true,
+      "sold_on_amazon": true,
+      "recency_sensitive": true
+    },
+    "cat": "air purifier"
+  },
+  {
+    "q": "best office chair",
+    "n": 2,
+    "facets": {
+      "is_buyable": true,
+      "sold_on_amazon": true,
+      "recency_sensitive": true
+    },
+    "cat": "office chair"
+  },
+  {
+    "q": "best robot vacuum",
+    "n": 2,
+    "facets": {
+      "is_buyable": true,
+      "sold_on_amazon": true,
+      "recency_sensitive": true
+    },
+    "cat": "robot vacuum"
+  },
+  {
+    "q": "best nas for home",
+    "n": 2,
+    "facets": {
+      "is_buyable": true,
+      "sold_on_amazon": true,
+      "recency_sensitive": true
+    },
+    "cat": "na"
+  },
+  {
+    "q": "best blender 2026",
+    "n": 2,
+    "facets": {
+      "is_buyable": true,
+      "sold_on_amazon": true,
+      "recency_sensitive": true
+    },
+    "cat": "blender"
+  },
+  {
+    "q": "best luggage 2026",
+    "n": 2,
+    "facets": {
+      "is_buyable": true,
+      "sold_on_amazon": true,
+      "recency_sensitive": true
+    },
+    "cat": "luggage"
+  },
+  {
+    "q": "best running shoes",
+    "n": 2,
+    "facets": {
+      "is_buyable": true,
+      "sold_on_amazon": true,
+      "recency_sensitive": true
+    },
+    "cat": "running shoe"
+  },
+  {
+    "q": "best soundbar 2026",
+    "n": 2,
+    "facets": {
+      "is_buyable": true,
+      "sold_on_amazon": true,
+      "recency_sensitive": true
+    },
+    "cat": "soundbar"
+  },
+  {
+    "q": "best dash cam 2026",
+    "n": 2,
+    "facets": {
+      "is_buyable": true,
+      "sold_on_amazon": true,
+      "recency_sensitive": true
+    },
+    "cat": "dash cam"
+  },
+  {
+    "q": "best gaming headset",
+    "n": 2,
+    "facets": {
+      "is_buyable": true,
+      "sold_on_amazon": true,
+      "recency_sensitive": true
+    },
+    "cat": "gaming headset"
+  },
+  {
+    "q": "best gaming monitor",
+    "n": 2,
+    "facets": {
+      "is_buyable": true,
+      "sold_on_amazon": true,
+      "recency_sensitive": true
+    },
+    "cat": "gaming monitor"
+  },
+  {
+    "q": "best vacuum cleaner",
+    "n": 2,
+    "facets": {
+      "is_buyable": true,
+      "sold_on_amazon": true,
+      "recency_sensitive": true
+    },
+    "cat": "vacuum cleaner"
+  },
+  {
+    "q": "best microwave 2026",
+    "n": 2,
+    "facets": {
+      "is_buyable": true,
+      "sold_on_amazon": true,
+      "recency_sensitive": true
+    },
+    "cat": "microwave"
+  },
+  {
+    "q": "best projector 2026",
+    "n": 2,
+    "facets": {
+      "is_buyable": true,
+      "sold_on_amazon": true,
+      "recency_sensitive": true
+    },
+    "cat": "projector"
+  },
+  {
+    "q": "best monitor for ps5",
+    "n": 2,
+    "facets": {
+      "is_buyable": true,
+      "sold_on_amazon": true,
+      "recency_sensitive": true
+    },
+    "cat": "monitor"
+  },
+  {
+    "q": "best smart lock 2026",
+    "n": 2,
+    "facets": {
+      "is_buyable": true,
+      "sold_on_amazon": true,
+      "recency_sensitive": true
+    },
+    "cat": "smart lock"
+  },
+  {
+    "q": "best tablet for kids",
+    "n": 2,
+    "facets": {
+      "is_buyable": true,
+      "sold_on_amazon": true,
+      "recency_sensitive": true
+    },
+    "cat": "tablet"
+  },
+  {
+    "q": "best smartwatch 2026",
+    "n": 2,
+    "facets": {
+      "is_buyable": true,
+      "sold_on_amazon": true,
+      "recency_sensitive": true
+    },
+    "cat": "smartwatch"
+  },
+  {
+    "q": "best hair dryer 2026",
+    "n": 2,
+    "facets": {
+      "is_buyable": true,
+      "sold_on_amazon": true,
+      "recency_sensitive": true
+    },
+    "cat": "hair dryer"
+  },
+  {
+    "q": "best vr headset 2026",
+    "n": 2,
+    "facets": {
+      "is_buyable": true,
+      "sold_on_amazon": true,
+      "recency_sensitive": true
+    },
+    "cat": "vr headset"
+  },
+  {
+    "q": "best lawn mower 2026",
+    "n": 2,
+    "facets": {
+      "is_buyable": true,
+      "sold_on_amazon": true,
+      "recency_sensitive": true
+    },
+    "cat": "lawn mower"
+  },
+  {
+    "q": "best dishwashers 2026",
+    "n": 2,
+    "facets": {
+      "is_buyable": true,
+      "sold_on_amazon": true,
+      "recency_sensitive": true
+    },
+    "cat": "dishwasher"
+  },
+  {
+    "q": "best mouse for gaming",
+    "n": 2,
+    "facets": {
+      "is_buyable": true,
+      "sold_on_amazon": true,
+      "recency_sensitive": true
+    },
+    "cat": "mouse"
+  },
+  {
+    "q": "best massage gun 2026",
+    "n": 2,
+    "facets": {
+      "is_buyable": true,
+      "sold_on_amazon": true,
+      "recency_sensitive": true
+    },
+    "cat": "massage gun"
+  },
+  {
+    "q": "best printer for home",
+    "n": 2,
+    "facets": {
+      "is_buyable": true,
+      "sold_on_amazon": true,
+      "recency_sensitive": true
+    },
+    "cat": "printer"
+  },
+  {
+    "q": "best label maker 2026",
+    "n": 2,
+    "facets": {
+      "is_buyable": true,
+      "sold_on_amazon": true,
+      "recency_sensitive": true
+    },
+    "cat": "label maker"
+  },
+  {
+    "q": "best pc case under 100",
+    "n": 2,
+    "facets": {
+      "is_buyable": true,
+      "sold_on_amazon": true,
+      "recency_sensitive": true
+    },
+    "cat": "pc case"
+  },
+  {
+    "q": "best coffee maker 2026",
+    "n": 2,
+    "facets": {
+      "is_buyable": true,
+      "sold_on_amazon": true,
+      "recency_sensitive": true
+    },
+    "cat": "coffee maker"
+  },
+  {
+    "q": "best refrigerator 2026",
+    "n": 2,
+    "facets": {
+      "is_buyable": true,
+      "sold_on_amazon": true,
+      "recency_sensitive": true
+    },
+    "cat": "refrigerator"
+  },
+  {
+    "q": "best baby monitor 2026",
+    "n": 2,
+    "facets": {
+      "is_buyable": true,
+      "sold_on_amazon": true,
+      "recency_sensitive": true
+    },
+    "cat": "baby monitor"
+  },
+  {
+    "q": "best gaming chair 2026",
+    "n": 2,
+    "facets": {
+      "is_buyable": true,
+      "sold_on_amazon": true,
+      "recency_sensitive": true
+    },
+    "cat": "gaming chair"
+  },
+  {
+    "q": "best controller for pc",
+    "n": 2,
+    "facets": {
+      "is_buyable": true,
+      "sold_on_amazon": true,
+      "recency_sensitive": true
+    },
+    "cat": "controller"
+  },
+  {
+    "q": "best graphics card 2026",
+    "n": 2,
+    "facets": {
+      "is_buyable": true,
+      "sold_on_amazon": true,
+      "recency_sensitive": true
+    },
+    "cat": "graphic card"
+  }
+]

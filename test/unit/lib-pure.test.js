@@ -28,7 +28,7 @@ export function runLibPureTests() {
 
   // tiers.js
   eq('tier full → config', getTierConfig('full'), TIER_CONFIGS.full);
-  eq('tier unknown → default config', getTierConfig('zzz').synthModel, 'moonshotai/kimi-k2.6');
+  eq('tier unknown → default config', getTierConfig('zzz').synthModel, 'openai/gpt-5.4-mini');
   ok('all tier keys share one config', TIER_CONFIGS.instant === TIER_CONFIGS.full && TIER_CONFIGS.full === TIER_CONFIGS.exhaustive);
   eq('public tiers', PUBLIC_TIERS, ['instant', 'full']);
   for (const t of PUBLIC_TIERS) ok(`isValidTier ${t}`, isValidTier(t));

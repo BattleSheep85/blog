@@ -17,12 +17,15 @@ const ENGINE_CONFIG = {
   maxSearches: 50,
   maxFetches: 20,
   agentLoopBudgetMs: 210_000, // ~3.5 min, safely under the 20-min reaper
-  synthModel: 'moonshotai/kimi-k2.6',
+  // Synth model = openai/gpt-5.4-mini (locked in 2026-06-26). Won the 50-query ×
+  // 150-juror blind judge panel on real Google searches: best grounding (7.18) +
+  // usefulness (7.31), ranked #1 in 53% of head-to-heads, near-cleanest fabrication
+  // rate. Beat kimi-k2.6, grok-4.20 (DQ'd on honesty, 3.15 fabs/report), gemini-flash
+  // (honest but thin), flash-lite. Bench: benchmarks/bench-synth-v2.mjs + judge panel.
+  synthModel: 'openai/gpt-5.4-mini',
   plannerModel: 'google/gemini-2.5-flash',
-  // kimi-k2.6 reasons by default and would burn the whole synth token budget on
-  // reasoning before emitting the report JSON (empty synthesis on large prompts).
-  // Turn thinking OFF for synthesis and give the report a generous token ceiling.
-  synthReasoning: { enabled: false },
+  // gpt-5.4-mini does not take a reasoning param in the bench config (undefined).
+  synthReasoning: undefined,
   synthMaxTokens: 16000,
   // ── speed knobs (OpenRouter platform levers) ──────────────────────────────
   // The agent loop is tool-ROUTING, not deep reasoning — cap thinking tokens per
@@ -47,10 +50,10 @@ const ENGINE_CONFIG = {
   // (filter to zero) with no routing benefit. The planner's real speed lever is
   // reasoning:{effort:'low'} above. Verified empirically 2026-06-22.
   plannerProvider: null,
-  // Synth (kimi-k2.6) IS multi-provider, so throughput-sort genuinely shortens the
-  // long stream; fp8+ quantization guards accuracy; allow_fallbacks keeps failover.
-  // Verified accepted by OpenRouter 2026-06-22.
-  synthProvider: { sort: 'throughput', allow_fallbacks: true, quantizations: ['fp8', 'fp16', 'bf16', 'fp32'] },
+  // gpt-5.4-mini is a single-provider (OpenAI) model on OpenRouter with no
+  // quantization tag, so the kimi-era throughput/quantization routing object would
+  // 404 ("no endpoints") or filter to zero. No provider routing for the synth now.
+  synthProvider: null,
   // Cap a hung planner routing turn well below the synth budget (the loop retries
   // once on error, so a rare false abort self-heals). gemini tool turns finish in s.
   plannerHardMs: 45_000,
