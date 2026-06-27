@@ -67,9 +67,26 @@
         });
     }
 
-    // Inquisitive step: classify the query first. If it has need-questions, show
-    // them with a one-tap "Just search for it" skip; otherwise go straight to
-    // research. Fail-OPEN on any error so research is never blocked.
+    // Generic clarifiers shown when /api/classify fails or returns none, so the
+    // "get it right the first time" step ALWAYS appears. Mirrors the server's
+    // defaultQuestionsForQuery (lib/classifier.js). All optional + skippable.
+    var DEFAULT_QUESTIONS = [
+        {
+            key: 'priority',
+            question: 'What matters most to you?',
+            suggested_answers: ['Best overall quality', 'Best value for money', 'Easiest to use', 'Most durable'],
+        },
+        {
+            key: 'budget',
+            question: 'What’s your budget?',
+            suggested_answers: ['Under $50', '$50–150', '$150–300', '$300+', 'No strict budget'],
+        },
+    ];
+
+    // Inquisitive step: classify the query first, then ALWAYS show clarifying
+    // questions (the classifier returns at least one; if it errors or returns
+    // none we fall back to DEFAULT_QUESTIONS) with a one-tap "Just search for
+    // it" skip. Reject messages still short-circuit. Research is never blocked.
     function beginResearch(query) {
         setFormsBusy(true);
         fetch('/api/classify', {
@@ -81,10 +98,9 @@
             .then(function (data) {
                 if (data && data.accept === false && data.reject_message) { showError(data.reject_message); return; }
                 var qs = (data && data.clarifying_questions) || [];
-                if (qs.length > 0) { renderClarify(query, qs); }
-                else { startResearch(query, null); }
+                renderClarify(query, qs.length > 0 ? qs : DEFAULT_QUESTIONS);
             })
-            .catch(function () { startResearch(query, null); }); // fail-open
+            .catch(function () { renderClarify(query, DEFAULT_QUESTIONS); }); // fail-open, but still ask
     }
 
     function renderClarify(query, questions) {

@@ -23,6 +23,7 @@ import { handleSubscribe } from './handlers/subscribe.js';
 import { handleChat } from './handlers/chat.js';
 import { handleNextJob, handleProgress, handleComplete } from './handlers/internal.js';
 import { handleSignup, handleLogin, handleLogout, renderLoginPage, renderAccountPage } from './handlers/auth.js';
+import { getSessionUser, getUserSearches } from './lib/auth.js';
 import { handleFind } from './pages/find.js';
 import { renderReviewsPage } from './pages/reviews.js';
 import { handleMetrics } from './pages/metrics.js';
@@ -160,6 +161,26 @@ export default {
             // grounded in a completed report (research pages).
             if (path === '/api/chat' && method === 'POST') {
                 return handleChat(request, env);
+            }
+
+            // Per-user search history (server-backed, cross-device). The "Your
+            // searches" tab + /history page hit this; signed-out users get
+            // {authed:false} and the client falls back to localStorage. Epoch
+            // seconds are normalized to ms to match the localStorage shape.
+            if (path === '/api/history' && method === 'GET') {
+                const jres = (obj) => new Response(JSON.stringify(obj), { headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } });
+                const user = await getSessionUser(request, env);
+                if (!user) return jres({ authed: false, items: [] });
+                try {
+                    const rows = await getUserSearches(env.DB, user.id, 50);
+                    const items = rows
+                        .filter((r) => r && r.slug)
+                        .map((r) => ({ slug: r.slug, query: r.query, ts: (r.created_at || 0) * 1000, status: r.status || null, category: r.category || null }));
+                    return jres({ authed: true, email: user.email, items });
+                } catch (err) {
+                    console.error('[history] lookup failed:', err instanceof Error ? err.message : String(err));
+                    return jres({ authed: true, email: user.email, items: [] });
+                }
             }
 
             // Internal API for the off-Cloudflare research worker (track 2).
