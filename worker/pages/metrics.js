@@ -18,6 +18,7 @@
 // try/catch and degrade to zero/empty results if the table is missing.
 
 import { monthKey } from '../pipeline/orchestrator.js';
+import { ingestGsc, getGscSummary } from '../lib/gsc.js';
 
 const DAY_SECONDS = 86400;
 const THIRTY_DAYS_SECONDS = 30 * DAY_SECONDS;
@@ -266,7 +267,17 @@ export async function handleMetrics(request, env) {
   const sinceSeconds = nowSeconds - THIRTY_DAYS_SECONDS;
   const sinceSqlDatetime = isoSecondsToSqlDatetime(sinceSeconds);
 
-  const [budget, runs, topPages, affiliate, guideClicks, subscribers, flywheel, unservedDemand] =
+  // Optional manual GSC ingest (?gsc_ingest=1) — handy for the first pull right
+  // after the GSC_SA_KEY secret is set, instead of waiting for the daily cron.
+  // Fail-soft: returns a {skipped}/{error} marker, never breaks the snapshot.
+  let gscIngest = null;
+  try {
+    if (new URL(request.url).searchParams.get('gsc_ingest') === '1') {
+      gscIngest = await ingestGsc(env).catch((e) => ({ error: e instanceof Error ? e.message : String(e) }));
+    }
+  } catch { /* bad URL — ignore */ }
+
+  const [budget, runs, topPages, affiliate, guideClicks, subscribers, flywheel, unservedDemand, gsc] =
     await Promise.all([
       getMonthSpend(env, nowSeconds),
       getRunStats(env, sinceSeconds),
@@ -276,6 +287,7 @@ export async function handleMetrics(request, env) {
       getSubscriberCount(env),
       getFlywheel(env),
       getUnservedDemand(env),
+      getGscSummary(env),
     ]);
 
   return jsonResponse(
@@ -289,6 +301,8 @@ export async function handleMetrics(request, env) {
       subscribers,
       flywheel,
       unserved_demand: unservedDemand,
+      gsc,
+      ...(gscIngest ? { gsc_ingest: gscIngest } : {}),
     },
     200,
   );

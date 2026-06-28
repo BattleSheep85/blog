@@ -28,6 +28,7 @@ import { handleFind } from './pages/find.js';
 import { renderReviewsPage } from './pages/reviews.js';
 import { handleMetrics } from './pages/metrics.js';
 import { runFlywheelTick } from './lib/keywords.js';
+import { ingestGsc } from './lib/gsc.js';
 import { getLatestResearchLastmod, generateSitemap, generateAtomFeed, generateOgImage } from './lib/sitemap.js';
 import { getResearchById } from './lib/db.js';
 import { displayQuery, escapeLikeWildcards, publicResearchFilter, canonicalizeQuery, isNotModified } from './lib/utils.js';
@@ -426,6 +427,24 @@ export default {
         } catch (err) {
             console.error(JSON.stringify({ where: 'scheduled-flywheel', error: err instanceof Error ? err.message : String(err) }));
         }
+
+        // Daily Google Search Console ingest. The */10 cron fires ~144×/day, so
+        // guard on a KV date stamp to run once per UTC day. Fail-SOFT: with no
+        // GSC_SA_KEY it's an instant no-op (no network, stays quiet, retries next
+        // tick so it self-starts the moment the secret is added). Under waitUntil
+        // so the OAuth + API round-trips never slow the reaper/flywheel above.
+        ctx.waitUntil((async () => {
+            try {
+                const today = new Date(now).toISOString().slice(0, 10);
+                if (await env.KV.get('gsc:last-date') === today) return;
+                const res = await ingestGsc(env);
+                if (res.skipped) return;
+                await env.KV.put('gsc:last-date', today);
+                console.log(JSON.stringify({ where: 'scheduled-gsc', ...res }));
+            } catch (err) {
+                console.error(JSON.stringify({ where: 'scheduled-gsc', error: err instanceof Error ? err.message : String(err) }));
+            }
+        })());
 
         // Fallback: when the off-CF worker is primary, a row pending > ~5 min
         // means the worker is down/backlogged. Process the oldest one on CF
