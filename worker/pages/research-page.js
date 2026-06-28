@@ -297,6 +297,60 @@ export function resolveProductCtas(p, ids, isService, slug, cleanLinks, webOnly 
   };
 }
 
+// At-a-glance comparison TABLE — a scannable, server-rendered side-by-side of
+// every ranked pick with a Buy column, shown above the long detail cards. SSR
+// (crawlable + no-JS safe + AI-answer-extractable) and a second cluster of
+// above-the-fold affiliate CTAs. Reuses resolveProductCtas so each Buy link is
+// byte-identical to the matching product card / Our-pick CTA.
+function renderComparisonTable(products, ids, isService, slug, cleanLinks, webOnly) {
+  if (!Array.isArray(products) || products.length < 2) return '';
+  const anyPrice = products.some((p) => p.price != null);
+  const muted = '<span class="compare-muted">—</span>';
+  const rows = products.map((p, i) => {
+    const ctas = resolveProductCtas(p, ids, isService, slug, cleanLinks, webOnly);
+    const a = ctas.amazon, r = ctas.retailer, g = ctas.google;
+    let buy = muted;
+    if (a.url && isValidHttpsUrl(a.url)) {
+      buy = `<a href="${escapeHtml(a.href)}" target="_blank" rel="noopener noreferrer nofollow sponsored" class="compare-buy">${escapeHtml(a.label)}</a>`;
+    } else if (r.url && isValidHttpsUrl(r.url)) {
+      buy = `<a href="${escapeHtml(r.url)}" target="_blank" rel="${r.rel}" class="compare-buy">${escapeHtml(r.label)}</a>`;
+    } else if (g.url) {
+      buy = `<a href="${escapeHtml(g.url)}" class="compare-buy">${escapeHtml(g.label)}</a>`;
+    }
+    const rating = p.rating != null
+      ? `<span class="compare-nowrap"><span aria-hidden="true">${'★'.repeat(Math.floor(p.rating))}${'☆'.repeat(5 - Math.floor(p.rating))}</span> ${escapeHtml(String(p.rating))}/5</span>`
+      : muted;
+    const price = p.price != null ? `$${p.price.toLocaleString()}` : muted;
+    const bestFor = p.best_for ? escapeHtml(String(p.best_for).slice(0, 90)) : muted;
+    const rankCell = p.rank != null ? `#${escapeHtml(String(p.rank))}` : String(i + 1);
+    return `<tr>
+<td class="compare-rank">${rankCell}</td>
+<th scope="row" class="compare-name"><a href="#product-${i + 1}">${escapeHtml(p.name)}</a>${p.brand ? `<span class="compare-brand">${escapeHtml(p.brand)}</span>` : ''}</th>
+<td>${rating}</td>
+${anyPrice ? `<td class="compare-nowrap">${price}</td>` : ''}
+<td>${bestFor}</td>
+<td>${buy}</td>
+</tr>`;
+  }).join('');
+  return `<section class="compare-section">
+<h2 id="compare" style="font-size:1.25rem;font-weight:700;margin-bottom:1rem">${isService ? 'At a glance' : `Compare all ${products.length}`}</h2>
+<div class="compare-scroll">
+<table class="compare-table">
+<caption style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Side-by-side comparison of all ${products.length} ranked picks with ratings${anyPrice ? ', price,' : ''} and where to buy.</caption>
+<thead><tr>
+<th scope="col">#</th>
+<th scope="col">Product</th>
+<th scope="col">Rating</th>
+${anyPrice ? '<th scope="col">Price</th>' : ''}
+<th scope="col">Best for</th>
+<th scope="col">Where to buy</th>
+</tr></thead>
+<tbody>${rows}</tbody>
+</table>
+</div>
+</section>`;
+}
+
 // `p` arrives with pros/cons/specs/metadata already parsed (see
 // renderResearchResult — the JSON columns are parsed exactly once after fetch).
 function renderProduct(p, index, ids, isService, slug, cleanLinks, webOnly) {
@@ -409,13 +463,19 @@ function isBelow4(p) { return p.rating != null && Number(p.rating) < 4; }
 function criticalReviewsBlock(p, cons) {
   const r = p.rating == null ? null : Number(p.rating);
   if (r != null && r >= 4) return ''; // 4★+ : criticism stays in the normal Cons grid
-  const items = (cons || []).map((c) => `<li>${escapeHtml(String(c))}</li>`).join('');
+  // cons[0] is already surfaced directly above by ratingNote() as the "main
+  // caveat" — list the REMAINING criticism here so the top con doesn't print
+  // twice within a few lines.
+  const rest = (cons || []).slice(1);
+  const items = rest.map((c) => `<li>${escapeHtml(String(c))}</li>`).join('');
   const intro = r == null
     ? 'We didn’t find enough independent reviews to score this confidently — read the criticism we did find before buying:'
     : 'This scores below 4★. Here’s the criticism reviewers actually raised — read it and decide whether any of it is a dealbreaker for you:';
   const body = items
     ? `<p class="crit-intro">${intro}</p><ul class="crit-list">${items}</ul>`
-    : '<p class="crit-intro">This scores below 4★ and we couldn’t surface specific, credible criticism — treat the rating cautiously and read recent buyer reviews before purchasing.</p>';
+    : ((cons || []).length
+        ? '<p class="crit-intro">The main caveat reviewers raised is noted above. We didn’t surface additional specific criticism — read recent buyer reviews before purchasing.</p>'
+        : '<p class="crit-intro">This scores below 4★ and we couldn’t surface specific, credible criticism — treat the rating cautiously and read recent buyer reviews before purchasing.</p>');
   return `<section class="critical-reviews" aria-label="Critical reviews">
 <h4 class="crit-head"><span aria-hidden="true">&#9888;</span> Why some reviewers rated it low</h4>
 ${body}</section>`;
@@ -658,8 +718,6 @@ ${Object.entries(clarifications).map(([k, v]) => `<span class="card-badge" style
 </div>
 </div>` : ''}
 
-${entry.status === 'complete' ? chatSection : ''}
-
 ${isProcessing ? `<div id="processing" style="padding:1.5rem;background:var(--surface-1);border:1px solid color-mix(in srgb,var(--accent) 30%,transparent);border-radius:0.875rem;margin:2rem 0">
 <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1rem">
 <div class="spinner" style="width:1.5rem;height:1.5rem;border-width:2px;margin:0;flex-shrink:0"></div>
@@ -691,8 +749,9 @@ ${isFailed ? `<div style="padding:1.5rem;background:var(--trust-low-bg);border:1
 
 ${entry.status === 'complete' ? (() => {
   const tocItems = [];
-  tocItems.push({ id: 'talk-about-it', label: 'Ask or refine' });
   if (entry.summary) tocItems.push({ id: 'summary', label: 'Summary' });
+  if (products.length > 1) tocItems.push({ id: 'compare', label: 'Compare' });
+  tocItems.push({ id: 'talk-about-it', label: 'Ask or refine' });
   if (hasBuyersGuide) tocItems.push({ id: 'buyers-guide', label: "Buyer's guide" });
   if (products.length > 0) tocItems.push({ id: 'products', label: isService ? 'Recommendations' : 'Products compared' });
   if (resultData.methodology) tocItems.push({ id: 'methodology', label: 'Methodology' });
@@ -708,6 +767,10 @@ ${entry.status === 'complete' ? (() => {
 ${entry.summary ? `<div class="summary-box"><h2 id="summary">Summary</h2><p>${escapeHtml(entry.summary)}</p></div>` : ''}
 
 ${entry.status === 'complete' && products.length > 0 ? renderOurPick(products.find((p) => p.rank === 1) || products[0], affiliateIds, isService, slug, cleanLinks, webOnly) : ''}
+
+${entry.status === 'complete' ? renderComparisonTable(products, affiliateIds, isService, slug, cleanLinks, webOnly) : ''}
+
+${entry.status === 'complete' ? chatSection : ''}
 
 ${entry.status === 'complete' ? renderTrustPanel(entry.sources, entry.completed_at) : ''}
 
