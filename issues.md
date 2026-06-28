@@ -43,14 +43,18 @@ revenue leak. The "funnel freeze until real traffic data" is now satisfied.
       for crawlers; sitemap 0.8). Pairs with the /reviews Buy-CTA fix.
 - [ ] QUICK WIN: email capture on home + /best hubs (backend built; research-page-only).
 
-### USER ACTION required (I can't do these; they gate big strategic value)
+### USER ACTION required (gates big strategic value)
 
-- [ ] CRITICAL (META-UNBLOCKER): GSC Search Analytics → D1 cron. Needs a Google Cloud
-      service-account JSON (or OAuth) for the verified property. Build is ready to go;
-      only the credential blocks it. Ends the funnel freeze + feeds the keyword flywheel.
-- [ ] HIGH (SEO/AEO): the LIVE robots.txt is a Cloudflare-managed block that walls off
-      ALL AI crawlers (GPTBot/ClaudeBot/CCBot/Google-Extended). Relaxing it for
-      AI-answer referral traffic is a Cloudflare *dashboard* change, not a repo edit.
+- [x] BUILT + DEPLOYED (dormant): GSC Search Analytics → D1 ingestion. lib/gsc.js
+      (zero-dep RS256 JWT + OAuth + searchAnalytics over fetch), schema/008_gsc_metrics
+      (applied to prod), daily cron (KV-guarded, fail-soft), /metrics `gsc` block +
+      `?gsc_ingest=1` trigger. Verified live: `{skipped:'no GSC_SA_KEY'}`.
+      REMAINING USER ACTION: set the GSC_SA_KEY secret (service-account JSON) +
+      optional GSC_SITE_URL — then it self-starts. Setup steps handed to the user 2026-06-27.
+- [~] DECIDED — relax (user, 2026-06-27): allow AI crawlers to GROUND (keep ai-train=no).
+      The LIVE robots.txt is a Cloudflare-managed block walling off GPTBot/ClaudeBot/
+      CCBot/Google-Extended. REMAINING USER ACTION: Cloudflare dashboard → AI Crawl
+      Control / managed robots → allow the AI-input crawlers. Steps handed over 2026-06-27.
 
 ### Stale items closed by this audit (were misrepresenting health)
 
