@@ -1,6 +1,69 @@
 # Issues
 
-Last updated: 2026-06-26
+Last updated: 2026-06-27
+
+## 2026-06-27 — 5-agent site audit + report comparison table (godmode R1)
+
+Ran a 5-auditor parallel sweep (live-QA, output-quality, SEO/traffic, backlog
+triage, blackbox-infra) over the live site + repo. Live metrics at audit time:
+$19.57/$60 spent (33%), 291 complete runs/30d. Key signal: physical/Amazon pages
+convert 37–75% CTR, but **non-Amazon categories earn $0 on real traffic** (tax
+software 0/81, credit-repair 0/64, enterprise firewalls 0/60) — a missing-CTA
+revenue leak. The "funnel freeze until real traffic data" is now satisfied.
+
+- [x] HIGH (CONVERSION): report pages had NO comparison table (grep `<table`=0)
+      and rendered the chat widget ABOVE the answer + buy CTA. Shipped an SSR,
+      no-JS-safe, AI-extractable `renderComparisonTable()` (research-page.js) with
+      a Buy column (reuses resolveProductCtas → /api/go/:id), and reordered to
+      Summary → Our Pick → Compare → chat → trust. TOC gains "Compare"; de-duped
+      the doubled top-con. app.css `.compare-*`. Verified live on the NAS report
+      (6 Buy CTAs, correct order). Closes the old comparison-TABLE backlog item.
+
+### Open, ranked (from the audit) — next rounds
+
+- [ ] CRITICAL (CONVERSION): /reviews catalog renders ZERO buy CTAs —
+      `renderReviewCard` (reviews.js:37, has the Amazon CTA) is dead code; the live
+      grid is JS-rendered as plain /research/ links with no Buy button and no
+      affiliate_url in the embedded data. The whole review catalog (primary nav,
+      sitemap 0.8) monetizes nothing. SSR the cards w/ Buy + fixes empty-for-crawlers.
+- [ ] HIGH (CONVERSION/UX): mobile nav is broken site-wide — every header link is
+      `hidden sm:inline` with no hamburger (worker/lib/html.js + public/index.html).
+      On phones only "Account" + theme toggle are reachable. Add a disclosure menu.
+- [ ] CRITICAL (QUALITY): location/service/experience queries get a product-shaped
+      plan — parallel-engine.js decompose() never receives classifier facets, so
+      facetFocusBlocks never reach the LIVE plan ("best pho in Wichita" → a Seattle
+      Our-Pick). Thread facets into decompose (reuse the clarifications path); needs
+      blackbox redeploy (worker/ AND research-worker.mjs) + a backfill of affected pages.
+- [ ] HIGH (QUALITY): in-query budget/spec caps not enforced — a $600 product ranked
+      #1 for "under $500". Extract the cap (classifier.js:154 hasBudget) into
+      constraints + a deterministic price guard in validate.js applyQualityGate.
+- [ ] MED (CONVERSION): ~40% of CTAs degrade to "Search Amazon" (keyword fallback)
+      vs exact /dp/ "Buy on Amazon" — lift exact-ASIN coverage (asin-resolver.js).
+- [ ] MED (SEO): SSR the /reviews + /research browse grids (today JS-hydrated, empty
+      for crawlers; sitemap 0.8). Pairs with the /reviews Buy-CTA fix.
+- [ ] QUICK WIN: email capture on home + /best hubs (backend built; research-page-only).
+
+### USER ACTION required (I can't do these; they gate big strategic value)
+
+- [ ] CRITICAL (META-UNBLOCKER): GSC Search Analytics → D1 cron. Needs a Google Cloud
+      service-account JSON (or OAuth) for the verified property. Build is ready to go;
+      only the credential blocks it. Ends the funnel freeze + feeds the keyword flywheel.
+- [ ] HIGH (SEO/AEO): the LIVE robots.txt is a Cloudflare-managed block that walls off
+      ALL AI crawlers (GPTBot/ClaudeBot/CCBot/Google-Extended). Relaxing it for
+      AI-answer referral traffic is a Cloudflare *dashboard* change, not a repo edit.
+
+### Stale items closed by this audit (were misrepresenting health)
+
+- [x] STALE: "HIGH (OPS) Serper free quota EXHAUSTED" (was line 250) — Serper was never
+      exhausted (50k paid intact; only the separate free trial burned). The real outage
+      (corrupted blackbox key) was root-caused/fixed 2026-06-25; Brave+Tavily+SearXNG
+      fallbacks all shipped. Only residual: dev still shares prod's key (hygiene).
+- [x] STALE: GOOGLE_CSE_ID dead env var — already removed 2026-06-16.
+- [x] STALE: delete dead db.js insertProductV2/completeResearch — already deleted 2026-06-25.
+- [x] STALE: "HIGH honesty engine-prompt fabrication" — duplicate of the resolved fix;
+      fabrication already collapsed to 0/0.
+- [x] OBSOLETE: "Phase 2 ship pure-ML Layer-1 synth behind a flag" — superseded by the
+      engine-architecture verdict (gated-LLM-cleanup shipped; honesty solved by the gate).
 
 ## 2026-06-26 — Shared list layouts on browse + reviews (godmode R1)
 
