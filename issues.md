@@ -19,6 +19,12 @@ Last updated: 2026-06-29
 - [x] HIGH — blackbox research-worker container: after the env-recreate dropped the original `--dns`, every external fetch (Serper/OpenRouter/Jina/RSS) hung ~5.0s on the AAAA/IPv6 lookup → mass "operation aborted due to timeout" + failed jobs (LAN SearXNG by literal IP unaffected — the tell). Fixed by recreating with `--dns 1.1.1.1/8.8.8.8/192.168.5.1` + `NODE_OPTIONS=--dns-result-order=ipv4first` (5.1s → 0.14s). Introduced AND fixed this session.
 - [ ] LOW — CF env `SYNTH_ENGINE="extract"` is vestigial: the blackbox path runs runParallelEngine (LLM synth) regardless. Clean up when convenient.
 
+### Blocked on credentials (surfaced fetching "top Google product searches")
+The ask was real Google search-term data; both proper sources were credential-blocked, so this session fell back to D1 `view_count` rankings + Google autocomplete harvest. Unblock either to get true Google query data:
+- [ ] MEDIUM — **GSC search-term data needs a GCP service-account key.** The Search Console→D1 ingestion (`worker/lib/gsc.js`, `gsc_metrics`, daily cron, `/metrics?gsc_ingest=1`) is BUILT + deployed but DORMANT until `GSC_SA_KEY` is set. Activation: create a Google Cloud service account → JSON key → add as a Restricted user on the verified GSC property → `wrangler secret put GSC_SA_KEY`. This is THE source for "what people search on Google → the site." (memory: gsc-ingestion-built-dormant)
+- [ ] LOW — **CF Analytics API token lacks `analytics.read` scope.** `CLOUDFLARE_API_TOKEN` (.cf-token) can deploy + query D1 but the GraphQL `httpRequestsAdaptiveGroups` (top pages / traffic) returns `authz: does not have permission 'com.cloudflare.api.account.zone.analytics.read'`. Add Analytics Read to the token (CF dash → My Profile → API Tokens) to pull traffic/top-pages programmatically; until then traffic ranking comes from D1 `view_count`.
+- [ ] LOW — Chrome-extension browser path (for the manual GSC dashboard CSV export) was unavailable this session — extension not connected. Either connect it or use the GSC_SA_KEY API path above.
+
 ## 2026-06-27 — 5-agent site audit + report comparison table (godmode R1)
 
 Ran a 5-auditor parallel sweep (live-QA, output-quality, SEO/traffic, backlog
