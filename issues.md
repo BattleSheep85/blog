@@ -1,6 +1,23 @@
 # Issues
 
-Last updated: 2026-06-27
+Last updated: 2026-06-29
+
+## 2026-06-29 — Synth model lock (gpt-5.4-mini) + SearXNG provider + DNS fix
+
+### Synth model — benchmarked & locked
+- [x] HIGH — Synth was kimi-k2.6: slowest candidate (~40s), timed out ~1/8 runs. Ran a 50-query × 150-juror blind judge panel on real Google searches; **locked synth to openai/gpt-5.4-mini** (best grounding 7.18 + usefulness 7.31, #1 in 53% of head-to-heads). grok-4.20 DQ'd on honesty (3.15 fabs/report), gemini-flash honest-but-thin, flash-lite last. (worker/lib/tiers.js, research-worker.mjs — A/B rotation retired)
+- [x] MEDIUM — synthProvider was the kimi throughput/quantization routing object; gpt-5.4-mini is single-provider so that 404s — set synthProvider:null. (worker/lib/tiers.js)
+- Bench suite added: harvest-google + select-top50 (Google autocomplete → real product queries), bench-synth-v2 (corpus-cached 4-model), build-judge-bundles + aggregate-judges (blinded panel). (benchmarks/)
+
+### Search providers — benchmarked & SearXNG shipped
+- [x] MEDIUM — DuckDuckGo rotation slot was dead (CAPTCHA from datacenter IPs). Replaced with self-hosted **SearXNG** (free metasearch on blackbox :8095, tuned to google+startpage+bing+mojeek). (worker/engine/parallel-engine.js, tools.js searxngSearch)
+- [x] MEDIUM — research-worker.mjs only forwarded SERPER_API_KEY → Brave AND the subagent's new Tavily were dead-wired. Now forwards SEARXNG_URL/BRAVE_API_KEY/TAVILY_API_KEY. (research-worker.mjs)
+- [x] LOW — Corrected stale "Serper exhausted" belief: 50k paid credits intact; the burned quota was the separate 2,500 free trial. (memory)
+- Provider bench (benchmarks/bench-providers.mjs): all 4 providers ≈ equal credibility; SearXNG free-equals paid; "use them all" = +50-65% unique-source recall.
+
+### Infra
+- [x] HIGH — blackbox research-worker container: after the env-recreate dropped the original `--dns`, every external fetch (Serper/OpenRouter/Jina/RSS) hung ~5.0s on the AAAA/IPv6 lookup → mass "operation aborted due to timeout" + failed jobs (LAN SearXNG by literal IP unaffected — the tell). Fixed by recreating with `--dns 1.1.1.1/8.8.8.8/192.168.5.1` + `NODE_OPTIONS=--dns-result-order=ipv4first` (5.1s → 0.14s). Introduced AND fixed this session.
+- [ ] LOW — CF env `SYNTH_ENGINE="extract"` is vestigial: the blackbox path runs runParallelEngine (LLM synth) regardless. Clean up when convenient.
 
 ## 2026-06-27 — 5-agent site audit + report comparison table (godmode R1)
 
