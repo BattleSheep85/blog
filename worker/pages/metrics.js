@@ -269,11 +269,16 @@ export async function handleMetrics(request, env) {
 
   // Optional manual GSC ingest (?gsc_ingest=1) — handy for the first pull right
   // after the GSC_SA_KEY secret is set, instead of waiting for the daily cron.
+  // Optional ?gsc_days=N widens the window for one-off historical backfills
+  // (the daily cron always uses the 5-day default). GSC retains ~16 months.
   // Fail-soft: returns a {skipped}/{error} marker, never breaks the snapshot.
   let gscIngest = null;
   try {
-    if (new URL(request.url).searchParams.get('gsc_ingest') === '1') {
-      gscIngest = await ingestGsc(env).catch((e) => ({ error: e instanceof Error ? e.message : String(e) }));
+    const reqUrl = new URL(request.url);
+    if (reqUrl.searchParams.get('gsc_ingest') === '1') {
+      const daysParam = Number(reqUrl.searchParams.get('gsc_days'));
+      const opts = Number.isFinite(daysParam) && daysParam > 0 ? { days: Math.min(daysParam, 480) } : undefined;
+      gscIngest = await ingestGsc(env, opts).catch((e) => ({ error: e instanceof Error ? e.message : String(e) }));
     }
   } catch { /* bad URL — ignore */ }
 

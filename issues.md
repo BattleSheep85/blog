@@ -2,6 +2,54 @@
 
 Last updated: 2026-07-01
 
+## 2026-07-01 — GSC unblocked + THE root cause found: zero real internal links to content
+
+Continuation of the revenue eval below. GSC access finally worked (see that section for the wrong-service-account
+saga); the moment real Search Console data landed, it revealed something more fundamental than the earlier findings.
+
+- [x] CRITICAL — **Google has crawled and indexed the homepage, but has NEVER crawled a single one of the 317+
+  individual `/research/:slug` content pages** (`URL Inspection API`: `coverageState: "URL is unknown to Google"`,
+  `lastCrawlTime: never`). The sitemap itself HAS been fetched repeatedly (`lastDownloaded` within the last day, 0
+  errors) and reports `submitted: 317, indexed: 0`. Root cause: `/research` (browse) and the homepage had **zero
+  server-rendered `<a href="/research/:slug">` links** — the actual list was JSON data rendered into visible links
+  only by client-side JS (`worker/lib/list-layout-boot.js`), which a crawler's fast HTML-parse pass never executes.
+  Sitemap-only + JSON-LD-only discovery is explicitly documented by Google as weaker/non-guaranteed vs. real
+  hyperlinks. This is the actual, most-fundamental reason for near-zero organic traffic/impressions — more
+  fundamental than the bot-click or `/dp/`-link findings from earlier today, and unrelated to the domain's legacy
+  IT-consulting search history (ruled that out — see below).
+  **Fixed:** `worker/pages/browse.js` now server-renders a real `<a href="/research/:slug">` card grid (reusing the
+  existing `.card`/`.card-top`/`.card-badge` CSS from the research-page "related research" section) as a
+  progressive-enhancement base; the client-side `TrueRankLayouts.render()` still replaces it with the polished
+  interactive view when JS loads (verified: `container.innerHTML = html`, a full replace, so no duplication risk).
+  Verified live: 12 real links/page, correctly paginated across `/research?page=N`. `/best/:category` hub pages
+  already had real SSR links (`worker/pages/category.js`) and were not the gap — but only cover the top ~12
+  categories shown in the browse-page strip, so most content had NO real link path before this fix.
+- [x] — Explicitly resubmitted `sitemap.xml` via the Search Console `sitemaps.submit` API (it was already being
+  fetched, but resubmission after a real code fix is standard practice to prompt re-processing).
+- [x] — Added `?gsc_days=N` to the manual `/metrics?gsc_ingest=1` trigger (was hardcoded to the cron's 5-day
+  window) to support one-off historical backfills. Used it to pull a 90-day backfill — see the GSC findings below.
+- [ ] Deferred to user (Google's own crawl scheduling, not something I can force via API): the general-content
+  "Request Indexing" action is Search-Console-UI-only, no public API. Recommend manually requesting indexing on
+  a handful of the highest-value pages (`URL Inspection` → paste URL → `REQUEST INDEXING`) as a manual nudge on
+  top of the code fix. Realistic timeline for re-crawl + indexing to show up: days to a few weeks, not instant.
+
+### GSC access — resolved (wrong service account, not a permission bug)
+Root cause of the "insufficient permission" 403s from the earlier attempt: the user had created TWO service
+accounts in GCP project `braided-rush-207117` — `truerank-gsc-reader` (granted Search Console access) and
+`truerank-gsc` (the one whose key was actually set as `GSC_SA_KEY`). Fixed by adding `truerank-gsc@...` as a
+second Search Console user rather than swapping keys. `sc-domain:chrisputer.tech` (Domain property) now returns
+real data; the code's `DEFAULT_SITE` already matched, no config change needed.
+
+### GSC data — the domain's legacy identity, quantified (and ruled out as the root cause)
+90-day backfill: only 10 distinct queries ever recorded, 50 total impressions, **0 clicks, ever**. Most of the
+volume ("zero trust infrastructure small business", "it consulting wichita", "disaster recovery as a service
+kansas city") is unrelated IT-consulting-business search history — chrisputer.tech almost certainly had a prior
+life as a local IT consulting site. Current-business queries ("truerank", "24tb nas") got a combined 6 impressions
+in 3 months. **User asked whether a new domain is needed — no.** The legacy content isn't blocking the new
+content from ranking; the missing-internal-links bug above is a complete, sufficient explanation on its own,
+and it would affect a brand-new domain identically (which would also start with zero domain-age signal, a strictly
+worse position). Fix the discovery path (done) and give it time; don't discard 3 months of domain age over this.
+
 ## 2026-07-01 — Full revenue/traffic eval + fixes ("I'm not making any money off of this")
 
 Audited the funnel end to end (D1 live queries, code review, live prod smoke tests). Verdict: cost is not
