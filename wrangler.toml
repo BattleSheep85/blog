@@ -28,7 +28,11 @@ CACHE_TTL_SECONDS = "86400"
 MONTHLY_BUDGET_USD = "60"
 # Programmatic-SEO flywheel: max keyword research runs the cron will start per
 # UTC day. The flywheel also stays dormant until SERPER_API_KEY is set.
-FLYWHEEL_DAILY_MAX = "6"
+# Raised 6->12 (2026-07-01, full eval): budget was 19% utilized ($11/mo of $60)
+# and the queue was refilled with 200 real-Google-popularity keywords (autocomplete
+# harvest) — the constraint was queue depth + cap, not budget. 12/day drains the
+# ~280-keyword queue over ~3 weeks and adds ~$13/mo, leaving room for organic growth.
+FLYWHEEL_DAILY_MAX = "12"
 # EXTERNAL_WORKER_ENABLED routes research processing. BOTH paths run the SAME honest
 # deterministic extraction synth (synthesizeHonest) — it cannot fabricate wherever it runs:
 #   "false" (DEFAULT + SAFE ROLLBACK): the CF-side runEngine (SYNTH_ENGINE=extract below)

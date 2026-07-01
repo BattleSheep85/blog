@@ -5,6 +5,43 @@
 
 import { logAffiliateClick, logGuideClick } from '../lib/db.js';
 import { buildAmazonSearchFallback } from '../lib/affiliate-links.js';
+import { checkRateLimit } from '../lib/rate-limit.js';
+
+// Bot/scraper defense for the affiliate redirect surface. /api/ is disallowed
+// in robots.txt, so any traffic hitting these routes is already non-compliant
+// with a well-behaved crawler's rules — this catches it anyway (UA sniffing is
+// easily spoofed) and caps the blast radius (rate limit). Real incident
+// 2026-06-21: 2,397 redirect hits from 6 IPs in a single day, no UA filter, no
+// rate limit — polluted affiliate_clicks and sent non-human traffic through
+// Amazon affiliate links, which risks Associates account suspension.
+const BOT_UA_PATTERN = /bot|crawl|spider|scraper|curl|wget|python-requests|python-urllib|scrapy|headless|phantomjs|selenium|puppeteer|playwright|go-http-client|java\/|libwww|httpclient|axios\/|node-fetch|okhttp|postman|scan|monitor|uptime|pingdom|check_http|facebookexternalhit|slurp|ahrefs|semrush|mj12bot|dotbot/i;
+
+async function isSuspiciousRequest(request, env, ip) {
+    const ua = request.headers.get('User-Agent') || '';
+    if (!ua || BOT_UA_PATTERN.test(ua)) return true;
+    if (!env.KV) return false;
+    // 30/hr is generous for a real visitor clicking through product cards on
+    // one page; a script hammering the redirect endpoint blows past it fast.
+    const rate = await checkRateLimit(env.KV, `go:${ip}`, 30, 3600);
+    return !rate.allowed;
+}
+
+// Strip Amazon's tag/ascsubtag query params so a flagged request still reaches
+// its destination (doesn't look like a dead link to whatever is probing it)
+// but never carries our affiliate tag through to Amazon.
+function stripAmazonAffiliateParams(url) {
+    if (!url) return url;
+    try {
+        const u = new URL(url);
+        const host = u.hostname.replace(/^www\./, '').toLowerCase();
+        if (host !== 'amazon.com' && !host.endsWith('.amazon.com')) return url;
+        u.searchParams.delete('tag');
+        u.searchParams.delete('ascsubtag');
+        return u.toString();
+    } catch {
+        return url;
+    }
+}
 
 // Recognize a usable, tagged Amazon /dp/ buy link (persisted by Phase 2).
 // Search-results URLs (amazon.com/s?...) are intentionally NOT treated as a
@@ -52,14 +89,18 @@ export async function handleAffiliateClick(productId, request, env) {
 
     // Hash the IP for privacy (don't store raw IPs)
     const ipHash = await hashString(ip);
+    const suspicious = await isSuspiciousRequest(request, env, ip);
 
-    // Log the click asynchronously (don't block the redirect)
-    const logPromise = logAffiliateClick(env.DB, {
-        productId,
-        reportId,
-        network,
-        ipHash,
-    }).catch(err => console.error('Click logging failed:', err));
+    // Log the click asynchronously (don't block the redirect). Bot/rate-limited
+    // hits are excluded so affiliate_clicks reflects real visitors.
+    const logPromise = suspicious
+        ? Promise.resolve()
+        : logAffiliateClick(env.DB, {
+            productId,
+            reportId,
+            network,
+            ipHash,
+        }).catch(err => console.error('Click logging failed:', err));
 
     // Look up the product's affiliate link (v2 schema: single affiliate_url,
     // with product_url as the untagged fallback). name/brand let us rebuild a
@@ -99,10 +140,15 @@ export async function handleAffiliateClick(productId, request, env) {
         }
     }
 
-    // Per-page EPC attribution: Amazon surfaces ascsubtag in the Associates Orders
-    // report, so we can see which research page actually EARNS (not just which gets
-    // clicks). No-op for non-Amazon redirects.
-    redirectUrl = withAmazonSubtag(redirectUrl, product?.research_slug ? `tr-${product.research_slug}` : 'tr-direct');
+    if (suspicious) {
+        // Never carry our affiliate tag through to Amazon for a flagged request.
+        redirectUrl = stripAmazonAffiliateParams(redirectUrl);
+    } else {
+        // Per-page EPC attribution: Amazon surfaces ascsubtag in the Associates
+        // Orders report, so we can see which research page actually EARNS (not
+        // just which gets clicks). No-op for non-Amazon redirects.
+        redirectUrl = withAmazonSubtag(redirectUrl, product?.research_slug ? `tr-${product.research_slug}` : 'tr-direct');
+    }
 
     // Wait for logging before redirecting
     await logPromise;
@@ -144,6 +190,8 @@ export async function handleAffiliateSearch(request, env) {
     const q = (url.searchParams.get('q') || '').trim().slice(0, 200);
     const ref = (url.searchParams.get('ref') || '').slice(0, 64);
     const network = (url.searchParams.get('network') || 'amazon').slice(0, 32);
+    const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+    const suspicious = await isSuspiciousRequest(request, env, ip);
 
     const amazonTag = env.AMAZON_ASSOCIATE_TAG || env.AMAZON_AFFILIATE_TAG || '';
     const tagSuffix = amazonTag ? `&tag=${encodeURIComponent(amazonTag)}` : '';
@@ -153,15 +201,21 @@ export async function handleAffiliateSearch(request, env) {
         ? `https://www.amazon.com/s?k=${encodeURIComponent(q)}${tagSuffix}`
         : `https://www.amazon.com/${amazonTag ? `?tag=${encodeURIComponent(amazonTag)}` : ''}`;
     // Per-page EPC attribution for guide pages, keyed by the guide slug (ref).
-    const redirectUrl = withAmazonSubtag(baseUrl, ref ? `tr-guide-${ref}` : 'tr-guide');
+    // Flagged requests skip the tag entirely — never send suspected bot/script
+    // traffic through the Amazon Associates link.
+    const redirectUrl = suspicious
+        ? stripAmazonAffiliateParams(baseUrl)
+        : withAmazonSubtag(baseUrl, ref ? `tr-guide-${ref}` : 'tr-guide');
 
-    // Best-effort analytics. Never let logging break the redirect.
-    try {
-        const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
-        const ipHash = await hashString(ip);
-        await logGuideClick(env.DB, { guideSlug: ref, productQuery: q, network, ipHash });
-    } catch (err) {
-        console.error('Guide click logging failed:', err);
+    // Best-effort analytics. Never let logging break the redirect. Skipped for
+    // flagged requests so guide_clicks reflects real visitors.
+    if (!suspicious) {
+        try {
+            const ipHash = await hashString(ip);
+            await logGuideClick(env.DB, { guideSlug: ref, productQuery: q, network, ipHash });
+        } catch (err) {
+            console.error('Guide click logging failed:', err);
+        }
     }
 
     return new Response(null, {
