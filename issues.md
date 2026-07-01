@@ -2,6 +2,30 @@
 
 Last updated: 2026-07-01
 
+## 2026-07-01 — /dp/ link recall: retailer fallback added (Best Buy, Newegg)
+
+Follow-up to the 65%-of-clicks-hit-a-generic-search-page finding from earlier today. Two initial fix ideas
+FAILED live testing before any code was written (exactly the point of testing first):
+- Serper Shopping endpoint: every result was a `google.com/search?ibp=oshop...` redirect, not a real merchant
+  URL, and **zero results were from Amazon** at all (Amazon largely doesn't participate in Google's Shopping
+  product feed the way Best Buy/Walmart do — it doesn't need to pay for that placement).
+- Naively extending the existing `site:amazon.com "product"` search technique to other retailers: noisy —
+  `site:bestbuy.com` returned Q&A pages, `site:newegg.com` returned Newegg's own internal search-results page
+  (`/p/pl?d=...`), `site:walmart.com` returned nothing. Same technique, much less reliable off Amazon.
+
+**Shipped instead:** `worker/lib/asin-resolver.js` — after the existing Amazon resolver (`resolveOne`, unchanged)
+finds no match, a new `resolveOtherRetailer()` tries Best Buy then Newegg via the same `site:` search technique,
+but gated behind a real per-retailer URL-pattern allowlist (reject Q&A/review-tab/search-listing paths; only
+accept genuine product-detail-page URL shapes) plus the existing title-token match. Caught a real bug during live
+verification before shipping: Best Buy runs TWO live URL schemes for genuine products (`/site/{slug}/{sku}.p` and
+`/product/{slug}/{code}/sku/{id}`) — the first-draft pattern only matched the first, silently dropping real
+matches on the second (found via a live test with "Anker PowerCore 20000mAh", fixed before deploy).
+`test/unit/asin-resolver.test.js` (16 tests, new) uses the exact real URLs captured during live testing as
+fixtures — not synthetic guesses. Verified end-to-end against live Serper before and after the fix.
+Without an Impact/Best-Buy affiliate program configured yet, a resolved Best Buy link is untagged (real,
+specific product page — same honest "known retailer, no ID configured → keep URL as-is" behavior already used
+for other retailers) — still a large UX win over the generic Amazon search-page fallback it replaces.
+
 ## 2026-07-01 — GSC unblocked + THE root cause found: zero real internal links to content
 
 Continuation of the revenue eval below. GSC access finally worked (see that section for the wrong-service-account

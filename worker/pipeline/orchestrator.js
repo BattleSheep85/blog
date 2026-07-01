@@ -183,7 +183,7 @@ export async function persistEngineResult(env, reportId, query, facets, topicalC
     const amazonViable = facets?.sold_on_amazon !== false && facets?.is_service !== true;
     let enriched = head;
     if (amazonViable) {
-        await report('Resolving Amazon product links...');
+        await report('Resolving direct product links...');
         enriched = await resolveAsins(env, enriched, report);
     }
     // Fill product photos synthesis didn't attach (one Serper Images query each).

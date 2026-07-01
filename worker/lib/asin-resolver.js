@@ -31,6 +31,37 @@ const SERPER_ENDPOINT = 'https://google.serper.dev/search';
 // including the /gp/product/ form, so use a focused local regex.
 const DP_ASIN = /\/(?:dp|gp\/product)\/([A-Z0-9]{10})(?:[/?]|$)/;
 
+// Non-Amazon retailer fallback, tried only when the Amazon site: search finds
+// no confident match. Verified against LIVE Serper /search results 2026-07-01:
+// site:{retailer} "{product}" returns a genuine product-detail page about as
+// often as noise (Q&A pages, review-tab deep links, or — Newegg — its own
+// internal search-results page), so a real URL-pattern gate is required, not
+// just the loose title-token match used for Amazon. Two retailers max, tried
+// in this order, first hit wins — keeps the added Serper spend/latency small.
+export const RETAILER_FALLBACKS = [
+  {
+    host: 'bestbuy.com',
+    // Best Buy runs (at least) two live URL schemes for genuine product
+    // pages: the older /site/{slug}/{sku}.p and a newer /product/{slug}/{code}
+    // /sku/{id} — verified 2026-07-01 both resolve to real, distinct products
+    // (missing the second form silently drops real matches). Q&A/review-tab
+    // pages live under /site/questions/... or /site/reviews/... and must be
+    // rejected even though they also contain digits that look product-ish.
+    accept: (url) => (
+      /\/site\/[^/]+\/\d+\.p(?:[/?]|$)/.test(url) ||
+      /\/product\/[^/]+\/[^/]+\/sku\/\d+(?:[/?]|$)/.test(url)
+    ) && !/\/(questions|reviews)\//.test(url),
+    normalize: (url) => url,
+  },
+  {
+    host: 'newegg.com',
+    // Real product pages: /p/{code}. Newegg's own SEARCH results use the
+    // literal path /p/pl (product list) — must be rejected, not a product.
+    accept: (url) => /\/p\/(?!pl(?:[/?]|$))[0-9A-Za-z-]+(?:[/?]|$)/.test(url),
+    normalize: (url) => url,
+  },
+];
+
 // Tokens too generic to count toward a title/product-name match.
 const STOPWORDS = new Set([
   'the', 'a', 'an', 'and', 'or', 'for', 'with', 'best', 'new', 'pro', 'plus',
@@ -66,7 +97,9 @@ export async function resolveAsins(env, products, onProgress) {
   }
   await Promise.all(targets.map(async (i) => {
     try {
-      const url = await resolveOne(out[i], apiKey);
+      // Amazon first (direct /dp/ commission on the primary affiliate program);
+      // only fall back to another retailer when Amazon genuinely has no match.
+      const url = await resolveOne(out[i], apiKey) || await resolveOtherRetailer(out[i], apiKey);
       if (url) {
         const affiliateUrl = buildAffiliateUrl(url, affiliateIds);
         out[i] = { ...out[i], productUrl: url, affiliateUrl: affiliateUrl || out[i].affiliateUrl };
@@ -79,7 +112,7 @@ export async function resolveAsins(env, products, onProgress) {
 
   if (resolvedCount > 0 && typeof onProgress === 'function') {
     try {
-      await onProgress(`Resolved ${resolvedCount} direct Amazon product link${resolvedCount === 1 ? '' : 's'}.`);
+      await onProgress(`Resolved ${resolvedCount} direct product link${resolvedCount === 1 ? '' : 's'}.`);
     } catch { /* progress is best-effort */ }
   }
 
@@ -96,18 +129,20 @@ function needsResolution(product) {
   return !DP_ASIN.test(url);
 }
 
-// One Serper query for a single product. Returns a canonical
-// https://www.amazon.com/dp/ASIN URL on a confident match, else null.
-async function resolveOne(product, apiKey) {
+// Product subject for a site:-restricted search: "{brand} {name}" (unless name
+// already starts with the brand), quotes stripped since they'd break Serper's
+// phrase-query syntax. Shared by the Amazon resolver and the retailer fallback.
+function productSubject(product) {
   const brand = (product.brand || '').trim();
   const name = (product.name || '').trim();
   if (name.length < 2) return null;
-
-  const subject = (brand && !name.toLowerCase().startsWith(brand.toLowerCase())
+  return (brand && !name.toLowerCase().startsWith(brand.toLowerCase())
     ? `${brand} ${name}`
-    : name).replace(/"/g, ''); // strip double-quotes that break Serper phrase queries
-  const query = `site:amazon.com "${subject}"`;
+    : name).replace(/"/g, '');
+}
 
+async function serperSiteSearch(host, subject, apiKey) {
+  const query = `site:${host} "${subject}"`;
   const response = await fetch(SERPER_ENDPOINT, {
     method: 'POST',
     signal: AbortSignal.timeout(TIMEOUT_MS),
@@ -117,15 +152,37 @@ async function resolveOne(product, apiKey) {
     },
     body: JSON.stringify({ q: query, num: 3 }),
   });
-
   if (!response.ok) {
-    // Auth/quota/transient errors → unchanged product. Caller swallows.
     console.log(`[asin-resolver] serper HTTP ${response.status} q="${query}"`);
-    return null;
+    return [];
   }
-
   const data = await response.json().catch(() => null);
-  const organic = Array.isArray(data?.organic) ? data.organic : [];
+  return Array.isArray(data?.organic) ? data.organic : [];
+}
+
+// Tries each RETAILER_FALLBACKS host in order, first URL-pattern-verified match
+// wins. Only called after the Amazon resolver (resolveOne) finds nothing.
+async function resolveOtherRetailer(product, apiKey) {
+  const subject = productSubject(product);
+  if (!subject) return null;
+  for (const retailer of RETAILER_FALLBACKS) {
+    const organic = await serperSiteSearch(retailer.host, subject, apiKey);
+    for (const item of organic) {
+      const link = typeof item?.link === 'string' ? item.link : '';
+      if (!link || !retailer.accept(link)) continue;
+      if (!titleMatches(subject, item?.title || '')) continue;
+      return retailer.normalize(link);
+    }
+  }
+  return null;
+}
+
+// One Serper query for a single product. Returns a canonical
+// https://www.amazon.com/dp/ASIN URL on a confident match, else null.
+async function resolveOne(product, apiKey) {
+  const subject = productSubject(product);
+  if (!subject) return null;
+  const organic = await serperSiteSearch('amazon.com', subject, apiKey);
 
   for (const item of organic) {
     const link = typeof item?.link === 'string' ? item.link : '';
@@ -161,7 +218,7 @@ function significantTokens(text) {
 }
 
 // Loose match: ≥2 shared significant tokens between subject and result title.
-function titleMatches(subject, title) {
+export function titleMatches(subject, title) {
   const a = new Set(significantTokens(subject));
   if (a.size === 0) return false;
   let shared = 0;
