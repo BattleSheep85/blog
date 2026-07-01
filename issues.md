@@ -1,6 +1,53 @@
 # Issues
 
-Last updated: 2026-06-29
+Last updated: 2026-07-01
+
+## 2026-07-01 — Full revenue/traffic eval + fixes ("I'm not making any money off of this")
+
+Audited the funnel end to end (D1 live queries, code review, live prod smoke tests). Verdict: cost is not
+the constraint (19% of $60/mo budget used); the real gaps were an unprotected affiliate endpoint and an
+underfed/undercapped growth flywheel. Fixed everything in my control; 3 items need the user's login.
+
+### Fixed
+- [x] CRITICAL — `/api/go/:id` and `/api/go/search` had zero bot/scraper protection. `robots.txt` already
+  disallows `/api/` for compliant crawlers, so 2,397 clicks from 6 IPs in one day (2026-06-21) and similar
+  bursts were non-compliant scrapers — polluting `affiliate_clicks`/`guide_clicks` AND risking Amazon
+  Associates suspension (ToS prohibits non-human traffic through affiliate links). Fixed: bot-UA regex +
+  30/hr per-IP rate limit gates both handlers; flagged requests still redirect (nothing looks broken to
+  whatever's probing) but get the Amazon tag stripped and are not logged. Verified live: bot UA → no
+  `tag=`; real browser UA → tagged + `ascsubtag`. (worker/handlers/affiliate.js)
+- [x] MEDIUM — Programmatic-SEO flywheel (Phase 5 of the original plan) was running but starved: only 43
+  keywords left pending (would've drained under a week) at a 6/day cap while 81% of the API budget sat
+  unused. Refilled with 200 new keywords from the real-Google-popularity autocomplete harvest (already
+  gathered 2026-06-26, previously unused) and raised the cap 6→12/day (~+$13/mo, still well under budget).
+  132 of 451 total pages (30%) already came from this flywheel before the fix — it's the real lever.
+  (wrangler.toml FLYWHEEL_DAILY_MAX, schema/seed_keywords_flywheel_refill_2026-07.sql)
+- [x] LOW — blackbox `JOB_CONCURRENCY=3` meant any burst (my own batch-testing on 2026-06-26 dumped ~95
+  jobs into the queue) backed the pipeline up badly — 32 jobs in the last 7 days averaged 112 minutes to
+  complete. Host has 16 cores / 37GB, was essentially idle (load avg 2.44) — real headroom existed. Bumped
+  to 5 (moderate, not doubled, to avoid tripping Serper/OpenRouter rate limits at higher fan-out).
+- [x] LOW — `test/integration/affiliate.spec.js` had a stale `insertProductV2` import (function doesn't
+  exist in db.js — the pipeline inserts products via raw SQL inline, no shared helper). Added a local
+  test-only helper matching the v2 schema; all 11 tests (7 existing + 4 new bot-defense) pass.
+
+### Deferred — needs the user directly (I cannot access these)
+- [ ] HIGH — Check the **Amazon Associates dashboard** for actual $ earned, and whether the account shows
+  any suspicious-activity flag from the bot-click bursts above (now fixed going forward, but past bursts
+  already happened before today's patch).
+- [ ] HIGH — Check the **AdSense dashboard** for actual impressions/earnings — the code renders ads
+  correctly (verified: all 3 slots + `ads.txt` present) but I have no visibility into real $ or approval
+  status beyond that.
+- [ ] MEDIUM — **GSC property access still not resolved** — `sites.list`/`searchAnalytics` both return
+  "User does not have sufficient permission" for the service account despite the user granting access;
+  identity was confirmed correct (`truerank-gsc@braided-rush-207117.iam.gserviceaccount.com`). Needs the
+  user to re-verify the grant landed on the exact right property in Search Console, or re-grant. This is
+  the single highest-leverage unblock — real search-impression data would replace guesswork keyword
+  seeding with actual demand data. (memory: gsc-ingestion-built-dormant)
+
+### Known, not fixed (pre-existing, out of scope for this pass)
+- [ ] LOW — 4 other integration test files (report.spec.js + others) reference stale db.js helpers
+  (`completeResearch`, `insertProductV2`) that don't exist — pre-existing breakage, unrelated to today's
+  change, found while running the full `npx vitest run` suite. Needs its own pass.
 
 ## 2026-06-29 — Synth model lock (gpt-5.4-mini) + SearXNG provider + DNS fix
 
