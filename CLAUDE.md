@@ -19,7 +19,7 @@ and produces honest comparison reports. Monetized via affiliate links (Amazon As
 - **Cost governor**: `MONTHLY_BUDGET_USD` (default 60) — each run increments a
   KV `cost:YYYY-MM` counter; `POST /api/research` returns 503 once the month's
   spend hits the cap. Per-run cost persists to `research.cost_usd`.
-- **Deployment**: GitHub (private) → Cloudflare Pages + Workers
+- **Deployment**: GitHub → GitHub Actions (`.github/workflows/deploy.yml`) → Cloudflare Workers
 
 ## Key Constraint
 NO RUNTIME package managers. The deployed Worker is plain JS with ZERO runtime
@@ -35,7 +35,7 @@ zero-dependency rule is unchanged — do NOT add a dependency that ships to the 
 
 ## Commands
 - Local dev: `npx wrangler dev` (wrangler is the only CLI tool, used ad-hoc not as a dependency)
-- Deploy: Push to main → Cloudflare auto-deploys
+- Deploy: **push to `main`** runs unit tests + `wrangler deploy` via GitHub Actions. Manual fallback: `export $(grep -v '^#' .cf-token | xargs) && npx wrangler deploy`. Repo needs `CLOUDFLARE_API_TOKEN` secret (Workers Scripts Edit).
 - DB migrations: `npx wrangler d1 execute DB --file=schema/001_initial.sql`
 - Tests: `node scripts/run-tests.mjs` (308 assertions across 10 suites — credibility, validate quality-gate, product-search faceting, reviews render-smoke, utils, affiliate-links, lib-pure, credibility-extra, prompts, llm)
 - Coverage gate: `bash scripts/coverage.sh` (Node built-in V8 coverage, zero npm; ~99.9% line on the 14-module pure-logic layer)

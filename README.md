@@ -59,6 +59,8 @@ chmod +x /tmp/tailwindcss
 /tmp/tailwindcss -c tailwind.config.cjs -i build/input.css -o public/css/tailwind.css --minify
 
 # 6. Deploy
+#    Production: push to main (GitHub Actions — see .github/workflows/deploy.yml).
+#    Manual:
 npx wrangler deploy
 ```
 

@@ -1,0 +1,42 @@
+# Push to main → unit tests → wrangler deploy (Worker + public/ assets).
+# Requires repo secret CLOUDFLARE_API_TOKEN (Workers Scripts Edit).
+# Worker secrets (OPENROUTER_API_KEY, etc.) stay in Cloudflare — not in GitHub.
+
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    name: Unit tests
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run unit tests
+        run: node scripts/run-tests.mjs
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    name: Deploy Worker
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy to Cloudflare Workers
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          command: deploy
+          wranglerVersion: '4'

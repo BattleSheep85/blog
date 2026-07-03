@@ -1,4 +1,5 @@
 name = "truerank"
+account_id = "06c8d26cd83f87b95cd1d5467cb712a2"
 main = "worker/index.js"
 compatibility_date = "2025-01-01"
 compatibility_flags = ["nodejs_compat"]

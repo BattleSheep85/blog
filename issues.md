@@ -1038,8 +1038,9 @@ Large multi-part round, all verified live in production:
       computes, CF persists via /api/internal/{next-job,complete}). Phase B cutover ACTIVE
       (EXTERNAL_WORKER_ENABLED=true) — all research off-CF, uncapped; cron fallback covers
       worker-down. Worker runs JOB_CONCURRENCY=3 jobs at once.
-- [x] Deploy: push-to-main does NOT deploy the Worker (no CI); deploy via
-      `CLOUDFLARE_API_TOKEN=$(.cf-token) npx wrangler deploy`.
+- [x] Deploy: GitHub Actions on push to `main` (`.github/workflows/deploy.yml`):
+      unit tests → `wrangler deploy`. Repo secret `CLOUDFLARE_API_TOKEN` required.
+      Manual fallback: `export $(grep -v '^#' .cf-token | xargs) && npx wrangler deploy`.
 
 Reconciled stale opens: SERPER "0 products" HIGH, "no /dp/ links" MEDIUM, CF-token
 user-action, and the Phase-2 result-shape / source-evidence LOWs are now resolved (below).

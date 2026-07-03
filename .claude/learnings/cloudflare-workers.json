@@ -38,9 +38,8 @@
     {
       "id": "push-does-not-deploy-worker",
       "bad_pattern": "Assuming `git push origin main` deploys the truerank Worker",
-      "good_pattern": "Deploy explicitly: CLOUDFLARE_API_TOKEN=$(grep .cf-token) npx wrangler deploy (wrangler is logged out locally; .cf-token has Workers-Scripts:Edit + deploy)",
-      "regex": null,
-      "description": "There is no CI (.github/workflows is empty). push-to-main does NOT redeploy the Worker (CLAUDE.md's claim is wrong; it may only cover the Pages static frontend). Setting a secret via wrangler also deploys the CURRENTLY-uploaded code, not local edits. Always run wrangler deploy after code changes. Verified 2026-06-16.",
+      "good_pattern": "Push to main — GitHub Actions runs unit tests then `wrangler deploy` (.github/workflows/deploy.yml). Manual: `export $(grep -v '^#' .cf-token | xargs) && npx wrangler deploy`",
+      "description": "CI added 2026-07-03: .github/workflows/deploy.yml deploys on push to main after unit tests. Requires CLOUDFLARE_API_TOKEN repo secret. wrangler.toml has account_id for CI. Worker runtime secrets (OPENROUTER_API_KEY, etc.) remain in Cloudflare only.",
       "context": "deploying worker/ code changes",
       "discovered": "2026-06-16",
       "severity": "MEDIUM"
