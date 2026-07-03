@@ -247,7 +247,7 @@ export async function runEngine(
       query, notes: state.notes, sources: state.sources, facets, topicalCategory,
       openrouterKey, conSelectorModel: config.conSelectorModel, cleanupModel: config.cleanupModel, recallModel: config.recallModel,
     });
-    const result = validateResearchResult(extracted);
+    const result = validateResearchResult(extracted, { query, topicalCategory });
     await emitEvent(onEvent, state, 'status', `Report complete: ${result.products.length} products ranked.`);
     return {
       result,
@@ -358,7 +358,7 @@ export async function runEngine(
     }
   }
 
-  const result = validateResearchResult(parsed);
+  const result = validateResearchResult(parsed, { query, topicalCategory });
 
   await emitEvent(onEvent, state, 'status', `Report complete: ${result.products.length} products ranked.`);
 

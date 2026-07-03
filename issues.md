@@ -13,7 +13,9 @@ Shipped eval harness for repeatable pick-quality regression against sourced expe
 - [x] Baseline (2026-07-03, 11/18 scored): pick 8/10, recall@5 7/10, disclosure 11/11, depth 11/11.
 - [ ] FOLLOW-UP — **Category contamination on live pages** caught by bench:
       `rw-air-fryer` top pick = Shark BreatheClear (air purifier); `rw-smart-bulb` top pick =
-      Logitech M720 mouse on a Home Assistant bulbs report. Revisit category gate / validate.js.
+      Logitech M720 mouse on a Home Assistant bulbs report. **Fix shipped (2026-07-03):**
+      `worker/lib/category-gate.js` + validate.js applies the gate on LLM synth path (extract
+      already had it). Existing pages need re-run to pick up the fix.
 - [ ] FOLLOW-UP — **7 missing pages** (mesh wifi, budget earbuds, budget espresso, home NAS,
       budget gaming headset, upright vacuum pets, laptop 2026) — run `node scripts/run-real-world-eval.mjs --spend`
       when budget allows (~$0.70).

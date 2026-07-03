@@ -1,4 +1,5 @@
 import { isChurnBrand } from '../lib/brand-quality.js';
+import { filterByCategory } from '../lib/category-gate.js';
 
 // Hosts that only serve pages (never direct images) — if the LLM hands us one
 // of these, it's a review/video/listing URL, not an image.
@@ -114,7 +115,11 @@ export function applyQualityGate(products) {
     .map(({ p }, i) => ({ ...p, rank: i + 1 }));
 }
 
-export function validateResearchResult(data) {
+/**
+ * @param {object} data - raw synth JSON
+ * @param {{ query?: string, topicalCategory?: string }} [ctx] - when set, drops cross-category products
+ */
+export function validateResearchResult(data, ctx = {}) {
   if (!data || typeof data !== 'object') throw new Error('Response is not an object');
   const obj = data;
 
@@ -159,7 +164,14 @@ export function validateResearchResult(data) {
   const complete = products.filter(
     (p) => p.name && (p.pros.length >= 1 || p.cons.length >= 1) && p.verdict.length >= 10,
   );
-  const filtered = complete.length >= 3 ? complete : products;
+  let filtered = complete.length >= 3 ? complete : products;
+
+  // Category gate (LLM synth path): same intent as extract/engine.js inCategory —
+  // a mouse must not rank #1 on a smart-bulb query. Fail-open when ctx is omitted
+  // (bench scripts parsing cached JSON without query context).
+  if (ctx.query || ctx.topicalCategory) {
+    filtered = filterByCategory(filtered, ctx.topicalCategory, ctx.query);
+  }
 
   // Quality gate: drop picks the synth itself rated below the floor. The rating
   // is OUR editorial score (derived from source credibility, per the synth

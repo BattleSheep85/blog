@@ -17,11 +17,12 @@ function prod(name, rating, rank, brand) {
 }
 
 // A fully-formed product for the end-to-end validateResearchResult path.
-function fullProd(name, rating, rank) {
+function fullProd(name, rating, rank, extra = {}) {
   return {
     name, brand: name.split(' ')[0], rating, rank,
     pros: ['a', 'b', 'c'], cons: ['x', 'y'],
     verdict: 'A reasonable pick for the stated use case overall.',
+    ...extra,
   };
 }
 
@@ -246,6 +247,64 @@ export function runValidateTests() {
       { name: 'C', rating: 4, pros: ['a'], cons: ['b'], verdict: 'c'.repeat(15) },
     ],
   }), false);
+
+  // Category gate: cross-category synth leaks (real-world bench failures).
+  {
+    const bulbCtx = { query: 'best smart light bulbs', topicalCategory: 'smart light bulbs' };
+    const r = validateResearchResult({
+      summary: 'Smart bulbs for Home Assistant.',
+      category: 'smart light bulbs',
+      products: [
+        fullProd('Logitech M720 Triathlon Multi-Device', 4.5, 1, {
+          verdict: 'A versatile wireless mouse for multi-device switching.',
+          pros: ['Comfortable mouse shape', 'Bluetooth and USB receiver'],
+        }),
+        fullProd('Philips Hue White and Color Ambiance', 4.6, 2, {
+          verdict: 'Top smart light bulb with broad Home Assistant support.',
+        }),
+        fullProd('LIFX Color Bulb', 4.4, 3, {
+          verdict: 'Bright Wi-Fi smart bulb, no hub required.',
+        }),
+        fullProd('Nanoleaf Essentials Matter', 4.3, 4, {
+          verdict: 'Affordable Matter smart bulb for whole-home lighting.',
+        }),
+      ],
+    }, bulbCtx);
+    eq('category gate drops mouse on bulb query', r.products.some((p) => /m720/i.test(p.name)), false);
+    eq('category gate keeps legit bulbs', r.products.length >= 3, true);
+  }
+  {
+    const fryerCtx = { query: 'best air fryer', topicalCategory: 'air fryers' };
+    const r = validateResearchResult({
+      summary: 'Air fryers for small kitchens.',
+      category: 'air fryers',
+      products: [
+        fullProd('Shark BreatheClear Compact Pro HP062', 4.5, 1, {
+          verdict: 'Compact air purifier with HEPA filtration.',
+          pros: ['Quiet purifier mode', 'Good for small rooms'],
+        }),
+        fullProd('Ninja Foodi Dual Zone Air Fryer', 4.6, 2, {
+          verdict: 'Excellent dual-basket air fryer for families.',
+        }),
+        fullProd('Cosori Pro LE Air Fryer', 4.4, 3, {
+          verdict: 'Reliable budget air fryer with even cooking.',
+        }),
+        fullProd('Instant Vortex Plus', 4.3, 4, {
+          verdict: 'Fast air fryer with simple controls.',
+        }),
+      ],
+    }, fryerCtx);
+    eq('category gate drops purifier mis-pick on fryer query', r.products.some((p) => /breathe/i.test(p.name)), false);
+    eq('category gate keeps fryers', r.products.some((p) => /fryer/i.test(p.name)), true);
+  }
+  eq('category gate skipped without ctx (bench compat)', validateResearchResult({
+    summary: 'S', category: 'C',
+    products: [
+      fullProd('Logitech M720 Triathlon', 4.5, 1),
+      fullProd('Pick B', 4.4, 2),
+      fullProd('Pick C', 4.3, 3),
+    ],
+  }).products.length, 3);
 
   return report;
 }

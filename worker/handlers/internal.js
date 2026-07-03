@@ -121,7 +121,7 @@ export async function handleComplete(request, env) {
     // (20-product cap, image-URL allowlist, string coercion) is enforced here
     // regardless of what the off-host worker sends.
     let validated;
-    try { validated = validateResearchResult(body.result); }
+    try { validated = validateResearchResult(body.result, { query, topicalCategory }); }
     catch {
       await env.DB.prepare(
         `UPDATE research SET status = 'failed', result = ?1, completed_at = ?2 WHERE id = ?3 AND status = 'processing'`

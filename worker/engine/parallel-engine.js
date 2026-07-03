@@ -236,7 +236,7 @@ export async function runParallelEngine(query, config, openrouterKey, env, onEve
   }
 
   let result;
-  try { result = validateResearchResult(parsed); }
+  try { result = validateResearchResult(parsed, { query, topicalCategory }); }
   catch (e) { throw Object.assign(e, { totalCostUsd }); }
   await emit(onEvent, 'status', `Report complete: ${result.products.length} products ranked.`);
   return { result, sources, notes, totalCostUsd, synthModel: config.synthModel };
