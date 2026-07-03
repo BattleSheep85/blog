@@ -41,6 +41,7 @@ zero-dependency rule is unchanged — do NOT add a dependency that ships to the 
 - Coverage gate: `bash scripts/coverage.sh` (Node built-in V8 coverage, zero npm; ~99.9% line on the 14-module pure-logic layer)
 - Integration tests (I/O modules, real D1/KV via Miniflare): `npx vitest run` (or `--coverage`). Specs in `test/integration/*.spec.js`, config in `vitest.config.js`. Needs `npm install` first (dev deps only).
 - Output eval: `node scripts/run-eval.mjs` (golden-query honesty audit against the live site; `--spend` enqueues missing runs, ~$0.10 each)
+- Real-world benchmark: `node scripts/run-real-world-eval.mjs` (expert-review ground truth in `eval/real-world-benchmark.json`; free audit of live pages)
 
 ## Architecture
 - `/public/` — Static frontend files (served by Cloudflare Pages)

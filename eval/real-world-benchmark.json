@@ -1,0 +1,330 @@
+{
+  "version": "1.0.0",
+  "curated": "2026-07-03",
+  "comment": "Expert-review-grounded benchmark queries for TrueRank. Each entry documents WHO said WHAT (Wirecutter, CNET, PCMag, etc.) so picks can be audited without an LLM judge. Run: node scripts/run-real-world-eval.mjs (free audit of live pages). Re-run sources quarterly — expert picks drift.",
+  "checks": {
+    "top_pick_in_accepted_set": "rank-1 product name contains an accepted_winners substring",
+    "recall_in_top5": "any must_include_any name appears in top-5 product cards",
+    "disclosure_present": "commission disclosure on page",
+    "min_products": 3,
+    "min_sources": 5,
+    "max_age_days": 120
+  },
+  "queries": [
+    {
+      "id": "rw-mechanical-keyboard",
+      "query": "best budget mechanical keyboard",
+      "category": "mechanical keyboards",
+      "facets": { "is_buyable": true, "sold_on_amazon": true, "recency_sensitive": true },
+      "accepted_winners": ["keychron v3 max", "keychron v5 max", "keychron v6 max", "keychron v1 max", "lemokey x4"],
+      "must_include_any": ["keychron"],
+      "anti_patterns": ["generic company", "pty ltd"],
+      "sources": [
+        {
+          "publication": "Wirecutter",
+          "url": "https://www.nytimes.com/wirecutter/reviews/our-favorite-mechanical-keyboards/",
+          "primary_picks": ["Keychron V3 Max", "Keychron V5 Max", "Keychron V6 Max"],
+          "retrieved": "2026-07-03"
+        }
+      ],
+      "tags": ["golden-overlap", "google-top50-adjacent"]
+    },
+    {
+      "id": "rw-nc-headphones",
+      "query": "best noise cancelling headphones",
+      "category": "noise cancelling headphones",
+      "facets": { "is_buyable": true, "sold_on_amazon": true, "recency_sensitive": true },
+      "accepted_winners": ["sony wh-1000xm6", "wh-1000xm6", "sony xm6", "xm6", "bose quietcomfort ultra", "quietcomfort ultra", "airpods max"],
+      "must_include_any": ["sony", "xm6", "wh-1000", "bose quietcomfort", "airpods max"],
+      "sources": [
+        {
+          "publication": "Wirecutter",
+          "url": "https://www.nytimes.com/wirecutter/reviews/best-noise-cancelling-headphones/",
+          "primary_picks": ["Sony WH-1000XM6"],
+          "retrieved": "2026-07-03"
+        },
+        {
+          "publication": "CNET",
+          "url": "https://www.cnet.com/tech/mobile/best-noise-canceling-headphones/",
+          "primary_picks": ["Sony WH-1000XM6", "Bose QuietComfort Ultra Headphones (2nd Gen)", "Apple AirPods Max 2"],
+          "retrieved": "2026-07-03"
+        }
+      ],
+      "tags": ["golden-overlap"]
+    },
+    {
+      "id": "rw-robot-vacuum-pets",
+      "query": "best robot vacuum for pet hair",
+      "category": "robot vacuums",
+      "facets": { "is_buyable": true, "sold_on_amazon": true, "recency_sensitive": true },
+      "accepted_winners": ["roborock q7 m5", "roborock q7", "tapo rv30", "eufy", "shark"],
+      "must_include_any": ["roborock", "eufy", "shark"],
+      "anti_patterns": ["roomba i3", "generic robot"],
+      "sources": [
+        {
+          "publication": "Wirecutter",
+          "url": "https://www.nytimes.com/wirecutter/reviews/best-robot-vacuum/",
+          "primary_picks": ["Roborock Q7 M5+", "Tapo RV30 Max Plus"],
+          "retrieved": "2026-07-03"
+        }
+      ],
+      "tags": ["golden-overlap"]
+    },
+    {
+      "id": "rw-mesh-wifi",
+      "query": "best mesh wifi systems",
+      "category": "mesh wifi systems",
+      "facets": { "is_buyable": true, "sold_on_amazon": true, "recency_sensitive": true },
+      "accepted_winners": ["eero 7", "eero pro 7", "tp-link deco", "deco be63", "asus zenwifi"],
+      "must_include_any": ["eero", "tp-link", "deco", "asus zenwifi", "orbi"],
+      "sources": [
+        {
+          "publication": "Wirecutter",
+          "url": "https://www.nytimes.com/wirecutter/reviews/best-wi-fi-mesh-networking-kits/",
+          "primary_picks": ["Eero 7"],
+          "retrieved": "2026-07-03"
+        },
+        {
+          "publication": "PCMag",
+          "url": "https://www.pcmag.com/picks/the-best-wi-fi-mesh-network-systems",
+          "primary_picks": ["eero Pro 7"],
+          "retrieved": "2026-07-03"
+        }
+      ],
+      "tags": ["live-corpus", "google-top50-adjacent"]
+    },
+    {
+      "id": "rw-standing-desk",
+      "query": "best standing desk",
+      "category": "standing desks",
+      "facets": { "is_buyable": true, "sold_on_amazon": true, "recency_sensitive": false },
+      "accepted_winners": ["uplift v3", "uplift desk", "flexispot en1", "flexispot e7", "branch duo"],
+      "must_include_any": ["uplift", "flexispot"],
+      "sources": [
+        {
+          "publication": "Wirecutter",
+          "url": "https://www.nytimes.com/wirecutter/reviews/best-standing-desk/",
+          "primary_picks": ["Uplift V3 Standing Desk"],
+          "budget_pick": "FlexiSpot EN1",
+          "retrieved": "2026-07-03"
+        }
+      ],
+      "tags": ["real-page-bench", "live-corpus"]
+    },
+    {
+      "id": "rw-wireless-earbuds-budget",
+      "query": "best wireless earbuds under $100",
+      "category": "wireless earbuds",
+      "facets": { "is_buyable": true, "sold_on_amazon": true, "recency_sensitive": true },
+      "accepted_winners": ["earfun", "soundcore", "jlab", "anker", "nothing ear"],
+      "must_include_any": ["earfun", "soundcore", "jlab", "anker", "nothing"],
+      "sources": [
+        {
+          "publication": "Wirecutter",
+          "url": "https://www.nytimes.com/wirecutter/reviews/best-wireless-earbuds/",
+          "note": "Budget tier rotates; accept major value brands in top 5",
+          "retrieved": "2026-07-03"
+        }
+      ],
+      "tags": ["real-page-bench"]
+    },
+    {
+      "id": "rw-espresso-budget",
+      "query": "best espresso machine under $500",
+      "category": "espresso machines",
+      "facets": { "is_buyable": true, "sold_on_amazon": true, "recency_sensitive": true },
+      "accepted_winners": ["breville", "gaggia", "delonghi", "casabrews", "philips"],
+      "must_include_any": ["breville", "gaggia", "delonghi"],
+      "sources": [
+        {
+          "publication": "Wirecutter",
+          "url": "https://www.nytimes.com/wirecutter/reviews/best-espresso-machine/",
+          "note": "Sub-$500 picks vary by sale price; Breville/Gaggia commonly cited",
+          "retrieved": "2026-07-03"
+        }
+      ],
+      "tags": ["real-page-bench", "google-top50-adjacent"]
+    },
+    {
+      "id": "rw-home-nas",
+      "query": "best home nas devices",
+      "category": "home NAS devices",
+      "facets": { "is_buyable": true, "sold_on_amazon": true, "recency_sensitive": true },
+      "accepted_winners": ["synology", "ugreen", "asustor", "terramaster"],
+      "must_include_any": ["synology", "ugreen", "asustor"],
+      "sources": [
+        {
+          "publication": "Wirecutter",
+          "url": "https://www.nytimes.com/wirecutter/reviews/best-network-attached-storage/",
+          "note": "Synology BeeStation + DiskStation lines commonly top lists",
+          "retrieved": "2026-07-03"
+        }
+      ],
+      "tags": ["live-corpus"]
+    },
+    {
+      "id": "rw-air-fryer",
+      "query": "best air fryer",
+      "category": "air fryers",
+      "facets": { "is_buyable": true, "sold_on_amazon": true, "recency_sensitive": false },
+      "accepted_winners": ["ninja", "cosori", "instant", "philips", "typhur"],
+      "must_include_any": ["ninja", "cosori", "instant"],
+      "sources": [
+        {
+          "publication": "Wirecutter",
+          "url": "https://www.nytimes.com/wirecutter/reviews/best-air-fryer/",
+          "retrieved": "2026-07-03"
+        }
+      ],
+      "tags": ["golden-overlap", "google-top50"]
+    },
+    {
+      "id": "rw-portable-charger-iphone",
+      "query": "best portable charger for iphone",
+      "category": "portable chargers",
+      "facets": { "is_buyable": true, "sold_on_amazon": true, "recency_sensitive": true },
+      "accepted_winners": ["anker", "belkin", "mophie", "ugreen"],
+      "must_include_any": ["anker", "belkin", "ugreen"],
+      "sources": [
+        {
+          "publication": "Wirecutter",
+          "url": "https://www.nytimes.com/wirecutter/reviews/best-usb-c-battery-packs-and-power-banks/",
+          "retrieved": "2026-07-03"
+        }
+      ],
+      "tags": ["google-top50"]
+    },
+    {
+      "id": "rw-office-chair",
+      "query": "best ergonomic office chair",
+      "category": "ergonomic office chairs",
+      "facets": { "is_buyable": true, "sold_on_amazon": true, "recency_sensitive": false },
+      "accepted_winners": ["steelcase", "herman miller", "branch", "hon ignition", "secretlab"],
+      "must_include_any": ["steelcase", "herman miller", "branch", "hon"],
+      "sources": [
+        {
+          "publication": "Wirecutter",
+          "url": "https://www.nytimes.com/wirecutter/reviews/best-office-chair/",
+          "retrieved": "2026-07-03"
+        }
+      ],
+      "tags": ["live-corpus"]
+    },
+    {
+      "id": "rw-gaming-headset-budget",
+      "query": "best gaming headset under $100",
+      "category": "gaming headsets",
+      "facets": { "is_buyable": true, "sold_on_amazon": true, "recency_sensitive": true },
+      "accepted_winners": ["hyperx", "steelseries", "razer", "logitech g", "corsair"],
+      "must_include_any": ["hyperx", "steelseries", "logitech", "razer"],
+      "sources": [
+        {
+          "publication": "PCMag",
+          "url": "https://www.pcmag.com/picks/the-best-gaming-headsets",
+          "note": "Sub-$100 tier; HyperX Cloud line frequently wins value",
+          "retrieved": "2026-07-03"
+        }
+      ],
+      "tags": ["live-corpus"]
+    },
+    {
+      "id": "rw-smart-bulb",
+      "query": "best smart light bulbs",
+      "category": "smart light bulbs",
+      "facets": { "is_buyable": true, "sold_on_amazon": true, "recency_sensitive": true },
+      "accepted_winners": ["philips hue", "tp-link kasa", "kasa", "nanoleaf", "sengled"],
+      "must_include_any": ["philips hue", "kasa", "nanoleaf"],
+      "anti_patterns": ["apple homekit alexa", "smart home platform"],
+      "sources": [
+        {
+          "publication": "Wirecutter",
+          "url": "https://www.nytimes.com/wirecutter/reviews/best-smart-led-light-bulbs/",
+          "retrieved": "2026-07-03"
+        }
+      ],
+      "tags": ["live-corpus", "category-gate-trap"]
+    },
+    {
+      "id": "rw-vacuum-pet",
+      "query": "best vacuum for pet hair",
+      "category": "vacuums",
+      "facets": { "is_buyable": true, "sold_on_amazon": true, "recency_sensitive": false },
+      "accepted_winners": ["dyson", "shark", "miele", "bissell", "tineco"],
+      "must_include_any": ["dyson", "shark", "bissell"],
+      "sources": [
+        {
+          "publication": "Wirecutter",
+          "url": "https://www.nytimes.com/wirecutter/reviews/best-vacuum-for-pet-hair/",
+          "retrieved": "2026-07-03"
+        }
+      ],
+      "tags": ["google-top50"]
+    },
+    {
+      "id": "rw-laptop-2026",
+      "query": "best laptop 2026",
+      "category": "laptops",
+      "facets": { "is_buyable": true, "sold_on_amazon": true, "recency_sensitive": true },
+      "accepted_winners": ["macbook air", "macbook pro", "dell xps", "lenovo thinkpad", "asus zenbook"],
+      "must_include_any": ["macbook", "dell xps", "thinkpad", "zenbook", "surface"],
+      "sources": [
+        {
+          "publication": "Wirecutter",
+          "url": "https://www.nytimes.com/wirecutter/reviews/best-laptops/",
+          "note": "Overall + category picks rotate with chip gens; accept flagship ultrabooks",
+          "retrieved": "2026-07-03"
+        }
+      ],
+      "tags": ["google-top50", "recency-sensitive"]
+    },
+    {
+      "id": "rw-tax-software",
+      "query": "best tax software for self employed",
+      "category": "Tax Software for Self-Employed",
+      "facets": { "is_buyable": false, "is_service": true, "sold_on_amazon": false, "recency_sensitive": true },
+      "accepted_winners": ["turbotax", "h&r block", "hr block", "taxact", "freetaxusa"],
+      "must_include_any": ["turbotax", "h&r block", "taxact", "freetaxusa"],
+      "sources": [
+        {
+          "publication": "Wirecutter",
+          "url": "https://www.nytimes.com/wirecutter/reviews/best-tax-software/",
+          "retrieved": "2026-07-03"
+        }
+      ],
+      "tags": ["non-amazon", "service", "live-corpus"]
+    },
+    {
+      "id": "rw-password-manager",
+      "query": "best password manager",
+      "category": "password managers",
+      "facets": { "is_buyable": false, "is_service": true, "sold_on_amazon": false, "recency_sensitive": false },
+      "accepted_winners": ["1password", "bitwarden", "proton pass", "dashlane"],
+      "must_include_any": ["1password", "bitwarden", "proton pass"],
+      "sources": [
+        {
+          "publication": "Wirecutter",
+          "url": "https://www.nytimes.com/wirecutter/reviews/best-password-managers/",
+          "retrieved": "2026-07-03"
+        }
+      ],
+      "tags": ["golden-overlap", "non-amazon"]
+    },
+    {
+      "id": "rw-local-food",
+      "query": "best pho in wichita",
+      "category": "local dining",
+      "facets": { "is_buyable": false, "is_service": true, "needs_location": true, "recency_sensitive": true },
+      "accepted_winners": [],
+      "must_include_any": [],
+      "consensus_weak": true,
+      "sources": [
+        {
+          "publication": "Local consensus",
+          "note": "No stable national expert pick — eval checks for named restaurants + sources, not a single brand winner",
+          "retrieved": "2026-07-03"
+        }
+      ],
+      "tags": ["local", "experience", "no-single-winner"]
+    }
+  ]
+}

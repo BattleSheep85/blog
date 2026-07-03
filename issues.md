@@ -1,6 +1,22 @@
 # Issues
 
-Last updated: 2026-07-01
+Last updated: 2026-07-03
+
+## 2026-07-03 — Real-world benchmark corpus (expert-ground-truth, no LLM judge)
+
+Shipped eval harness for repeatable pick-quality regression against sourced expert reviews
+(Wirecutter/CNET/PCMag URLs documented per query). Free live audit; `--spend` enqueues missing pages.
+
+- [x] `eval/real-world-benchmark.json` — 18 queries with `accepted_winners`, `must_include_any`,
+      `anti_patterns`, and citation URLs.
+- [x] `scripts/run-real-world-eval.mjs` — deterministic scrape of live `/research/:slug` pages.
+- [x] Baseline (2026-07-03, 11/18 scored): pick 8/10, recall@5 7/10, disclosure 11/11, depth 11/11.
+- [ ] FOLLOW-UP — **Category contamination on live pages** caught by bench:
+      `rw-air-fryer` top pick = Shark BreatheClear (air purifier); `rw-smart-bulb` top pick =
+      Logitech M720 mouse on a Home Assistant bulbs report. Revisit category gate / validate.js.
+- [ ] FOLLOW-UP — **7 missing pages** (mesh wifi, budget earbuds, budget espresso, home NAS,
+      budget gaming headset, upright vacuum pets, laptop 2026) — run `node scripts/run-real-world-eval.mjs --spend`
+      when budget allows (~$0.70).
 
 ## 2026-07-01 — /dp/ link recall: retailer fallback added (Best Buy, Newegg)
 
