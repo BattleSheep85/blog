@@ -25,6 +25,20 @@ regex false positives caught + fixed before they shipped; 362 unit assertions gr
 - [x] LOW (review-caught): dropped the dead `h === 'www.' + d` branch in `isExpertApexHost` — `hostOf`
       already strips a leading `www.`, so the apex check covers it.
 
+### Deploy — both targets
+
+- [x] Cloudflare Worker: pushed to `main`; GitHub Actions ran unit tests + `wrangler deploy` (green).
+- [x] Blackbox research-worker (the box that ACTUALLY runs prod gather+synth,
+      `EXTERNAL_WORKER_ENABLED=true`): found ~26 `worker/` files behind `main` — the injection
+      defense PLUS several prior sessions' commits (category-gate 2026-07-03, asin-resolver 2026-07-01,
+      affiliate fallback) had shipped to CF but never rsynced to the box. CI only deploys Cloudflare.
+      Full-synced `worker/` → `chris@192.168.5.10:/mnt/pods/truerank-research-worker/src/worker/`,
+      restarted the container; verified zero residual checksum drift + a clean `polling` boot banner
+      (no ES-module error → the changed credibility import graph loaded). (memory: blackbox-deploy-gap)
+- [ ] LOW (INFRA): automate the blackbox deploy so CI and the homelab box can't silently drift again
+      (a deploy step that rsyncs on push, or a git-pull on the box). Manual rsync is the current process
+      and clearly falls behind across sessions.
+
 ## 2026-07-07 — BaitBench-informed evaluation: injection defense + expert-affiliate scoring fix
 
 Cross-analyzed TrueRank against the BaitBench (~/projects/baitbench) v1-2026Q3 results — the ad-susceptibility
