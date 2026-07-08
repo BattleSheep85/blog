@@ -25,8 +25,12 @@ blackbox redeploy needed this pass.
 - [x] MED (legal): email consent + one-click unsubscribe shipped (schema 009 applied to prod; unsubscribe.js
       + /unsubscribe route; consent timestamp = created_at; unsub_token; any future send filters
       unsubscribed_at IS NULL + sends List-Unsubscribe). See the email-list item below.
-- [x] Fixed the pre-existing stale `insertProductV2` import in handlers.spec.js (local helper) —
-      un-skipped the image-proxy tests (also the "4 stale-helper integration files" LOW from 2026-07-01, partial).
+- [x] Restored the ENTIRE integration suite to green (15 files / 135 tests) — broken since 2026-06-25.
+      The specs referenced db.js helpers removed that day (completeResearch/insertProductV2); added a
+      shared test-only `test/integration/_helpers.js` and rewired db/report/index/sitemap/handlers specs
+      to it (production db.js unchanged — those footgun helpers stay deleted). This closes the "4
+      stale-helper integration files" LOW from 2026-07-01. Also updated the affiliate last-resort test to
+      assert the new open-redirect behavior (known-retailer product_url used; non-retailer NOT followed).
 
 ### Deferred (with rationale — logged, not done)
 - [ ] MED (perf): getRelatedResearch read amplification — REASSESSED as already mitigated: the research

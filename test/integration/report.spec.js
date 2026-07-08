@@ -4,7 +4,8 @@ import { env } from 'cloudflare:test';
 import { beforeAll, describe, it, expect } from 'vitest';
 import { applySchema } from './_schema.js';
 import { handleGetReport, handleFeedback } from '../../worker/handlers/report.js';
-import { generateId, insertResearch, updateResearchStatus, completeResearch, insertProductV2 } from '../../worker/lib/db.js';
+import { generateId, insertResearch, updateResearchStatus } from '../../worker/lib/db.js';
+import { completeResearch, insertProductV2 } from './_helpers.js';
 
 beforeAll(() => applySchema(env.DB));
 

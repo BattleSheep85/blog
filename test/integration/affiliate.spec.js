@@ -63,12 +63,20 @@ describe('handleAffiliateClick', () => {
     expect(loc).toContain('tag=battlesheep0a-20');
   });
 
-  it('last resort: untagged product_url when name too short for a search fallback', async () => {
+  it('last resort: a KNOWN-RETAILER product_url is used when name too short for a search fallback', async () => {
     const pid = generateId();
-    // name length < 3 → buildAmazonSearchFallback returns '' → product_url is used.
-    await insertProductV2(env.DB, { id: pid, researchId: rid, name: 'AB', rank: 4, productUrl: 'https://example.com/widget' });
+    // name length < 3 → buildAmazonSearchFallback returns '' → known-retailer product_url is used.
+    await insertProductV2(env.DB, { id: pid, researchId: rid, name: 'AB', rank: 4, productUrl: 'https://www.bestbuy.com/site/widget/12345.p' });
     const loc = (await handleAffiliateClick(pid, req(`/api/go/${pid}`), env)).headers.get('Location');
-    expect(loc).toBe('https://example.com/widget');
+    expect(loc).toBe('https://www.bestbuy.com/site/widget/12345.p');
+  });
+
+  it('does NOT open-redirect to a non-retailer product_url (falls back to tagged Amazon)', async () => {
+    const pid = generateId();
+    await insertProductV2(env.DB, { id: pid, researchId: rid, name: 'AB', rank: 5, productUrl: 'https://example.com/widget' });
+    const loc = (await handleAffiliateClick(pid, req(`/api/go/${pid}`), env)).headers.get('Location');
+    expect(loc).not.toContain('example.com');
+    expect(loc).toContain('amazon.com');
   });
 
   it('falls back to the tagged Amazon homepage for an unknown product', async () => {

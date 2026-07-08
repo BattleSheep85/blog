@@ -4,7 +4,8 @@
 import { env, SELF } from 'cloudflare:test';
 import { beforeAll, describe, it, expect } from 'vitest';
 import { applySchema } from './_schema.js';
-import { generateId, insertResearch, completeResearch, insertProductV2 } from '../../worker/lib/db.js';
+import { generateId, insertResearch } from '../../worker/lib/db.js';
+import { completeResearch, insertProductV2 } from './_helpers.js';
 
 const BASE = 'https://chrisputer.tech';
 let completeId;

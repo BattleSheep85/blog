@@ -6,6 +6,7 @@ import init from '../../schema/001_initial.sql?raw';
 import guides from '../../schema/002_guide_clicks.sql?raw';
 import v2 from '../../schema/003_research_v2.sql?raw';
 import * as db from '../../worker/lib/db.js';
+import { completeResearch, insertProductV2 } from './_helpers.js';
 
 // Apply a .sql file statement-by-statement (D1 has no multi-statement exec via
 // prepare). Strips line comments; splits on ';'. Fine for our DDL (no ';' in
@@ -48,7 +49,7 @@ describe('db.js', () => {
   it('completeResearch finalizes the row', async () => {
     const id = db.generateId();
     await db.insertResearch(env.DB, { id, slug: 's-' + id, query: 'q2', canonicalQuery: 'q2' });
-    await db.completeResearch(env.DB, { id, status: 'complete', summary: 'Sum', category: 'Cat', result: '{}', sources: '[]' });
+    await completeResearch(env.DB, { id, status: 'complete', summary: 'Sum', category: 'Cat', result: '{}', sources: '[]' });
     const row = await db.getResearchById(env.DB, id);
     expect(row.status).toBe('complete');
     expect(row.summary).toBe('Sum');
@@ -58,8 +59,8 @@ describe('db.js', () => {
   it('insertProductV2 + getProductsByResearchId (ordered by rank)', async () => {
     const rid = db.generateId();
     await db.insertResearch(env.DB, { id: rid, slug: 's-' + rid, query: 'q3', canonicalQuery: 'q3' });
-    await db.insertProductV2(env.DB, { researchId: rid, name: 'Second', rank: 2, rating: 4 });
-    await db.insertProductV2(env.DB, { researchId: rid, name: 'First', rank: 1, rating: 4.5, price: 10 });
+    await insertProductV2(env.DB, { researchId: rid, name: 'Second', rank: 2, rating: 4 });
+    await insertProductV2(env.DB, { researchId: rid, name: 'First', rank: 1, rating: 4.5, price: 10 });
     const { results } = await db.getProductsByResearchId(env.DB, rid);
     expect(results.map((p) => p.name)).toEqual(['First', 'Second']);
     expect(results[0].currency).toBe('USD'); // default applied
@@ -70,10 +71,10 @@ describe('db.js', () => {
     await db.insertResearch(env.DB, { id: rid, slug: 's-' + rid, query: 'mesh wifi', canonicalQuery: 'mesh-wifi-uniq' });
     // pending + no products → not found
     expect(await db.findResearchByCanonicalQuery(env.DB, 'mesh-wifi-uniq')).toBeNull();
-    await db.completeResearch(env.DB, { id: rid, status: 'complete', summary: 's', category: 'c', result: '{}', sources: '[]' });
+    await completeResearch(env.DB, { id: rid, status: 'complete', summary: 's', category: 'c', result: '{}', sources: '[]' });
     // complete but still zero products → still not found (degenerate cluster guard)
     expect(await db.findResearchByCanonicalQuery(env.DB, 'mesh-wifi-uniq')).toBeNull();
-    await db.insertProductV2(env.DB, { researchId: rid, name: 'P', rank: 1 });
+    await insertProductV2(env.DB, { researchId: rid, name: 'P', rank: 1 });
     const found = await db.findResearchByCanonicalQuery(env.DB, 'mesh-wifi-uniq');
     expect(found.id).toBe(rid);
     // empty canonical → null short-circuit
@@ -90,7 +91,7 @@ describe('db.js', () => {
 
     const pid = db.generateId();
     // insertProductV2 with only the required fields → currency/pros/cons defaults.
-    await db.insertProductV2(env.DB, { id: pid, researchId: id, name: 'Bare' });
+    await insertProductV2(env.DB, { id: pid, researchId: id, name: 'Bare' });
     const { results } = await db.getProductsByResearchId(env.DB, id);
     expect(results[0].currency).toBe('USD');
     expect(results[0].pros).toBe('[]');
@@ -107,7 +108,7 @@ describe('db.js', () => {
     const rid = db.generateId();
     await db.insertResearch(env.DB, { id: rid, slug: 's-' + rid, query: 'q4', canonicalQuery: 'q4' });
     const pid = db.generateId();
-    await db.insertProductV2(env.DB, { id: pid, researchId: rid, name: 'P', rank: 1 });
+    await insertProductV2(env.DB, { id: pid, researchId: rid, name: 'P', rank: 1 });
 
     await db.logAffiliateClick(env.DB, { productId: pid, reportId: rid, network: 'amazon', ipHash: 'h1' });
     const ac = await env.DB.prepare('SELECT COUNT(*) n FROM affiliate_clicks WHERE product_id = ?').bind(pid).first();

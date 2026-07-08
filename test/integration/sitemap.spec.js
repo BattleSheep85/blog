@@ -4,7 +4,8 @@ import { env } from 'cloudflare:test';
 import { beforeAll, describe, it, expect } from 'vitest';
 import { applySchema } from './_schema.js';
 import { generateSitemap, generateAtomFeed, generateOgImage } from '../../worker/lib/sitemap.js';
-import { generateId, insertResearch, completeResearch, insertProductV2 } from '../../worker/lib/db.js';
+import { generateId, insertResearch } from '../../worker/lib/db.js';
+import { completeResearch, insertProductV2 } from './_helpers.js';
 
 const ORIGIN = 'https://chrisputer.tech';
 
