@@ -133,9 +133,11 @@ export async function handleAffiliateClick(productId, request, env) {
         const fallback = buildAmazonSearchFallback(product?.name, product?.brand || '', amazonTag);
         if (fallback) {
             redirectUrl = fallback;
-        } else if (product?.product_url && product.product_url.startsWith('https://')) {
-            // Last resort: an untagged but valid https product page beats
-            // dumping the user on the Amazon homepage.
+        } else if (product?.product_url && isKnownRetailerUrl(product.product_url)) {
+            // Last resort: an untagged but valid KNOWN-RETAILER product page beats
+            // dumping the user on the Amazon homepage. Gated by the retailer host
+            // allowlist so a row written outside the pipeline can't turn this into
+            // an open redirect to an arbitrary https host.
             redirectUrl = product.product_url;
         }
     }

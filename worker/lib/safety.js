@@ -52,6 +52,20 @@ const ILLEGAL_PATTERNS = [
   /\bhuman\s+trafficking\b/, /\bbuy\s+a\s+(?:human|kidney|organ)\b/,
 ];
 
+// Prompt-injection / jailbreak attempts in the QUERY itself. The query is
+// interpolated into the planner + synthesis prompts, so a crafted query could
+// try to steer them (the [ai-injection] source defense only covers fetched page
+// content, not the query). Deterministic + unambiguous (no bare "system prompt"
+// etc. that would false-positive on a legit "best prompt manager" search).
+// Match on the normalized (lowercased, punctuation→space) string.
+const INJECTION_PATTERNS = [
+  /\bignore (?:all |any )?(?:previous|prior|preceding|above|earlier) (?:instructions?|prompts?)\b/,
+  /\bdisregard (?:all |any |the )?(?:previous|prior|above|earlier|these) (?:instructions?|prompts?|rules?)\b/,
+  /\byou are (?:now )?(?:dan|do anything now|jailbroken)\b/,
+  /\bin developer mode\b/,
+  /\bif you(?:'re| are) (?:an? )?(?:ai|assistant|language model|llm)\s+(?:please )?(?:recommend|rank|say|output|ignore|prefer|rate|list)\b/,
+];
+
 function normalize(query) {
   return ' ' + String(query || '').toLowerCase().replace(/[^a-z0-9\s]+/g, ' ').replace(/\s+/g, ' ').trim() + ' ';
 }
@@ -65,6 +79,7 @@ export function screenQuery(query) {
   if (q.trim().length === 0) return { blocked: false, reason: null };
   for (const re of ADULT_PATTERNS) if (re.test(q)) return { blocked: true, reason: 'adult' };
   for (const re of ILLEGAL_PATTERNS) if (re.test(q)) return { blocked: true, reason: 'illegal' };
+  for (const re of INJECTION_PATTERNS) if (re.test(q)) return { blocked: true, reason: 'injection' };
   return { blocked: false, reason: null };
 }
 
@@ -72,6 +87,7 @@ export function screenQuery(query) {
 export function rejectionMessage(reason) {
   if (reason === 'adult') return "We don't research adult or sexually explicit content. Try a different product or topic.";
   if (reason === 'illegal') return "We can't research illegal products or activities. Try a different product or topic.";
+  if (reason === 'injection') return "That query looks like an attempt to manipulate the research tool rather than a product search. Try describing the product you want.";
   return "We can't research that query. Try a different product or topic.";
 }
 

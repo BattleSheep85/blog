@@ -37,6 +37,12 @@ export async function handleStartResearch(request, env) {
     if (query.length > 500) {
         return jsonResponse({ error: 'Query must be under 500 characters' }, 400);
     }
+    // Require real textual content: an emoji/punctuation-only query has raw length
+    // >= 3 but no letters/digits — it would slugify to nothing, create a junk row +
+    // sitemap entry, and burn a paid run on nonsense. Fail fast.
+    if ((query.match(/[a-z0-9]/gi) || []).length < 3) {
+        return jsonResponse({ error: 'Query must contain at least 3 letters or numbers' }, 400);
+    }
 
     // CONTENT SAFETY: reject adult/illegal queries at submit — never create a row, enqueue,
     // research, or index them. Deterministic + fail-closed (ahead of the LLM classifier).
@@ -224,6 +230,7 @@ export async function handleResearchStream(reportId, env, request) {
                 controller.enqueue(encoder.encode(`id: ${id}\ndata: ${JSON.stringify(data)}\n\n`));
             };
 
+          try {
             const dbRow = await getResearchById(env.DB, reportId);
 
             if (!dbRow) {
@@ -274,6 +281,13 @@ export async function handleResearchStream(reportId, env, request) {
 
             send(maxStep, { type: 'keepalive', status: apiStatus(dbRow?.status || 'pending') });
             controller.close();
+          } catch (err) {
+            // A D1/KV read throwing inside start() would otherwise never close the
+            // controller → the SSE connection hangs until the client/edge times out.
+            console.error('[research:stream] error:', err instanceof Error ? err.message : String(err));
+            try { send(9998, { type: 'error', error: 'stream error, please retry' }); } catch {}
+            try { controller.close(); } catch {}
+          }
         },
     });
 

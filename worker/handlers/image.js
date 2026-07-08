@@ -14,6 +14,9 @@
 const FETCH_TIMEOUT_MS = 10_000;
 // Anything under this is a tracking pixel / placeholder, not a photo.
 const MIN_BYTES = 1_000;
+// Product photos are well under this; a larger declared size is abuse/mis-served
+// content, not a product image — reject rather than proxy it through the worker.
+const MAX_BYTES = 10 * 1024 * 1024;
 
 export async function handleProductImage(productId, env) {
     const row = await env.DB.prepare(
@@ -43,7 +46,7 @@ export async function handleProductImage(productId, env) {
 
     const contentType = upstream.headers.get('Content-Type') || '';
     const length = Number(upstream.headers.get('Content-Length')) || null;
-    if (!upstream.ok || !contentType.startsWith('image/') || (length !== null && length < MIN_BYTES)) {
+    if (!upstream.ok || !contentType.startsWith('image/') || (length !== null && (length < MIN_BYTES || length > MAX_BYTES))) {
         return notFoundImage();
     }
 

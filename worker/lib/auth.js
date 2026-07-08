@@ -1,9 +1,10 @@
 /**
  * Authentication primitives — zero dependencies, WebCrypto only.
  *
- * Passwords: PBKDF2-SHA256, 100k iterations, 16-byte random salt, stored as
- * `pbkdf2$<iterations>$<salt-b64>$<hash-b64>` so the cost factor can be raised
- * later without invalidating old hashes.
+ * Passwords: PBKDF2-SHA256, 600k iterations (OWASP 2023 guidance), 16-byte
+ * random salt, stored as `pbkdf2$<iterations>$<salt-b64>$<hash-b64>`. verifyPassword
+ * reads the iteration count FROM the stored hash, so raising this constant only
+ * affects new hashes — existing lower-cost hashes keep verifying.
  *
  * Sessions: 32 random bytes → base64url cookie token. D1 stores only the
  * SHA-256 hex of the token (a leaked sessions table can't be replayed).
@@ -11,7 +12,7 @@
 
 import { generateId } from './db.js';
 
-const PBKDF2_ITERATIONS = 100_000;
+const PBKDF2_ITERATIONS = 600_000;
 const SESSION_COOKIE = 'tr_sess';
 const SESSION_TTL_SECONDS = 30 * 86400; // 30 days
 
