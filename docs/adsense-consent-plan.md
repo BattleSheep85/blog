@@ -25,7 +25,9 @@ and needs essentially no custom UI. Best fit for a zero-dependency edge site.
 Google then serves the consent banner automatically through the ad stack for
 EEA/UK/CH IPs. No per-page code for the banner itself.
 
-### Step 2 — Code (small, ~1 file): allow the CMP under our CSP
+### Step 2 — Code (small, ~1 file): allow the CMP under our CSP ✅ DONE 2026-07-08
+Shipped in worker/index.js CSP: `https://fundingchoicesmessages.google.com` added
+to `script-src`, `connect-src`, and `frame-src`. Below is what/why (for reference):
 Our CSP (worker/index.js:707-746) is strict (nonce + `strict-dynamic`). The
 Funding Choices / consent flow loads from extra Google origins that must be
 allowlisted or the banner is silently CSP-blocked:

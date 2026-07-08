@@ -31,10 +31,13 @@ consent gaps, and stale docs — NOT in core logic.
 - [x] MED (UX, bonus, same block): budget-exhausted error said "try tomorrow" — the cap is MONTHLY.
       Corrected to "resets at the start of next month." (worker/handlers/research.js)
 
-### Planned, not yet implemented
-- [ ] HIGH (legal, TIMELY — may gate AdSense approval): AdSense loads with no EU consent/CMP. Full plan
-      written in docs/adsense-consent-plan.md (Google's free certified GDPR message = dashboard action +
-      a small CSP allowlist edit). Awaiting go-ahead + desktop login.
+### Partially done — AdSense EU consent/CMP (HIGH, legal, TIMELY — may gate AdSense approval)
+- [x] CODE: CSP now allows Google's certified GDPR message (Funding Choices) —
+      `https://fundingchoicesmessages.google.com` added to script-src/connect-src/frame-src
+      (worker/index.js). Deployed. (docs/adsense-consent-plan.md Step 2)
+- [ ] DASHBOARD (needs your login): AdSense → Privacy & messaging → GDPR → create + publish the consent
+      message targeting EEA/UK. Then verify via an EEA VPN that the banner shows with no CSP console errors.
+      Steps in docs/adsense-consent-plan.md Step 1 + Verification.
 
 ### Open, logged (not fixed this pass) — MED
 - [ ] MED (security): prompt-injection via the raw user QUERY — it's interpolated into planner/synth
