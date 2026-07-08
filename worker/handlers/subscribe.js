@@ -52,11 +52,14 @@ export async function handleSubscribe(request, env) {
     const researchId = rawId ? rawId.slice(0, 128) : null;
 
     const createdAt = Math.floor(Date.now() / 1000);
+    // Per-row token for one-click unsubscribe (List-Unsubscribe + email footer).
+    // created_at is the consent timestamp (the opt-in submit is the consent basis).
+    const unsubToken = crypto.randomUUID().replace(/-/g, '');
 
     try {
         await env.DB.prepare(
-            'INSERT OR IGNORE INTO subscribers (email, research_id, created_at) VALUES (?, ?, ?)'
-        ).bind(email, researchId, createdAt).run();
+            'INSERT OR IGNORE INTO subscribers (email, research_id, created_at, unsub_token) VALUES (?, ?, ?, ?)'
+        ).bind(email, researchId, createdAt, unsubToken).run();
     } catch (err) {
         console.error('Subscribe insert failed:', err);
         return jsonResponse({ ok: false, error: 'server_error', message: 'Something went wrong on our end. Please try again shortly.' }, 500);

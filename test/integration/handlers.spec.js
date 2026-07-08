@@ -4,9 +4,19 @@ import { env } from 'cloudflare:test';
 import { beforeAll, describe, it, expect, vi, afterEach } from 'vitest';
 import { applySchema } from './_schema.js';
 import { handleSubscribe } from '../../worker/handlers/subscribe.js';
+import { handleUnsubscribe } from '../../worker/handlers/unsubscribe.js';
 import { handleProductImage } from '../../worker/handlers/image.js';
 import { handleSignup, handleLogin, handleLogout } from '../../worker/handlers/auth.js';
-import { generateId, insertResearch, insertProductV2 } from '../../worker/lib/db.js';
+import { generateId, insertResearch } from '../../worker/lib/db.js';
+
+// db.js has no shared products-insert helper (the pipeline writes products inline
+// via raw SQL; the dead insertProductV2/completeResearch helpers were removed
+// 2026-06-25). Tests do the same against the v2 schema (schema/003_research_v2.sql).
+async function insertProductV2(db, { id, researchId, name, rank = null, imageUrl = null }) {
+  await db.prepare(
+    'INSERT INTO products (id, research_id, name, rank, image_url) VALUES (?1, ?2, ?3, ?4, ?5)'
+  ).bind(id, researchId, name, rank, imageUrl).run();
+}
 
 beforeAll(() => applySchema(env.DB));
 afterEach(() => vi.unstubAllGlobals());
@@ -33,6 +43,30 @@ describe('handleSubscribe', () => {
     await handleSubscribe(postJson({ email: 'fan@example.com', researchId: 'r1' }), env); // dup → INSERT OR IGNORE
     const n = await env.DB.prepare("SELECT COUNT(*) n FROM subscribers WHERE email = 'fan@example.com'").first();
     expect(n.n).toBe(1);
+  });
+  it('stores an unsub_token + created_at (consent timestamp) on new rows', async () => {
+    await handleSubscribe(postJson({ email: 'consent@example.com' }), env);
+    const row = await env.DB.prepare("SELECT unsub_token, created_at, unsubscribed_at FROM subscribers WHERE email='consent@example.com'").first();
+    expect(row.unsub_token).toBeTruthy();
+    expect(row.created_at).toBeGreaterThan(0);
+    expect(row.unsubscribed_at).toBe(null);
+  });
+});
+
+describe('handleUnsubscribe', () => {
+  it('a valid token unsubscribes every row for that email; bad/missing token 404/400', async () => {
+    await handleSubscribe(postJson({ email: 'bye@example.com', researchId: 'rA' }), env);
+    await handleSubscribe(postJson({ email: 'bye@example.com', researchId: 'rB' }), env);
+    const row = await env.DB.prepare("SELECT unsub_token FROM subscribers WHERE email='bye@example.com' LIMIT 1").first();
+    expect(row.unsub_token).toBeTruthy();
+
+    const res = await handleUnsubscribe(new Request(`https://x/unsubscribe?token=${row.unsub_token}`, { method: 'GET' }), env);
+    expect(res.status).toBe(200);
+    const active = await env.DB.prepare("SELECT COUNT(*) n FROM subscribers WHERE email='bye@example.com' AND unsubscribed_at IS NULL").first();
+    expect(active.n).toBe(0);
+
+    expect((await handleUnsubscribe(new Request('https://x/unsubscribe?token=nope', { method: 'GET' }), env)).status).toBe(404);
+    expect((await handleUnsubscribe(new Request('https://x/unsubscribe', { method: 'GET' }), env)).status).toBe(400);
   });
 });
 

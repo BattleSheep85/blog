@@ -20,6 +20,7 @@ import { renderBrowse } from './pages/browse.js';
 import { renderHistoryPage } from './pages/history.js';
 import { renderCategoryHub } from './pages/category.js';
 import { handleSubscribe } from './handlers/subscribe.js';
+import { handleUnsubscribe } from './handlers/unsubscribe.js';
 import { handleChat } from './handlers/chat.js';
 import { handleNextJob, handleProgress, handleComplete } from './handlers/internal.js';
 import { handleSignup, handleLogin, handleLogout, renderLoginPage, renderAccountPage } from './handlers/auth.js';
@@ -156,6 +157,11 @@ export default {
             // Email capture for "notify me when research completes / re-runs".
             if (path === '/api/subscribe' && method === 'POST') {
                 return handleSubscribe(request, env);
+            }
+
+            // Self-serve one-click unsubscribe (GET link + RFC 8058 POST).
+            if (path === '/unsubscribe' && (method === 'GET' || method === 'POST')) {
+                return handleUnsubscribe(request, env);
             }
 
             // "Talk about it" chat — refine a query (home) or ask follow-ups
