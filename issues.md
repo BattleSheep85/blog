@@ -2,6 +2,84 @@
 
 Last updated: 2026-07-08
 
+## 2026-07-08 — Whole-project review board (14-persona audit) + fixes
+
+Ran /review-board (5 parallel persona groups: safety, quality, UX/business, innovation, compliance)
+over the full codebase. Verdict: strong core (honesty extraction engine, idempotency latch, budget
+governor, CSP nonces, AI-injection defense all praised), risks clustered in operational abuse, legal/
+consent gaps, and stale docs — NOT in core logic.
+
+### Fixed this session (unit suite 362 green; 2 new + 11 affiliate integration tests green)
+- [x] HIGH (privacy/legal): IP hash was UNSALTED SHA-256 truncated to 64 bits — trivially brute-forced
+      across the ~4B IPv4 space, so the privacy policy's "cannot be reversed" claim was false. Salted
+      `hashString` (IP_HASH_SALT → WORKER_SECRET fallback, already set → active immediately) + corrected
+      privacy.html wording to "salted, truncated one-way hash". (worker/handlers/affiliate.js, public/privacy.html)
+- [x] HIGH (availability/cost — "wallet-DoS"): per-IP throttle on /api/research was removed 2026-06-24,
+      leaving the SHARED monthly budget cap as the only backstop → one actor firing distinct junk queries
+      could drain the month and 503 everyone. Added a GENEROUS velocity cap (20 new PAID runs/IP/hr; cache/
+      cluster hits stay free + uncounted; returns 429 + Retry-After). ~$2/hr worst case vs $60 drain.
+      New test/integration/research.spec.js (2 tests, verified). (worker/handlers/research.js)
+- [x] HIGH (user-facing/SEO false claim): homepage FAQ (visible copy + JSON-LD rich result) promised
+      "Hover any source to see exactly what it contributed" — a feature that does not exist (sources are a
+      bare link list). Reworded both to a truthful sourcing claim. (public/index.html)
+- [x] HIGH (stale docs): README claimed a DeepSeek R1 / Qwen 3.6 / Reddit-JSON-API stack (all gone) and
+      applied only migrations 001+002 (missing 003 research_v2 = the LIVE tables → broken fresh deploy);
+      PRD described Claude haiku/sonnet/opus tiers; deploy/README verify step said synth_model=kimi (would
+      flag a healthy deploy as broken). Fixed README stack + full-migration loop + real secrets list + a
+      "CLAUDE.md is authoritative" banner; added a stale-model banner to PRD; corrected deploy/README to
+      gpt-5.4-mini/extraction-v0. (README.md, PRD.md, deploy/README.md)
+- [x] MED (UX, bonus, same block): budget-exhausted error said "try tomorrow" — the cap is MONTHLY.
+      Corrected to "resets at the start of next month." (worker/handlers/research.js)
+
+### Planned, not yet implemented
+- [ ] HIGH (legal, TIMELY — may gate AdSense approval): AdSense loads with no EU consent/CMP. Full plan
+      written in docs/adsense-consent-plan.md (Google's free certified GDPR message = dashboard action +
+      a small CSP allowlist edit). Awaiting go-ahead + desktop login.
+
+### Open, logged (not fixed this pass) — MED
+- [ ] MED (security): prompt-injection via the raw user QUERY — it's interpolated into planner/synth
+      prompts; the injection defense we shipped covers page CONTENT, not the query. Only the fail-open LLM
+      classifier guards it.
+- [ ] MED (legal): email capture (subscribe.js / 005_subscribers.sql) stores addresses with no consent
+      flag/timestamp and no self-serve unsubscribe / one-click list-unsubscribe (GDPR/CAN-SPAM thin).
+- [ ] MED (security): lib/rate-limit.js sliding window is non-atomic (read-then-write) — soft-defeatable
+      under a concurrent burst (auth/chat/affiliate + the new research cap). Volume ceiling still holds.
+- [ ] MED (quality/CLAUDE.md): file-size limits blown — research-page.js 1298 lines, extract/engine.js
+      828 (limit 800); functions far over 50 lines (renderResearchResult ~725, analyzeProduct ~162).
+- [ ] MED (quality): duplication — two runPool impls; ~5 copies of the fenced-JSON parser; duplicated
+      stream→parse→retry synth orchestration (engine.js ↔ parallel-engine.js); DEFAULT_AFFILIATE_TAG
+      hardcoded in research-page.js + reviews.js with DIVERGENT env-key fallbacks (tags can silently differ
+      between /reviews and /research).
+- [ ] MED (quality): "tiers" concept is collapsed to one config but still threaded through handlers/queue/
+      metrics (index.js tier='full'|'exhaustive', by_tier). Architecturally dead, pervasively wired.
+- [ ] MED (security): affiliate.js final redirect else-branch 302s to any https product_url (open-redirect
+      if a row is written outside the pipeline). Add a host allowlist on the fallback.
+- [ ] MED (perf): every page view runs getRelatedResearch (OR-of-8 LIKE, LIMIT 50) + a view_count UPDATE
+      = 3+ D1 statements/view — read amplification that scales with traffic.
+- [ ] MED (bug): CACHE_VERSION (tr9) ≠ sitemap XML_CACHE_VERSION (tr1) despite a comment claiming they
+      match — the shared-lastmod invariant is broken.
+- [ ] MED (legal): privacy policy names OpenRouter but not Serper/Brave/Tavily/SearXNG/Jina, which receive
+      the raw search query (GDPR Art.13 transparency).
+- [ ] MED (UX): failure pages show a generic message and hide the real stored result.error ("No reliable
+      products found…"), leaving users without the reason/next step.
+- [ ] MED (correctness, mitigated): incrementMonthlyCost KV read-add-put is non-atomic; concurrent
+      completions lose updates. Mitigated by the D1 SUM MAX-gate in budgetExhausted — make KV advisory.
+
+### Open, logged — LOW
+- [ ] LOW (a11y): no skip-to-content link / no `<main id>` target (WCAG 2.4.1); primary header `<nav>` has
+      no aria-label.
+- [ ] LOW (security): PBKDF2-SHA256 at 100k iterations < OWASP 600k (versioned hash format already supports
+      raising it); /api/internal/* has no rate limit if WORKER_SECRET leaks; image proxy streams unbounded
+      bodies when no Content-Length; auth rate-limit keys use raw (unhashed) IP in KV.
+- [ ] LOW (robustness): emoji-only query (raw length ≥3) passes the length + safety gates and creates a junk
+      row/sitemap entry — add a "≥3 alphanumerics" gate; SSE stream start() has no try/catch (D1 throw → hung
+      connection); `?src=`/`?from=` query variants bust the page cache (crawler amplification).
+- [ ] LOW (quality/cleanup): sanitizeUrl is a dead export; process.env DEBUG_FUNNEL scaffolding shipped in
+      the extract path (dead in Workers); buildAgentTools(facets) ignores its arg; runParallelEngine synth
+      path is dead in prod (bench-only); status vocab inconsistent (DB 'complete' vs API 'completed');
+      subscribe.js returns raw machine error codes with no human message; docs/ml-engine-design.md +
+      local-synth-roadmap.md are unbuilt proposals with no status banner.
+
 ## 2026-07-08 — Code-review pass on the injection-defense diff (before deploy)
 
 Ran the high-effort code-review gate on the uncommitted 2026-07-07 changes. Two real recall-killing

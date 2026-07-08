@@ -71,7 +71,8 @@ degraded to the sequential engine + CF caps but fully functional), or set
 curl -s -X POST https://chrisputer.tech/api/research -H 'Content-Type: application/json' \
   -d '{"query":"best <something fresh>"}'
 docker logs -f truerank-research-worker     # [job …] → engine → complete -> 200
-# then confirm the research row shows synth_model=kimi and products in D1.
+# then confirm the research row shows synth_model=gpt-5.4-mini (or extraction-v0
+# on the off-CF extraction path) and products in D1.
 ```
 
 ## Live activity feed (off-CF)

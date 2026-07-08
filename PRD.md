@@ -8,6 +8,13 @@
 > interest, and never ingests marketplace reviews at all. Review-level
 > authenticity analysis is scoped as a future phase (§3b). The accounts
 > non-goal also graduated (2026-06-12).
+>
+> **Stale model references (read this):** sections below still describe a
+> Claude haiku/sonnet/opus tiered stack and multi-tier depth modes. That is
+> historical. The shipped stack collapsed to ONE config (2026-06-16) on
+> Gemini + GPT-5.4-mini via OpenRouter. `CLAUDE.md` is the authoritative,
+> always-current description of models, search providers, and tiers — where it
+> and this PRD disagree, `CLAUDE.md` wins.
 
 ## Problem
 

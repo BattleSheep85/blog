@@ -14,6 +14,7 @@ import { generateSlug, canonicalizeQuery, parseJsonSafe } from '../lib/utils.js'
 import { screenQuery, rejectionMessage } from '../lib/safety.js';
 import { PUBLIC_TIERS } from '../lib/tiers.js';
 import { budgetExhausted } from '../pipeline/orchestrator.js';
+import { checkRateLimit } from '../lib/rate-limit.js';
 import { getSessionUser, recordUserSearch } from '../lib/auth.js';
 import { apiStatus } from '../lib/status.js';
 
@@ -96,15 +97,31 @@ export async function handleStartResearch(request, env) {
         }
     }
 
-    // Per-IP rate limiting removed (2026-06-24, by request) — the public research endpoint is
-    // unthrottled. The MONTHLY_BUDGET_USD governor below is the sole cost backstop: it refuses
-    // new paid runs (503) once the month's spend hits the cap, so worst-case exposure is bounded
-    // by the budget, not by request rate.
+    // Wallet-DoS defense (2026-07-08): the tight per-IP throttle was removed
+    // 2026-06-24 for legit UX, leaving the SHARED MONTHLY_BUDGET_USD cap as the
+    // only backstop — so one actor firing distinct junk queries (~$0.10 each)
+    // could drain the whole month and 503 every user. This is a GENEROUS velocity
+    // cap, not the old throttle: only genuinely new PAID runs reach here (cache /
+    // cluster hits already returned above and stay free + uncounted), and 20/hr is
+    // far above real human use (~$2/hr worst case) while stopping a single-source
+    // budget drain. Deliberately leaky (KV limiter is non-atomic) — fine for a
+    // volume ceiling.
+    const clientIp = request.headers.get('CF-Connecting-IP') || 'unknown';
+    const velocity = await checkRateLimit(env.KV, `research:${clientIp}`, 20, 3600);
+    if (!velocity.allowed) {
+        const retryAfter = Math.max(1, Math.ceil((velocity.resetAt - Date.now()) / 1000));
+        return jsonResponse(
+            { error: 'Too many new research runs from your connection in the last hour. Please try again shortly.' },
+            429,
+            { 'Retry-After': String(retryAfter) },
+        );
+    }
+
     // Monthly budget governor — gate on MAX(KV soft counter, D1 completed-spend)
     // so a burst of in-flight runs OR the accurate completed total can refuse new
     // work (503). Closes the split-brain where intake trusted only the racy KV.
     if (await budgetExhausted(env)) {
-        return jsonResponse({ error: 'Monthly research budget exhausted — try tomorrow' }, 503);
+        return jsonResponse({ error: 'Monthly research budget exhausted — resets at the start of next month.' }, 503);
     }
 
     // Create the permanent research row. Slug mirrors Exhaustive's shape:
@@ -295,12 +312,13 @@ export async function handleResearchEvents(slug, url, env) {
     return jsonResponse({ status: row.status, events, preview: row.preview ?? null });
 }
 
-function jsonResponse(data, status = 200) {
+function jsonResponse(data, status = 200, extraHeaders = {}) {
     return new Response(JSON.stringify(data), {
         status,
         headers: {
             'Content-Type': 'application/json',
             'Access-Control-Allow-Origin': '*',
+            ...extraHeaders,
         },
     });
 }

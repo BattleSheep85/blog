@@ -88,7 +88,7 @@ export async function handleAffiliateClick(productId, request, env) {
     const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
 
     // Hash the IP for privacy (don't store raw IPs)
-    const ipHash = await hashString(ip);
+    const ipHash = await hashString(ip, env);
     const suspicious = await isSuspiciousRequest(request, env, ip);
 
     // Log the click asynchronously (don't block the redirect). Bot/rate-limited
@@ -211,7 +211,7 @@ export async function handleAffiliateSearch(request, env) {
     // flagged requests so guide_clicks reflects real visitors.
     if (!suspicious) {
         try {
-            const ipHash = await hashString(ip);
+            const ipHash = await hashString(ip, env);
             await logGuideClick(env.DB, { guideSlug: ref, productQuery: q, network, ipHash });
         } catch (err) {
             console.error('Guide click logging failed:', err);
@@ -227,8 +227,15 @@ export async function handleAffiliateSearch(request, env) {
     });
 }
 
-async function hashString(str) {
-    const data = new TextEncoder().encode(str);
+// Salted, truncated one-way hash used for rate limiting + click analytics.
+// The salt is REQUIRED for the "cannot be reversed" property: an unsalted
+// SHA-256 of an IP is trivially brute-forced (the IPv4 space is only ~4B
+// values), so without a secret salt the digest is effectively reversible.
+// Salt precedence: IP_HASH_SALT, else the already-set WORKER_SECRET, else
+// empty (degrades to the old unsalted behavior only if neither is configured).
+async function hashString(str, env) {
+    const salt = (env && (env.IP_HASH_SALT || env.WORKER_SECRET)) || '';
+    const data = new TextEncoder().encode(`${salt}:${str}`);
     const hashBuffer = await crypto.subtle.digest('SHA-256', data);
     const hashArray = Array.from(new Uint8Array(hashBuffer));
     return hashArray.map(b => b.toString(16).padStart(2, '0')).join('').slice(0, 16);

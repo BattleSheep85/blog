@@ -1,13 +1,15 @@
 # TrueRank
 
-Honest product research. We scrape real reviews from Reddit, forums, and independent sites, filter out fakes, and give you a sourced comparison report.
+Honest product research. We search real reviews across the web (expert review sites, forums, and communities), filter out fakes and affiliate bait, and give you a sourced comparison report.
+
+> **Current stack of record:** `CLAUDE.md` is the authoritative, always-current description of the models, search providers, and architecture. This README is a high-level overview; if the two disagree, `CLAUDE.md` wins.
 
 ## What it does
 
 1. You type a product query (e.g. "best NAS for home media server")
-2. TrueRank searches Reddit, HackerNews, and Google for real user reviews
-3. AI analyzes each source for authenticity, flags fakes and affiliate bait
-4. You get a ranked comparison with trust scores, pros/cons from real users, and links to buy
+2. A research engine runs ~50 web/news searches (Serper + SearXNG + HN Algolia + RSS feeds) and reads the strongest sources
+3. Sources are scored for credibility (hands-on vs listicle vs affiliate-conflict) and an honest synthesis ranks the products with sourced pros/cons
+4. You get a ranked comparison with trust signals, pros/cons traceable to sources, and links to buy
 
 ## Stack
 
@@ -17,12 +19,15 @@ Honest product research. We scrape real reviews from Reddit, forums, and indepen
 | API | Cloudflare Workers (plain JS) | $5/mo |
 | Database | Cloudflare D1 (SQLite) | Free tier |
 | Cache | Cloudflare KV | Free tier |
-| Background jobs | Cloudflare Queues | Free tier |
-| AI (analysis) | DeepSeek R1 via OpenRouter | Free |
-| AI (writing) | Qwen 3.6 Plus via OpenRouter | Free |
-| Search | Reddit JSON API + HN Algolia + Serper.dev | Free |
+| Background jobs | Cloudflare Queues (+ off-CF research worker) | Free tier |
+| AI — classifier | `google/gemini-2.5-flash-lite` via OpenRouter | paid |
+| AI — planner/agent | `google/gemini-2.5-flash` via OpenRouter | paid |
+| AI — synthesis | `openai/gpt-5.4-mini` via OpenRouter | paid |
+| Search | Serper.dev (primary) + SearXNG + Brave/Tavily (fallback) + HN Algolia + RSS | mostly free |
 
-Zero package managers. No npm, no pip, no cargo. All JS dependencies are vendored.
+AI cost is governed by `MONTHLY_BUDGET_USD` (default $60): each run increments a KV cost counter and `/api/research` returns 503 once the month's spend hits the cap.
+
+Zero **runtime** package managers. The deployed Worker is plain JS with zero runtime dependencies — everything shipped is vendored or CDN-loaded. (A dev-only Miniflare/vitest test harness lives in `devDependencies` and is never bundled — see `CLAUDE.md`.)
 
 ## Setup
 
@@ -44,14 +49,22 @@ npx wrangler queues create truerank-dlq
 
 # 2. Update wrangler.toml with the IDs from step 1
 
-# 3. Run database migrations
-npx wrangler d1 execute truerank-db --file=schema/001_initial.sql
-npx wrangler d1 execute truerank-db --file=schema/002_guide_clicks.sql
+# 3. Run database migrations — apply ALL of them, in order. The live app uses
+#    the v2 `research`/`products` tables from 003 onward; 001 is legacy and
+#    applying only 001/002 leaves the app pointed at tables that don't exist.
+for f in schema/00*_*.sql; do npx wrangler d1 execute truerank-db --file="$f"; done
 
-# 4. Set secrets
-npx wrangler secret put OPENROUTER_API_KEY
-npx wrangler secret put SERPER_API_KEY        # optional
-npx wrangler secret put AMAZON_ASSOCIATE_TAG
+# 4. Set secrets (see CLAUDE.md "Secrets" for the full, current list)
+npx wrangler secret put OPENROUTER_API_KEY    # required — classifier/planner/synth
+npx wrangler secret put SERPER_API_KEY        # primary web/news search
+npx wrangler secret put WORKER_SECRET         # gates /api/internal/* + salts IP hashes
+# Optional search fallbacks / tuning:
+npx wrangler secret put BRAVE_API_KEY         # optional search fallback
+npx wrangler secret put TAVILY_API_KEY        # optional search fallback
+npx wrangler secret put JINA_API_KEY          # optional — lifts read_page rate cap
+#   SEARXNG_URL, MONTHLY_BUDGET_USD, EXTERNAL_WORKER_ENABLED, FLYWHEEL_DAILY_MAX,
+#   AMAZON_AFFILIATE_TAG and the Impact/BHphoto affiliate IDs are [vars]/secrets
+#   documented in CLAUDE.md and wrangler.toml.
 
 # 5. Build the production CSS (standalone Tailwind binary, no package manager)
 curl -fsSL -o /tmp/tailwindcss https://github.com/tailwindlabs/tailwindcss/releases/download/v3.4.17/tailwindcss-linux-x64
