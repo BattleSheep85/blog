@@ -2,6 +2,47 @@
 
 Last updated: 2026-07-08
 
+## 2026-07-08 — Review-board backlog cleared (waves 1–4) + deferrals
+
+Worked the code-fixable review-board backlog below. Unit 371 green; new/updated integration
+specs green (research throttle, handlers subscribe+unsubscribe+image cap). All CF-side — no
+blackbox redeploy needed this pass.
+
+### Fixed
+- [x] MED (security): prompt-injection screening of the raw QUERY — new INJECTION_PATTERNS +
+      'injection' reason in safety.js (chokepoint), user-safe message, +9 lib-pure assertions.
+- [x] MED (security): affiliate.js last-resort redirect gated on isKnownRetailerUrl → open-redirect closed.
+- [x] LOW→MED (robustness): emoji/punctuation-only queries rejected (≥3 alphanumerics); SSE start()
+      wrapped in try/catch (no more hung streams on a D1 throw); image proxy rejects Content-Length >10MB.
+- [x] LOW (security): PBKDF2 100k→600k (OWASP; old hashes still verify via stored iteration count).
+- [x] MED (quality): unified the Amazon-tag fallback into affiliate-links.js (DEFAULT_AFFILIATE_TAG +
+      resolveAmazonTag) — replaced 3 divergent copies (research-page/reviews/orchestrator).
+- [x] MED (bug): sitemap comment corrected (XML_CACHE_VERSION versions independently from page CACHE_VERSION).
+- [x] MED (UX): failure pages surface the real stored result.error; budget msg fixed to monthly.
+- [x] LOW (a11y): skip-to-content link + main id + primary-nav aria-label (public/index.html).
+- [x] LOW (UX): subscribe.js returns human-readable `message` alongside machine error codes.
+- [x] LOW (docs): visible "design proposal / not built" banners on docs/ml-engine-design + local-synth-roadmap.
+- [x] MED (legal): email consent + one-click unsubscribe shipped (schema 009 applied to prod; unsubscribe.js
+      + /unsubscribe route; consent timestamp = created_at; unsub_token; any future send filters
+      unsubscribed_at IS NULL + sends List-Unsubscribe). See the email-list item below.
+- [x] Fixed the pre-existing stale `insertProductV2` import in handlers.spec.js (local helper) —
+      un-skipped the image-proxy tests (also the "4 stale-helper integration files" LOW from 2026-07-01, partial).
+
+### Deferred (with rationale — logged, not done)
+- [ ] MED (perf): getRelatedResearch read amplification — REASSESSED as already mitigated: the research
+      page is KV-cached, so the OR-of-8 LIKE runs only on cache MISS, not per view. No change made.
+- [ ] MED (quality): dead "tiers" concept still threaded through handlers/queue/metrics/DB — pervasive,
+      cosmetic, real regression risk (queue message shape, metrics by_tier, DB inserts). Deferred.
+- [ ] MED (quality): file-size splits (research-page.js 1298, extract/engine.js 828) — large refactors,
+      one blackbox + honesty-critical; deferred per the "no big refactors late in context" rule.
+- [ ] MED (security): rate-limit.js atomicity — a true fix needs Durable Objects (architectural), not a
+      patch. Left as a documented known limitation; the new research velocity cap is a volume ceiling anyway.
+- [ ] LOW (cleanup, blackbox-side): DEBUG_FUNNEL scaffolding, buildAgentTools(facets) ignored arg, and the
+      parseFencedJson (×5) + runPool (×2) dedups — batched for a future engine-cleanup pass + blackbox
+      redeploy (avoid cosmetic drift). NOTE: "sanitizeUrl dead export" was a FALSE POSITIVE (used in orchestrator.js).
+- [ ] LOW: /api/internal has no rate limit — deliberately NOT added (would throttle the legit 15s off-CF
+      poller for marginal defense-in-depth behind the secret gate).
+
 ## 2026-07-08 — Whole-project review board (14-persona audit) + fixes
 
 Ran /review-board (5 parallel persona groups: safety, quality, UX/business, innovation, compliance)
