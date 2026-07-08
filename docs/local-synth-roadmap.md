@@ -1,5 +1,9 @@
 <!-- Generated 2026-06-17 by a 5-area research workflow (hardware/models/distillation/cost/integration). Decision-grade roadmap; not yet executed. -->
 
+> ⚠️ **STATUS: ROADMAP — NOT executed.** A proposal for a self-hosted/local
+> synthesis path. Production synthesis runs via OpenRouter (see `CLAUDE.md`).
+> Read this as intent, not as documentation of what runs today.
+
 # Self-Hosting the TrueRank Synthesis Model on a 7900 XTX — Feasibility Roadmap
 
 *Tech-lead synthesis. Date 2026-06-17. Status: FEASIBLE on hardware, GATED on honesty, WEAK on cost.*

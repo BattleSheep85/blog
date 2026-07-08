@@ -26,7 +26,7 @@ function jsonResponse(data, status = 200) {
 
 export async function handleSubscribe(request, env) {
     if (request.method !== 'POST') {
-        return jsonResponse({ ok: false, error: 'method_not_allowed' }, 405);
+        return jsonResponse({ ok: false, error: 'method_not_allowed', message: 'Method not allowed.' }, 405);
     }
 
     // Parse defensively — never trust the body. Malformed JSON is a client error.
@@ -34,16 +34,16 @@ export async function handleSubscribe(request, env) {
     try {
         body = await request.json();
     } catch {
-        return jsonResponse({ ok: false, error: 'invalid_json' }, 400);
+        return jsonResponse({ ok: false, error: 'invalid_json', message: 'We could not read your request. Please try again.' }, 400);
     }
 
     if (!body || typeof body !== 'object') {
-        return jsonResponse({ ok: false, error: 'invalid_body' }, 400);
+        return jsonResponse({ ok: false, error: 'invalid_body', message: 'Invalid request.' }, 400);
     }
 
     const email = typeof body.email === 'string' ? body.email.trim().toLowerCase() : '';
     if (!email || email.length > 254 || !EMAIL_RE.test(email)) {
-        return jsonResponse({ ok: false, error: 'invalid_email' }, 400);
+        return jsonResponse({ ok: false, error: 'invalid_email', message: 'Please enter a valid email address.' }, 400);
     }
 
     // researchId is optional; normalize empty/whitespace to NULL so a general
@@ -59,7 +59,7 @@ export async function handleSubscribe(request, env) {
         ).bind(email, researchId, createdAt).run();
     } catch (err) {
         console.error('Subscribe insert failed:', err);
-        return jsonResponse({ ok: false, error: 'server_error' }, 500);
+        return jsonResponse({ ok: false, error: 'server_error', message: 'Something went wrong on our end. Please try again shortly.' }, 500);
     }
 
     return jsonResponse({ ok: true });

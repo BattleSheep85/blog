@@ -1,3 +1,8 @@
+> ⚠️ **STATUS: DESIGN PROPOSAL — NOT the shipped system.** This describes a
+> proposed ML extraction engine. The live honesty engine is `worker/engine/extract/`;
+> the authoritative current architecture is in `CLAUDE.md`. Read this as history/intent,
+> not as documentation of what runs in production.
+
 <!-- Generated 2026-06-17 by a 6-area research workflow (entity/fact/ranking/prose/architecture/validation). Design proposal; not yet built. -->
 
 # Pure-ML Extraction Synthesis Engine — Design Doc
