@@ -39,6 +39,28 @@ regex false positives caught + fixed before they shipped; 362 unit assertions gr
       (a deploy step that rsyncs on push, or a git-pull on the box). Manual rsync is the current process
       and clearly falls behind across sessions.
 
+## 2026-07-08 — Revenue rails verified with the user (both healthy, both starved)
+
+Walked the user through the two monetization dashboards (login-gated, so user-reported; I supplied
+the expected numbers from D1 + live config and interpreted).
+
+- [x] HIGH (was 2026-07-01 deferred): **Amazon Associates — NOT flagged/suspended.** No warning banner;
+      the June bot-click bursts did not trigger a traffic-quality review, and the 2026-07-01 bot defense
+      is holding. Tracking works: Amazon counted 4,445 clicks on `battlesheep0a-20` (we logged 5,086 —
+      normal undercount). BUT **0 ordered items, $0 earnings.** Not a plumbing bug — bots inflate clicks
+      and never buy (24h purchase window), and real human traffic is ~0 (even the 868 post-defense 7-day
+      clicks converted 0). $0 is a TRAFFIC problem, not an affiliate problem. WATCH: Amazon closes
+      Associate accounts with <3 qualifying sales in the first 180 days — user should check the approval
+      date for remaining runway. The only fix is real converting traffic → the indexing/crawl items.
+- [x] HIGH (was 2026-07-01 deferred): **AdSense — correctly configured, in review (not a bug).** Status
+      "Getting ready," review requested 2026-07-07, ads.txt "Authorized." Zero clicks/$0 because ads are
+      NOT serving yet (pending Google approval; days–4wk). Verified the loader `<script ... client=
+      ca-pub-6952672558994325>` is present in <head> on home, worker-rendered /research pages, AND
+      /reviews — matches ads.txt + ADSENSE_PUBLISHER_ID. Ownership verification should pass immediately
+      (code already installed); no code paste needed. Just awaiting review.
+- NET: both revenue rails are wired correctly and safe; $0 is entirely a discovery/traffic problem.
+  Highest-leverage remaining work = GSC Request Indexing + Cloudflare AI Crawl Control (below).
+
 ## 2026-07-07 — BaitBench-informed evaluation: injection defense + expert-affiliate scoring fix
 
 Cross-analyzed TrueRank against the BaitBench (~/projects/baitbench) v1-2026Q3 results — the ad-susceptibility
