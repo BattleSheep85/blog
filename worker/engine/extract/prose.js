@@ -6,6 +6,7 @@
 import { CUES, MARKETING } from './lexicon.js';
 import { sentences } from './engine.js';
 import { STOPWORDS } from './gazetteer.js';
+import { NONCREDIBLE_GENRES } from '../../lib/credibility.js';
 
 const trimQuote = (s) => String(s || '').replace(/\s+/g, ' ').replace(/^["“”']|["“”']$/g, '').trim();
 
@@ -57,7 +58,7 @@ export function buildBuyersGuide(sources, notes, products) {
   for (const s of sources) {
     const cred = s.credibility?.score ?? 0;
     const tags = s.credibility?.tags || [];
-    if (cred >= 45 && !tags.every((t) => ['listicle', 'affiliate-conflict', 'manufacturer'].includes(t))) {
+    if (cred >= 45 && !tags.every((t) => NONCREDIBLE_GENRES.has(t))) {
       credibleText.push(...sentences(`${s.content || ''}`));
     }
   }
@@ -87,7 +88,7 @@ export function buildBuyersGuide(sources, notes, products) {
   const hypeFound = new Set();
   for (const s of sources) {
     const tags = s.credibility?.tags || [];
-    if (!tags.some((t) => ['listicle', 'affiliate-conflict', 'manufacturer'].includes(t))) continue;
+    if (!tags.some((t) => NONCREDIBLE_GENRES.has(t))) continue;
     for (const w of String(s.content || '').toLowerCase().match(/[a-z#-]+/g) || []) if (MARKETING.has(w)) hypeFound.add(w);
   }
   const marketingToIgnore = [];

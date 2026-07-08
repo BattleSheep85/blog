@@ -12,8 +12,13 @@
 //   'expert-domain'       — established review outlet (Wirecutter, RTINGS, etc.)
 //   'community'           — reddit / forums / hacker news — unpaid opinions
 //   'manufacturer'        — official product/retailer page — not a review
+//   'ai-injection'        — page contains instructions addressed to AI tools — manipulation attempt
 //
 // SourceCredibility = { tags: CredibilityTag[], score: number (0-100), reasons: string[] }
+
+// Genres that can NEVER be the sole basis for a recommendation. Single source
+// of truth — imported by the extract engine.
+export const NONCREDIBLE_GENRES = new Set(['listicle', 'affiliate-conflict', 'manufacturer', 'ai-injection']);
 
 // ─── Affiliate-link detection ────────────────────────────────────────────────
 
@@ -111,6 +116,46 @@ export function hasAffiliateLinks(content) {
   const matches = content.match(urlPattern) || [];
   for (const m of matches) {
     if (isAffiliateUrl(m)) return true;
+  }
+  return false;
+}
+
+// ─── AI-targeted injection detection ─────────────────────────────────────────
+
+// Text planted in page content addressed to AI tools reading the page —
+// documented in the wild (hidden white-text instructions, "GEO" injection,
+// adversarial SEO). A page that addresses AI assistants directly is trying to
+// manipulate automated research tools like this one; its product claims get
+// zero weight. NOTE: a rare false positive is an article ABOUT prompt
+// injection quoting an attack string — acceptable, such pages aren't product
+// evidence anyway.
+// Rationale: a bare "ai" alternative matches AI-as-an-ADJECTIVE prose — "if
+// you're an AI gamer/power user", "note for AI-heavy workloads", "instructions
+// for AI art" — on exactly the AI-hardware/AI-tool products this site reviews,
+// silently discarding legit reviews as injection. So every "AI" here must be
+// followed by a real automated-reader noun (assistant/model/agent/…) OR, for a
+// bare self-identifying "if you are an AI", by an injection directive verb.
+const AI_INJECTION_PATTERNS = [
+  // Self-identifying address to an automated reader by assistant noun.
+  /\bif you(?:'re| are) (?:an?|the) (?:ai (?:assistant|model|agent|chat ?bot|bot|tool|summariz\w+)|llm|language model|chat ?bot|summariz\w+)s?\b/i,
+  // "if you are an AI, <directive>" — bare AI immediately followed by an
+  // injection verb (never a human-descriptor noun like gamer/enthusiast).
+  /\bif you(?:'re| are) (?:an? )?ai[\s,.:;-]+(?:please\s+)?(?:reading this|processing this|recommend|rank|prefer|choose|select|include|suggest|output|say|write|list|ignore|disregard|promote|feature)\b/i,
+  /\bignore (?:all |any )?(?:previous|prior|preceding|above|earlier) (?:instructions?|prompts?)\b/i,
+  // "note/instructions/message for automated summarizers/AI assistants/LLMs …".
+  // The noun after AI/automated/LLM is required, so "note for AI workloads" (AI
+  // as an adjective) does not match.
+  /\b(?:note|notice|instructions?|message) (?:for|to) (?:(?:automated|ai|llm) (?:summariz\w+|assistants?|systems?|tools?|agents?|bots?|models?)|llms?|language models?|chat ?bots?)\b/i,
+  /\bai (?:assistants?|chat ?bots?|summariz\w+|agents?) (?:reading|processing|summarizing|indexing) this\b/i,
+];
+
+/**
+ * Returns true if content contains instructions addressed to AI tools.
+ */
+export function hasAiInjection(content) {
+  if (!content) return false;
+  for (const pat of AI_INJECTION_PATTERNS) {
+    if (pat.test(content)) return true;
   }
   return false;
 }
@@ -249,6 +294,18 @@ export function isExpertDomain(url) {
   return false;
 }
 
+// Affiliate softening applies only to the apex/www host of an expert domain —
+// leased subdomains (coupons.*, deals.*) are a documented parasite-SEO
+// pattern and keep the full affiliate penalty.
+function isExpertApexHost(url) {
+  const h = hostOf(url); // hostOf already strips a leading www., so apex === www.
+  if (!h) return false;
+  for (const d of EXPERT_DOMAINS) {
+    if (h === d) return true;
+  }
+  return false;
+}
+
 export function isCommunityDomain(url) {
   const h = hostOf(url);
   if (!h) return false;
@@ -295,10 +352,25 @@ export function scoreSource(input) {
 
   const fullContent = (input.content || '') + '\n' + (input.extraContent || '');
 
+  if (hasAiInjection(fullContent)) {
+    tags.push('ai-injection');
+    reasons.push('contains instructions addressed to AI tools — manipulation attempt');
+    score -= 60;
+  }
+
   if (hasAffiliateLinks(fullContent) || isAffiliateUrl(input.url)) {
     tags.push('affiliate-conflict');
-    reasons.push('contains affiliate-tracked outbound links');
-    score -= 45;
+    if (isExpertApexHost(input.url)) {
+      // Established editorial outlets (Wirecutter, PCMag, RTINGS…) are all
+      // affiliate-monetized with disclosed links + editorial standards — a
+      // different animal from parasite-SEO affiliate grids. Soft penalty so
+      // they stay above the score-45 credibility gates.
+      reasons.push('affiliate links on an established editorial outlet (disclosed monetization)');
+      score -= 15;
+    } else {
+      reasons.push('contains affiliate-tracked outbound links');
+      score -= 45;
+    }
   }
 
   if (isHandsOn(fullContent)) {

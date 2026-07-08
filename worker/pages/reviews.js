@@ -242,7 +242,7 @@ ${filters.page < totalPages ? `<a href="${escapeHtml(reviewsHref(filters, { page
     ts: (r.completed_at || 0) * 1000,
   }));
   const resultsHtml = rows.length
-    ? `${jsonEmbed('reviews-list-data', reviewListItems)}<div id="reviews-list"></div>`
+    ? `${jsonEmbed('reviews-list-data', reviewListItems)}<div id="reviews-list"><div class="grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem">${rows.map((r) => renderReviewCard(r, affiliateIds)).join('')}</div></div>`
     : `<p style="color:var(--ink-2);padding:2rem 0">No products match these filters. <a href="/reviews" style="color:var(--accent)">Clear all filters</a> and try again.</p>`;
 
   const body = `<div class="container" style="max-width:78rem;padding:2.5rem 1.5rem;margin:0 auto">

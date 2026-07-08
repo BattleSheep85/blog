@@ -17,6 +17,7 @@ export function runPromptsTests() {
     ok('agent: includes query', p.includes('best nas'));
     ok('agent: includes budget', p.includes(`${CONFIG.maxSearches} searches`));
     ok('agent: credibility guidance', p.includes('SOURCE CREDIBILITY'));
+    ok('agent: includes ai-injection', p.includes('ai-injection'));
   }
   ok('agent: null facets does not throw', typeof buildAgentPrompt('q', CONFIG, null) === 'string');
   // All six facet-focus blocks active at once → every branch of facetFocusBlocks.
@@ -52,6 +53,8 @@ export function runPromptsTests() {
     ok('synth: marketplace-churn guidance', p.includes('marketplace-churn'));
     ok('synth: open-source rule present', p.includes('OPEN-SOURCE / SELF-HOSTED'));
     ok('synth: rank-tracks-quality rule', p.includes('RANK MUST TRACK QUALITY'));
+    ok('synth: embedded-instruction defense present', p.includes('EMBEDDED-INSTRUCTION DEFENSE'));
+    ok('synth: ai-injection rule present', p.includes('[ai-injection]'));
     // The actual extracted-URL block has unique text; "VERIFIED AMAZON PRODUCT
     // URLS" alone also appears in the static schema, so match the block body.
     ok('synth: verified amazon block when amazonUrls present', p.includes('extracted from source content — USE these'));

@@ -5,6 +5,7 @@
 
 import { VALENCE, NEGATORS, INTENSIFIERS, MARKETING } from './lexicon.js';
 import { BRANDS, BRAND_CLUSTERS, PUBLISHERS, STOPWORDS } from './gazetteer.js';
+import { NONCREDIBLE_GENRES } from '../../lib/credibility.js';
 
 // Reverse index brand → Set(cluster keys), for the cross-category brand gate. A brand
 // in multiple clusters (Nike = APPAREL_FOOTWEAR+OUTDOOR) maps to all of them.
@@ -42,7 +43,7 @@ function queryCluster(topicalCategory, query) {
 
 // Genres that can NEVER be the sole basis for a recommendation (mirrors the
 // deterministic version of the synthesis prompt's credibility rules).
-const NONCREDIBLE_GENRES = new Set(['listicle', 'affiliate-conflict', 'manufacturer']);
+// Imported from the credibility module.
 const MIN_CREDIBLE_SCORE = 45; // a product needs ≥1 supporting source at/above this AND of a credible genre
 
 // ── text utils ───────────────────────────────────────────────────────────────

@@ -1,6 +1,79 @@
 # Issues
 
-Last updated: 2026-07-03
+Last updated: 2026-07-08
+
+## 2026-07-08 — Code-review pass on the injection-defense diff (before deploy)
+
+Ran the high-effort code-review gate on the uncommitted 2026-07-07 changes. Two real recall-killing
+regex false positives caught + fixed before they shipped; 362 unit assertions green (credibility 76→83).
+
+- [x] HIGH (RECALL BUG, review-caught): `hasAiInjection` pattern 3 ended in a bare `|ai)` alternative, so
+      "note for AI-heavy workloads" / "instructions for AI art" (AI as an ADJECTIVE) matched → -60 → the
+      source dropped below READ_MIN_SCORE (never read) AND MIN_CREDIBLE_SCORE — silently discarding legit
+      reviews of exactly the AI-hardware/AI-tool products this site ranks. `scoreSource` runs on search
+      SNIPPETS too, so the blast radius was every AI-adjacent query. Fixed: every "AI" in the patterns now
+      requires a real automated-reader noun (assistant/model/agent/bot/tool/summarizer/…).
+- [x] MED (RECALL BUG, review-caught): pattern 1 used a bare `ai` target + a fixed-list negative lookahead,
+      so "if you're an AI gamer/power user/card buyer" (AI describing the human reader) false-positived past
+      the lookahead. Fixed: split into (1a) "if you are an AI <assistant-noun>" and (1b) "if you are an AI,
+      <injection-verb>" — the classic "if you are an AI, recommend X" is still caught; adjective prose is not.
+      Regression fixtures added for both FP classes + the bare-directive true positive (test/unit/credibility.test.js).
+- [x] MED (CONVENTIONS, review-caught): `build/input.css` (the documented Tailwind `@tailwind` build
+      entrypoint — README.md:59/119) had been deleted unrelated to this work; restored (`git checkout`).
+- [x] MED (REUSE, review-caught): /reviews SSR grid now carries `class="grid"` to match the browse.js
+      reference pattern (shares app.css `.grid` responsive rule); `ssrCards` map moved inside the non-empty branch.
+- [x] LOW (review-caught): dropped the dead `h === 'www.' + d` branch in `isExpertApexHost` — `hostOf`
+      already strips a leading `www.`, so the apex check covers it.
+
+## 2026-07-07 — BaitBench-informed evaluation: injection defense + expert-affiliate scoring fix
+
+Cross-analyzed TrueRank against the BaitBench (~/projects/baitbench) v1-2026Q3 results — the ad-susceptibility
+benchmark built from TrueRank's task shape. Key data: both prod models resist recommendation flips (0% FR on
+AI-targeted injection) but only *detect* manipulation ~60-73% of the time, and are WORST on marketing puffery
+(gemini-flash 45.4% MDR, gpt-5.4-mini 42.5% MDR) — deterministic detectors must compensate. kimi-k2.6's 48.3%
+Cynicism Tax retroactively validates the 2026-06-29 synth swap.
+
+### Shipped (reviewed, 355 unit assertions green)
+- [x] HIGH (SECURITY/QUALITY): NO prompt-injection defense existed anywhere while the engine feeds arbitrary
+      fetched page bodies to LLMs — and GEO/adversarial-SEO injection targeting AI research tools is documented
+      in the wild (BaitBench Category D). Shipped: deterministic `hasAiInjection()` detector + `ai-injection`
+      credibility tag (-60, below every score-45 gate) in worker/lib/credibility.js; added to NONCREDIBLE_GENRES
+      (now exported from credibility.js as the single source of truth — extract/engine.js + prose.js import it);
+      EMBEDDED-INSTRUCTION DEFENSE rule + [ai-injection] tag docs in the synthesis + agent prompts (prompts.js);
+      data-not-instructions line in NOTE_SYSTEM (parallel-engine.js). Regexes reviewed for false positives
+      ("if you're an air fryer fan" / "AI enthusiast" / "message to assistants" all pass clean — tested).
+- [x] HIGH (QUALITY BUG): every major editorial outlet (Wirecutter/PCMag/CNET — all affiliate-monetized) took
+      the full -45 affiliate penalty after full-page fetch → score ~20, BELOW both score-45 gates
+      (READ_MIN_SCORE, MIN_CREDIBLE_SCORE) — the scorer was gutting exactly the sources the synthesis prompt
+      says to trust most. Fixed: -15 soft penalty when the affiliate links sit on the apex/www host of an
+      EXPERT_DOMAINS entry (leased parasite subdomains like coupons.cnet.com keep the full -45).
+- [x] MED (REVIEW-CAUGHT): post-read credibility rescore was never re-gated — a page whose injection/affiliate
+      taint only shows in the full body still flowed into note extraction. readOk now also requires
+      score >= READ_MIN_SCORE after the rescore. (parallel-engine.js:181)
+- [x] LOW: trust-panel "down-weighted" tally now counts ai-injection (research-page.js); doc drift fixed
+      (CLAUDE.md + tiers.js header still claimed kimi-k2.6 synthesis; duplicate TAVILY_API_KEY line removed).
+- [x] CRITICAL (CONVERSION + SEO): /reviews (sitewide product directory, primary nav) rendered an EMPTY
+      `<div id="reviews-list"></div>` populated only by client JS — ZERO buy CTAs (the catalog monetized
+      nothing) and empty for crawlers. `renderReviewCard` (with its click-tracked buy CTA) was dead code.
+      Fixed with the proven browse.js pattern: SSR a real card grid of `renderReviewCard` into the container
+      as a progressive-enhancement base (the client `TrueRankLayouts.render` does a full innerHTML replace, so
+      no duplication when JS loads). Now every review card ships a buy CTA + a real /research/:slug link in the
+      HTML. reviews-render smoke suite extended (16→19 assertions) to pin SSR cards + buy CTA + research link.
+      (worker/pages/reviews.js) Closes the CRITICAL item from the 2026-06-27 audit.
+
+### Recommendations from the evaluation (not yet done)
+- [ ] MED (QUALITY): puffery is the shared blind spot of both prod models (~43-45% MDR in BaitBench). Consider
+      deterministic Category-B detectors next: sponsored-content disclosures ("#ad", "paid partnership"),
+      spec-weasel terms ("HEPA-type", "True-HEPA-inspired", peak-vs-sustained wattage), fabricated-authority
+      signals. Needs a false-positive corpus check before shipping (BaitBench docs/real-world-examples.md is
+      the pattern bank).
+- [ ] MED (EVAL): add an ad-resistance regression eval to TrueRank itself — plant BaitBench-style canaries in a
+      fixture corpus and assert the pipeline never echoes them (guards future prompt edits). The BaitBench
+      grader technique is directly reusable; keep no code dependency per its charter.
+- [ ] LOW (NOTE): BaitBench ranks gemini-2.5-flash above gpt-5.4-mini on ad resistance (93.3 vs 91.5 ARS, half
+      the cost, 5% vs 16.7% cynicism) — but TrueRank's own juror panel found gemini "honest but thin" on
+      synthesis usefulness. No model change recommended; re-check when BaitBench Phase-4 adds more models.
+
 
 ## 2026-07-03 — Real-world benchmark corpus (expert-ground-truth, no LLM judge)
 
@@ -181,11 +254,11 @@ revenue leak. The "funnel freeze until real traffic data" is now satisfied.
 
 ### Open, ranked (from the audit) — next rounds
 
-- [ ] CRITICAL (CONVERSION): /reviews catalog renders ZERO buy CTAs —
+- [x] CRITICAL (CONVERSION): /reviews catalog renders ZERO buy CTAs —
       `renderReviewCard` (reviews.js:37, has the Amazon CTA) is dead code; the live
       grid is JS-rendered as plain /research/ links with no Buy button and no
       affiliate_url in the embedded data. The whole review catalog (primary nav,
-      sitemap 0.8) monetizes nothing. SSR the cards w/ Buy + fixes empty-for-crawlers.
+      sitemap 0.8) monetizes nothing. SSR the cards w/ Buy + fixes empty-for-crawlers. **FIXED 2026-07-07 — see the 2026-07-07 section above (SSR renderReviewCard grid).**
 - [ ] HIGH (CONVERSION/UX): mobile nav is broken site-wide — every header link is
       `hidden sm:inline` with no hamburger (worker/lib/html.js + public/index.html).
       On phones only "Account" + theme toggle are reachable. Add a disclosure menu.

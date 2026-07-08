@@ -13,7 +13,7 @@ and produces honest comparison reports. Monetized via affiliate links (Amazon As
 - **AI** (bench-derived paid stack via OpenRouter, all over `fetch()`):
   - **Classifier**: `google/gemini-2.5-flash-lite` (facets + topical category + reject)
   - **Planner / agent loop**: `google/gemini-2.5-flash`
-  - **Synthesis**: `moonshotai/kimi-k2.6` (single stack — matched opus-4.8's perfect honesty at ~1/9 the cost in the June-2026 benchmark)
+  - **Synthesis**: `openai/gpt-5.4-mini` (locked 2026-06-29 after a 50-query × 150-juror blind panel: best grounding + usefulness; replaced kimi-k2.6 which was slowest and timed out ~1/8 runs — see `issues.md` 2026-06-29 + `worker/lib/tiers.js`)
   - **Tiers collapsed to ONE config (2026-06-16):** one model set + ~50-search deep research for every run (no more instant/full/exhaustive). `worker/lib/tiers.js` exposes a single `ENGINE_CONFIG`; all tier keys resolve to it. Rationale + data: `benchmarks/engine-llm-bench-2026-06.md`.
 - **Search**: Serper.dev Google Search (web + news, primary), SearXNG (self-hosted metasearch on blackbox, free/broad — fills the dead DuckDuckGo rotation slot + leads the web fallback chain), Brave + Tavily (keyed CF-reachable fallbacks / selectable providers), HN Algolia (free), DuckDuckGo (last resort, CAPTCHA-blocked from datacenter IPs), RSS expert feeds. Provider quality benchmark: `benchmarks/bench-providers.mjs` (all four ≈ equal credibility; SearXNG free-equals paid; "use them all" = +50–65% unique-source recall).
 - **Cost governor**: `MONTHLY_BUDGET_USD` (default 60) — each run increments a
@@ -68,6 +68,5 @@ zero-dependency rule is unchanged — do NOT add a dependency that ships to the 
 - SEARXNG_URL — optional; self-hosted SearXNG metasearch (blackbox `http://192.168.5.10:8095`).
   Set on the blackbox research-worker container env only (LAN-private; the CF edge can't
   reach it, so the `searxng` provider returns null there and degrades gracefully).
-- TAVILY_API_KEY — optional; Tavily search (LLM-optimized) — selectable `tavily` provider + fallback
 - JINA_API_KEY — optional; lifts Jina Reader's free rate cap for `read_page`
 - AMAZON_ASSOCIATE_TAG — optional; `AMAZON_AFFILIATE_TAG` ([vars]) is the default tag

@@ -5,8 +5,8 @@
 //   - classifier: google/gemini-2.5-flash-lite  (set in worker/lib/classifier.js)
 //   - planner:    google/gemini-2.5-flash        (perfect skepticism + tool-calls,
 //                 cheapest + fastest; the feared "15% BS" failure did not reproduce)
-//   - synthesis:  moonshotai/kimi-k2.6           (matched opus-4.8's PERFECT honesty
-//                 in the bench at ~1/9 the cost and 2.7x the speed)
+//   - synthesis:  openai/gpt-5.4-mini            (locked 2026-06-29; won the 50-query
+//                 blind juror panel — see synthModel comment below)
 //
 // Depth is tuned to "deep & sustainable" within Cloudflare's per-run limits
 // (~950 subrequests, ~20-min reaper). The off-Cloudflare research worker

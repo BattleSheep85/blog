@@ -73,6 +73,11 @@ export async function runReviewsRenderTests() {
       ok(`render ${c.url}: has filter sidebar`, html.includes('aria-label="Filters"'));
       ok(`render ${c.url}: has all four facets`, html.includes('>Category<') && html.includes('>Brand<') && html.includes('>Price<') && html.includes('>Rating<'));
       ok(`render ${c.url}: noindex=${c.wantNoindex}`, html.includes('noindex,follow') === c.wantNoindex);
+      if (c.url === '/reviews') {
+        ok('base: renders SSR review cards (not empty container)', html.includes('class="review-card"'));
+        ok('base: renders a buy CTA', html.includes('product-cta-amazon'));
+        ok('base: card links to parent research report', html.includes('/research/best-nas'));
+      }
     }
   }
   return report;

@@ -534,7 +534,7 @@ function summarizeSourceCredibility(rawSources) {
     if (lower.some((t) => t.includes('hands-on'))) stats.handsOn++;
     if (lower.some((t) => t.includes('expert-domain') || t.includes('expert'))) stats.expert++;
     if (lower.some((t) => t.includes('community'))) stats.community++;
-    if (lower.some((t) => t.includes('affiliate-conflict') || t.includes('listicle'))) stats.downWeighted++;
+    if (lower.some((t) => t.includes('affiliate-conflict') || t.includes('listicle') || t.includes('ai-injection'))) stats.downWeighted++;
   }
   return stats;
 }
