@@ -12,14 +12,13 @@
 import { layout, jsonLdScript } from '../lib/html.js';
 import { escapeHtml, parseJsonSafe, isValidHttpsUrl, displayQuery } from '../lib/utils.js';
 import { renderItemImage, resolveProductCtas, isNonProductCategory } from './research-page.js';
+import { resolveAmazonTag } from '../lib/affiliate-links.js';
 import { adSlot } from '../lib/ads.js';
 import { jsonEmbed, listLayoutBoot } from '../lib/list-layout-boot.js';
 import {
   PAGE_SIZE, PRICE_BANDS, RATING_OPTIONS, SORT_OPTIONS,
   parseProductFilters, isNarrowed, buildProductWhere, orderByClause, reviewsHref,
 } from '../lib/product-search.js';
-
-const DEFAULT_AFFILIATE_TAG = 'battlesheep0a-20';
 
 // SQL CASE that buckets p.price into PRICE_BANDS keys — generated from the
 // constant so the JS bands and the SQL facet counts can never drift. Bounds are
@@ -151,7 +150,7 @@ export async function renderReviewsPage(url, env) {
   if (rows.length === 0 && filters.page > 1) return null; // out-of-range page → 404
 
   const affiliateIds = {
-    amazonTag: env.AMAZON_AFFILIATE_TAG || env.AMAZON_ASSOCIATE_TAG || DEFAULT_AFFILIATE_TAG,
+    amazonTag: resolveAmazonTag(env),
     walmartImpact: env.WALMART_IMPACT_ID || undefined,
     targetImpact: env.IMPACT_TARGET_ID || undefined,
     bestbuyImpact: env.IMPACT_BESTBUY_ID || undefined,

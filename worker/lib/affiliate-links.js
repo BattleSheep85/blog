@@ -18,6 +18,17 @@ const BUY_HOSTS = [
 // AffiliateIds shape (was a TS interface):
 // { amazonTag, walmartImpact?, targetImpact?, bestbuyImpact?, neweggImpact?, bhphoto? }
 
+// The account's Amazon Associates tag, used when env is unset (local/dev). Single
+// source of truth — do NOT re-declare in page modules.
+export const DEFAULT_AFFILIATE_TAG = 'battlesheep0a-20';
+
+// Resolve the Amazon tag from env with a consistent fallback chain across every
+// render path (research pages + /reviews previously diverged on the
+// AMAZON_ASSOCIATE_TAG fallback, silently changing tags between pages).
+export function resolveAmazonTag(env) {
+  return (env && (env.AMAZON_AFFILIATE_TAG || env.AMAZON_ASSOCIATE_TAG)) || DEFAULT_AFFILIATE_TAG;
+}
+
 // Strict host match — `hostname.includes('amazon.com')` would match
 // `amazon.com.evil.example`. Always compare by exact match + suffix.
 function hostMatches(host, target) {

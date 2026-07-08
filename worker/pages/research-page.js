@@ -1,13 +1,10 @@
 import { layout, html, jsonLdScript } from '../lib/html.js';
 import { parseJsonSafe, isValidHttpsUrl, escapeHtml, timeAgo, displayQuery } from '../lib/utils.js';
-import { buildAffiliateUrl, buildAmazonSearchFallback, retailerLabel } from '../lib/affiliate-links.js';
+import { buildAffiliateUrl, buildAmazonSearchFallback, retailerLabel, resolveAmazonTag } from '../lib/affiliate-links.js';
 import { adSlot } from '../lib/ads.js';
 import { getResearchBySlug, getProductsByResearchId } from '../lib/db.js';
 import { searchBar } from '../lib/search-bar.js';
 import { jsonEmbed, productLayoutBoot } from '../lib/list-layout-boot.js';
-
-// inlined from src/types.ts for phase 1 (types.ts is erased in the port)
-const DEFAULT_AFFILIATE_TAG = 'battlesheep0a-20';
 
 // Icons for well-known metadata keys. Unknown keys render with a generic dot so
 // new verticals render sensibly without code changes.
@@ -633,7 +630,7 @@ export async function renderResearchResult(slug, env, fromQuery = null, cleanLin
   const affiliateIds = cleanLinks
     ? { amazonTag: '' }
     : {
-        amazonTag: env.AMAZON_AFFILIATE_TAG || DEFAULT_AFFILIATE_TAG,
+        amazonTag: resolveAmazonTag(env),
         walmartImpact: env.WALMART_IMPACT_ID || undefined,
         targetImpact: env.IMPACT_TARGET_ID || undefined,
         bestbuyImpact: env.IMPACT_BESTBUY_ID || undefined,
@@ -743,7 +740,7 @@ ${isProcessing ? `<div id="processing" style="padding:1.5rem;background:var(--su
 
 ${isFailed ? `<div style="padding:1.5rem;background:var(--trust-low-bg);border:1px solid color-mix(in srgb,var(--trust-low) 40%,transparent);border-radius:0.875rem;margin:2rem 0">
 <h2 style="color:var(--trust-low);font-size:1.1rem;font-weight:600;margin-bottom:.5rem">Research failed</h2>
-<p style="color:var(--ink-2)">Something went wrong during analysis. This could be due to insufficient source data.</p>
+<p style="color:var(--ink-2)">${resultData.error ? escapeHtml(resultData.error) : 'Something went wrong during analysis. This could be due to insufficient source data.'}</p>
 <form method="POST" action="/research/new" style="margin-top:1rem"><input type="hidden" name="q" value="${escapeHtml(entry.query)}"><input type="hidden" name="fresh" value="1"><button type="submit" class="btn">Try again</button></form>
 </div>` : ''}
 

@@ -42,9 +42,11 @@ export async function getLatestResearchLastmod(env, cacheVersion) {
   return lm;
 }
 
-// Cache-version namespace for the rendered XML blobs and the shared lastmod
-// key. Matches CACHE_VERSION in index.js so they share `lastmod:tr1` and a
-// template bump invalidates feeds along with pages.
+// Cache-version namespace for the rendered XML blobs (sitemap + feed) and their
+// lastmod lookups. This versions INDEPENDENTLY from index.js's page CACHE_VERSION:
+// they key separate KV namespaces (`xml:` vs `page:`) with different bump cadences
+// (XML structure changes rarely; page templates often). Bump this when the XML
+// output shape changes; it does NOT need to track the page cache version.
 const XML_CACHE_VERSION = 'tr1';
 const XML_CACHE_TTL = 3600;
 

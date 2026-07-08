@@ -19,7 +19,7 @@
 import { runEngine } from '../engine/engine.js';
 import { classifyQuery } from '../lib/classifier.js';
 import { getTierConfig } from '../lib/tiers.js';
-import { buildAffiliateUrl } from '../lib/affiliate-links.js';
+import { buildAffiliateUrl, resolveAmazonTag } from '../lib/affiliate-links.js';
 import { resolveAsins } from '../lib/asin-resolver.js';
 import { resolveImages } from '../lib/image-resolver.js';
 import { getResearchById, generateId } from '../lib/db.js';
@@ -27,7 +27,6 @@ import { sanitizeUrl, slugify } from '../lib/utils.js';
 import { submitToIndexNow } from '../lib/indexnow.js';
 import { screenQuery, rejectionMessage, classifierRejectToReason } from '../lib/safety.js';
 
-const DEFAULT_AFFILIATE_TAG = 'battlesheep0a-20';
 // Monthly spend ceiling default; overridden by env.MONTHLY_BUDGET_USD.
 const DEFAULT_MONTHLY_BUDGET_USD = 60;
 
@@ -191,7 +190,7 @@ export async function persistEngineResult(env, reportId, query, facets, topicalC
     result.products = [...enriched, ...tail];
 
     const affiliateIds = {
-        amazonTag: env.AMAZON_AFFILIATE_TAG || env.AMAZON_ASSOCIATE_TAG || DEFAULT_AFFILIATE_TAG,
+        amazonTag: resolveAmazonTag(env),
         walmartImpact: env.WALMART_IMPACT_ID || undefined,
         targetImpact: env.IMPACT_TARGET_ID || undefined,
         bestbuyImpact: env.IMPACT_BESTBUY_ID || undefined,
