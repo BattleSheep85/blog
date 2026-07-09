@@ -598,6 +598,15 @@ export async function renderResearchResult(slug, env, fromQuery = null, cleanLin
   const isFailed = entry.status === 'failed';
 
   const resultData = parseJsonSafe(entry.result, {});
+  // Only surface a stored failure reason if it's a clean, short, user-facing
+  // message (e.g. "No reliable products found for this query."). Raw provider /
+  // HTTP / JSON errors (e.g. an OpenRouter 403) must never leak to users.
+  const failReason = (() => {
+    const e = String(resultData.error || '').trim();
+    if (!e || e.length > 160) return '';
+    if (/[{}]|https?:|\b[45]\d\d\b|openrouter|api key|token|timeout|stack|undefined|null|prompt injection/i.test(e)) return '';
+    return e;
+  })();
   const buyersGuide = resultData.buyersGuide;
   const hasBuyersGuide = !!(buyersGuide && (buyersGuide.howToChoose || (buyersGuide.pitfalls?.length ?? 0) > 0 || (buyersGuide.marketingToIgnore?.length ?? 0) > 0));
   // Classifier verdict: this category isn't sold on Amazon (lumber, vehicles,
@@ -740,7 +749,7 @@ ${isProcessing ? `<div id="processing" style="padding:1.5rem;background:var(--su
 
 ${isFailed ? `<div style="padding:1.5rem;background:var(--trust-low-bg);border:1px solid color-mix(in srgb,var(--trust-low) 40%,transparent);border-radius:0.875rem;margin:2rem 0">
 <h2 style="color:var(--trust-low);font-size:1.1rem;font-weight:600;margin-bottom:.5rem">Research failed</h2>
-<p style="color:var(--ink-2)">${resultData.error ? escapeHtml(resultData.error) : 'Something went wrong during analysis. This could be due to insufficient source data.'}</p>
+<p style="color:var(--ink-2)">${failReason ? escapeHtml(failReason) : 'Something went wrong during analysis. This could be due to insufficient source data.'}</p>
 <form method="POST" action="/research/new" style="margin-top:1rem"><input type="hidden" name="q" value="${escapeHtml(entry.query)}"><input type="hidden" name="fresh" value="1"><button type="submit" class="btn">Try again</button></form>
 </div>` : ''}
 

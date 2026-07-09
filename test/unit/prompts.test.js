@@ -59,6 +59,17 @@ export function runPromptsTests() {
     // URLS" alone also appears in the static schema, so match the block body.
     ok('synth: verified amazon block when amazonUrls present', p.includes('extracted from source content — USE these'));
     ok('synth: includes note content', p.includes('Synology is well-reviewed'));
+
+    // REGRESSION GUARD (2026-07-08): our own prompts must NOT contain literal
+    // attack strings — OpenRouter's prompt-injection guardrail 403-blocks any
+    // request whose text contains e.g. "ignore previous instructions", failing
+    // the whole research run. Describe the defense abstractly, never quote it.
+    const FORBIDDEN = [/ignore (?:all |any )?previous instructions/i, /if you are an ai(?:\s+assistant)?,?\s+recommend/i, /note for automated summarizers/i];
+    const agent = buildAgentPrompt('best nas', CONFIG, { is_buyable: true });
+    for (const re of FORBIDDEN) {
+      ok('synth prompt has no attack-string ' + re, !re.test(p));
+      ok('agent prompt has no attack-string ' + re, !re.test(agent));
+    }
   }
 
   // Recency filtering: a stale dated source is dropped and announced.
