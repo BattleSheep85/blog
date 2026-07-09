@@ -2,6 +2,64 @@
 
 Last updated: 2026-07-08
 
+## 2026-07-08 — UI/UX review board (14-persona, focus: improve UI/UX)
+
+Ran /review-board focused on UI/UX. Verdict: NEEDS WORK — strong design-token/honesty foundation, but real
+crash risks on the report page + broken mobile nav + a11y gaps. (tailwind.css "0 bytes" was a false alarm —
+valid 19KB single-line prebuilt file.)
+
+### Critical (report page can 500 on bad data)
+- [ ] HIGH (CRASH): star rating renders `'☆'.repeat(5 - Math.floor(rating))` — a rating >5 or negative throws
+      RangeError and 500s the whole page; reviews.js already clamps with Math.min(5,…). Mirror it. (worker/pages/research-page.js:318,413 + the third star site)
+- [ ] HIGH (CRASH): escapeHtml() does str.replace with no coercion — escapeHtml(entry.id)/null/numeric DB
+      fields throw TypeError → 500 SSR. Fix: String(str ?? ''). (worker/lib/utils.js:37)
+- [ ] HIGH (CRASH): renderItemImage(name) does name.slice/charCodeAt unguarded; product name column is
+      nullable → 500 on report + reviews render. Null-guard the name. (worker/pages/research-page.js:408, reviews.js:65)
+
+### High (UX)
+- [ ] HIGH (UX/mobile): mobile nav is unreachable — every header link is `hidden sm:inline`, no hamburger
+      anywhere; phones show only Account + theme toggle. Add a disclosure menu. (worker/lib/html.js:118-133, public/index.html:101-112)
+- [ ] HIGH (UX/trust): wait-time copy contradicts itself — overlay "90 seconds", clarify "3-4 minutes",
+      guides "about a minute". Reconcile to one honest number. (worker/lib/search-bar.js:21, worker/pages/clarify.js:42, public/best/*)
+- [ ] HIGH (COST/PERF): per-view `UPDATE research SET view_count+1` on every report GET (incl. crawlers)
+      defeats edge-caching the highest-traffic page. Batch via KV counter or sample. (worker/pages/research-page.js:583)
+- [ ] HIGH (SAFETY): in-page activity-feed + chat fetches call r.json() with no content-type guard (the
+      readJson guard in app.js isn't reused) → "Unexpected token '<'" on a CF challenge/5xx; events poll
+      retries every 3s forever with no cap. (worker/pages/research-page.js:1055,1245; worker/handlers/research.js:326)
+
+### Medium (a11y — WCAG)
+- [ ] MED (a11y): custom tabs are click-only, no arrow-key/roving-tabindex (4.1.2/APG) — home tablist +
+      report Ask/Refine tabs. (public/index.html:120-123, public/js/app.js:465, worker/pages/research-page.js:672-675)
+- [ ] MED (a11y): the 4 static legal pages (about/contact/privacy/terms) have no skip-to-content link (2.4.1);
+      the SSR layout + homepage already do.
+- [ ] MED (a11y): /reviews facet "checkboxes" are ☐/☑ glyphs inside <a> with no role/aria-checked (4.1.2). (worker/pages/reviews.js:92-93)
+- [ ] MED (a11y): missing visible focus rings on example chips, .share-btn, .js-copy-link (2.4.7); icon SVGs
+      in theme-toggle not aria-hidden; nav aria-label inconsistent ("Primary" vs "Main navigation"); compare-table
+      stars missing aria-label. (public/index.html, public/css/app.css:306, worker/lib/html.js:130-131)
+
+### Medium (UX/robustness)
+- [ ] MED (UX): long/emoji product names have no word-break/truncation → card blowout on mobile. (worker/pages/research-page.js:408,505)
+- [ ] MED (UX): double-clicking "Research it"/example chip re-fires /api/classify before the first resolves →
+      duplicate calls/stacked clarify. (public/js/app.js:230-266)
+- [ ] MED (UX): a 0-product completed report renders an empty body + "0 products compared" and looks broken.
+- [ ] MED (UX): processing page stacks activity feed + email capture + quick-answer with no hierarchy; button
+      says "Reading reviews…" while the overlay says "Running research…" (two loading vocabularies).
+
+### Low (quality / enables UI work)
+- [ ] LOW (quality): static homepage footer vs SSR layout footer have drifted (different nav links + disclosure
+      text). (public/index.html:405-428, worker/lib/html.js:159-179)
+- [ ] LOW (quality): research-page.js is 1304 lines (>800 cap) with pervasive inline style= duplicating app.css
+      classes; extract inline scripts (~270 lines) + card family (~210) into modules.
+- [ ] LOW (quality): JSON-encode slug/id into inline <script> instead of escapeHtml (wrong escaper for JS-string
+      context; latent breakout if slug generation loosens). (worker/pages/research-page.js:1047,1123,1161)
+- [ ] LOW (docs): Tailwind rebuild command undocumented + not in CI — new utility classes silently uncompiled.
+
+### Future horizons (blue-sky, realistic + zero-dep)
+- [ ] navigator.share button (mobile share sheet); example chips fire research on one tap; "Searching → Reading
+      → Ranking → Writing" step indicator for perceived speed; freshness badge at the Our-pick CTA.
+
+Note: the AdSense-no-consent-banner finding was already logged (see the docs/adsense-consent-plan.md item) — do not duplicate it.
+
 ## 2026-07-08 — P0: research failing ("injection error at end of report") — root-caused + fixed
 
 User reported research runs failing with an "injection error" shown at the bottom of report pages.
