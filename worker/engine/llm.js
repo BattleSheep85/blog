@@ -36,6 +36,21 @@ function reasoningEffortOf(r) {
   return typeof r === 'string' ? r : (r && r.effort) || undefined;
 }
 
+// OpenRouter/OpenAI reject any message string containing an unpaired UTF-16
+// surrogate (a lone half of an emoji/multibyte pair) with a 400 "Invalid input
+// … unpaired UTF-16 surrogate", failing the whole run. These appear in truncated
+// scraped page text AND can be created by slicing a string mid-pair in
+// pruneMessages. Strip them at the send boundary. Immutable — returns new msgs.
+function stripLoneSurrogates(s) {
+  return typeof s === 'string'
+    ? s.replace(/[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/g, '')
+    : s;
+}
+export function sanitizeLLMMessages(messages) {
+  if (!Array.isArray(messages)) return messages;
+  return messages.map((m) => (m && typeof m.content === 'string' ? { ...m, content: stripLoneSurrogates(m.content) } : m));
+}
+
 export async function callLLMStreaming(apiKey, model, messages, onToken, opts = {}) {
   const { reasoning, maxTokens, provider, responseFormat, models } = opts;
   const { hardMs, chunkMs } = llmBudgetMs(reasoningEffortOf(reasoning));
@@ -61,7 +76,7 @@ export async function callLLMStreaming(apiKey, model, messages, onToken, opts = 
       },
       body: JSON.stringify({
         ...(Array.isArray(models) && models.length ? { models } : { model }),
-        messages,
+        messages: sanitizeLLMMessages(messages),
         stream: true,
         max_tokens: maxTokens ?? 8192,
         // OpenRouter emits a final SSE chunk carrying the full usage object
@@ -123,7 +138,7 @@ export async function callLLMStreaming(apiKey, model, messages, onToken, opts = 
 
 export async function callLLM(apiKey, model, messages, opts = {}) {
   const { tools, reasoning, maxTokens, provider, responseFormat, models, hardMsOverride } = opts;
-  const body = { messages };
+  const body = { messages: sanitizeLLMMessages(messages) };
   // model vs models[] fallback chain are mutually exclusive (OpenRouter 400s on both).
   if (Array.isArray(models) && models.length) body.models = models; else body.model = model;
   if (tools && tools.length > 0) {

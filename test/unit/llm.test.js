@@ -1,6 +1,6 @@
 // Coverage for the pure helpers in llm.js: the reasoning-effort time budgets and
 // the context-pruning algorithm (truncate middle tool outputs, then drop oldest).
-import { llmBudgetMs, pruneMessages } from '../../worker/engine/llm.js';
+import { llmBudgetMs, pruneMessages, sanitizeLLMMessages } from '../../worker/engine/llm.js';
 
 export function runLlmTests() {
   const report = { passed: 0, failed: 0, failures: [] };
@@ -15,6 +15,28 @@ export function runLlmTests() {
   eq('budget medium', llmBudgetMs('medium').hardMs, 240_000);
   eq('budget low', llmBudgetMs('low').hardMs, 180_000);
   eq('budget default', llmBudgetMs(undefined).hardMs, 120_000);
+
+  // sanitizeLLMMessages — strips unpaired UTF-16 surrogates (the OpenRouter 400
+  // "Invalid input … unpaired UTF-16 surrogate" cause) while preserving valid text
+  // and valid emoji (a full surrogate PAIR must survive).
+  {
+    const loneHigh = 'good backpack \uD83D and more'; // lone high surrogate
+    const loneLow = 'nice \uDE00 pick';                // lone low surrogate
+    const validEmoji = 'love it 😀 great';   // full pair 😀
+    const out = sanitizeLLMMessages([
+      { role: 'user', content: loneHigh },
+      { role: 'system', content: loneLow },
+      { role: 'assistant', content: validEmoji },
+      { role: 'tool', content: 42 }, // non-string content passes through
+    ]);
+    ok('lone high surrogate removed', !/[\uD800-\uDBFF]/.test(out[0].content) && out[0].content.includes('good backpack'));
+    ok('lone low surrogate removed', !/[\uDC00-\uDFFF]/.test(out[1].content) && out[1].content.includes('nice'));
+    eq('valid emoji pair preserved', out[2].content, validEmoji);
+    eq('non-string content untouched', out[3].content, 42);
+    // JSON of the cleaned strings must be valid UTF-8 (no lone surrogates anywhere).
+    ok('no lone surrogates remain across all', !/[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/.test(out.map((m) => m.content).join('')));
+  }
+  eq('sanitize non-array passthrough', sanitizeLLMMessages(null), null);
 
   // pruneMessages — under budget → returned unchanged (same reference).
   {
