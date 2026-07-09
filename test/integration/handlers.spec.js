@@ -7,6 +7,7 @@ import { handleSubscribe } from '../../worker/handlers/subscribe.js';
 import { handleUnsubscribe } from '../../worker/handlers/unsubscribe.js';
 import { handleProductImage } from '../../worker/handlers/image.js';
 import { handleSignup, handleLogin, handleLogout } from '../../worker/handlers/auth.js';
+import { createUser, findUserByEmail } from '../../worker/lib/auth.js';
 import { generateId, insertResearch } from '../../worker/lib/db.js';
 
 // db.js has no shared products-insert helper (the pipeline writes products inline
@@ -104,20 +105,15 @@ describe('auth flow', () => {
   const email = 'user@truerank.test';
   const PW = 'hunter2pass';
 
-  it('signup creates an account + session cookie, then rejects the duplicate (409)', async () => {
+  it('signup is under construction (503) and creates no user', async () => {
     const res = await handleSignup(postJson({ email, password: PW }), env);
-    expect(res.status).toBe(200);
-    expect(res.headers.get('Set-Cookie')).toBeTruthy();
-    expect((await handleSignup(postJson({ email, password: PW }), env)).status).toBe(409);
-  });
-
-  it('signup validates email + password', async () => {
-    expect((await handleSignup(postJson({ email: 'bad', password: PW }), env)).status).toBe(400);
-    expect((await handleSignup(postJson({ email: 'x@y.com', password: 'short' }), env)).status).toBe(400);
+    expect(res.status).toBe(503);
+    expect((await res.json()).error).toMatch(/under construction/i);
+    expect(await findUserByEmail(env.DB, email)).toBeFalsy();
   });
 
   it('login succeeds with the right password, fails otherwise', async () => {
-    await handleSignup(postJson({ email, password: PW }), env); // self-contained: create first
+    await createUser(env.DB, email, PW); // signup disabled → create the user directly
     expect((await handleLogin(postJson({ email, password: PW }), env)).status).toBe(200);
     expect((await handleLogin(postJson({ email, password: 'wrongpass1' }), env)).status).toBe(401);
     expect((await handleLogin(postJson({ email: 'nobody@x.com', password: 'whatever1' }), env)).status).toBe(401);
