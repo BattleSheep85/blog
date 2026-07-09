@@ -26,9 +26,14 @@ gpt-5.4-mini, 3 products).
       provider/HTTP/JSON errors (4xx/5xx, OpenRouter, braces, tokens, "prompt injection") now fall back to
       the generic message. Verified: a previously-403-failed page now shows the generic text.
 - Deploys: Cloudflare + blackbox (synthesis/planner/notes run there). Canary verified end-to-end.
-- [ ] FOLLOW-UP (optional): ~9 reports failed with the 403 + more with the 400 while this was live; they sit
-      'failed'. Re-run to recover those pages (~$0.10 each) when desired. Also earlier same day: the Wave-1
-      deterministic QUERY injection screen was removed (it false-positived on legit searches — see below).
+- [x] FOLLOW-UP DONE: re-queued the 10 reports that failed with the 403/400 provider errors (flipped to
+      'pending'; blackbox poller drained them). 6 recovered to real reports (cd-rates 5, bbq 5, olive-oil 4,
+      knife-set 3, yoga-mat 1, travel-backpack 1); the other 4 re-failed LEGITIMATELY (thin/niche queries
+      with no researchable sources: two hyper-specific "205-55-r16 tire" specs, "best egg loan", "best one
+      tire") — NOT the bug (blackbox logs show zero provider 4xx; synth_model null = no products found).
+      Spot-checked a recovered page: renders clean, 0 injection/provider phrases. Month spend ~$4-5/$60.
+      Earlier same day: the Wave-1 deterministic QUERY injection screen was also removed (false-positived
+      on legit searches — see below).
 
 ## 2026-07-08 — Review-board backlog cleared (waves 1–4) + deferrals
 
