@@ -414,7 +414,7 @@ ${imageBlock}
 <div class="product-header">
 <div>
 ${p.rank != null ? `<span class="product-rank ${rankClass}">#${p.rank}</span>` : ''}
-<h3 style="font-size:1.15rem;font-weight:700;color:var(--ink);margin-top:.3rem">${escapeHtml(p.name)}</h3>
+<h3 class="wrap-anywhere" style="font-size:1.15rem;font-weight:700;color:var(--ink);margin-top:.3rem">${escapeHtml(p.name)}</h3>
 ${p.brand ? `<p style="color:var(--ink-2);font-size:.85rem">${escapeHtml(p.brand)}</p>` : ''}
 </div>
 <div style="text-align:right;flex-shrink:0">
@@ -511,7 +511,7 @@ function renderOurPick(p, ids, isService, slug, cleanLinks, webOnly) {
   }
   return `<div class="ourpick-box" id="our-pick">
 <div class="ourpick-eyebrow">Our pick</div>
-<h2 class="ourpick-name">${escapeHtml(p.name)}</h2>
+<h2 class="ourpick-name wrap-anywhere">${escapeHtml(p.name)}</h2>
 ${(ratingHtml || priceHtml) ? `<div class="ourpick-meta">${ratingHtml}${priceHtml}</div>` : ''}
 ${ratingNote(p, Array.isArray(p.cons) ? p.cons : [])}
 ${p.verdict ? `<p class="ourpick-verdict">${escapeHtml(p.verdict)}</p>` : ''}
@@ -708,7 +708,7 @@ ${entry.category ? `<span class="card-badge">${escapeHtml(entry.category)}</span
 <span>Published <time datetime="${createdIso}">${date}</time></span>
 ${entry.completed_at && entry.completed_at !== entry.created_at ? `<span>Last updated <time datetime="${lastUpdatedIso}">${lastUpdatedLabel}</time></span>` : ''}
 <span>${entry.view_count} views</span>
-<span>${products.length} products compared</span>
+<span>${products.length === 0 ? 'No products found' : `${products.length} product${products.length === 1 ? '' : 's'} compared`}</span>
 </div>
 ${entry.status === 'complete' ? `<div class="share-bar">
 <span>Share:</span>
@@ -780,6 +780,12 @@ ${entry.status === 'complete' ? (() => {
 })() : ''}
 
 ${entry.summary ? `<div class="summary-box"><h2 id="summary">Summary</h2><p>${escapeHtml(entry.summary)}</p></div>` : ''}
+
+${entry.status === 'complete' && products.length === 0 ? `<div style="padding:1.5rem;background:var(--surface-1);border:1px solid var(--line);border-radius:0.875rem;margin:2rem 0">
+<h2 style="font-size:1.25rem;font-weight:700;color:var(--ink);margin-bottom:.5rem">No clear picks this time</h2>
+<p style="color:var(--ink-2)">We couldn't find enough trustworthy sources to confidently rank products for this query.</p>
+<form method="POST" action="/research/new" style="margin-top:1rem"><input type="hidden" name="q" value="${escapeHtml(entry.query)}"><input type="hidden" name="fresh" value="1"><button type="submit" class="btn">Try again</button></form>
+</div>` : ''}
 
 ${entry.status === 'complete' && products.length > 0 ? renderOurPick(products.find((p) => p.rank === 1) || products[0], affiliateIds, isService, slug, cleanLinks, webOnly) : ''}
 

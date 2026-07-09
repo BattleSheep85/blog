@@ -62,7 +62,7 @@ function renderReviewCard(row, affiliateIds) {
 ${renderItemImage(row.image_url, row.name, row.id)}
 <div style="display:flex;justify-content:space-between;gap:.6rem;align-items:flex-start">
 <div style="min-width:0">
-<h3 style="font-size:1.02rem;font-weight:700;color:var(--ink);line-height:1.35">${escapeHtml(row.name)}</h3>
+<h3 class="wrap-anywhere" style="font-size:1.02rem;font-weight:700;color:var(--ink);line-height:1.35">${escapeHtml(row.name)}</h3>
 ${row.brand ? `<p style="color:var(--ink-3);font-size:.8rem">${escapeHtml(row.brand)}</p>` : ''}
 </div>
 ${row.price != null ? `<p class="product-price" style="flex-shrink:0">$${row.price.toLocaleString()}</p>` : ''}

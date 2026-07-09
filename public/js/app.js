@@ -87,7 +87,13 @@
     // questions (the classifier returns at least one; if it errors or returns
     // none we fall back to DEFAULT_QUESTIONS) with a one-tap "Just search for
     // it" skip. Reject messages still short-circuit. Research is never blocked.
+    // Guards against rapid double-submits / example-chip taps queuing duplicate
+    // /api/classify calls. Reset in setFormsBusy(false) (the error/return path);
+    // a successful run redirects away, so no reset is needed there.
+    var inFlight = false;
     function beginResearch(query) {
+        if (inFlight) return;
+        inFlight = true;
         setFormsBusy(true);
         fetch('/api/classify', {
             method: 'POST',
@@ -163,6 +169,7 @@
     }
 
     function setFormsBusy(busy) {
+        if (!busy) inFlight = false; // re-enable submission after an error/return
         searchForms.forEach(function (form) {
             var btn = form.querySelector('button[type="submit"]');
             var input = form.querySelector('input[name="query"]');
