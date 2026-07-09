@@ -175,7 +175,7 @@ sync(isDark);
 </div>
 </div>
 <div class="mt-10 border-t border-line pt-6">
-<p class="mb-3 flex flex-wrap gap-x-5 gap-y-1 text-caption"><a href="/privacy" class="text-ink-3 hover:text-ink">Privacy Policy</a><a href="/terms" class="text-ink-3 hover:text-ink">Terms of Use</a><a href="/contact" class="text-ink-3 hover:text-ink">Contact</a></p>
+<p class="mb-3 flex flex-wrap gap-x-5 gap-y-1 text-caption"><a href="/privacy" class="text-ink-3 hover:text-ink">Privacy Policy</a><a href="/terms" class="text-ink-3 hover:text-ink">Terms of Use</a><a href="/contact" class="text-ink-3 hover:text-ink">Contact</a><a href="https://ko-fi.com/chrisputer" target="_blank" rel="noopener nofollow" class="text-ink-3 hover:text-ink">Support&nbsp;♥</a></p>
 <p class="max-w-[80ch] text-caption text-ink-3">As an Amazon Associate, Chrisputer Labs earns from qualifying purchases. Product data is compiled from public sources, and our rankings are never influenced by affiliate relationships.</p>
 </div>
 </div>
