@@ -1231,22 +1231,37 @@ document.addEventListener('DOMContentLoaded',function(){
       box.appendChild(btn);box.scrollTop=box.scrollHeight;
     }
 
-    document.querySelectorAll('[data-chat-tab]').forEach(function(tab){
-      tab.addEventListener('click',function(){
-        mode=tab.dataset.chatTab;
-        document.querySelectorAll('[data-chat-tab]').forEach(function(t){
-          var active=t.dataset.chatTab===mode;
-          t.setAttribute('aria-selected',active?'true':'false');
-          t.style.background=active?'var(--accent-quiet)':'';
-          t.style.borderColor=active?'var(--accent)':'';
-          t.style.color=active?'var(--accent)':'';
-        });
-        box.innerHTML='';
-        if(status)status.textContent='';
-        input.placeholder=mode==='refine'
-          ?'e.g. Narrow it to under $100, or focus on quiet models'
-          :'e.g. Which one is best for a small apartment?';
-        seedIntro();
+    var chatTabs=document.querySelectorAll('[data-chat-tab]');
+    function activateChatTab(name){
+      mode=name;
+      chatTabs.forEach(function(t){
+        var active=t.dataset.chatTab===mode;
+        t.setAttribute('aria-selected',active?'true':'false');
+        t.setAttribute('tabindex',active?'0':'-1');
+        t.style.background=active?'var(--accent-quiet)':'';
+        t.style.borderColor=active?'var(--accent)':'';
+        t.style.color=active?'var(--accent)':'';
+      });
+      box.innerHTML='';
+      if(status)status.textContent='';
+      input.placeholder=mode==='refine'
+        ?'e.g. Narrow it to under $100, or focus on quiet models'
+        :'e.g. Which one is best for a small apartment?';
+      seedIntro();
+    }
+    chatTabs.forEach(function(tab,i){
+      tab.setAttribute('tabindex',tab.getAttribute('aria-selected')==='true'?'0':'-1');
+      tab.addEventListener('click',function(){activateChatTab(tab.dataset.chatTab)});
+      tab.addEventListener('keydown',function(ev){
+        var next=i;
+        if(ev.key==='ArrowRight')next=(i+1)%chatTabs.length;
+        else if(ev.key==='ArrowLeft')next=(i-1+chatTabs.length)%chatTabs.length;
+        else if(ev.key==='Home')next=0;
+        else if(ev.key==='End')next=chatTabs.length-1;
+        else return;
+        ev.preventDefault();
+        activateChatTab(chatTabs[next].dataset.chatTab);
+        chatTabs[next].focus();
       });
     });
 

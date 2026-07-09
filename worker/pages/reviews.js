@@ -89,7 +89,7 @@ function facetGroup(title, filters, dim, rows, opts = {}) {
   const items = rows.filter((r) => countOf(r) > 0 || keyOf(r) === activeKey);
   if (items.length === 0 && !activeKey) return '';
   const row = (label, count, href, active) =>
-    `<li><a href="${escapeHtml(href)}" rel="nofollow" style="display:flex;justify-content:space-between;gap:.5rem;padding:.28rem .1rem;font-size:.85rem;text-decoration:none;color:${active ? 'var(--ink)' : 'var(--ink-2)'};font-weight:${active ? '600' : '400'}">
+    `<li><a href="${escapeHtml(href)}" rel="nofollow" aria-pressed="${active ? 'true' : 'false'}" style="display:flex;justify-content:space-between;gap:.5rem;padding:.28rem .1rem;font-size:.85rem;text-decoration:none;color:${active ? 'var(--ink)' : 'var(--ink-2)'};font-weight:${active ? '600' : '400'}">
 <span style="display:flex;gap:.4rem;align-items:center;min-width:0"><span aria-hidden="true" style="flex-shrink:0">${active ? '☑' : '☐'}</span><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(label)}</span></span>
 ${count != null ? `<span style="color:var(--ink-3);flex-shrink:0">${count.toLocaleString()}</span>` : ''}</a></li>`;
   return `<div style="margin-bottom:1.4rem">

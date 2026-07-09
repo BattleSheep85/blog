@@ -120,15 +120,30 @@ const AUTH_PAGE_SCRIPT = `<script nonce="__CSP_NONCE__">
   }
   wire('login-form','/api/auth/login');
   wire('signup-form','/api/auth/signup');
-  document.querySelectorAll('[data-auth-tab]').forEach(function(btn){
-    btn.addEventListener('click',function(){
-      var target=btn.dataset.authTab;
-      document.querySelectorAll('[data-auth-panel]').forEach(function(p){p.classList.toggle('hidden',p.dataset.authPanel!==target)});
-      document.querySelectorAll('[data-auth-tab]').forEach(function(b){
-        var active=b.dataset.authTab===target;
-        b.classList.toggle('border-accent',active);b.classList.toggle('text-ink',active);
-        b.classList.toggle('border-transparent',!active);b.classList.toggle('text-ink-3',!active);
-      });
+  var authTabs=document.querySelectorAll('[data-auth-tab]');
+  function activateAuthTab(target){
+    document.querySelectorAll('[data-auth-panel]').forEach(function(p){p.classList.toggle('hidden',p.dataset.authPanel!==target)});
+    authTabs.forEach(function(b){
+      var active=b.dataset.authTab===target;
+      b.setAttribute('aria-selected',active?'true':'false');
+      b.setAttribute('tabindex',active?'0':'-1');
+      b.classList.toggle('border-accent',active);b.classList.toggle('text-ink',active);
+      b.classList.toggle('border-transparent',!active);b.classList.toggle('text-ink-3',!active);
+    });
+  }
+  authTabs.forEach(function(btn,i){
+    btn.setAttribute('tabindex',btn.getAttribute('aria-selected')==='true'?'0':'-1');
+    btn.addEventListener('click',function(){activateAuthTab(btn.dataset.authTab)});
+    btn.addEventListener('keydown',function(ev){
+      var next=i;
+      if(ev.key==='ArrowRight')next=(i+1)%authTabs.length;
+      else if(ev.key==='ArrowLeft')next=(i-1+authTabs.length)%authTabs.length;
+      else if(ev.key==='Home')next=0;
+      else if(ev.key==='End')next=authTabs.length-1;
+      else return;
+      ev.preventDefault();
+      activateAuthTab(authTabs[next].dataset.authTab);
+      authTabs[next].focus();
     });
   });
 })();
@@ -156,9 +171,9 @@ export async function renderLoginPage(request, env) {
 <h1 class="font-serif text-h1 font-semibold text-ink">Your account</h1>
 <p class="mt-2 text-body text-ink-2">Sign in to keep a history of everything you've researched.</p>
 <div class="mt-8 rounded-xl border border-line bg-surface-1 p-6 shadow-card">
-<div class="mb-6 flex border-b border-line" role="tablist">
-<button type="button" data-auth-tab="login" class="border-b-2 border-accent px-4 py-2 text-body-sm font-semibold text-ink">Sign in</button>
-<button type="button" data-auth-tab="signup" class="border-b-2 border-transparent px-4 py-2 text-body-sm font-semibold text-ink-3">Create account</button>
+<div class="mb-6 flex border-b border-line" role="tablist" aria-label="Account">
+<button type="button" role="tab" aria-selected="true" data-auth-tab="login" class="border-b-2 border-accent px-4 py-2 text-body-sm font-semibold text-ink">Sign in</button>
+<button type="button" role="tab" aria-selected="false" data-auth-tab="signup" class="border-b-2 border-transparent px-4 py-2 text-body-sm font-semibold text-ink-3">Create account</button>
 </div>
 <div data-auth-panel="login">${authForm('login-form', 'Sign in', 'current-password')}</div>
 <div data-auth-panel="signup" class="hidden"><div class="rounded-lg border border-line bg-surface-2 p-5 text-center"><p class="text-body font-semibold text-ink">🚧 Under construction</p><p class="mt-2 text-body-sm text-ink-2">Account creation isn't available yet — we're still building it. Check back soon.</p></div></div>

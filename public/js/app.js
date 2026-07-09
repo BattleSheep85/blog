@@ -453,6 +453,7 @@
             tabs.forEach(function (tab) {
                 var active = tab.dataset.homeTab === name;
                 tab.setAttribute('aria-selected', active ? 'true' : 'false');
+                tab.setAttribute('tabindex', active ? '0' : '-1');
                 tab.classList.toggle('bg-accent-quiet', active);
                 tab.classList.toggle('text-ink', active);
                 tab.classList.toggle('text-ink-3', !active);
@@ -462,8 +463,20 @@
             }
         }
 
-        tabs.forEach(function (tab) {
+        tabs.forEach(function (tab, i) {
+            tab.setAttribute('tabindex', tab.getAttribute('aria-selected') === 'true' ? '0' : '-1');
             tab.addEventListener('click', function () { showTab(tab.dataset.homeTab); });
+            tab.addEventListener('keydown', function (ev) {
+                var next = i;
+                if (ev.key === 'ArrowRight') next = (i + 1) % tabs.length;
+                else if (ev.key === 'ArrowLeft') next = (i - 1 + tabs.length) % tabs.length;
+                else if (ev.key === 'Home') next = 0;
+                else if (ev.key === 'End') next = tabs.length - 1;
+                else return;
+                ev.preventDefault();
+                showTab(tabs[next].dataset.homeTab);
+                tabs[next].focus();
+            });
         });
     })();
 
