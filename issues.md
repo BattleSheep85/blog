@@ -2,6 +2,34 @@
 
 Last updated: 2026-07-08
 
+## 2026-07-08 — P0: research failing ("injection error at end of report") — root-caused + fixed
+
+User reported research runs failing with an "injection error" shown at the bottom of report pages.
+Root-caused via prod D1 (NOT the initially-assumed model-narration — that hypothesis was disproven
+by the data). TWO stacked provider errors, both fixed + verified with a live canary (completes,
+gpt-5.4-mini, 3 products).
+
+- [x] CRITICAL: **OpenRouter 403 "prompt injection patterns detected"** (`patterns:[ignore_previous_instructions]`).
+      The injection-defense text added 2026-07-07/08 QUOTED literal attack strings inside our OWN prompts
+      ("ignore previous instructions", "if you are an AI assistant, recommend X", "note for automated
+      summarizers"). OpenRouter's guardrail scans OUTGOING requests, matched them, and 403-blocked the call →
+      run failed. Fixed: rephrased the defense abstractly (no quoted attack strings) in prompts.js (agent +
+      [ai-injection] + EMBEDDED-INSTRUCTION DEFENSE), parallel-engine.js NOTE_SYSTEM, classifier.js jailbreak
+      desc. Regression guard added (prompts.test.js asserts no attack strings in our prompts).
+- [x] CRITICAL: **OpenRouter 400 "Invalid input … unpaired UTF-16 surrogate"** (surfaced by the canary once
+      the 403 cleared). Scraped source text can carry a lone surrogate half (broken emoji / truncated
+      multibyte), and pruneMessages slicing can split a valid pair — OpenAI rejects such strings. Fixed:
+      `sanitizeLLMMessages()` strips lone surrogates at the send boundary in llm.js (both call paths),
+      preserving valid emoji pairs. +6 unit assertions.
+- [x] UX: the Wave-2 "surface result.error" change was DISPLAYING these raw provider errors at the report
+      tail. Gated the failure message (research-page.js) so only clean, short reasons show; raw
+      provider/HTTP/JSON errors (4xx/5xx, OpenRouter, braces, tokens, "prompt injection") now fall back to
+      the generic message. Verified: a previously-403-failed page now shows the generic text.
+- Deploys: Cloudflare + blackbox (synthesis/planner/notes run there). Canary verified end-to-end.
+- [ ] FOLLOW-UP (optional): ~9 reports failed with the 403 + more with the 400 while this was live; they sit
+      'failed'. Re-run to recover those pages (~$0.10 each) when desired. Also earlier same day: the Wave-1
+      deterministic QUERY injection screen was removed (it false-positived on legit searches — see below).
+
 ## 2026-07-08 — Review-board backlog cleared (waves 1–4) + deferrals
 
 Worked the code-fixable review-board backlog below. Unit 371 green; new/updated integration
