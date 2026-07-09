@@ -4,6 +4,7 @@ import { buildAffiliateUrl, buildAmazonSearchFallback, retailerLabel, resolveAma
 import { adSlot } from '../lib/ads.js';
 import { getResearchBySlug, getProductsByResearchId } from '../lib/db.js';
 import { searchBar } from '../lib/search-bar.js';
+import { RESEARCH_ETA } from '../lib/tiers.js';
 import { jsonEmbed, productLayoutBoot } from '../lib/list-layout-boot.js';
 
 // Icons for well-known metadata keys. Unknown keys render with a generic dot so
@@ -746,7 +747,7 @@ ${isProcessing ? `<div id="processing" style="padding:1.5rem;background:var(--su
 </div>
 <div id="activity-feed" class="activity-feed"></div>
 <div class="notify-box" style="margin-top:1.25rem;padding:.9rem 1.05rem;background:color-mix(in srgb,var(--accent) 6%,transparent);border:1px solid color-mix(in srgb,var(--accent) 25%,transparent);border-radius:10px">
-<label for="notify-email" style="display:block;font-size:.82rem;color:var(--ink-2);margin-bottom:.5rem">This can take a minute. Want an email when it&rsquo;s ready?</label>
+<label for="notify-email" style="display:block;font-size:.82rem;color:var(--ink-2);margin-bottom:.5rem">This usually takes ${RESEARCH_ETA}. Want an email when it&rsquo;s ready?</label>
 <form id="notify-form" style="display:flex;gap:.5rem;flex-wrap:wrap;margin:0">
 <input id="notify-email" type="email" name="email" required placeholder="you@example.com" autocomplete="email" maxlength="254" style="flex:1;min-width:12rem;padding:.55rem .7rem;background:var(--bg);border:1px solid var(--line);border-radius:8px;color:var(--ink);font-size:.88rem">
 <button type="submit" class="btn" style="font-size:.85rem;padding:.55rem 1rem;white-space:nowrap">Notify me</button>

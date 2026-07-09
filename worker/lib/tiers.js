@@ -83,3 +83,8 @@ export function getTierConfig(tier) {
 export function isValidTier(value) {
   return PUBLIC_TIERS.includes(value);
 }
+
+// Single source of truth for the user-facing research wait-time estimate.
+// Any copy that quotes how long a run takes should import this constant
+// rather than hard-coding a duration (keeps the estimate consistent site-wide).
+export const RESEARCH_ETA = '1–2 minutes';

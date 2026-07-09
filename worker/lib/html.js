@@ -126,6 +126,20 @@ ${extra_head}
 <a href="/best/" class="hidden text-body-sm text-ink-2 transition-colors hover:text-ink sm:inline">Guides</a>
 <a href="/about" class="hidden text-body-sm text-ink-2 transition-colors hover:text-ink sm:inline">About</a>
 <a href="/account" class="text-body-sm text-ink-2 transition-colors hover:text-ink" title="Your past searches">Account</a>
+<details class="nav-menu relative sm:hidden">
+<summary class="nav-toggle flex items-center rounded-lg p-2 text-ink-2 hover:text-ink" aria-label="Open menu" role="button">
+<svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+</summary>
+<div class="nav-menu-panel absolute right-0 mt-2 z-50 flex flex-col gap-1 rounded-lg border border-line bg-surface-1 p-2 shadow-card min-w-[11rem]">
+<a href="/" class="rounded px-3 py-2 text-body-sm text-ink-2 hover:text-ink">Home</a>
+<a href="/research" class="rounded px-3 py-2 text-body-sm text-ink-2 hover:text-ink">Browse</a>
+<a href="/history" class="rounded px-3 py-2 text-body-sm text-ink-2 hover:text-ink">Your searches</a>
+<a href="/reviews" class="rounded px-3 py-2 text-body-sm text-ink-2 hover:text-ink">Reviews</a>
+<a href="/best/" class="rounded px-3 py-2 text-body-sm text-ink-2 hover:text-ink">Guides</a>
+<a href="/about" class="rounded px-3 py-2 text-body-sm text-ink-2 hover:text-ink">About</a>
+<a href="/account" class="rounded px-3 py-2 text-body-sm text-ink-2 hover:text-ink">Account</a>
+</div>
+</details>
 <button id="theme-toggle" type="button" class="rounded-lg p-2 text-ink-3 transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60" aria-label="Toggle light and dark theme">
 <svg id="icon-moon" class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
 <svg id="icon-sun" class="hidden h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>

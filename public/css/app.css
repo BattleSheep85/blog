@@ -771,3 +771,12 @@ article[id]:target {
         border: 1px solid #ccc;
     }
 }
+
+/* ----------------------------------------------------------------------------
+   Mobile nav (pure-CSS <details>/<summary> hamburger). CSP script-src forbids
+   inline onclick, so the menu is JS-free: <details open> shows the panel
+   natively. Hide the default disclosure triangle marker across browsers.
+---------------------------------------------------------------------------- */
+summary.nav-toggle { list-style: none; cursor: pointer; }
+summary.nav-toggle::-webkit-details-marker { display: none; }
+details.nav-menu[open] .nav-menu-panel { display: flex; }

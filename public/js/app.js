@@ -170,7 +170,7 @@
             if (btn) {
                 btn.disabled = busy;
                 var label = btn.querySelector('[data-btn-label]');
-                if (label) label.textContent = busy ? 'Reading reviews…' : 'Research it';
+                if (label) label.textContent = busy ? 'Researching…' : 'Research it';
             }
         });
     }

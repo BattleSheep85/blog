@@ -11,6 +11,7 @@
 
 import { layout } from '../lib/html.js';
 import { escapeHtml, displayQuery } from '../lib/utils.js';
+import { RESEARCH_ETA } from '../lib/tiers.js';
 
 function renderQuestion(q, idx) {
     const inputName = `clarify_${escapeHtml(q.key)}`;
@@ -39,7 +40,7 @@ export function renderClarifyPage(query, tier, questions, env) {
     const prettyQuery = displayQuery(query);
     // Tiers collapsed to one stack (2026-06-16) — single label/time for every run.
     const tierLabel = 'Deep research';
-    const tierTime = 'about 3–4 minutes';
+    const tierTime = `about ${RESEARCH_ETA}`;
 
     const body = `<div class="mx-auto max-w-2xl px-6 py-12 md:py-16">
 <nav aria-label="Breadcrumb" class="mb-6 text-caption text-ink-3">

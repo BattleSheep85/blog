@@ -6,6 +6,8 @@
 // radiogroup and no tier-dependent Turnstile toggle here — tier UI returns
 // in Phase 2.
 
+import { RESEARCH_ETA } from './tiers.js';
+
 export function searchBar(size = 'large') {
   const ph = size === 'large'
     ? 'What product are you researching?'
@@ -18,7 +20,7 @@ document.querySelectorAll('form.search-form').forEach(function(f){
 f.addEventListener('submit',function(){
 var o=document.createElement('div');
 o.style.cssText='position:fixed;inset:0;background:color-mix(in srgb,var(--bg) 92%,transparent);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;color:var(--ink);gap:1.25rem;padding:1rem;text-align:center';
-o.innerHTML='<div class="spinner"></div><div style="font-size:1.1rem;font-weight:600;color:var(--ink)">Running research…</div><div style="font-size:0.95rem;color:var(--ink-2);max-width:440px">Takes about 90 seconds. Please keep this tab open — we’ll redirect you automatically when it’s ready.</div>';
+o.innerHTML='<div class="spinner"></div><div style="font-size:1.1rem;font-weight:600;color:var(--ink)">Running research…</div><div style="font-size:0.95rem;color:var(--ink-2);max-width:440px">This usually takes ${RESEARCH_ETA}. Please keep this tab open — we’ll redirect you automatically when it’s ready.</div>';
 document.body.appendChild(o);
 var btn=f.querySelector('button[type="submit"]');
 if(btn){btn.disabled=true;btn.textContent='Researching…'}
