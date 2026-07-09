@@ -79,13 +79,21 @@ ${entries.map(([k, v]) => {
 </dl>`;
 }
 
+// Star row for a rating. Clamps to 0..5 so a bad rating (>5, negative, NaN,
+// null) never makes String.repeat throw a RangeError (which 500s the page).
+export function starMarkup(rating) {
+  const full = Math.max(0, Math.min(5, Math.floor(Number(rating) || 0)));
+  return '★'.repeat(full) + '☆'.repeat(5 - full);
+}
+
 // Soft gradient fallback when imageUrl is missing or fails to load. Keyed by
 // first letter so different items get distinct visual treatments without
 // needing a real image pipeline.
 export function renderItemImage(imageUrl, name, productId) {
-  const safeName = escapeHtml(name.slice(0, 60));
-  const letter = escapeHtml((name.trim().charAt(0) || '?').toUpperCase());
-  const colorIndex = name.charCodeAt(0) % 6;
+  const safe = String(name ?? '').trim() || 'Product';
+  const safeName = escapeHtml(safe.slice(0, 60));
+  const letter = escapeHtml((safe.charAt(0) || '?').toUpperCase());
+  const colorIndex = safe.charCodeAt(0) % 6;
   const gradients = [
     'linear-gradient(135deg,#1e3a8a,#2563eb)',
     'linear-gradient(135deg,#4c1d95,#7c3aed)',
@@ -315,7 +323,7 @@ function renderComparisonTable(products, ids, isService, slug, cleanLinks, webOn
       buy = `<a href="${escapeHtml(g.url)}" class="compare-buy">${escapeHtml(g.label)}</a>`;
     }
     const rating = p.rating != null
-      ? `<span class="compare-nowrap"><span aria-hidden="true">${'★'.repeat(Math.floor(p.rating))}${'☆'.repeat(5 - Math.floor(p.rating))}</span> ${escapeHtml(String(p.rating))}/5</span>`
+      ? `<span class="compare-nowrap"><span aria-hidden="true">${starMarkup(p.rating)}</span> ${escapeHtml(String(p.rating))}/5</span>`
       : muted;
     const price = p.price != null ? `$${p.price.toLocaleString()}` : muted;
     const bestFor = p.best_for ? escapeHtml(String(p.best_for).slice(0, 90)) : muted;
@@ -410,7 +418,7 @@ ${p.brand ? `<p style="color:var(--ink-2);font-size:.85rem">${escapeHtml(p.brand
 </div>
 <div style="text-align:right;flex-shrink:0">
 ${p.price != null ? `<p class="product-price">$${p.price.toLocaleString()}</p>` : ''}
-${p.rating != null ? `<p class="product-rating"><span aria-hidden="true">${'★'.repeat(Math.floor(p.rating))}${'☆'.repeat(5 - Math.floor(p.rating))}</span> <span>${p.rating}/5</span></p>` : ''}
+${p.rating != null ? `<p class="product-rating"><span aria-hidden="true">${starMarkup(p.rating)}</span> <span>${p.rating}/5</span></p>` : ''}
 </div>
 </div>
 ${p.best_for ? `<div class="product-bestfor">Best for: ${escapeHtml(p.best_for)}</div>` : ''}
@@ -485,7 +493,7 @@ function renderOurPick(p, ids, isService, slug, cleanLinks, webOnly) {
   if (!p) return '';
   const ctas = resolveProductCtas(p, ids, isService, slug, cleanLinks, webOnly);
   const ratingHtml = p.rating != null
-    ? `<span class="ourpick-rating"><span aria-hidden="true">${'★'.repeat(Math.floor(p.rating))}${'☆'.repeat(5 - Math.floor(p.rating))}</span> <span>${p.rating}/5</span></span>`
+    ? `<span class="ourpick-rating"><span aria-hidden="true">${starMarkup(p.rating)}</span> <span>${p.rating}/5</span></span>`
     : '';
   const priceHtml = p.price != null ? `<span class="ourpick-price">$${p.price.toLocaleString()}</span>` : '';
   const a = ctas.amazon;
@@ -1048,12 +1056,14 @@ document.addEventListener('DOMContentLoaded',function(){
   var lastSeq=0;
   var sources=0;
   var pollCount=0;
+  var failCount=0;
   var icons={search:'\u{1F50D}',fetch:'\u{1F4D6}',note:'\u{1F4DD}',synthesize:'\u{2728}',status:'\u{2139}\uFE0F',error:'\u{26A0}\uFE0F'};
   function poll(){
     pollCount++;
     fetch('/api/research/'+slug+'/events?since='+lastSeq)
-      .then(function(r){return r.json()})
+      .then(function(r){var ct=r.headers.get('content-type')||'';if(ct.indexOf('application/json')===-1){throw new Error('non-json')}return r.json()})
       .then(function(d){
+        failCount=0;
         if(d.preview){
           var box=document.getElementById('preview-box');
           var txt=document.getElementById('preview-text');
@@ -1105,7 +1115,18 @@ document.addEventListener('DOMContentLoaded',function(){
           setTimeout(poll,pollCount<3?500:1000);
         }
       })
-      .catch(function(){setTimeout(poll,3000)});
+      .catch(function(){
+        failCount++;
+        if(failCount>10){
+          if(counter)counter.textContent='Connection lost — refresh to continue.';
+          var div=document.createElement('div');
+          div.className='activity-item activity-error';
+          div.textContent='\u{26A0}️ Connection lost — refresh to continue.';
+          feed.appendChild(div);
+          return;
+        }
+        setTimeout(poll,3000);
+      });
   }
   poll();
 });
@@ -1130,7 +1151,7 @@ document.addEventListener('DOMContentLoaded',function(){
         method:'POST',
         headers:{'Content-Type':'application/json'},
         body:JSON.stringify({email:email,researchId:researchId})
-      }).then(function(r){return r.json()}).then(function(d){
+      }).then(function(r){var ct=r.headers.get('content-type')||'';if(ct.indexOf('application/json')===-1){throw new Error('non-json')}return r.json()}).then(function(d){
         if(d&&d.ok){
           if(msg)msg.textContent="Thanks! We'll email you.";
           form.style.display='none';
@@ -1242,7 +1263,7 @@ document.addEventListener('DOMContentLoaded',function(){
       var body={slug:slug,messages:transcript};
       if(mode==='refine')body.mode='refine';
       fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
-        .then(function(r){return r.json().then(function(d){return{ok:r.ok,d:d}})})
+        .then(function(r){var ct=r.headers.get('content-type')||'';if(ct.indexOf('application/json')===-1){throw new Error('non-json')}return r.json().then(function(d){return{ok:r.ok,d:d}})})
         .then(function(res){
           form.__busy=false;
           if(res.ok&&res.d&&res.d.reply){

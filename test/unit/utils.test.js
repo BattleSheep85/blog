@@ -34,6 +34,9 @@ export function runUtilsTests() {
 
   // escapeHtml / escapeXml
   eq('escapeHtml', escapeHtml(`<a href="x">'&'</a>`), '&lt;a href=&quot;x&quot;&gt;&#39;&amp;&#39;&lt;/a&gt;');
+  eq('escapeHtml null → empty', escapeHtml(null), '');
+  eq('escapeHtml undefined → empty', escapeHtml(undefined), '');
+  eq('escapeHtml number → string', escapeHtml(5), '5');
   eq('escapeXml apos', escapeXml(`a'<&">`), 'a&apos;&lt;&amp;&quot;&gt;');
 
   // displayQuery: uppercase kept, digit upper, stopword mid lower, ends capitalized

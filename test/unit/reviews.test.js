@@ -7,6 +7,7 @@
 // signal. Cheap insurance against shipping another render 500.
 
 import { renderReviewsPage } from '../../worker/pages/reviews.js';
+import { starMarkup } from '../../worker/pages/research-page.js';
 
 const PRODUCT = {
   id: 'abcd1234', name: 'Synology DS224+', brand: 'Synology', price: 499, rating: 4.5,
@@ -57,6 +58,15 @@ function mockEnv() {
 export async function runReviewsRenderTests() {
   const report = { passed: 0, failed: 0, failures: [] };
   const ok = (name, cond) => { if (cond) report.passed++; else { report.failed++; report.failures.push(name); } };
+
+  // starMarkup must clamp out-of-range/NaN ratings so String.repeat never throws
+  // a RangeError (which would 500 the report page). Always exactly 5 glyphs.
+  for (const r of [6, -1, NaN, 3.7, null, undefined, '4']) {
+    let s = null, threw = null;
+    try { s = starMarkup(r); } catch (e) { threw = e; }
+    ok(`starMarkup(${String(r)}): no throw`, !threw);
+    ok(`starMarkup(${String(r)}): 5 glyphs`, typeof s === 'string' && [...s].length === 5 && /^[★☆]{5}$/u.test(s));
+  }
 
   const cases = [
     { url: '/reviews', wantNoindex: false },
