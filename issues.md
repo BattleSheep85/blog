@@ -55,8 +55,10 @@ valid 19KB single-line prebuilt file.)
 - [ ] LOW (docs): Tailwind rebuild command undocumented + not in CI — new utility classes silently uncompiled.
 
 ### Future horizons (blue-sky, realistic + zero-dep)
-- [ ] navigator.share button (mobile share sheet); example chips fire research on one tap; "Searching → Reading
-      → Ranking → Writing" step indicator for perceived speed; freshness badge at the Our-pick CTA.
+- [x] navigator.share button on the report share bar (progressive enhancement) — SHIPPED 2026-07-08
+- [x] example-query chips are one-tap (start the classify→clarify flow) — SHIPPED 2026-07-08
+- [x] "Searching → Reading → Ranking → Writing" step-progress indicator on the processing page — SHIPPED 2026-07-08
+- [ ] freshness badge at the Our-pick CTA — not yet done
 
 Note: the AdSense-no-consent-banner finding was already logged (see the docs/adsense-consent-plan.md item) — do not duplicate it.
 
