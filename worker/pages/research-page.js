@@ -742,6 +742,12 @@ ${isProcessing ? `<div id="processing" style="padding:1.5rem;background:var(--su
 <p style="color:var(--ink-3);font-size:.8rem" id="source-count">Starting...</p>
 </div>
 </div>
+<ol id="progress-steps" class="progress-steps" aria-hidden="true">
+<li class="progress-step is-active" data-step="0"><span class="progress-dot"></span><span>Searching</span></li>
+<li class="progress-step" data-step="1"><span class="progress-dot"></span><span>Reading</span></li>
+<li class="progress-step" data-step="2"><span class="progress-dot"></span><span>Ranking</span></li>
+<li class="progress-step" data-step="3"><span class="progress-dot"></span><span>Writing</span></li>
+</ol>
 <div id="preview-box" style="display:none;padding:1rem 1.15rem;margin-bottom:1rem;background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 8%,transparent),color-mix(in srgb,var(--accent) 8%,transparent));border:1px solid color-mix(in srgb,var(--accent) 25%,transparent);border-radius:10px">
 <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-3);font-weight:600;margin-bottom:.5rem">Quick answer &middot; from prior knowledge</div>
 <div id="preview-text" style="font-size:.92rem;line-height:1.55;color:var(--ink-2);white-space:pre-wrap"></div>
@@ -1076,6 +1082,8 @@ document.addEventListener('DOMContentLoaded',function(){
   var pollCount=0;
   var failCount=0;
   var icons={search:'\u{1F50D}',fetch:'\u{1F4D6}',note:'\u{1F4DD}',synthesize:'\u{2728}',status:'\u{2139}\uFE0F',error:'\u{26A0}\uFE0F'};
+  var STEP_OF={search:0,fetch:1,note:2,synthesize:3};var maxStep=0;
+  function updateSteps(cur){var steps=document.querySelectorAll('#progress-steps .progress-step');for(var i=0;i<steps.length;i++){var s=parseInt(steps[i].dataset.step,10);steps[i].classList.toggle('is-done',s<cur);steps[i].classList.toggle('is-active',s===cur);}}
   function poll(){
     pollCount++;
     fetch('/api/research/'+slug+'/events?since='+lastSeq)
@@ -1099,10 +1107,12 @@ document.addEventListener('DOMContentLoaded',function(){
             feed.scrollTop=feed.scrollHeight;
             lastSeq=e.seq;
             if(e.event_type==='search')sources++;
+            if(e.event_type in STEP_OF){var st=STEP_OF[e.event_type];if(st>maxStep){maxStep=st;updateSteps(maxStep);}}
           });
           if(counter)counter.textContent=sources+' searches completed';
         }
         if(d.status==='complete'){
+          maxStep=3;updateSteps(3);
           // In-place swap: fetch the now-rendered page, splice in .container content.
           // Falls back to reload if anything goes wrong. Also re-wires inline
           // handlers on the freshly-inserted DOM via window.__rewire.
