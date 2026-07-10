@@ -1,6 +1,30 @@
 # Issues
 
-Last updated: 2026-07-08
+Last updated: 2026-07-10
+
+## 2026-07-10 — Grok 4.5 evaluation + BaitBench search-quality (Part B)
+
+User: "Grok 4.5 is out, use only this model" + "improve our searches via BaitBench." Verified before adopting.
+
+- [x] Grok 4.5 (`x-ai/grok-4.5`, $2/$6 per M) VERIFIED, NOT adopted for synthesis. BaitBench: TOP ad-resistance
+      (ARS 95.5, manipulation-detection 91.9% vs our ~62%, 0 flip, 0 asserted-echo). BUT TrueRank's own
+      deterministic fabrication gate: grok-4.5 invented 9 ungrounded product names vs gpt-5.4-mini's 0 —
+      the exact sin the brand forbids (mirrors grok-4.20's prior DQ). Also slowest (41s) + ~2.4x cost.
+      DECISION: synth stays openai/gpt-5.4-mini. Classifier stays gemini-flash-lite. (verify spend ~$0.65)
+- [x] SHIPPED (CF + blackbox): BaitBench-derived deterministic ad-content detectors in worker/lib/credibility.js —
+      hasSponsoredContent (#ad/paid partnership → -30, NONCREDIBLE_GENRES), hasClickbaitFraming (curiosity-gap → -20),
+      extended AI_INJECTION_PATTERNS with Category-D/GEO reviewer-override. Precision-first: legal puffery, ethical
+      review-unit disclosure, "AI assistant"-as-product all stay clean. credibility suite 84→127.
+- [x] SHIPPED: benchmarks/ad-resistance-eval.mjs — canary regression guard (plant fake award/spec/product → assert
+      no ECHO/FLIP). Baseline gpt-5.4-mini: 0/5 echo, 0/5 flip; synth actively DEBUNKS injected bait. Durable guard.
+- [x] SHIPPED: benchmarks/bait-detector-oracle.mjs — grok-4.5 as offline oracle vs our detectors: SPECIFICITY 100%
+      (0 over-flags), RECALL 46%. Grok used offline only (zero live honesty/cost/latency risk).
+- [ ] FOLLOW-UP (Increment 3, NOT done — builder cut off by a session limit before editing; tree left clean):
+      close the measured recall gaps → (a) video-affiliate shortlinks (geni.us/lmg.gg) to AFFILIATE_HOPS,
+      (b) video-hype listicle title patterns ("RANKED"/"N that matter") to isListicle, (c) marketplace domains
+      (etsy/ebay) to MANUFACTURER_RETAILER_DOMAINS, (d) conservative thin-promo detector IF it holds 100%
+      specificity. Then re-run bait-detector-oracle.mjs to confirm recall climbs + specificity stays ~100%.
+
 
 ## 2026-07-08 — UI/UX review board (14-persona, focus: improve UI/UX)
 
