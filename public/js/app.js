@@ -33,7 +33,9 @@
             var input = document.getElementById('query-input');
             if (input) {
                 input.value = this.dataset.query;
-                input.focus();
+            }
+            if (typeof beginResearch === 'function') {
+                beginResearch(this.dataset.query);
             }
         });
     });
