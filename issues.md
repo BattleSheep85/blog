@@ -50,9 +50,9 @@ valid 19KB single-line prebuilt file.)
       text). (public/index.html:405-428, worker/lib/html.js:159-179) — FIXED (4-pass UI/UX sprint 2026-07-08): disclosure text unified; nav-column differences left.
 - [ ] LOW (quality): research-page.js is 1304 lines (>800 cap) with pervasive inline style= duplicating app.css
       classes; extract inline scripts (~270 lines) + card family (~210) into modules.
-- [ ] LOW (quality): JSON-encode slug/id into inline <script> instead of escapeHtml (wrong escaper for JS-string
-      context; latent breakout if slug generation loosens). (worker/pages/research-page.js:1047,1123,1161)
-- [ ] LOW (docs): Tailwind rebuild command undocumented + not in CI — new utility classes silently uncompiled.
+- [x] LOW (quality): JSON-encode slug/id into inline <script> instead of escapeHtml (wrong escaper for JS-string
+      context; latent breakout if slug generation loosens). (worker/pages/research-page.js:1047,1123,1161) — FIXED 2026-07-08
+- [x] LOW (docs): Tailwind rebuild command undocumented + not in CI — new utility classes silently uncompiled. — FIXED 2026-07-08
 
 ### Future horizons (blue-sky, realistic + zero-dep)
 - [x] navigator.share button on the report share bar (progressive enhancement) — SHIPPED 2026-07-08
