@@ -13,12 +13,15 @@
 //   'community'           — reddit / forums / hacker news — unpaid opinions
 //   'manufacturer'        — official product/retailer page — not a review
 //   'ai-injection'        — page contains instructions addressed to AI tools — manipulation attempt
+//   'sponsored-content'   — paid promotion (#ad, paid partnership) — marketing, not a review
+//   'clickbait'           — curiosity-gap / hype framing — SEO bait, not evidence
 //
 // SourceCredibility = { tags: CredibilityTag[], score: number (0-100), reasons: string[] }
 
 // Genres that can NEVER be the sole basis for a recommendation. Single source
-// of truth — imported by the extract engine.
-export const NONCREDIBLE_GENRES = new Set(['listicle', 'affiliate-conflict', 'manufacturer', 'ai-injection']);
+// of truth — imported by the extract engine. `sponsored-content` is marketing
+// (like affiliate-conflict): a paid placement can never anchor a recommendation.
+export const NONCREDIBLE_GENRES = new Set(['listicle', 'affiliate-conflict', 'manufacturer', 'ai-injection', 'sponsored-content']);
 
 // ─── Affiliate-link detection ────────────────────────────────────────────────
 
@@ -147,6 +150,20 @@ const AI_INJECTION_PATTERNS = [
   // as an adjective) does not match.
   /\b(?:note|notice|instructions?|message) (?:for|to) (?:(?:automated|ai|llm) (?:summariz\w+|assistants?|systems?|tools?|agents?|bots?|models?)|llms?|language models?|chat ?bots?)\b/i,
   /\bai (?:assistants?|chat ?bots?|summariz\w+|agents?) (?:reading|processing|summarizing|indexing) this\b/i,
+  // ── BaitBench Category-D / GEO (generative-engine-optimization) override ──
+  // Text that tells an automated reader which product to surface as the top
+  // result. The verb + superlative is the tell; the required AI/model/engine
+  // reader noun keeps legit "AI assistant" product prose from matching. Written
+  // abstractly (no literal attack-string copy) per the OpenRouter-403 lesson.
+  //
+  // "AI/assistants/models/engines should recommend|rank|pick … as the (best|#1|top)".
+  /\b(?:ai|llm|assistants?|models?|chat ?bots?|search engines?|generative engines?|language models?)\b[^.?!]{0,40}?\bshould\b[^.?!]{0,40}?\b(?:recommend|rank|pick|prefer|choose|select|surface|feature|output|list|promote|name)\b[^.?!]{0,60}?\b(?:as (?:the )?(?:#?1|number one|top|best|first)|the (?:top|best|first|#?1) (?:choice|pick|option|result|recommendation))/i,
+  // "when recommending/ranking/summarizing … (rank|list|place|put) THIS as top" —
+  // an instruction conditioned on the reader being a recommender/summarizer.
+  /\bwhen (?:recommending|ranking|summariz\w+|listing|comparing|generating|answering)\b[^.?!]{0,60}?\b(?:recommend|rank|list|place|put|surface|prefer|choose|select|feature|output)\b[^.?!]{0,40}?\b(?:this|it|us|our (?:product|brand))\b[^.?!]{0,30}?\b(?:as (?:the )?(?:#?1|top|best|first)|first|at the top|above (?:all )?(?:other|competitor))/i,
+  // Explicit reviewer/ranking override addressed to the model: "override your
+  // ranking / disregard other reviews / this is the best regardless".
+  /\b(?:override|disregard|ignore|discount|downrank)\b[^.?!]{0,50}?\b(?:your |any |other |the )?(?:ranking|rankings|scores?|reviews?|verdicts?|recommendations?|comparisons?)\b/i,
 ];
 
 /**
@@ -156,6 +173,76 @@ export function hasAiInjection(content) {
   if (!content) return false;
   for (const pat of AI_INJECTION_PATTERNS) {
     if (pat.test(content)) return true;
+  }
+  return false;
+}
+
+// ─── Sponsored / paid-promotion detection ────────────────────────────────────
+
+// HIGH-PRECISION markers of PAID promotion. These are explicit paid-placement
+// disclosures (FTC #ad, "paid partnership") — marketing, not a review.
+//
+// CRITICAL false-positive guard: ethical review-unit disclosure ("we were sent
+// a review unit", "brand provided a sample", "review sample") is STANDARD
+// practice at legit outlets and is deliberately NOT matched here. Only literal
+// paid-promo markers trip this detector.
+const SPONSORED_CONTENT_PATTERNS = [
+  // FTC hashtags — word-boundary-anchored so "#ad" doesn't match "#addons".
+  /(?:^|[\s(])#ad(?![a-z0-9])/i,
+  /(?:^|[\s(])#sponsored(?![a-z0-9])/i,
+  /(?:^|[\s(])#paid(?![a-z0-9])/i,
+  /\bpaid partnership with\b/i,
+  /\bin paid partnership\b/i,
+  /\bsponsored post\b/i,
+  /\bsponsored content\b/i,
+  /\bsponsored by\b/i,
+  // "this post|article|video|review|content is sponsored"
+  /\bthis (?:post|article|video|review|content|page) is sponsored\b/i,
+  // "brought to you by <brand>" — classic advertorial header.
+  /\bbrought to you by\b/i,
+];
+
+/**
+ * Returns true if content carries an explicit PAID-promotion marker (#ad,
+ * sponsored post, paid partnership). Ethical review-unit disclosure is NOT
+ * matched — that is standard practice at legitimate outlets.
+ */
+export function hasSponsoredContent(content) {
+  if (!content) return false;
+  for (const pat of SPONSORED_CONTENT_PATTERNS) {
+    if (pat.test(content)) return true;
+  }
+  return false;
+}
+
+// ─── Clickbait / curiosity-gap framing detection ─────────────────────────────
+
+// BaitBench Category C: curiosity-gap + manufactured-hype headlines. These
+// phrases are unambiguous clickbait. Normal enthusiastic review language ("we
+// love", "impressive", "whisper-quiet") is legal puffery and is NOT listed.
+const CLICKBAIT_PATTERNS = [
+  // "the trick|secret|thing (big brands|manufacturers|they|companies) don't want you to know"
+  /\bthe (?:one )?(?:trick|secret|thing|hack|truth|reason)s?\b[^.?!]{0,40}?\b(?:big brands|brands|manufacturers|companies|retailers|they|the industry)\b[^.?!]{0,20}?\bdon['’]?t want you to (?:know|see|find out)\b/i,
+  // "what (they|big brands|manufacturers) don't (tell|want) you …"
+  /\bwhat\b[^.?!]{0,30}?\b(?:they|big brands|brands|manufacturers|companies)\b[^.?!]{0,15}?\bdon['’]?t (?:tell|want)\b/i,
+  /\byou won['’]?t believe\b/i,
+  /\bwill (?:shock|blow|stun|amaze)\b/i,
+  /\bdoctors hate\b/i,
+  /\bone weird trick\b/i,
+  /\bthis (?:simple |one )?(?:trick|hack)\b[^.?!]{0,30}?\b(?:shock|will|that)/i,
+  /\bwhat they don['’]?t tell you\b/i,
+];
+
+/**
+ * Returns true if the title or content uses curiosity-gap / manufactured-hype
+ * clickbait framing (BaitBench Category C). Legal puffery in normal review
+ * prose does not match — these phrases are unambiguous bait.
+ */
+export function hasClickbaitFraming(title, content) {
+  const haystack = ((title || '') + '\n' + (content || ''));
+  if (!haystack.trim()) return false;
+  for (const pat of CLICKBAIT_PATTERNS) {
+    if (pat.test(haystack)) return true;
   }
   return false;
 }
@@ -343,7 +430,13 @@ export function isManufacturerDomain(url) {
  *   +  5 community discussion (reddit/HN/etc.)
  *   - 30 listicle / thin SEO content
  *   - 45 affiliate-tracked outbound links (conflict of interest)
+ *   - 30 sponsored / paid-promotion markers (#ad, paid partnership)
+ *   - 20 clickbait curiosity-gap framing
  *   - 15 manufacturer/retailer page (informational, not a review)
+ *
+ * The sponsored/clickbait penalties are moderate on purpose: a single soft
+ * signal must not, on its own, push a genuine expert-domain source (+15, or
+ * +40 with hands-on) below the MIN_CREDIBLE_SCORE (45) gate.
  */
 export function scoreSource(input) {
   const tags = [];
@@ -371,6 +464,18 @@ export function scoreSource(input) {
       reasons.push('contains affiliate-tracked outbound links');
       score -= 45;
     }
+  }
+
+  if (hasSponsoredContent(fullContent)) {
+    tags.push('sponsored-content');
+    reasons.push('paid-promotion marker (#ad / sponsored / paid partnership)');
+    score -= 30;
+  }
+
+  if (hasClickbaitFraming(input.title, fullContent)) {
+    tags.push('clickbait');
+    reasons.push('clickbait curiosity-gap / manufactured-hype framing');
+    score -= 20;
   }
 
   if (isHandsOn(fullContent)) {
