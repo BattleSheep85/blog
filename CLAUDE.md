@@ -37,6 +37,7 @@ zero-dependency rule is unchanged — do NOT add a dependency that ships to the 
 - Local dev: `npx wrangler dev` (wrangler is the only CLI tool, used ad-hoc not as a dependency)
 - Deploy: **push to `main`** runs unit tests + `wrangler deploy` via GitHub Actions. Manual fallback: `export $(grep -v '^#' .cf-token | xargs) && npx wrangler deploy`. Repo needs `CLOUDFLARE_API_TOKEN` secret (Workers Scripts Edit).
 - DB migrations: `npx wrangler d1 execute DB --file=schema/001_initial.sql`
+- Build CSS (after changing Tailwind classes): the standalone Tailwind binary — see README "Build CSS" (`tailwindcss -c tailwind.config.cjs -i build/input.css -o public/css/tailwind.css --minify`). Not in CI; rebuild + commit public/css/tailwind.css when you add new utility classes.
 - Tests: `node scripts/run-tests.mjs` (308 assertions across 10 suites — credibility, validate quality-gate, product-search faceting, reviews render-smoke, utils, affiliate-links, lib-pure, credibility-extra, prompts, llm)
 - Coverage gate: `bash scripts/coverage.sh` (Node built-in V8 coverage, zero npm; ~99.9% line on the 14-module pure-logic layer)
 - Integration tests (I/O modules, real D1/KV via Miniflare): `npx vitest run` (or `--coverage`). Specs in `test/integration/*.spec.js`, config in `vitest.config.js`. Needs `npm install` first (dev deps only).
