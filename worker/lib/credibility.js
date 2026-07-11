@@ -15,13 +15,28 @@
 //   'ai-injection'        — page contains instructions addressed to AI tools — manipulation attempt
 //   'sponsored-content'   — paid promotion (#ad, paid partnership) — marketing, not a review
 //   'clickbait'           — curiosity-gap / hype framing — SEO bait, not evidence
+//   'self-purchased'      — reviewer bought the product themselves — independence-positive
+//   'seeded-unit'         — reviewer disclosed a manufacturer-provided loaner/sample — honest, but lowers independence
+//   'incentivized-review' — free/discounted product given IN EXCHANGE FOR a review — real conflict
+//   'embargo-nda'         — reviewer operated under a manufacturer review embargo or NDA — constrained independence
 //
-// SourceCredibility = { tags: CredibilityTag[], score: number (0-100), reasons: string[] }
+// SourceCredibility = { tags: CredibilityTag[], score: number (0-100), reasons: string[], independence: number (0-100) }
+//
+// Independence is a SPECTRUM, separate from credibility. A disclosed loaner is
+// honest and standard practice (RTINGS/Wirecutter get loaners) — it lowers
+// independence but must NOT tank credibility. Free-product-for-review and
+// embargo/NDA are the real conflicts. Self-purchase is a positive signal.
 
 // Genres that can NEVER be the sole basis for a recommendation. Single source
 // of truth — imported by the extract engine. `sponsored-content` is marketing
 // (like affiliate-conflict): a paid placement can never anchor a recommendation.
-export const NONCREDIBLE_GENRES = new Set(['listicle', 'affiliate-conflict', 'manufacturer', 'ai-injection', 'sponsored-content']);
+// `incentivized-review` joins this set for the same reason: a free-for-review
+// exchange is a real conflict of interest, not just a lowered-independence
+// disclosure — it can't anchor a recommendation on its own. NOTE: 'seeded-unit'
+// (an honest loaner disclosure) is deliberately NOT added here — loaners are
+// how legit review outlets operate; only the free-for-review incentive taints
+// the source's ability to anchor a verdict.
+export const NONCREDIBLE_GENRES = new Set(['listicle', 'affiliate-conflict', 'manufacturer', 'ai-injection', 'sponsored-content', 'incentivized-review']);
 
 // ─── Affiliate-link detection ────────────────────────────────────────────────
 
@@ -210,6 +225,161 @@ const SPONSORED_CONTENT_PATTERNS = [
 export function hasSponsoredContent(content) {
   if (!content) return false;
   for (const pat of SPONSORED_CONTENT_PATTERNS) {
+    if (pat.test(content)) return true;
+  }
+  return false;
+}
+
+// ─── Reviewer-independence detection ─────────────────────────────────────────
+// Independence is a SPECTRUM, distinct from credibility (see header comment).
+// Each detector below is precision-first: false positives are the cardinal
+// sin, so every pattern requires the specific qualifying object/verb, not a
+// bare keyword.
+
+// First-person, self-funded acquisition of the product under review. GUARD:
+// requires a first-person subject (we/i/our) + a purchase/pay verb + an
+// explicit self-funding qualifier (ourselves, our own money, full price, at
+// retail, out of pocket). Generic "you can buy this on Amazon" / "where to
+// buy" copy has neither the first-person subject nor the self-funding
+// qualifier, so it does not match.
+const SELF_PURCHASE_PATTERNS = [
+  /\b(?:we|i)\s+bought\s+(?:this|it|our own)\b/i,
+  /\b(?:we|i)\s+purchased\s+(?:this|it|the unit)\s+(?:ourselves|with our own money|at retail|at full price|out of pocket)\b/i,
+  /\bpaid full price\b/i,
+  /\bpaid for it ourselves\b/i,
+  /\bout of our own pocket\b/i,
+  /\bwe don['’]?t accept free (?:units|samples)\b/i,
+  /\bnot provided by the manufacturer\b/i,
+];
+
+/**
+ * Returns true if content discloses a first-person, self-funded purchase of
+ * the reviewed product — the strongest positive independence signal.
+ * GUARD: requires first-person subject + purchase/pay verb + self-funding
+ * qualifier; MUST NOT match generic "buy this on Amazon" retail copy.
+ */
+export function hasSelfPurchase(content) {
+  if (!content) return false;
+  for (const pat of SELF_PURCHASE_PATTERNS) {
+    if (pat.test(content)) return true;
+  }
+  return false;
+}
+
+// Honest disclosure that the review unit/sample was a manufacturer-provided
+// loaner. GUARD: the object of "provided/supplied/sent/loaned" etc. must be a
+// review unit/sample/product tied to a manufacturer/brand/review — so "we
+// sent the unit back" (reviewer sending something OUT, no manufacturer/brand
+// object) does not match.
+const SEEDED_UNIT_PATTERNS = [
+  /\breview\s+(?:unit|sample)\s+(?:was\s+)?(?:provided|supplied|sent|loaned)\b/i,
+  /\b(?:unit|sample|product)\s+(?:was\s+)?(?:provided|supplied|sent|loaned|gifted|furnished)\s+(?:to us\s+)?(?:by|from)\s+(?:the\s+)?(?:manufacturer|brand|company|vendor|maker)\b/i,
+  /\b(?:the\s+)?(?:manufacturer|brand|company)\s+(?:sent|provided|supplied|loaned)\s+us\b/i,
+  /\bsent us a (?:review\s+)?(?:unit|sample|product)\b/i,
+  /\bpress\s+(?:loan|loaner|sample|unit)\b/i,
+  /\bsample provided for review\b/i,
+  /\bprovided for review\b/i,
+  /\bwe were sent\b/i,
+  /\bwe received (?:a|the) (?:unit|sample|review unit) (?:from|for review)\b/i,
+];
+
+/**
+ * Returns true if content discloses a manufacturer-provided review loaner or
+ * sample — an HONEST, standard disclosure (RTINGS/Wirecutter get loaners). It
+ * lowers independence but must NOT be treated as sponsored content and must
+ * NOT tank credibility.
+ * GUARD: object must be a review unit/sample/product tied to a
+ * manufacturer/brand/review; MUST NOT match "we sent the unit back" (no
+ * manufacturer/brand object, reviewer is the sender).
+ */
+export function hasSeededUnit(content) {
+  if (!content) return false;
+  for (const pat of SEEDED_UNIT_PATTERNS) {
+    if (pat.test(content)) return true;
+  }
+  return false;
+}
+
+// Free or discounted product given IN EXCHANGE FOR a review — a real conflict
+// of interest, distinct from an honest loaner. GUARD: the exchange object
+// must be a review/opinion/feedback/rating, so "in exchange for your email
+// signup" does not match.
+const INCENTIVIZED_REVIEW_PATTERNS = [
+  /\bin exchange for (?:an? |my |our )?(?:honest |fair |candid )?review\b/i,
+  /\bin exchange for (?:my|our) (?:honest\s+)?(?:opinion|feedback|rating)\b/i,
+  /\b(?:received|got) (?:this|the|a) (?:product|item|unit) (?:for\s+)?free in exchange\b/i,
+  /\bfree (?:product|item|unit) in exchange\b/i,
+  /\bamazon vine\b/i,
+  /\bvine voice\b/i,
+  /\bvine customer review of a free product\b/i,
+  /\bcomplimentary (?:unit|product|copy) (?:in exchange|for (?:a|my|our) review)\b/i,
+  /\bdiscounted (?:product|unit|price) in exchange for\b/i,
+];
+
+/**
+ * Returns true if content discloses a free/discounted product given IN
+ * EXCHANGE FOR a review — a real conflict of interest (unlike a disclosed
+ * loaner).
+ * GUARD: exchange object must be a review/opinion/feedback/rating; MUST NOT
+ * match "in exchange for your email/newsletter signup".
+ */
+export function hasIncentivizedReview(content) {
+  if (!content) return false;
+  for (const pat of INCENTIVIZED_REVIEW_PATTERNS) {
+    if (pat.test(content)) return true;
+  }
+  return false;
+}
+
+// Reviewer operating under a review/press/media embargo or an NDA. GUARD:
+// requires the review/press/media/NDA qualifier so trade/arms/oil/export
+// embargoes never match — a bare "embargo" is never sufficient.
+const REVIEW_EMBARGO_NDA_PATTERNS = [
+  /\b(?:review|press|media|launch) embargo\b/i,
+  /\bunder (?:a|an) (?:review|press|media) embargo\b/i,
+  /\bembargo(?:ed)? (?:until|lifts|lifted|date|period)\b/i,
+  /\b(?:signed|under|subject to) (?:a|an )?(?:nda|non-disclosure agreement)\b/i,
+  /\bnon-disclosure agreement\b/i,
+  /\breview guidelines (?:provided|set) by (?:the )?(?:manufacturer|brand|company|vendor)\b/i,
+];
+
+/**
+ * Returns true if content discloses that the reviewer operated under a
+ * review/press/media embargo or signed an NDA — a constraint on independence.
+ * GUARD: requires the review/press/media/NDA qualifier; MUST NOT match bare
+ * trade/arms/oil/export embargo language (e.g. "under a trade embargo").
+ */
+export function hasReviewEmbargoOrNda(content) {
+  if (!content) return false;
+  for (const pat of REVIEW_EMBARGO_NDA_PATTERNS) {
+    if (pat.test(content)) return true;
+  }
+  return false;
+}
+
+// Non-disparagement / gag clause language. NOTE: exported for detection/
+// reporting purposes only — deliberately NOT wired into scoreSource. A review
+// that REPORTS the existence of a gag clause (e.g. investigative journalism
+// about a manufacturer's NDA terms) is valuable, credible reporting, not
+// evidence that the SOURCE itself is gagged. Penalizing a source for merely
+// mentioning a gag clause would punish exactly the transparency we want.
+const EULA_GAG_PATTERNS = [
+  /\bnon-disparagement (?:clause|agreement|provision)\b/i,
+  /\bgag (?:clause|order|provision)\b/i,
+  /\bnot (?:to )?(?:disparage|post negative|write negative|make disparaging)\b/i,
+  /\bprohibits (?:negative|critical) reviews\b/i,
+  /\bagree not to (?:post|write|publish) (?:any )?(?:negative|disparaging|critical) (?:reviews|comments|statements)\b/i,
+];
+
+/**
+ * Returns true if content mentions a non-disparagement/gag clause. Exported
+ * for reporting purposes only — deliberately NOT wired into scoreSource. A
+ * source reporting on a gag clause (journalism) is not itself a gagged
+ * source; see the constant comment above for the rationale.
+ */
+export function hasEulaGag(content) {
+  if (!content) return false;
+  for (const pat of EULA_GAG_PATTERNS) {
     if (pat.test(content)) return true;
   }
   return false;
@@ -428,15 +598,24 @@ export function isManufacturerDomain(url) {
  *   + 25 hands-on testing detected
  *   + 15 expert review domain
  *   +  5 community discussion (reddit/HN/etc.)
+ *   + 10 self-funded purchase disclosed (independence-positive)
  *   - 30 listicle / thin SEO content
  *   - 45 affiliate-tracked outbound links (conflict of interest)
  *   - 30 sponsored / paid-promotion markers (#ad, paid partnership)
+ *   - 25 incentivized review (free/discounted product for a review)
  *   - 20 clickbait curiosity-gap framing
  *   - 15 manufacturer/retailer page (informational, not a review)
+ *   - 10 reviewer under a review/press embargo or NDA
+ *   +  0 seeded-unit loaner disclosed — tag only, does NOT move credibility
+ *        (honest, standard practice; it only lowers `independence`)
  *
  * The sponsored/clickbait penalties are moderate on purpose: a single soft
  * signal must not, on its own, push a genuine expert-domain source (+15, or
  * +40 with hands-on) below the MIN_CREDIBLE_SCORE (45) gate.
+ *
+ * Also returns `independence` (0-100), a SEPARATE spectrum from `score` — see
+ * the header comment for the concept. A disclosed loaner lowers independence
+ * without touching credibility; free-for-review and embargo/NDA hit both.
  */
 export function scoreSource(input) {
   const tags = [];
@@ -470,6 +649,29 @@ export function scoreSource(input) {
     tags.push('sponsored-content');
     reasons.push('paid-promotion marker (#ad / sponsored / paid partnership)');
     score -= 30;
+  }
+
+  if (hasSelfPurchase(fullContent)) {
+    tags.push('self-purchased');
+    reasons.push('reviewer disclosed self-funded purchase — independence-positive');
+    score += 10;
+  }
+
+  if (hasSeededUnit(fullContent)) {
+    tags.push('seeded-unit');
+    reasons.push('review-unit loan disclosed (honest, lower independence)');
+  }
+
+  if (hasIncentivizedReview(fullContent)) {
+    tags.push('incentivized-review');
+    reasons.push('free/discounted product given in exchange for a review — conflict of interest');
+    score -= 25;
+  }
+
+  if (hasReviewEmbargoOrNda(fullContent)) {
+    tags.push('embargo-nda');
+    reasons.push('reviewer operated under a review embargo or NDA — constrained independence');
+    score -= 10;
   }
 
   if (hasClickbaitFraming(input.title, fullContent)) {
@@ -513,7 +715,23 @@ export function scoreSource(input) {
   }
 
   score = Math.max(0, Math.min(100, score));
-  return { tags, score, reasons };
+
+  // Independence (0-100): a spectrum separate from credibility, derived from
+  // the same tag set. Base 60 (typical unaffiliated hands-on reviewer),
+  // adjusted by independence-relevant tags, clamped [0, 100].
+  let independence = 60;
+  if (tags.includes('self-purchased')) independence += 35;
+  if (tags.includes('community')) independence += 15;
+  if (tags.includes('seeded-unit')) independence -= 20;
+  if (tags.includes('incentivized-review')) independence -= 40;
+  if (tags.includes('embargo-nda')) independence -= 25;
+  if (tags.includes('affiliate-conflict')) independence -= 20;
+  if (tags.includes('sponsored-content')) independence -= 40;
+  if (tags.includes('manufacturer')) independence -= 50;
+  if (tags.includes('ai-injection')) independence -= 60;
+  independence = Math.max(0, Math.min(100, independence));
+
+  return { tags, score, reasons, independence };
 }
 
 /**
@@ -523,5 +741,6 @@ export function scoreSource(input) {
 export function formatCredibilityBadge(cred) {
   const parts = cred.tags.map((t) => `[${t}]`);
   parts.push(`[score=${cred.score}]`);
+  parts.push(`[indep=${cred.independence}]`);
   return parts.join('');
 }

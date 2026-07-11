@@ -17,6 +17,11 @@ import {
   hasAiInjection,
   hasSponsoredContent,
   hasClickbaitFraming,
+  hasSelfPurchase,
+  hasSeededUnit,
+  hasIncentivizedReview,
+  hasReviewEmbargoOrNda,
+  hasEulaGag,
   scoreSource,
   formatCredibilityBadge,
 } from '../../worker/lib/credibility.js';
@@ -164,6 +169,36 @@ export function runCredibilityTests() {
     ['clickbait-negative-puffery', hasClickbaitFraming('The Best Air Purifier We Tested', 'Whisper-quiet and impressive CADR — we loved it.'), false],
     ['clickbait-negative-hands-on', hasClickbaitFraming('Hands-on: Acme Purifier', 'We love it, and the minimalist design really impressed us.'), false],
     ['clickbait-negative-empty', hasClickbaitFraming('', ''), false],
+
+    // ── hasSelfPurchase ───────────────────────────────────────────────────
+    ['self-purchase-positive', hasSelfPurchase('We bought this unit ourselves at full retail price.'), true],
+    ['self-purchase-negative-buy-link', hasSelfPurchase('You can buy this on Amazon for $99.'), false],
+    ['self-purchase-negative-empty', hasSelfPurchase(''), false],
+
+    // ── hasSeededUnit ─────────────────────────────────────────────────────
+    ['seeded-unit-positive', hasSeededUnit('The review unit was provided by the manufacturer.'), true],
+    ['seeded-unit-negative-sent-back', hasSeededUnit('We sent the unit back after two weeks.'), false],
+    ['seeded-unit-not-sponsored',
+      hasSponsoredContent('The review unit was provided by the manufacturer.'),
+      false],
+
+    // ── hasIncentivizedReview ─────────────────────────────────────────────
+    ['incentivized-positive-exchange-review',
+      hasIncentivizedReview('I received this product for free in exchange for an honest review.'),
+      true],
+    ['incentivized-positive-vine', hasIncentivizedReview('Amazon Vine'), true],
+    ['incentivized-negative-email-signup',
+      hasIncentivizedReview('Subscribe in exchange for your email address.'),
+      false],
+
+    // ── hasReviewEmbargoOrNda ─────────────────────────────────────────────
+    ['embargo-positive-press', hasReviewEmbargoOrNda('This review was under a press embargo until today.'), true],
+    ['embargo-positive-nda', hasReviewEmbargoOrNda('We signed a non-disclosure agreement.'), true],
+    ['embargo-negative-trade', hasReviewEmbargoOrNda('The company is under a trade embargo.'), false],
+    ['embargo-negative-arms', hasReviewEmbargoOrNda('an arms embargo'), false],
+
+    // ── hasEulaGag ────────────────────────────────────────────────────────
+    ['eula-gag-positive', hasEulaGag('The EULA contains a non-disparagement clause.'), true],
 
     // ── scoreSource composite ─────────────────────────────────────────────
   ];
@@ -348,10 +383,98 @@ export function runCredibilityTests() {
   cases.push(['composite-expert-clickbait-tag-expert', expertWithClickbait.tags.includes('expert-domain'), true]);
   cases.push(['composite-expert-clickbait-still-credible', expertWithClickbait.score >= 45, true]);
 
+  // ── Independence composite: self-purchased reddit source is highly independent.
+  const selfPurchasedReddit = scoreSource({
+    url: 'https://www.reddit.com/r/monitors/comments/xyz/i_bought_the_c4',
+    title: 'I bought the LG C4 myself',
+    content: 'We bought this unit ourselves at full retail price and used it for months.',
+    sourceType: 'web',
+  });
+  cases.push(['independence-self-purchased-reddit-tag', selfPurchasedReddit.tags.includes('self-purchased'), true]);
+  cases.push(['independence-self-purchased-reddit-high', selfPurchasedReddit.independence > 85, true]);
+  cases.push(['independence-self-purchased-reddit-in-range',
+    selfPurchasedReddit.independence >= 0 && selfPurchasedReddit.independence <= 100, true]);
+
+  // ── Independence composite: a sponsored manufacturer page is highly conflicted.
+  const sponsoredManufacturerPage = scoreSource({
+    url: 'https://apple.com/shop/buy-mac/macbook-pro',
+    title: 'Buy MacBook Pro',
+    content: 'This post is sponsored by BrandX #ad. The most advanced Mac notebook ever.',
+    sourceType: 'web',
+  });
+  cases.push(['independence-sponsored-manufacturer-low', sponsoredManufacturerPage.independence < 20, true]);
+  cases.push(['independence-sponsored-manufacturer-in-range',
+    sponsoredManufacturerPage.independence >= 0 && sponsoredManufacturerPage.independence <= 100, true]);
+
+  // ── Independence composite: an expert-domain source disclosing a loaner sits
+  // strictly between the self-purchased-reddit high and the sponsored-manufacturer low.
+  const expertLoanerPage = scoreSource({
+    url: 'https://rtings.com/tv/reviews/lg/c4-oled',
+    title: 'LG C4 OLED Review',
+    content: 'We tested it for weeks. The review unit was provided by the manufacturer.',
+    sourceType: 'web',
+  });
+  cases.push(['independence-expert-loaner-tag', expertLoanerPage.tags.includes('seeded-unit'), true]);
+  cases.push(['independence-expert-loaner-not-sponsored', expertLoanerPage.tags.includes('sponsored-content'), false]);
+  cases.push(['independence-expert-loaner-credible', expertLoanerPage.score >= 45, true]);
+  cases.push(['independence-expert-loaner-between-low',
+    expertLoanerPage.independence > sponsoredManufacturerPage.independence, true]);
+  cases.push(['independence-expert-loaner-between-high',
+    expertLoanerPage.independence < selfPurchasedReddit.independence, true]);
+  cases.push(['independence-expert-loaner-in-range',
+    expertLoanerPage.independence >= 0 && expertLoanerPage.independence <= 100, true]);
+
+  // ── Incentivized-review composite: real conflict of interest, penalized + tagged.
+  const incentivizedPage = scoreSource({
+    url: 'https://some-blog.com/free-purifier-review',
+    title: 'My honest thoughts',
+    content: 'I received this product for free in exchange for an honest review.',
+    sourceType: 'web',
+  });
+  cases.push(['composite-incentivized-tagged', incentivizedPage.tags.includes('incentivized-review'), true]);
+  cases.push(['composite-incentivized-penalized', incentivizedPage.score < 50, true]);
+
+  // ── Embargo/NDA composite: constrained independence, mild credibility penalty.
+  const embargoPage = scoreSource({
+    url: 'https://some-tech-blog.com/early-look',
+    title: 'Early Look',
+    content: 'This review was under a press embargo until today.',
+    sourceType: 'web',
+  });
+  cases.push(['composite-embargo-tagged', embargoPage.tags.includes('embargo-nda'), true]);
+  cases.push(['composite-embargo-penalized', embargoPage.score < 50, true]);
+
+  // ── Gag-clause composite: hasEulaGag is NOT wired into scoreSource — reporting
+  // on a gag clause must not lower a source's credibility score.
+  const gagReportingPage = scoreSource({
+    url: 'https://some-tech-blog.com/nda-investigation',
+    title: 'Inside the NDA Terms Manufacturers Use',
+    content: 'The EULA contains a non-disparagement clause. We tested the product for weeks regardless.',
+    sourceType: 'web',
+  });
+  cases.push(['composite-gag-not-tagged', gagReportingPage.tags.includes('eula-gag'), false]);
+  cases.push(['composite-gag-score-unaffected', gagReportingPage.score >= 45, true]);
+
+  // ── Regression: a plain hands-on expert review with none of the new signals
+  // gets no new tags and independence in the typical unaffiliated 60-75 band.
+  const plainHandsOnReview = scoreSource({
+    url: 'https://some-blog.com/acme-purifier-review',
+    title: 'Acme Purifier: Hands-on Review',
+    content: 'We tested it for a week. Whisper-quiet, and we loved the minimalist design.',
+    sourceType: 'web',
+  });
+  cases.push(['regression-no-self-purchased', plainHandsOnReview.tags.includes('self-purchased'), false]);
+  cases.push(['regression-no-seeded-unit', plainHandsOnReview.tags.includes('seeded-unit'), false]);
+  cases.push(['regression-no-incentivized', plainHandsOnReview.tags.includes('incentivized-review'), false]);
+  cases.push(['regression-no-embargo', plainHandsOnReview.tags.includes('embargo-nda'), false]);
+  cases.push(['regression-independence-in-band',
+    plainHandsOnReview.independence >= 60 && plainHandsOnReview.independence <= 75, true]);
+
   // Format badge sanity.
   const badge = formatCredibilityBadge(handsOnExpert);
   cases.push(['badge-contains-score', badge.includes('[score='), true]);
   cases.push(['badge-contains-handsOn', badge.includes('[hands-on]'), true]);
+  cases.push(['badge-contains-indep', badge.includes('[indep='), true]);
 
   return run(cases);
 }
