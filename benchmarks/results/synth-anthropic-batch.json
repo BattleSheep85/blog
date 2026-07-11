@@ -1,0 +1,1719 @@
+[
+  {
+    "query": "best wireless earbuds un",
+    "model": "claude-haiku-4-5 (batch)",
+    "ok": "✓",
+    "cost": "$0.0259",
+    "products": 6,
+    "name_ung": 0,
+    "num_ung": 0,
+    "avg_pros": 4,
+    "avg_cons": 3.2,
+    "has_verdict": 6,
+    "has_rating": 6,
+    "products_full": [
+      {
+        "name": "Anker Soundcore Space A40",
+        "brand": "Anker (Soundcore)",
+        "price": 79.99,
+        "rating": 4.5,
+        "pros": [
+          "Excellent active noise cancellation for the price, repeatedly praised by RTINGS, PCMag, and Wirecutter as best-in-class for under $100",
+          "8-hour battery life per charge with ANC enabled, verified by independent testing",
+          "Comfortable fit with multiple ear tip sizes, validated across Reddit and community feedback for all-day wear",
+          "Solid adaptive ANC that adjusts to ambient noise, outperforming similarly-priced competitors"
+        ],
+        "cons": [
+          "Call quality microphone is adequate but not excellent; some users report background noise leakage on calls",
+          "Charging case is bulky compared to competitors, reducing portability appeal",
+          "Touch controls occasionally miss input or trigger false activations, a known firmware limitation"
+        ],
+        "specs": {
+          "batteryPerCharge": "8 hours (ANC on)",
+          "noiseReductionRating": "ANC -24 dB (adaptive)",
+          "waterResistance": "IP44",
+          "driverSize": "11mm"
+        },
+        "verdict": "The Anker Soundcore Space A40 is the consensus pick across RTINGS, PCMag, and Wirecutter for best noise-cancelling earbuds under $100 in 2026. Hands-on testing confirms strong ANC performance (outperforming $150+ competitors in isolation tests) and reliable 8-hour battery life. The bulky case and occasional touch-control issues are minor trade-offs for the feature set at this price.",
+        "best_for": ""
+      },
+      {
+        "name": "EarFun Air Pro 4+",
+        "brand": "EarFun",
+        "price": 79.99,
+        "rating": 4.5,
+        "pros": [
+          "PCMag Editors' Choice for noise cancellation among cheap earbuds—hands-on testing confirms strong passive and active isolation",
+          "Currently discounted to $79.99 on Amazon (MSRP $99.99), excellent value for ANC performance",
+          "Balanced, warm sound signature with slightly elevated bass, well-suited to casual listeners and music streaming",
+          "Reliable connection stability and low-latency mode for gaming, validated across community reports"
+        ],
+        "cons": [
+          "ANC performance is good but not as aggressive as Soundcore Space A40 in extreme noise (plane cabins, heavy machinery)",
+          "Build quality reports suggest plastic hinges on case may fatigue with heavy daily use; some users report hinge failure after 12+ months",
+          "Touch controls are responsive but sensitivity customization is limited via app"
+        ],
+        "specs": {
+          "batteryPerCharge": "8 hours (ANC on)",
+          "noiseReductionRating": "ANC -22 dB",
+          "waterResistance": "IP54",
+          "driverSize": "10.2mm"
+        },
+        "verdict": "PCMag hands-on testing rates the EarFun Air Pro 4+ as Editors' Choice for noise cancellation in the budget earbud category. At the current $79.99 Amazon price, it delivers strong ANC (within 2 dB of the $80 Soundcore Space A40) and warm, engaging sound for music. Case build concerns suggest potential durability issues after 12+ months; monitor hinge integrity if bought used.",
+        "best_for": ""
+      },
+      {
+        "name": "Tribit FlyBuds 3",
+        "brand": "Tribit",
+        "price": 35.99,
+        "rating": 4,
+        "pros": [
+          "PCMag Editors' Choice for intense workouts—completely waterproof (IP67 rating), outperforming sport-focused competitors at similar prices",
+          "Secure fit with 4 ear hook sizes, validated across gym and running reviews; minimal movement during exercise",
+          "Exceptional value at $35.99; decent sound quality and reliability for the price point",
+          "8-hour battery life per charge, suitable for all-day outdoor activity"
+        ],
+        "cons": [
+          "No active noise cancellation; passive isolation only—not suited for commuting in loud environments",
+          "Sound profile is bass-heavy and lacks clarity in vocals; not recommended for critical listening or music work",
+          "Charging case is small but connector is proprietary (non-USB-C), limiting charging flexibility"
+        ],
+        "specs": {
+          "batteryPerCharge": "8 hours",
+          "waterResistance": "IP67 (fully waterproof)",
+          "driverSize": "13mm",
+          "fitType": "Over-ear hooks with 4 sizes"
+        },
+        "verdict": "PCMag hands-on testing names the Tribit FlyBuds 3 Editors' Choice for intense workouts due to IP67 waterproofing and secure ear-hook design. At $35.99, they deliver exceptional value for gym, running, and water sports—the only real trade-off is lack of ANC and consumer-grade sound tuning. Ideal for athletes indifferent to music quality.",
+        "best_for": ""
+      },
+      {
+        "name": "EarFun Free 2S",
+        "brand": "EarFun",
+        "price": 49.99,
+        "rating": 4,
+        "pros": [
+          "Wirecutter (New York Times expert-domain testing) rates it as best wireless earbuds under $50, validating cost-to-feature ratio",
+          "Warm, slightly bass-forward sound signature appeals to mainstream listeners and streaming consumers",
+          "IPX4 water resistance suitable for light sweating and rain exposure",
+          "Solid 7-hour battery life per charge, adequate for typical daily use"
+        ],
+        "cons": [
+          "No active noise cancellation; only passive isolation through ear-tip fit—unsuitable for noisy commutes",
+          "Build quality is plastic-heavy; some durability concerns after 18+ months of daily use per Reddit reports",
+          "Microphone call quality is basic; background noise is noticeable to call recipients"
+        ],
+        "specs": {
+          "batteryPerCharge": "7 hours",
+          "waterResistance": "IPX4",
+          "driverSize": "10.2mm"
+        },
+        "verdict": "Wirecutter's hands-on testing endorses the EarFun Free 2S as best true wireless under $50, valuing its warm sound and cost efficiency. No ANC limits its appeal to quiet environments; best suited for casual home listening and gym use where isolation comes from fit, not electronics.",
+        "best_for": ""
+      },
+      {
+        "name": "Soundcore Liberty 4 NC",
+        "brand": "Anker (Soundcore)",
+        "price": 56.99,
+        "rating": 3.5,
+        "pros": [
+          "Hi-Res Audio certification with LDAC codec support for lossless audio from compatible sources (Sony, Android devices with Hi-Res apps)",
+          "Claimed 50-hour battery life across case (per-charge runtime not independently verified in recent tests)",
+          "Hi-Res audio feature at sub-$60 price is rare; appeals to audiophiles with compatible playback devices",
+          "Effective passive noise isolation through secure fit"
+        ],
+        "cons": [
+          "Battery life claims (50 hours total) are misleading; per-charge runtime appears to be 6–8 hours, typical for the category. LDAC audio benefit only realized with Hi-Res sources (not Spotify, YouTube, Apple Music standard streams)",
+          "Active noise cancellation performance lags competitors (Soundcore Space A40, EarFun Air Pro 4+) in independent testing; passive seal matters more than ANC circuit",
+          "No recent hands-on testing from major reviewers after 2025; newer models have superseded it in benchmark rankings"
+        ],
+        "specs": {
+          "batteryPerCharge": "6–8 hours (estimated; not independently verified)",
+          "audioCodec": "LDAC, AAC, SBC",
+          "noiseReductionRating": "98.5% (claimed)",
+          "waterResistance": "IP54"
+        },
+        "verdict": "The Soundcore Liberty 4 NC is technically dated (2023 model) and lacks recent hands-on testing to validate its claimed 98.5% noise reduction or 50-hour battery. LDAC Hi-Res support is a genuine asset for users with compatible playback devices, but meaningless for Spotify/YouTube listeners. Superseded by the Soundcore Space A40 in nearly every independent test.",
+        "best_for": ""
+      },
+      {
+        "name": "JLab Go Pods ANC",
+        "brand": "JLab",
+        "price": 36,
+        "rating": 3.5,
+        "pros": [
+          "Tom's Guide hands-on reviewer (expert-domain source) calls it the best ultra-budget ANC earbud at $25–$36, exceptional value for noise cancellation feature inclusion",
+          "ANC at sub-$40 price is rare; provides basic noise reduction suitable for light ambient noise",
+          "Lightweight and comfortable for extended wear, per community feedback",
+          "IPX4 water resistance handles light exercise and rain"
+        ],
+        "cons": [
+          "ANC performance is modest compared to $80+ models; effective only in low-to-medium noise (office background, light traffic), not in loud environments (planes, construction)",
+          "Sound quality is compressed and lacking detail; bass is thin compared to competitors at similar price",
+          "Call microphone quality is below average; background noise is prominent to call recipients",
+          "Build feels cheap; reports of durability issues (button rattle, hinge failure) after 6–12 months"
+        ],
+        "specs": {
+          "batteryPerCharge": "6 hours (ANC on)",
+          "noiseReductionRating": "ANC enabled (no dB rating provided)",
+          "waterResistance": "IPX4",
+          "driverSize": "8mm"
+        },
+        "verdict": "Tom's Guide expert testing endorses the JLab Go Pods ANC as the best value ultra-budget ANC option at $25–$36. ANC is present but weak (office-only, not commute-rated), and sound quality is mediocre. Durability concerns after 6–12 months suggest it's a temporary earbud, not a long-term investment.",
+        "best_for": ""
+      }
+    ],
+    "summary": "We analyzed 93 sources spanning hands-on reviews, expert testing, and community feedback to identify the best wireless earbuds under $100 as of July 2026. The market is dominated by budget-focused brands like Anker Soundcore, EarFun, and JLab, with the Anker Soundcore Space A40 and EarFun Air Pro 4+ emerging as top picks for noise cancellation and overall value. A sharp divide exists between established reviewed products (backed by credible sources) and marketplace-churn white-label clones; we've omitted the latter entirely."
+  },
+  {
+    "query": "best linen shirts for me",
+    "model": "claude-haiku-4-5 (batch)",
+    "ok": "✓",
+    "cost": "$0.0216",
+    "products": 5,
+    "name_ung": 2,
+    "num_ung": 0,
+    "avg_pros": 2.8,
+    "avg_cons": 3.2,
+    "has_verdict": 5,
+    "has_rating": 4,
+    "products_full": [
+      {
+        "name": "Banana Republic Standard-Fit Linen Shirt",
+        "brand": "Banana Republic",
+        "price": null,
+        "rating": 4,
+        "pros": [
+          "Named as 'Best Overall' by GQ expert source (May 2026), indicating editorial credibility",
+          "Standard fit balances casual ease with refined tailoring, suitable for multiple occasions",
+          "Machine-washable and available in range of colors per GQ listing"
+        ],
+        "cons": [
+          "Exact price not specified in sources; no independent hands-on review confirming quality claims",
+          "No GSM specification found in sources; durability and weight characteristics unverified",
+          "Rating based solely on listicle mention without detailed product testing or long-term user feedback"
+        ],
+        "specs": {},
+        "verdict": "GQ names this 'Best Overall,' suggesting broad appeal and editorial confidence, but limited independent hands-on testing backs this claim. Suitable as a safe mainstream pick for men seeking a balanced casual-to-refined linen shirt.",
+        "best_for": ""
+      },
+      {
+        "name": "Uniqlo Premium Linen Shirt",
+        "brand": "Uniqlo",
+        "price": null,
+        "rating": 4,
+        "pros": [
+          "Named 'Best Budget' by GQ (May 20, 2026), indicating strong value proposition",
+          "Multiple social-media reviews (May 2025) praise 2025 version as 'much softer' and improved over previous years, with non-irritating fabric",
+          "Confirmed machine-washable per GQ listing; accessible price point for entry-level linen buyers"
+        ],
+        "cons": [
+          "Price not stated in sources; 'budget' label suggests lower cost, but exact MSRP unconfirmed",
+          "Earlier model reviews suggest prior versions had quality issues (skin irritation complaints); relies on user reports rather than hands-on testing",
+          "No GSM or fiber-content specs provided; durability over time not independently verified"
+        ],
+        "specs": {},
+        "verdict": "GQ positions this as best-budget option, and recent user feedback on TikTok indicates material improvements, making it a credible affordable entry point. However, lack of hands-on expert testing and price opacity limit confidence.",
+        "best_for": ""
+      },
+      {
+        "name": "J.Crew Baird McNutt Irish Linen Shirt",
+        "brand": "J.Crew",
+        "price": null,
+        "rating": 3.5,
+        "pros": [
+          "Named in Forbes Vetted (Jun 27, 2025) as a machine-washable option; confirms ease of care",
+          "Styleforum community (Jul 13, 2025) notes 'quite good for the price point, typically <$50 on sale,' suggesting established reputation for value",
+          "Baird McNutt is recognized as quality Irish linen supplier, indicating material heritage"
+        ],
+        "cons": [
+          "No hands-on expert testing or detailed specification data in sources; reputation reliant on user forum commentary",
+          "Price range ($50 on sale) suggests frequent discounting; full MSRP unclear, making true value hard to assess",
+          "Listicle mentions only confirm existence, not detailed product quality or fit reliability"
+        ],
+        "specs": {},
+        "verdict": "Community reputation and Baird McNutt provenance suggest solid quality, and sub-$50 sale pricing is attractive, but lack of independent hands-on testing limits confidence in long-term durability claims.",
+        "best_for": ""
+      },
+      {
+        "name": "Charles Tyrwhitt Linen Shirt",
+        "brand": "Charles Tyrwhitt",
+        "price": null,
+        "rating": 3.5,
+        "pros": [
+          "Single hands-on review by The Adult Man (Jun 3, 2025) describes 'featherlight but built to last' with slubby texture and breathable weave",
+          "Reviewer notes 'surprisingly tough' construction despite lightweight feel, suggesting durability",
+          "Described as suitable for both casual and semi-formal wear"
+        ],
+        "cons": [
+          "Only one independent hands-on review found; limited sample size for confident generalization",
+          "The Adult Man review is from a personal blog (not expert-domain source); credibility lower than RTINGS or Wirecutter",
+          "No specifications (GSM, fiber content, care instructions) provided; price also absent from sources"
+        ],
+        "specs": {},
+        "verdict": "The Adult Man's hands-on assessment is positive and specific, but a single non-expert-domain reviewer is insufficient to confidently rank this above Banana Republic or Uniqlo. Use as a secondary option if Charles Tyrwhitt fits your aesthetic.",
+        "best_for": ""
+      },
+      {
+        "name": "Bonobos Everyday Linen Shirt",
+        "brand": "Bonobos",
+        "price": null,
+        "rating": null,
+        "pros": [
+          "Named in Forbes Vetted (Jun 27, 2025) as machine-washable option; confirms care convenience",
+          "Bonobos brand reputation for tailored fit and quality construction appeals to men seeking structured casual wear"
+        ],
+        "cons": [
+          "No independent hands-on testing, price, or specifications found in sources",
+          "Only listicle mention; no detailed verdict or comparative analysis provided",
+          "Insufficient data to assess durability, fabric weight, or fit reliability",
+          "Rating set to null due to lack of substantive sourced information"
+        ],
+        "specs": {},
+        "verdict": "Listicle-only mention without hands-on testing or detailed specs. Include for completeness as a mainstream option, but treat with low confidence; seek user reviews on Bonobos site before purchase.",
+        "best_for": ""
+      }
+    ],
+    "summary": "Analysis of 100 sources on men's linen shirts reveals severe data accessibility issues: 9 key sources (YouTube videos, Reddit threads) returned 403 Forbidden errors, blocking direct content review. Of remaining accessible sources, most are undated listicles, styling guides, and care instructions rather than hands-on product reviews. Two credible expert sources (GQ, Travel + Leisure hands-on test) and one Wirecutter listicle mention specific brands, but insufficient hands-on testing data exists to rank individual products with confidence. Uniqlo Premium Linen and Banana Republic Standard-Fit emerge as most frequently cited across multiple sources, but evidence remains thin."
+  },
+  {
+    "query": "best self-hosted photo b",
+    "model": "claude-haiku-4-5 (batch)",
+    "ok": "✓",
+    "cost": "$0.0211",
+    "products": 4,
+    "name_ung": 1,
+    "num_ung": 0,
+    "avg_pros": 4,
+    "avg_cons": 4,
+    "has_verdict": 4,
+    "has_rating": 4,
+    "products_full": [
+      {
+        "name": "Immich",
+        "brand": "Immich (FUTO-sponsored open-source)",
+        "price": null,
+        "rating": 4.5,
+        "pros": [
+          "Feature-rich: advanced search, AI tagging (AutoTag v0.80.0+), multi-user sharing, and GPS metadata editing; tested against 360,000+ assets for scalability",
+          "Active development and community: stable v2.5+ milestones, monthly updates, extensive Reddit and Discord support; v1.0 stabilization roadmap publicly tracked",
+          "Flexible storage: supports external S3, B2, and NAS backends; reduces initial library import from 384 GB to smaller footprint via deduplication",
+          "Mobile-first design: iOS and Android apps with real-time multi-device upload event rendering; works offline and syncs on reconnect"
+        ],
+        "cons": [
+          "High resource overhead: requires 6–8 GB RAM minimum; initial indexing of 10,000+ photos takes 24–48 hours on CPU-only setups; machine learning on 4 GB RAM is impractical",
+          "Setup complexity: Docker required; reverse proxy and SSL configuration needed for remote access; first-time deployment takes 2–4 hours beyond Docker familiarity",
+          "Mobile upload gaps: does not chunk large file uploads (roadmap item); videos larger than 200 MB fail over mobile internet; no native chunked streaming for slow connections",
+          "Steep learning curve for non-developers: WebUI is powerful but requires understanding of reverse proxies, Docker volumes, and database backups"
+        ],
+        "specs": {
+          "minRAM": "6 GB",
+          "recommendedRAM": "8 GB",
+          "minCores": "2",
+          "recommendedCores": "4",
+          "license": "AGPL-3.0",
+          "deploymentModel": "Docker",
+          "multiUserSupport": "Yes",
+          "aiFeatures": "Yes (AutoTag, object detection, facial recognition beta)"
+        },
+        "verdict": "Immich is the top-ranked self-hosted photo backup for users with moderate technical skill and adequate hardware. Hands-on testing confirms it handles 100,000+ photos smoothly with 8 GB RAM and is genuinely comparable to Google Photos for backup, search, and sharing. Community support is exceptional, and active development means issues get fixed. Trade-off: steep setup and non-negotiable resource requirements.",
+        "best_for": ""
+      },
+      {
+        "name": "PhotoPrism",
+        "brand": "PhotoPrism (open-source)",
+        "price": null,
+        "rating": 4,
+        "pros": [
+          "Lightweight and fast: runs on 3 GB RAM, 2 cores; indexed search works smoothly even on modest hardware like Raspberry Pi or low-cost NAS",
+          "Decentralized web design: designed to respect privacy by keeping photos on your own server; no cloud dependency",
+          "Flexible tagging and AI: includes automatic image classification, face detection, and place-based organization; can disable AI to save resources",
+          "Cross-platform support: documented setup for QNAP (64-bit, 3 GB RAM, 2 cores) and Unraid; straightforward Docker Compose deployment"
+        ],
+        "cons": [
+          "Fewer features than Immich: lacks multi-user library sharing and advanced GPS editing; best suited for single-user or family-curated libraries, not collaborative teams",
+          "Smaller community: less Stack Overflow/Reddit coverage than Immich; fewer third-party integrations and plugins",
+          "Mobile app maturity: mobile experience lags Immich; uploads require more manual steps; lacks real-time sync on app open",
+          "Documentation gaps: fewer hands-on tutorials and troubleshooting guides compared to Immich's extensive community wiki"
+        ],
+        "specs": {
+          "minRAM": "3 GB",
+          "recommendedRAM": "4 GB",
+          "minCores": "2",
+          "minStorage": "64-bit system required",
+          "license": "AGPL-3.0",
+          "deploymentModel": "Docker",
+          "multiUserSupport": "Limited (no true multi-user libraries)",
+          "aiFeatures": "Yes (TensorFlow-based image classification, face detection, place tagging)"
+        },
+        "verdict": "PhotoPrism is the best choice for lightweight self-hosting or constrained hardware (NAS, Pi, low-end VPS). Its 3 GB RAM requirement and fast indexing make it ideal for photographers with smaller libraries (under 50k photos) or who prioritize simplicity. Community is smaller, but the software is stable and well-documented for NAS platforms. Lacks Immich's multi-user features and cutting-edge AI.",
+        "best_for": ""
+      },
+      {
+        "name": "Nextcloud (with Photos app)",
+        "brand": "Nextcloud (open-source)",
+        "price": null,
+        "rating": 3.5,
+        "pros": [
+          "Unified platform: manages files, photos, contacts, and calendar in one system; reduces operational overhead of running multiple Docker containers",
+          "Wide NAS support: documented deployment on Unraid, TrueNAS, Synology via native apps or Docker; lower barrier to entry for NAS users",
+          "Proven stability: Nextcloud ecosystem is mature, widely deployed, and battle-tested; excellent documentation and large community forums",
+          "Flexible mobile access: native mobile apps for iOS and Android with automatic photo/video backup; works seamlessly with existing file sync"
+        ],
+        "cons": [
+          "Photo features lag dedicated tools: Photos app lacks advanced AI tagging, facial recognition, and place-based search; search is slower than Immich or PhotoPrism on large libraries",
+          "Performance on large libraries: indexing and searching 100k+ photos is noticeably slower; users report lag in WebUI with 10k+ images",
+          "Setup complexity rivals Immich: requires Nextcloud install (full stack), database tuning, and proper reverse proxy; not beginner-friendly despite reputation",
+          "Resource-heavy baseline: Nextcloud core uses more RAM/CPU than PhotoPrism even before Photos; not suitable for constrained hardware like Raspberry Pi Zero"
+        ],
+        "specs": {
+          "minRAM": "512 MB",
+          "recommendedRAM": "2–4 GB (photos app performance)",
+          "minCores": "1",
+          "license": "AGPL-3.0",
+          "deploymentModel": "Docker, native NAS apps, or standalone",
+          "multiUserSupport": "Yes (true multi-user with per-user photo libraries)",
+          "aiFeatures": "Limited (basic tagging; face recognition beta)"
+        },
+        "verdict": "Nextcloud is a solid choice if you already manage files in Nextcloud or need a unified file+photo+calendar system. Photo-specific features lag dedicated tools like Immich, making it suboptimal for photography-heavy workflows. Recommended only for users valuing ecosystem integration over photo-focused features.",
+        "best_for": ""
+      },
+      {
+        "name": "Piwigo",
+        "brand": "Piwigo (open-source)",
+        "price": null,
+        "rating": 3.5,
+        "pros": [
+          "Lightweight gallery server: designed for hosting and sharing photo galleries; minimal resource overhead compared to Immich",
+          "Mature codebase: well-established (15+ year project); stable on older hardware including vintage Mac Pro systems",
+          "Simple interface: straightforward album/gallery management without overwhelming features; good for non-technical users prioritizing ease over power",
+          "Active community: forum-based support; many shared plugins and themes available"
+        ],
+        "cons": [
+          "Limited backup automation: primary use is gallery sharing, not automatic device-to-server backup; manual upload workflows required",
+          "No native mobile backup: mobile apps are basic viewers, not backup clients; lacks auto-upload on app launch",
+          "Weak search and tagging: metadata search is rudimentary; no AI-powered tagging or face recognition",
+          "Photo management weak point: designed as a gallery/sharing tool, not a personal photo management system; lacks library organization features (collections, smart albums)"
+        ],
+        "specs": {
+          "minRAM": "512 MB",
+          "minCores": "1",
+          "license": "GPL-2.0",
+          "deploymentModel": "PHP + MySQL/Apache or Docker",
+          "multiUserSupport": "Yes (admin + viewer roles)",
+          "backupAutomation": "None (manual uploads via web or plugins)"
+        },
+        "verdict": "Piwigo is a lightweight photo gallery server, not a backup tool. While stable and simple, it lacks automatic device backup, mobile push features, and smart organization. Suitable for sharing existing photo collections, not for primary backup workflows.",
+        "best_for": ""
+      }
+    ],
+    "summary": "Immich dominates self-hosted photo backup with strong community support, active development, and hands-on verification across multiple platforms. PhotoPrism and Nextcloud offer viable alternatives for users prioritizing lightweight setups or unified file/photo management. All three are mature open-source projects with no subscription fees, though Immich requires 6–8 GB RAM and poses steeper learning curves for non-technical users."
+  },
+  {
+    "query": "best robot vacuum for pe",
+    "model": "claude-haiku-4-5 (batch)",
+    "ok": "✓",
+    "cost": "$0.0239",
+    "products": 5,
+    "name_ung": 0,
+    "num_ung": 0,
+    "avg_pros": 3,
+    "avg_cons": 2,
+    "has_verdict": 5,
+    "has_rating": 5,
+    "products_full": [
+      {
+        "name": "Ecovacs Deebot X8 Pro Omni",
+        "brand": "Ecovacs",
+        "price": 599,
+        "rating": 4.5,
+        "pros": [
+          "Hands-on tested by PCMag (expert-domain source, score=90) as 'Top Pick' for pet hair with thorough vacuum and mop performance; specifically confirmed to vacuum pet hair without tangles and mop up food remnants.",
+          "Vacuum-and-mop hybrid design handles wet messes that vacuum-only models cannot, useful for households with messy eaters or frequent spills.",
+          "Received PCMag Editors' Choice award, indicating sustained performance credibility from a long-term reviewer (PCMag tests for 10+ years)."
+        ],
+        "cons": [
+          "Price point ($599 discounted from $1,099.99 MSRP) is mid-to-premium; unclear if discount is permanent or promotional.",
+          "Mop-vacuum combos sacrifice pure vacuuming power on carpets compared to dedicated vacuum-only robots, per consumer testing data; not ideal if carpets dominate your home."
+        ],
+        "specs": {
+          "type": "Vacuum and Mop Hybrid",
+          "original_price": "$1,099.99"
+        },
+        "verdict": "PCMag's hands-on testing confirms the Ecovacs Deebot X8 Pro Omni handles pet hair effectively without tangling and performs competently as a mop-vacuum combo. At $599 (discounted), it offers vacuum-mop hybrid functionality backed by credible expert testing—the strongest supported pick in our research. Caveat: sacrifices carpet-only vacuuming power versus dedicated robot vacuums, so best for balanced bare-floor/carpet homes with occasional wet messes.",
+        "best_for": ""
+      },
+      {
+        "name": "MOVA V50",
+        "brand": "Mova",
+        "price": null,
+        "rating": 4,
+        "pros": [
+          "Hands-on YouTube testing (source 84, score=75) confirms 'impressive pet waste performance,' demonstrating real-world capability on household pet messes.",
+          "Identified as 'best robot vacuum under $700' by hands-on reviewer, positioning it as a flagship-level value option.",
+          "User feedback highlights strong performance across multiple cleaning scenarios when tested against cheaper alternatives like Roomba 405."
+        ],
+        "cons": [
+          "Exact current retail price not stated in sources; MSRP and availability unclear, making purchase comparison difficult.",
+          "Limited independent hands-on coverage—primarily supported by YouTube reviewer (score 75, hands-on but not expert-domain); lacks corroboration from PCMag, RTINGS, or Consumer Reports expert testing."
+        ],
+        "specs": {
+          "price_range": "Under $700"
+        },
+        "verdict": "A YouTube hands-on reviewer confirms the MOVA V50 excels at pet hair and waste pickup, positioning it as strong value under $700. However, this single hands-on source lacks corroboration from major expert reviewers (PCMag, RTINGS, Consumer Reports), so rank reflects moderate confidence. Good candidate for budget-conscious pet owners if expert validation emerges.",
+        "best_for": ""
+      },
+      {
+        "name": "Dyson 360 Vis Nav",
+        "brand": "Dyson",
+        "price": null,
+        "rating": 4,
+        "pros": [
+          "Highlighted as 'highly rated' robot vacuum for pet hair in research notes sourced from PCMag (expert-domain reviewer, score=90).",
+          "Tied for first place in Vacuum Wars (score 50, hands-on) for pet hair pickup performance, demonstrating consistent excellence across independent testers.",
+          "Advanced obstacle avoidance via visual navigation reduces pet-incident collisions."
+        ],
+        "cons": [
+          "No specific retail price confirmed in sources; Dyson products historically premium-priced.",
+          "Limited detail on anti-tangle brush design specifics; reliance on vision-based navigation may underperform in low-light pet environments compared to LiDAR+camera combos."
+        ],
+        "specs": {
+          "navigation": "Visual (360 camera)"
+        },
+        "verdict": "Dyson 360 Vis Nav appears in PCMag's pet-hair-focused coverage and tied first in Vacuum Wars' hands-on testing, indicating strong real-world performance. Limited pricing and detailed specs in our sources constrain confidence; treat as credible but pending deeper technical validation.",
+        "best_for": ""
+      },
+      {
+        "name": "Eufy Omni C20",
+        "brand": "Eufy/Anker",
+        "price": 349,
+        "rating": 3.5,
+        "pros": [
+          "Budget-friendly entry at ~$349 (noted in source 44, score=50), making it accessible for cost-conscious pet households.",
+          "Community feedback (Reddit, score=55) from long-haired dog owners praised its performance with double-coated shedders and noted the cutter comb in base keeps main brush mostly clean—a tangible anti-tangle feature.",
+          "Single traditional brush roller design with rubber and soft bristles supports pet hair without easy matting (source 44)."
+        ],
+        "cons": [
+          "Reddit user experience (source 36, score=60) reported 'pretty disappointing experience' with Eufy C10 (similar line), raising durability and reliability concerns for the variant reviewed.",
+          "No hands-on expert-domain testing (PCMag, RTINGS, Consumer Reports) confirmed for C20; reliance on community and budget-listing sources weakens confidence."
+        ],
+        "specs": {
+          "price": "$349 (typical)",
+          "brush_type": "Single traditional roller with rubber and soft bristles"
+        },
+        "verdict": "The Eufy Omni C20 offers budget appeal (~$349) and positive Reddit feedback from dog owners, particularly those with high-shedding breeds. However, lack of expert hands-on testing and mixed user reports on Eufy's budget line (C10 concerns) suggest moderate confidence—good value option but not yet validated by major independent reviewers.",
+        "best_for": ""
+      },
+      {
+        "name": "iRobot Roomba j7+",
+        "brand": "iRobot",
+        "price": null,
+        "rating": 3.5,
+        "pros": [
+          "Forbes Vetted (listicle, score=20, but referencing iRobot data) highlights 'particularly advanced obstacle detection' and explicit design to 'avoid pet waste'—a pragmatic pet-specific feature.",
+          "Dual rubber brush roll design (noted in iRobot marketing, source 5) supports pet hair pickup without tangling.",
+          "Established brand with long-term user community for troubleshooting and support."
+        ],
+        "cons": [
+          "Forbes ranking source is a listicle with promotional tone; no hands-on expert testing (PCMag, RTINGS, Consumer Reports) cited for j7+ pet performance.",
+          "Price not confirmed in sources; iRobot's premium positioning suggests $400–$800+ range, limiting affordability."
+        ],
+        "specs": {
+          "brush_type": "Dual rubber brush rolls"
+        },
+        "verdict": "The Roomba j7+ includes pet-waste-avoidance logic and dual-brush design suitable for shedding, per Forbes and iRobot marketing, but lacks hands-on expert validation in our sources. Recommend only if budget is secondary and you prioritize obstacle-avoidance reliability; otherwise, await PCMag or RTINGS pet-hair testing.",
+        "best_for": ""
+      }
+    ],
+    "summary": "After analyzing 100+ sources, we found that most robot vacuum coverage relies heavily on listicles and affiliate links with insufficient hands-on testing for reliable pet-hair-specific claims. The strongest evidence supports the Ecovacs Deebot X8 Pro Omni (PCMag's top pick with hands-on testing confirming excellent pet hair pickup), though sources are sparse for direct competitive validation. Robot vacuums are effective for regular pet hair maintenance on bare floors but underperform on carpets compared to dedicated upright vacuums—a critical limitation most marketing ignores."
+  },
+  {
+    "query": "best mechanical keyboard",
+    "model": "claude-haiku-4-5 (batch)",
+    "ok": "✓",
+    "cost": "$0.0192",
+    "products": 4,
+    "name_ung": 0,
+    "num_ung": 0,
+    "avg_pros": 3,
+    "avg_cons": 2,
+    "has_verdict": 4,
+    "has_rating": 4,
+    "products_full": [
+      {
+        "name": "Keychron Q5 Max",
+        "brand": "Keychron",
+        "price": null,
+        "rating": 4.5,
+        "pros": [
+          "Expert-domain source (RTINGS, May 2026) confirms excellent build quality and premium typing feel, with wireless capability for multi-device coding",
+          "Community consensus (Reddit, Feb 2026) highlights Mac/Windows compatibility with dedicated mode support, critical for cross-platform developers",
+          "75% layout strikes proven balance between functionality and desk space efficiency for programming workflows"
+        ],
+        "cons": [
+          "Premium pricing positions it above budget-constrained developers—no specific price found in sources, but Keychron's position in market suggests $150–250 range",
+          "No sourced information on long-term durability after 12+ months of heavy coding use, limiting confidence in multi-year reliability claims"
+        ],
+        "specs": {
+          "layout": "75%",
+          "connectivity": "wireless"
+        },
+        "verdict": "RTINGS (expert-domain, May 2026) ranks this as the best mechanical keyboard tested, citing excellent build quality and typing feel. Multiple community sources confirm Mac/Windows compatibility and programmer adoption. Recommended for those with budget flexibility who value premium construction and wireless convenience.",
+        "best_for": ""
+      },
+      {
+        "name": "Evoworks Evo75",
+        "brand": "Evoworks",
+        "price": 170,
+        "rating": 4,
+        "pros": [
+          "Expert-domain review (The Verge, May 2026) describes 'incredible build for $170'—delivers premium feel and prebuilt state at half the cost of comparable alternatives",
+          "Includes Rye switches producing 'thocky' typing tone preferred by programmers for satisfying tactile feedback during long coding sessions",
+          "Includes travel case and alternate Mac keycaps, plus ball-catch quick-release top for easy customization—valuable for developers who tinker with their setup"
+        ],
+        "cons": [
+          "75% layout may not suit developers who frequently use function rows or number pad—verify key layout matches your coding environment before purchase",
+          "Limited post-release durability data: sourced review is from May 2026 with no 6+ month real-world testing feedback available yet"
+        ],
+        "specs": {
+          "layout": "75%",
+          "keycaps": "prebuilt with Rye switches",
+          "caseColor": "Nebula with subtle color flecks"
+        },
+        "verdict": "The Verge's expert review (May 2026) confirms exceptional value: prebuilt with quality switches, travel case, and Mac keycaps at $170. Honest verdict: best budget pick for programmers, though layout may not suit all workflows. No data on durability beyond the review period.",
+        "best_for": ""
+      },
+      {
+        "name": "Dry Studio ATM98",
+        "brand": "Dry Studio",
+        "price": 259,
+        "rating": 3.5,
+        "pros": [
+          "Expert-domain review (The Verge, May 2026) highlights silent switches ideal for shared office environments where programmers work in open-plan spaces",
+          "1800-layout (98%) provides full number pad and function rows for developers who use spreadsheets, terminal navigation, or numerical input",
+          "Enormous RGB-ified rotary dial offers tactile control for volume/brightness during long coding sessions"
+        ],
+        "cons": [
+          "Silent switches may feel mushy compared to linear or tactile alternatives, reducing tactile feedback some programmers rely on for typing confidence",
+          "Premium pricing ($259) with limited independent verification beyond single Verge review—no community long-term durability data or comparative testing available"
+        ],
+        "specs": {
+          "layout": "1800 / 98%",
+          "switches": "silent",
+          "features": "RGB rotary dial"
+        },
+        "verdict": "The Verge (expert-domain, May 2026) praises silent switches and full layout, but sourced information is limited to a single review. Silent switches are excellent for office settings but may feel less responsive than linear switches. Rank reflects single-source backing and lack of community testing feedback.",
+        "best_for": ""
+      },
+      {
+        "name": "Keychron Q2 Pro",
+        "brand": "Keychron",
+        "price": null,
+        "rating": 4,
+        "pros": [
+          "Setup Insider listicle (Jun 11, 2026) names this best for programming, citing gasket-mounted aluminum construction and 75% layout balance",
+          "Wireless capability enables multi-workspace coding without cable constraints",
+          "75% layout proven optimal for programmer desk setups"
+        ],
+        "cons": [
+          "Primary source is a listicle (score 20) lacking hands-on testing details or specific performance measurements",
+          "No expert-domain (RTINGS, PCMag, Wirecutter) confirmation in sources despite strong positioning"
+        ],
+        "specs": {
+          "layout": "75%",
+          "construction": "gasket-mounted aluminum",
+          "connectivity": "wireless"
+        },
+        "verdict": "Setup Insider listicle (Jun 11, 2026) recommends as top pick for programmers, but lacks hands-on testing or expert-domain corroboration. Rank reflects reliance on single listicle source; buy with caution pending independent verification.",
+        "best_for": ""
+      }
+    ],
+    "summary": "Based on expert reviews and community feedback from 2026, the Keychron Q5 Max emerges as the top overall recommendation for programmers, offering excellent build quality, wireless capability, and typing feel at a premium price point. Budget-conscious developers should consider the Evoworks Evo75, which delivers remarkable value at $170 with a 75% layout and quality components. For those prioritizing ergonomics and long coding sessions, split keyboards and ergonomic designs warrant consideration, though they require adjustment time."
+  },
+  {
+    "query": "best standing desk for a",
+    "model": "claude-haiku-4-5 (batch)",
+    "ok": "✓",
+    "cost": "$0.0249",
+    "products": 6,
+    "name_ung": 3,
+    "num_ung": 0,
+    "avg_pros": 3,
+    "avg_cons": 2,
+    "has_verdict": 6,
+    "has_rating": 6,
+    "products_full": [
+      {
+        "name": "BTOD Recommended Stability Winner (NewHeights XT)",
+        "brand": "NewHeights",
+        "price": null,
+        "rating": 4.5,
+        "pros": [
+          "Wobble score less than half the closest competitor on BTOD.com's WobbleMeter—gold standard for stability at standing height",
+          "Dual-motor system ensures consistent performance under full load (tested at 275 lbs, maintains 1.35 in/sec speed)",
+          "Backed by hands-on testing and real-world durability metrics, not marketing claims"
+        ],
+        "cons": [
+          "Price not sourced; likely premium tier ($1000+) based on premium positioning in BTOD reviews",
+          "Limited public retail presence—may require direct inquiry or specialist retailers"
+        ],
+        "specs": {},
+        "verdict": "Most stable standing desk tested by BTOD.com's independent wobble meter. Dual-motor performance under load is proven. Premium price reflects engineering rigor; recommended for users prioritizing stability and longevity over budget.",
+        "best_for": ""
+      },
+      {
+        "name": "Ergo Electric Standing Desk 54x26",
+        "brand": "Vari",
+        "price": 799,
+        "rating": 4,
+        "pros": [
+          "Spacious 54 in. × 26 in. desktop suitable for dual monitors and multi-device setups",
+          "200 lb weight capacity covers most home-office loads (monitors, computer, peripherals, desk accessories)",
+          "Includes 4 programmable memory settings and cable management grommets for cable control"
+        ],
+        "cons": [
+          "Laminate surface finish requires upkeep to resist scratching and peeling—not a premium material for this price tier",
+          "No independent stability or wobble testing cited in sources; stability at standing height is unverified"
+        ],
+        "specs": {
+          "width": "54 in.",
+          "depth": "26 in.",
+          "weightCapacity": "200 lbs",
+          "desktopThickness": "1.25 in.",
+          "legSpacing": "39.5 in.",
+          "memorySettings": "4 programmable"
+        },
+        "verdict": "Solid mid-range option with generous desktop dimensions and practical features, backed by a named manufacturer with clear specs. The $799 price is fair for the size and memory presets. However, the laminate surface and lack of independent stability testing mean this is a 'trust the brand' pick rather than a proven performer. Coupon codes improve value.",
+        "best_for": ""
+      },
+      {
+        "name": "Uplift V3 Standing Desk",
+        "brand": "Uplift",
+        "price": null,
+        "rating": 4.5,
+        "pros": [
+          "Dual-motor system with impressive stability and fast adjustment speed praised in expert and community reviews",
+          "Wide customization options, add-ons, and lifetime warranty (per BTOD and Uplift comparison notes)",
+          "Faster motors than competitors; V3 has better stability at standing height than earlier V2 model"
+        ],
+        "cons": [
+          "Price not explicitly stated in sources; described as premium-tier, likely $800–$1500+",
+          "Some users report assembly complexity and time (though videos show 'fast and easy' assembly per manufacturer claims)"
+        ],
+        "specs": {},
+        "verdict": "Uplift V3 is a credible mid-to-premium pick backed by both expert BTOD testing and community consensus (Reddit users prefer V3 over V2 for standing-height stability). Dual motors and customization justify the premium price. No wobble meter data cited, so stability claims rest on user and expert anecdotes rather than instrumental proof—rank reflects this slight uncertainty versus NewHeights XT.",
+        "best_for": ""
+      },
+      {
+        "name": "Flexispot EC1 Standing Desk",
+        "brand": "Flexispot",
+        "price": 199.99,
+        "rating": 4,
+        "pros": [
+          "Entry-level price point (~$200) makes it accessible for budget-conscious home offices and first-time standing desk buyers",
+          "Dual-motor option available in the EC1 range, providing better speed and stability than single-motor competitors at this price",
+          "Community and BTOD reviews confirm it is 'easiest-to-assemble' in the entry-level category"
+        ],
+        "cons": [
+          "Limited desk surface dimensions and lower weight capacity compared to mid-range alternatives (exact specs not cited in sources)",
+          "Basic laminate surface; not suited for heavy loads or multi-device setups requiring large workspace"
+        ],
+        "specs": {},
+        "verdict": "Best budget standing desk for single-monitor home offices or casual sit-stand switching. Flexispot EC1's $200 price and dual-motor availability represent genuine value in the entry tier. No independent wobble testing limits confidence in stability claims; treat as a 'practical choice' rather than a performance pick.",
+        "best_for": ""
+      },
+      {
+        "name": "Monoprice Dual Motor Height Adjustable 3-Stage Electric Sit-Stand Desk",
+        "brand": "Monoprice",
+        "price": null,
+        "rating": 4,
+        "pros": [
+          "Dual-motor system with 220 lbs weight capacity, fast and stable performance under load (1.55 in/sec at minimal load per BTOD testing data)",
+          "Described as 'easiest-to-assemble standing desk in the entry-level category' and 'best-looking frame in the $200+ range' by BTOD hands-on review",
+          "Professional-grade frame design with robust steel construction"
+        ],
+        "cons": [
+          "Price not stated; inferred as entry-to-mid-range ($250–$500) based on 'easiest-to-assemble' positioning in BTOD's $200+ category",
+          "No independent wobble or stability testing at standing height cited; performance relative to peers like NewHeights XT is unverified"
+        ],
+        "specs": {
+          "weightCapacity": "220 lbs",
+          "motorSystem": "Dual motor"
+        },
+        "verdict": "Strong value for an entry-level desk with dual motors and robust frame. BTOD's hands-on assembly notes and speed testing confirm solid engineering. Lacks wobble meter data, so stability claims are unproven; rank reflects this gap versus independently-tested competitors.",
+        "best_for": ""
+      },
+      {
+        "name": "IKEA Idasen Standing Desk",
+        "brand": "IKEA",
+        "price": null,
+        "rating": 3.5,
+        "pros": [
+          "Excellent stability at sitting height (wobble score 9/10, rocking 8/10 per BTOD WobbleMeter test)",
+          "Held up well at 42 in. standing height (wobble 24, rocking 20—'Very Good' rating per BTOD)",
+          "Affordable price and wide availability through IKEA retail and online"
+        ],
+        "cons": [
+          "Stability deteriorates significantly from sitting to standing height—wobble and rocking scores decline noticeably, meaning full standing use is less stable than competitors",
+          "BTOD mentions 'problems' with the Bekant model; exact issues not detailed in sources, suggesting potential reliability or design concerns not quantified"
+        ],
+        "specs": {},
+        "verdict": "IKEA Idasen scores well at sitting height but shows noticeable stability decline at standing height—a critical flaw for a standing desk. BTOD's wobble data is objective and hands-on; the unspecified 'problems' with Bekant variant and stability drop at standing height warrant caution. Budget price is attractive, but stability concerns limit this to light-use or primarily-sitting scenarios.",
+        "best_for": ""
+      }
+    ],
+    "summary": "Standing desks for home offices split into budget ($200–$300), mid-range ($400–$800), and premium ($1000+) tiers. Top performers balance stability (tested via wobble metrics), motor speed (1.35–1.55 in/sec loaded), and surface durability. BTOD.com's hands-on testing and Wirecutter's expert reviews form the credible core; most YouTube and affiliate-heavy listicles lack independent validation. Key decision: dual-motor stability and height range matter far more than marketing buzzwords."
+  },
+  {
+    "query": "best budget espresso mac",
+    "model": "claude-haiku-4-5 (batch)",
+    "ok": "✓",
+    "cost": "$0.0251",
+    "products": 6,
+    "name_ung": 0,
+    "num_ung": 0,
+    "avg_pros": 2.7,
+    "avg_cons": 2,
+    "has_verdict": 6,
+    "has_rating": 5,
+    "products_full": [
+      {
+        "name": "Gaggia Classic Pro",
+        "brand": "Gaggia",
+        "price": 450,
+        "rating": 4.5,
+        "pros": [
+          "Commercial 58mm portafilter opens massive aftermarket upgrade and accessory ecosystem; you can swap baskets, add PID controllers, upgrade pumps, and mod the machine for years",
+          "Legendary Italian durability and simplicity; documented cases of machines lasting 10+ years with proper maintenance and heavy daily use",
+          "Best long-term value under $500—buying used or refurbished drops the price further, and the machine's simple design means fewer parts fail compared to electronic competitors"
+        ],
+        "cons": [
+          "Steep learning curve; no PID temperature controller means you must manually manage boiler temperature using the brew switch—inconsistent shots until you develop the skill",
+          "Requires a separate quality grinder; the machine alone cannot compete with all-in-one super-automatics, making the true entry cost $550–650 for a capable setup"
+        ],
+        "specs": {
+          "portafilterSize": "58mm",
+          "boilerType": "single boiler",
+          "pressureRating": "9 bar"
+        },
+        "verdict": "Hands-on testing and community consensus confirm the Gaggia Classic Pro as the most honest best-value machine under $500 for buyers willing to invest time in learning and planning a grinder budget. Legendary durability and the 58mm portafilter platform justify the steeper learning curve; it outperforms more expensive semi-automatics on shot quality over time.",
+        "best_for": ""
+      },
+      {
+        "name": "Breville Bambino Plus",
+        "brand": "Breville",
+        "price": 400,
+        "rating": 4,
+        "pros": [
+          "Ultra-compact footprint (7.5 inches wide) with automatic microfoam production, making it genuinely beginner-friendly and ideal for small kitchens or dorms",
+          "3-second heat-up time and thermoblock heating system deliver espresso faster than any competing machine in this price range",
+          "Built-in shot timer and integrated grinder-ready design reduce the learning curve; even novices pull acceptable shots within the first week"
+        ],
+        "cons": [
+          "Flimsy overall feel due to thin stainless steel and plastic components; reviewers consistently note cheap construction that contradicts the $400 price tag",
+          "Automatic microfoam can be inconsistent and is difficult to customize for milk-based drinks; many buyers disable it to develop proper steaming skills, negating a key selling point"
+        ],
+        "specs": {
+          "width": "7.5 inches",
+          "heatUpTime": "3 seconds",
+          "boilerType": "thermoblock"
+        },
+        "verdict": "Hands-on expert testing confirms the Bambino Plus is the best compact machine for absolute beginners, but the build quality does not justify the $400 price—it feels like a $250 machine. The proprietary 54mm portafilter prevents meaningful upgrades, locking you into Breville accessories.",
+        "best_for": ""
+      },
+      {
+        "name": "Casabrews CM5418",
+        "brand": "Casabrews",
+        "price": 140,
+        "rating": 3.5,
+        "pros": [
+          "Exceptionally affordable entry point at $140; roughly half the price of the Breville Bambino, making it genuinely accessible for budget-conscious beginners",
+          "Lightweight and compact semi-automatic design with steam wand; performs adequately for milk-based drinks on a budget",
+          "Launched spring 2025, so newer machines in circulation may have fewer design flaws than first-generation units"
+        ],
+        "cons": [
+          "Flimsy feel confirmed in hands-on testing; combination of thin stainless steel and plastic components feels cheap and is prone to developing rattles or leaks after months of use",
+          "Limited aftermarket support and upgrade options; this is a lesser-known brand without an established modding community, leaving you trapped with the stock machine if it develops issues"
+        ],
+        "specs": {
+          "boilerType": "thermoblock",
+          "launchYear": "2025"
+        },
+        "verdict": "Hands-on testing confirms the CM5418 delivers acceptable espresso for the price but feels cheap and lacks the durability or ecosystem of the Gaggia or Breville. It is the best choice only if budget is severely constrained ($100–150 range); spending $100 more for the Breville Bambino or waiting for a used Gaggia yields far better long-term value.",
+        "best_for": ""
+      },
+      {
+        "name": "Breville Bambino (non-Plus)",
+        "brand": "Breville",
+        "price": 300,
+        "rating": 3.5,
+        "pros": [
+          "Entry-level semi-automatic with legitimate steam wand for milk drinks; more user control than super-automatics at this price",
+          "Compact and lightweight design suits small counter spaces; faster heat-up than single-boiler machines",
+          "Significantly cheaper than the Bambino Plus ($100 less) while offering the same core semi-automatic functionality"
+        ],
+        "cons": [
+          "Flimsy construction due to thin stainless steel and plastic components is well-documented; detractors note the machine feels insubstantial and is prone to cosmetic and functional wear",
+          "Proprietary 54mm portafilter prevents upgrades or accessory compatibility, locking you into Breville ecosystem parts"
+        ],
+        "specs": {
+          "launchYear": "2020"
+        },
+        "verdict": "The non-Plus Bambino is recommended as a 'best budget option' by hands-on testers but carries the same build-quality concerns as the Plus version. At $300, it is marginally better value than the Plus, but the flimsy feel and proprietary portafilter still detract. Only pick this if you need the compact form factor urgently; otherwise, allocate an extra $150 for the Gaggia Classic Pro.",
+        "best_for": ""
+      },
+      {
+        "name": "Flair Pro 2",
+        "brand": "Flair",
+        "price": 250,
+        "rating": 4,
+        "pros": [
+          "Best manual option for budget espresso; no electricity or complicated electronics means no heat stability issues—you control temperature by preheating the unit",
+          "Produces genuinely high-quality espresso shots comparable to semi-automatic machines when technique is learned; the lack of automation is a feature, not a bug, for espresso enthusiasts",
+          "Extremely durable and simple; minimal maintenance and no parts to fail; the design is so robust it has a dedicated community of modders who upgrade baskets, seals, and lever handles"
+        ],
+        "cons": [
+          "Steep learning curve and slow workflow; you must preheat, grind, tamp, and manually apply pressure—brewing one shot takes 5–10 minutes versus 30 seconds on an electric machine",
+          "Not suitable for milk drinks; the Flair Pro 2 has no steam wand, making lattes or cappuccinos impossible without buying a separate steamer"
+        ],
+        "specs": {
+          "type": "manual lever",
+          "portafilterSize": "standard 58mm compatible"
+        },
+        "verdict": "Hands-on testing confirms the Flair Pro 2 pulls excellent espresso and is the honest best manual option under $500 for purists willing to trade speed for simplicity and shot quality. It is not a budget compromise—it is a legitimate alternative to electric machines, especially for buyers who enjoy the ritual of espresso preparation and drink only straight shots.",
+        "best_for": ""
+      },
+      {
+        "name": "De'Longhi La Specialista Arte Evo",
+        "brand": "De'Longhi",
+        "price": null,
+        "rating": null,
+        "pros": [
+          "Listed as a top machine under $500 by Espresso Machine Pro (affiliate-linked source); marketed with modern features and compact design"
+        ],
+        "cons": [
+          "No hands-on or expert-domain testing sources in the dataset support this machine's performance claims",
+          "Only listicle and affiliate-conflicted sources mention this model; insufficient independent verification of shot quality, durability, or build reliability"
+        ],
+        "specs": {},
+        "verdict": "All published reviews carry affiliate links and lack independent hands-on testing; this machine is included only for completeness but should be treated as unverified. If considering De'Longhi, research Reddit communities and YouTube teardowns before buying; the brand has a mixed reputation for durability and espresso quality.",
+        "best_for": ""
+      }
+    ],
+    "summary": "Budget espresso machines under $500 split into two camps: semi-automatic machines (Breville Bambino, Gaggia Classic Pro, Casabrews CM5418) that require skill but deliver excellent shots, and super-automatic options (De'Longhi models) that sacrifice control for convenience. The Gaggia Classic Pro emerges as the best overall value for long-term investment, while the Breville Bambino Plus suits beginners prioritizing compact size and automation."
+  },
+  {
+    "query": "best running shoes for f",
+    "model": "claude-haiku-4-5 (batch)",
+    "ok": "✓",
+    "cost": "$0.0265",
+    "products": 10,
+    "name_ung": 0,
+    "num_ung": 0,
+    "avg_pros": 2.4,
+    "avg_cons": 2.4,
+    "has_verdict": 10,
+    "has_rating": 6,
+    "products_full": [
+      {
+        "name": "Brooks Adrenaline GTS 25",
+        "brand": "Brooks",
+        "price": null,
+        "rating": 4.5,
+        "pros": [
+          "Guide Rails provide subtle, non-intrusive stability without feeling heavy or restrictive.",
+          "Hits a sweet spot in price, comfort, and support for new runners and overpronators.",
+          "Described by podiatrists and multiple sources as an 'everyday stability favourite' and commonly recommended for flat feet."
+        ],
+        "cons": [
+          "Less maximum cushioning compared to max-stack stability shoes like HOKA Gaviota; may feel firm underfoot for plushness-seekers.",
+          "Guide Rails are a proprietary feature that may feel different from traditional medial posts—requires personal fit test."
+        ],
+        "specs": {},
+        "verdict": "Multiple sources, including community feedback and podiatrist recommendations, identify Brooks Adrenaline GTS 25 as the top choice for everyday stability. Guide Rails provide medial control without the heavy, rigid feel of older motion-control shoes. Widely available and proven in 1000+ user reports; strong evidence across community and expert sources.",
+        "best_for": ""
+      },
+      {
+        "name": "ASICS Gel-Kayano 32",
+        "brand": "ASICS",
+        "price": null,
+        "rating": 4.5,
+        "pros": [
+          "Firm, hard-to-compress midsole and medial post deliver strong arch support and motion control for flat feet.",
+          "Described as 'a classic stability shoe for flat feet' and 'legendary' by multiple experts and podiatrists.",
+          "Consistent recommendation across listicles, YouTube reviews, and community sources for overpronation and severe flat feet."
+        ],
+        "cons": [
+          "Higher price point and heavier weight compared to Brooks Adrenaline GTS 25; not ideal for speed-focused runners.",
+          "Firm midsole may feel harsh on first runs; requires break-in period for comfort."
+        ],
+        "specs": {},
+        "verdict": "ASICS Gel-Kayano 32 ranks as the most frequently mentioned stability shoe across expert, community, and specialist sources. The firm midsole and medial post are proven for flat feet. Evidence comes from multiple hands-on reviews, podiatrist endorsements, and 1000+ community reports. Slightly lower ranking than Brooks Adrenaline GTS 25 due to heavier weight and higher cost, but equally credible for maximum support needs.",
+        "best_for": ""
+      },
+      {
+        "name": "HOKA Gaviota 5",
+        "brand": "HOKA",
+        "price": null,
+        "rating": 4.5,
+        "pros": [
+          "Maximum cushioning paired with HOKA's rocker geometry provides stability and comfort for flat feet without traditional medial posts.",
+          "High stack height (33+ mm) offers excellent impact absorption for long-distance running and heavy runners.",
+          "Consistently recommended by podiatrists and specialists as a top max-stability option for overpronators."
+        ],
+        "cons": [
+          "Rocker geometry and high stack may feel unstable to runners accustomed to traditional medial posts; requires fit test.",
+          "Heavier and bulkier than competitors; not suitable for speed work or tempo runs."
+        ],
+        "specs": {},
+        "verdict": "HOKA Gaviota 5 appears in multiple expert and specialist reviews as a top max-stability, max-cushion option for flat feet. The rocker geometry provides stability through geometry rather than a medial post, which some runners prefer. Strong evidence from YouTube reviews by podiatrists and specialist comparisons, though less frequently mentioned in community forums than Brooks or ASICS. Rank reflects the alternate stability mechanism—equally credible but different approach.",
+        "best_for": ""
+      },
+      {
+        "name": "New Balance Fresh Foam X 860v15",
+        "brand": "New Balance",
+        "price": null,
+        "rating": 4,
+        "pros": [
+          "Excellent arch support and wide-base platform designed specifically for flat feet and wide arches.",
+          "Available in multiple widths (2E, 4E) making it suitable for runners with both flat feet and wider feet.",
+          "Recommended for runners whose feet press into arches of other shoes; provides firm, supportive platform."
+        ],
+        "cons": [
+          "RTINGS expert review is access-restricted; limited hands-on testing data in available sources.",
+          "Heavier and less fashionable compared to Brooks or HOKA; primarily function-focused."
+        ],
+        "specs": {},
+        "verdict": "New Balance Fresh Foam X 860v15 is mentioned in multiple listicles and podiatrist recommendations as ideal for runners with flat feet and wide arches. The shoe is purpose-built for arch support and available in extended widths. However, RTINGS' expert review is member-restricted, limiting independent verification of claims. Evidence rests primarily on listicle mentions and brand positioning; rank reflects this lower credibility baseline while acknowledging the shoe's clear design intent for flat feet.",
+        "best_for": ""
+      },
+      {
+        "name": "Saucony Guide 18",
+        "brand": "Saucony",
+        "price": null,
+        "rating": 4,
+        "pros": [
+          "Rocker geometry and medial guide provide stability without excessive rigidity; described as 'easier to run in' than some competitors.",
+          "Rocker makes long runs more enjoyable; consistently recommended by community runners for marathon training.",
+          "Lower price point than ASICS Gel-Kayano; good balance of support and affordability."
+        ],
+        "cons": [
+          "Less cushioning than HOKA Gaviota; not ideal for heavy runners or maximum-protection needs.",
+          "Rocker design is less familiar to runners accustomed to traditional medial posts; requires adjustment period."
+        ],
+        "specs": {},
+        "verdict": "Saucony Guide 18 is strongly recommended in community sources (Reddit) and expert comparisons for overpronation and flat feet. The rocker geometry and medial guide offer a middle ground between lightweight Brooks and max-cushion HOKA. Evidence comes from hands-on community reports and expert comparisons; rank reflects solid but slightly narrower recommendation base compared to top-ranked shoes.",
+        "best_for": ""
+      },
+      {
+        "name": "Mount To Coast P1",
+        "brand": "Mount To Coast",
+        "price": null,
+        "rating": null,
+        "pros": [
+          "Maximum protection and stiffness provide excellent control for long-distance runners who need high stability.",
+          "Very stable and hard to twist; ideal for runners requiring firm, unyielding support."
+        ],
+        "cons": [
+          "Only source is a single Instagram reel from a podiatrist—no independent hands-on testing, listicle coverage, or retailer availability confirmed.",
+          "Extremely limited brand presence; no manufacturer website or major retailer listings found in sources.",
+          "Price, specifications, and availability are entirely unknown; cannot verify if product is currently sold."
+        ],
+        "specs": {},
+        "verdict": "Mount To Coast P1 is mentioned by a podiatrist on Instagram as providing maximum stability for long-distance runners. However, the shoe has zero independent coverage, no identifiable manufacturer website, and no availability data in any searched sources. This is an unverified product backed only by a single influencer mention. Omit from purchase recommendations unless you can find independent reviews or verify retail availability; treat as speculative.",
+        "best_for": ""
+      },
+      {
+        "name": "Salomon XT 6",
+        "brand": "Salomon",
+        "price": null,
+        "rating": null,
+        "pros": [
+          "Described as a trail-specific option with super-stable underfoot platform.",
+          "Suitable for flat-footed runners seeking trail running stability."
+        ],
+        "cons": [
+          "Runs narrow—poor fit for wide-footed runners (common among flat-footed populations).",
+          "Limited road-running recommendation; primarily positioned for trail use.",
+          "Source is a single Instagram reel from a podiatrist; no independent hands-on testing or listicle coverage."
+        ],
+        "specs": {},
+        "verdict": "Salomon XT 6 is mentioned as a trail-running option for flat feet but runs narrow—a significant drawback for a population often fitting wider feet. Single Instagram source with no independent verification. Only consider if you have narrow feet and seek trail-specific stability; otherwise, road-focused options rank higher.",
+        "best_for": ""
+      },
+      {
+        "name": "Altra Experience Form",
+        "brand": "Altra",
+        "price": null,
+        "rating": null,
+        "pros": [
+          "Wider toe box accommodates broader forefoot common in flat-footed runners.",
+          "Provides stability with natural toe splay encouragement."
+        ],
+        "cons": [
+          "Source is a single Instagram recommendation; no independent hands-on testing, expert reviews, or community feedback.",
+          "Altra's zero-drop platform differs fundamentally from traditional stability shoes—fit and comfort unpredictable for flat-feet runners accustomed to standard drops.",
+          "Price, availability, and complete specifications unknown."
+        ],
+        "specs": {},
+        "verdict": "Altra Experience Form is mentioned on Instagram for flat feet with a wider toe box. However, Altra's zero-drop, natural-form philosophy differs sharply from traditional stability shoes; this may help or harm depending on individual foot mechanics. Single-source mention with no independent corroboration. Lower confidence; requires personal fit testing at a retailer before purchase.",
+        "best_for": ""
+      },
+      {
+        "name": "Nike Structure 26",
+        "brand": "Nike",
+        "price": null,
+        "rating": null,
+        "pros": [
+          "Strong arch support and all-day wear comfort."
+        ],
+        "cons": [
+          "Source is a single Instagram reel with minimal detail; no independent hands-on testing, expert reviews, or listicle coverage.",
+          "Claim lacks specificity (arch support strength not quantified) and no corroboration from running specialists.",
+          "No pricing, availability, or detailed specs provided."
+        ],
+        "specs": {},
+        "verdict": "Nike Structure 26 is briefly mentioned on Instagram for arch support and all-day wear. However, the claim is vague and unsupported by independent reviews, expert testing, or community feedback. Insufficient evidence to recommend; priority should be Brooks, ASICS, HOKA, or Saucony options with stronger independent backing.",
+        "best_for": ""
+      },
+      {
+        "name": "New Balance 860 v14",
+        "brand": "New Balance",
+        "price": null,
+        "rating": 4,
+        "pros": [
+          "Great match for runners whose feet press into arches of other shoes; designed for wide arches and flat feet.",
+          "Available in extended widths; strong arch support platform."
+        ],
+        "cons": [
+          "v14 is a prior generation; v15 is current model. Availability as v14 may be limited.",
+          "Source is a single Instagram podiatrist recommendation with no independent hands-on testing or expert corroboration."
+        ],
+        "specs": {},
+        "verdict": "New Balance 860 v14 is mentioned by a podiatrist on Instagram for flat feet and wide arches. However, v14 is a prior generation; the Fresh Foam X 860v15 (already ranked #4) is the current model. If seeking New Balance stability, prioritize the v15; v14 may have limited availability and no warranty on refurbished stock.",
+        "best_for": ""
+      }
+    ],
+    "summary": "Running shoes for flat feet require stability features—firm midsoles, arch support, and motion control—to address overpronation. Our analysis found Brooks Adrenaline GTS 25, ASICS Gel-Kayano 32, and HOKA Gaviota 5 as the most consistently recommended options across hands-on and expert sources. However, critical expert sources from RTINGS were access-restricted, and many source URLs returned 403 errors, limiting the depth of evidence. Recommendations should be paired with professional gait analysis and a fitting at a specialty running store."
+  },
+  {
+    "query": "best wireless earbuds un",
+    "model": "gpt-5.4-mini",
+    "ok": "✓",
+    "cost": "$0.0206",
+    "products": 3,
+    "name_ung": 0,
+    "num_ung": 0,
+    "avg_pros": 3.3,
+    "avg_cons": 3,
+    "has_verdict": 3,
+    "has_rating": 3,
+    "products_full": [
+      {
+        "name": "EarFun Air Pro 4+",
+        "brand": "EarFun",
+        "price": 79.99,
+        "rating": 4.5,
+        "pros": [
+          "PCMag’s Editors' Choice for best noise cancellation among cheap wireless earbuds, which is strong expert-domain support.",
+          "SoundGuys includes it in its 2026 best wireless earbuds under $100 coverage and calls it a recommendation within that price band.",
+          "At $79.99 on Amazon, it sits comfortably below the $100 ceiling while still being positioned as a current 2026 option."
+        ],
+        "cons": [
+          "The best evidence here is still mostly listicle-style roundup support, not a deep pile of independent hands-on reviews.",
+          "I do not have sourced specs, measured battery life, or detailed fit/mic data in the provided notes, so the case is incomplete.",
+          "The product appears to have multiple naming variants in the notes (“EarFun Air Pro 4+” and “EarFun Air Pro 4”), which creates some ambiguity and should be checked before buying."
+        ],
+        "specs": {
+          "msrp": "$99.99"
+        },
+        "verdict": "This is the cleanest current sub-$100 recommendation I can defend from the provided sources. It has the best mix of expert-domain support, a current 2026 price, and an Editors' Choice-style endorsement, but the evidence base is still thinner than I’d like.",
+        "best_for": ""
+      },
+      {
+        "name": "Soundcore Liberty 4 NC",
+        "brand": "Soundcore",
+        "price": 56.99,
+        "rating": 4,
+        "pros": [
+          "A hands-on source reports 98.5% noise reduction in testing, which is unusually strong budget ANC evidence.",
+          "The same source reports 50-hour battery life, which is very competitive for the class if you value long runtime.",
+          "It supports Hi-Res audio with LDAC, so it has a stronger feature list than many ultra-budget rivals.",
+          "The price in the notes is only $56.99, leaving plenty of room under the $100 cap."
+        ],
+        "cons": [
+          "The main supporting source in the notes is powersof10.com, which is much weaker than a top-tier expert-domain review outlet.",
+          "I do not have corroborating 2026 hands-on coverage from a second strong source in the provided notes, so confidence is moderate rather than high.",
+          "No sourced details here cover mic quality, comfort, or long-term durability, which are often the real deciding factors for budget earbuds."
+        ],
+        "specs": {
+          "batteryLife": "50 hours",
+          "codec": "LDAC",
+          "noiseReduction": "98.5%"
+        },
+        "verdict": "A very plausible budget ANC buy, especially if you want to spend far less than $100. I like the measured noise reduction and low price, but the supporting review stack is not as strong as EarFun’s.",
+        "best_for": ""
+      },
+      {
+        "name": "Tribit FlyBuds 3",
+        "brand": "Tribit",
+        "price": null,
+        "rating": 3.5,
+        "pros": [
+          "PCMag hands-on coverage says they far outperform their $35 price.",
+          "PCMag describes a completely waterproof build, which is useful for workouts and sweat-heavy use.",
+          "PCMag also calls out a secure fit, which matters more than many spec-sheet extras for exercise earbuds."
+        ],
+        "cons": [
+          "The source note is from 2025-10-01, so it is within the freshness window but still only covers workout suitability, not overall sound quality.",
+          "I do not have a sourced current price in the notes, so the value judgment is incomplete.",
+          "These are clearly more specialized for exercise than for general ANC or everyday commuting, so they are not an all-rounder pick."
+        ],
+        "specs": {},
+        "verdict": "I would only buy these if workout security and waterproofing are the main goal. The hands-on PCMag support is solid for that niche, but they are not the best general-purpose under-$100 earbud choice.",
+        "best_for": ""
+      }
+    ],
+    "summary": "The strongest 2026-supported pick is the EarFun Air Pro 4+, which multiple expert sources still place at or near the top of the sub-$100 class, including PCMag’s Editors' Choice and SoundGuys' under-$100 roundup. The Soundcore Liberty 4 NC also remains a credible budget ANC option with a much lower street price and at least one hands-on source reporting excellent noise reduction and long battery life, but its supporting evidence is thinner and the source mix is weaker. Several popular 2024 picks are stale by the stated freshness rule, so I omitted them rather than pretend they are current buys."
+  },
+  {
+    "query": "best linen shirts for me",
+    "model": "gpt-5.4-mini",
+    "ok": "✓",
+    "cost": "$0.0241",
+    "products": 6,
+    "name_ung": 0,
+    "num_ung": 0,
+    "avg_pros": 4,
+    "avg_cons": 4,
+    "has_verdict": 6,
+    "has_rating": 6,
+    "products_full": [
+      {
+        "name": "Standard-Fit Linen Shirt",
+        "brand": "Banana Republic",
+        "price": null,
+        "rating": 4.4,
+        "pros": [
+          "Named Best Overall in GQ’s May 20, 2026 roundup of the best men's linen shirts.",
+          "Banana Republic is an established brand, not a marketplace-churn label, which lowers the risk of generic white-label quality.",
+          "Standard-fit styling suggests broader wearability than skinny, fashion-only cuts.",
+          "Recent 2026 coverage makes it one of the freshest options in the dataset."
+        ],
+        "cons": [
+          "We do not have hands-on measurements, fabric weight, or construction details from the accessible source snippets.",
+          "No exact price or product-page URL was available in the provided sources.",
+          "The recommendation is based on a listicle verdict, not a detailed independent test report.",
+          "Standard fit may be too plain if you want a more tailored or fashion-forward silhouette."
+        ],
+        "specs": {},
+        "verdict": "This is the strongest evidence-backed pick in the notes because GQ’s 2026 roundup names it Best Overall and Banana Republic is an established brand. Confidence is still only moderate because the accessible source snippet does not give fabric, fit measurements, or real testing detail.",
+        "best_for": ""
+      },
+      {
+        "name": "Premium Linen Shirt",
+        "brand": "Uniqlo",
+        "price": null,
+        "rating": 4.2,
+        "pros": [
+          "Named Best Budget in GQ’s May 20, 2026 roundup of the best men's linen shirts.",
+          "Uniqlo is an established budget brand with broad real-world reputation.",
+          "A recent May 2025 user review snippet says the 2025 linen shirt was 'much softer' and 'doesn't agitate the skin.'",
+          "Budget positioning makes it easier to try without committing to a luxury price point."
+        ],
+        "cons": [
+          "The strongest accessible praise is still a short review snippet and a listicle, not a deep hands-on comparative test.",
+          "No product-page URL, exact price, or verified specs were available in the notes.",
+          "Budget linen can still be thin or wrinkle heavily; the sources do not prove this shirt solves those tradeoffs.",
+          "Fit and collar style may be too basic for buyers looking for a sharper or more tailored look."
+        ],
+        "specs": {},
+        "verdict": "Uniqlo is the most credible budget name in the material, and the recent review snippet is a useful real-world signal. I would still treat it as a value buy rather than a premium shirt, because the evidence is thinner than for a true hands-on test.",
+        "best_for": ""
+      },
+      {
+        "name": "Baird McNutt Irish Linen Shirt",
+        "brand": "J.Crew",
+        "price": null,
+        "rating": 4.1,
+        "pros": [
+          "Mentioned positively in Forbes Vetted’s June 27, 2025 list of best linen shirts for men.",
+          "Also praised in a July 13, 2025 Styleforum discussion as 'quite good for the price point' and often under $50 on sale.",
+          "J.Crew is an established brand with enough reputation to avoid the marketplace-generic trap.",
+          "Irish linen styling is a concrete differentiator rather than vague marketing language."
+        ],
+        "cons": [
+          "The strongest sources here are a listicle and forum comments, which are helpful but not definitive.",
+          "No exact current price or product-page URL was available in the source notes.",
+          "Fit can be sale-dependent and inconsistent across J.Crew items, but we do not have sourced details on this shirt’s cut.",
+          "The evidence does not tell us how it handles shrinkage, transparency, or long-term wear."
+        ],
+        "specs": {},
+        "verdict": "This is a solid, established-brand option with decent price-to-reputation signals, especially if you catch it on sale. It ranks behind Banana Republic and Uniqlo because the evidence is less direct and more community-driven.",
+        "best_for": ""
+      },
+      {
+        "name": "Everyday Linen Shirt",
+        "brand": "Bonobos",
+        "price": null,
+        "rating": 3.9,
+        "pros": [
+          "Included by Forbes Vetted in its June 27, 2025 best linen shirts roundup.",
+          "Bonobos is an established menswear brand with a real product identity, not a random marketplace label.",
+          "The 'Everyday' framing suggests practical wear rather than costume-like resort styling.",
+          "Recent mention keeps it within the freshness window for 2026 recommendation."
+        ],
+        "cons": [
+          "The accessible source snippet gives no hands-on evaluation or technical detail about fabric quality.",
+          "No exact price or product URL was available in the notes.",
+          "We do not have proof that it outperforms cheaper rivals on comfort, durability, or opacity.",
+          "Without stronger evidence, this sits more as a plausible mainstream option than a proven top-tier pick."
+        ],
+        "specs": {},
+        "verdict": "Bonobos is credible enough to include, but the evidence in hand is not strong enough to place it above the clearer winners. I would buy it only if the cut and sale price suit you better than the higher-ranked options.",
+        "best_for": ""
+      },
+      {
+        "name": "Linen Shirt",
+        "brand": "Faherty",
+        "price": null,
+        "rating": 3.8,
+        "pros": [
+          "Travel + Leisure’s Oct. 30, 2025 tested-and-reviewed roundup includes Faherty among brands they tested.",
+          "Being named in a hands-on review is more useful than pure listicle repetition.",
+          "Faherty is an established apparel brand with recognizable identity and broad retail presence.",
+          "The brand appears in recent linen coverage, suggesting it remains a live option in 2026."
+        ],
+        "cons": [
+          "The accessible snippet does not identify which exact Faherty linen shirt was tested.",
+          "We do not have the underlying test results, fabric weight, or construction details from the snippet alone.",
+          "No exact price or product URL was available in the notes.",
+          "Without the full article details, the recommendation is real but still under-specified."
+        ],
+        "specs": {},
+        "verdict": "Faherty earns a spot because a hands-on roundup included it, which is stronger evidence than a generic fashion list. Still, the lack of item-level details keeps it below the more straightforward mainstream picks.",
+        "best_for": ""
+      },
+      {
+        "name": "Men's Long-Sleeve Linen Shirt",
+        "brand": "Charles Tyrwhitt",
+        "price": null,
+        "rating": 3.7,
+        "pros": [
+          "A June 3, 2025 hands-on review explicitly discusses Charles Tyrwhitt’s linen line.",
+          "The review describes it as 'featherlight' while also saying it feels built to last.",
+          "Charles Tyrwhitt is a real menswear brand with a clear product identity.",
+          "The shirt is positioned as breathable and slubby, which matches what buyers usually want from linen."
+        ],
+        "cons": [
+          "The accessible snippet gives only one reviewer’s perspective, so confidence is limited.",
+          "No exact product model, price, or product page was available in the notes.",
+          "'Featherlight' can be a pro for heat, but the snippet does not tell us whether the shirt is sheer or fragile.",
+          "May skew more classic than fashion-forward, depending on the specific cut."
+        ],
+        "specs": {},
+        "verdict": "This is a credible, fairly safe linen-shirt candidate because it comes from a hands-on review rather than a hype roundup. I still would not rank it higher without item-level specifics, but it looks like a sensible buy from an established brand.",
+        "best_for": ""
+      }
+    ],
+    "summary": "The evidence is thin but usable: recent 2025–2026 listicles and a handful of hands-on/review pieces consistently point to a few established brands, with Banana Republic, Uniqlo, J.Crew, Bonobos, and Faherty appearing most often. Because many sources are listicles and several URLs were inaccessible, confidence is moderate rather than high. The safest picks are established brands with recent coverage; I would avoid treating any affiliate-heavy roundup as definitive."
+  },
+  {
+    "query": "best self-hosted photo b",
+    "model": "gpt-5.4-mini",
+    "ok": "✓",
+    "cost": "$0.0171",
+    "products": 1,
+    "name_ung": 0,
+    "num_ung": 0,
+    "avg_pros": 5,
+    "avg_cons": 4,
+    "has_verdict": 1,
+    "has_rating": 1,
+    "products_full": [
+      {
+        "name": "Immich",
+        "brand": "Immich",
+        "price": null,
+        "rating": 4.5,
+        "pros": [
+          "Fresh 2026 sources describe it as an open-source self-hosted photo and video management solution for backing up, organizing, and managing photos on your own server.",
+          "Immich docs in the sources explicitly list backup and restore documentation, plus a quick-start flow and mobile app support.",
+          "The requirements page in the sources gives concrete hardware guidance: 6GB RAM minimum, 8GB recommended, 2 CPU cores minimum, 4 recommended.",
+          "Community sources in 2026 show real users discussing large libraries, redundancy, storage backends, and mobile upload behavior, which is a sign of active usage.",
+          "The project appears alive and current, with 2025 year-in-review and multiple 2026 docs/issues indicating ongoing maintenance."
+        ],
+        "cons": [
+          "It is not a lightweight, zero-maintenance tool; self-hosting means you must manage server uptime, storage, updates, and backups yourself.",
+          "The sources mention upload and memory pain points, including reports that initial indexing can be slow and RAM use can be substantial on large libraries.",
+          "Most of the strongest evidence here is documentation and community chatter, not a clean hands-on benchmark comparing it against every rival.",
+          "The provided expert-domain source exists, but the snippet here does not expose its actual verdict, so the recommendation rests partly on incomplete evidence."
+        ],
+        "specs": {
+          "minimumRam": "6GB",
+          "recommendedRam": "8GB",
+          "minimumCpu": "2 cores",
+          "recommendedCpu": "4 cores"
+        },
+        "verdict": "Immich is the best-supported pick in the supplied 2026 sources and the one I would personally choose if I wanted a self-hosted Google Photos-style backup system. The evidence is not perfect, but it is current, active, and specific enough to justify the top rank; just do not pretend it is effortless or backup-safe by default.",
+        "best_for": ""
+      }
+    ],
+    "summary": "Immich is the only candidate with enough fresh, non-manufacturer evidence in the provided sources to support a recommendation in 2026. The strongest support is mostly docs plus community discussion; there is one high-quality expert-domain review from Notebookcheck, but the snippet provided here does not actually expose the product-specific findings, so confidence is moderate rather than high. Overall, the evidence favors Immich as the best self-hosted photo backup option for people who want a Google Photos-style experience and are willing to self-host a server."
+  },
+  {
+    "query": "best robot vacuum for pe",
+    "model": "gpt-5.4-mini",
+    "ok": "✓",
+    "cost": "$0.0305",
+    "products": 5,
+    "name_ung": 0,
+    "num_ung": 0,
+    "avg_pros": 3,
+    "avg_cons": 2,
+    "has_verdict": 5,
+    "has_rating": 5,
+    "products_full": [
+      {
+        "name": "Deebot X8 Pro Omni",
+        "brand": "Ecovacs",
+        "price": 599,
+        "rating": 4.5,
+        "pros": [
+          "PCMag named it a Top Pick for pet hair and gave it an Editors' Choice award.",
+          "Hands-on testing notes say it vacuumed pet hair thoroughly without tangles.",
+          "Hands-on testing also says it had no problem mopping up cat food remnants from messy eaters."
+        ],
+        "cons": [
+          "It is a vacuum-and-mop hybrid, so if you only want the best carpet cleaner, the combo format may be more than you need.",
+          "The evidence we have is strongest for pet-hair and mopping performance, but we do not have enough sourced detail here on long-term ownership or service reliability."
+        ],
+        "specs": {
+          "functionality": "Vacuum and Mop Hybrid"
+        },
+        "verdict": "This is the best-supported pet-hair pick in the provided 2026 evidence. PCMag’s hands-on testing and Editors' Choice status give it real weight, and the reported no-tangle pet-hair results are exactly what matters for homes with shedding animals.",
+        "best_for": ""
+      },
+      {
+        "name": "Qrevo Curv",
+        "brand": "Roborock",
+        "price": null,
+        "rating": 4.3,
+        "pros": [
+          "It is named as one of the popular robot vacuums in the 2026 notes.",
+          "It appears in recent pet-hair recommendation discussions alongside other strong models.",
+          "Roborock has repeated presence across current 2026 sources, which suggests established market momentum and ongoing availability."
+        ],
+        "cons": [
+          "In the provided notes, we do not have direct hands-on performance data for this exact model.",
+          "The support here is thinner than for the Ecovacs pick, so confidence is lower and the ranking is more provisional."
+        ],
+        "specs": {},
+        "verdict": "A plausible high-end choice, but the evidence in these notes is thinner than I’d like. It is supported by current mention in 2026 sources, yet I would still prefer the Ecovacs X8 Pro Omni on the strength of explicit hands-on pet-hair testing.",
+        "best_for": ""
+      },
+      {
+        "name": "S8 MaxV Ultra",
+        "brand": "Roborock",
+        "price": null,
+        "rating": 4.2,
+        "pros": [
+          "It is listed among the popular robot vacuums in the 2026 notes.",
+          "Roborock’s current presence across multiple sources suggests it remains a serious brand in this category.",
+          "It is a known premium robot-vacuum platform in the current market, which generally means better support than random marketplace brands."
+        ],
+        "cons": [
+          "The provided sources do not include a direct test snippet for pet-hair pickup on this exact model.",
+          "We do not have a sourced price here, so value is harder to judge."
+        ],
+        "specs": {},
+        "verdict": "This is a credible premium option, but the evidence here is indirect rather than decisive. I would buy it only if current pricing and feature set make it a better fit than the Ecovacs pick above.",
+        "best_for": ""
+      },
+      {
+        "name": "P50 Pro Ultra",
+        "brand": "MOVA",
+        "price": null,
+        "rating": 4,
+        "pros": [
+          "It is identified as a popular 2026 robot vacuum in the notes.",
+          "MOVA models are mentioned by Consumer Reports as among the only robotic vacuum-mop combos earning recommendation.",
+          "The brand appears repeatedly in recent pet-hair discussions, suggesting real market presence rather than a fake marketplace clone."
+        ],
+        "cons": [
+          "The notes do not provide exact performance data for this specific model.",
+          "Brand reputation is still less established than Roborock, Ecovacs, or iRobot, so I would watch warranty and support policies closely."
+        ],
+        "specs": {},
+        "verdict": "Reasonable to consider, but I would not call it the safest buy without more model-specific test data. Consumer Reports recommendation status helps, yet the exact performance evidence in these notes is still limited.",
+        "best_for": ""
+      },
+      {
+        "name": "L60",
+        "brand": "Eufy",
+        "price": null,
+        "rating": 4,
+        "pros": [
+          "Wirecutter says it performed on a par with its picks in cleaning tests for hair and fur.",
+          "It is highlighted in current 2026 robot-vacuum coverage from an expert-domain source.",
+          "Eufy has a real consumer brand footprint, making it a safer choice than marketplace-churn alternatives."
+        ],
+        "cons": [
+          "The provided snippet does not give detailed pet-hair edge cases or long-term maintenance data.",
+          "We do not have a sourced price in the notes, so value is unknown."
+        ],
+        "specs": {},
+        "verdict": "A solid vacuum-only option if you care more about fur pickup than mopping. The Wirecutter note is meaningful, but the evidence here does not justify putting it above the stronger combo-focused pet-hair leaders.",
+        "best_for": ""
+      }
+    ],
+    "summary": "The strongest 2026 evidence points to a small set of established robot vacuums from PCMag, Consumer Reports, Wirecutter, and CNET. For pet hair specifically, the best-supported top picks are the Ecovacs Deebot X8 Pro Omni, Roborock Qrevo Curv, and Roborock S8 MaxV Ultra, with the caveat that mopping-heavy combo bots can be less effective on carpet than vacuum-first designs. I would avoid over-weighting YouTube shorts, affiliate-linked listicles, and blocked/403 source snippets; the report below leans only on the credible, recent sources that actually named products or described test results."
+  },
+  {
+    "query": "best mechanical keyboard",
+    "model": "gpt-5.4-mini",
+    "ok": "✓",
+    "cost": "$0.0185",
+    "products": 3,
+    "name_ung": 0,
+    "num_ung": 0,
+    "avg_pros": 3,
+    "avg_cons": 2,
+    "has_verdict": 3,
+    "has_rating": 3,
+    "products_full": [
+      {
+        "name": "Keychron Q5 Max",
+        "brand": "Keychron",
+        "price": null,
+        "rating": 4.6,
+        "pros": [
+          "RTINGS calls it the best mechanical keyboard they’ve tested for 2026 in programming use",
+          "It has premium-feeling construction and a heavyweight aluminum case per RTINGS",
+          "It is a wireless mechanical keyboard, which suits cleaner desk setups for programming"
+        ],
+        "cons": [
+          "The notes here do not provide a direct price, so value is hard to judge from the supplied sources",
+          "No detailed tradeoff list is provided in the notes, so this recommendation relies on a single expert roundup"
+        ],
+        "specs": {},
+        "verdict": "This is the most defensible top pick from the current evidence. RTINGS names it the best mechanical keyboard they’ve tested for programming, and that carries more weight than the thin promotional sources elsewhere in the notes.",
+        "best_for": ""
+      },
+      {
+        "name": "Evoworks Evo75",
+        "brand": "Evoworks",
+        "price": 170,
+        "rating": 4.4,
+        "pros": [
+          "The Verge describes it as having an incredible build for $170",
+          "It comes prebuilt with switches and keycaps",
+          "It includes a zip-up travel case, alternate Mac keycaps, and a ball-catch quick-release top"
+        ],
+        "cons": [
+          "The review support in the notes comes mainly from one expert-domain source, so confidence is narrower than for the top pick",
+          "The price is still relatively high for a prebuilt board, even if The Verge liked the build"
+        ],
+        "specs": {
+          "layout": "75-percent"
+        },
+        "verdict": "A very strong 75% option if you want a polished, ready-to-use board and value nice materials and accessories. The Verge’s hands-on verdict is positive and specific, but it is still a single-source recommendation, so I’d place it behind the broader consensus pick.",
+        "best_for": ""
+      },
+      {
+        "name": "Dry Studio ATM98",
+        "brand": "Dry Studio",
+        "price": 259,
+        "rating": 4,
+        "pros": [
+          "The Verge describes it as one of two nicest keyboards they’ve ever seen",
+          "It is a 1800-layout / 98-percent keyboard, which is useful if you want a numpad without a full-size footprint",
+          "It features silent switches, which can be attractive for office or shared work environments"
+        ],
+        "cons": [
+          "It costs $259, which is a meaningful premium",
+          "The notes give fewer concrete usability details than for the Evo75, so the recommendation is less complete"
+        ],
+        "specs": {
+          "layout": "1800 / 98-percent"
+        },
+        "verdict": "Good fit for programmers who want a denser layout and quieter switches, but the evidence here is thinner than for the top pick. The expensive price and limited detail make it more of a niche recommendation than a default buy.",
+        "best_for": ""
+      }
+    ],
+    "summary": "The strongest evidence in the notes points to premium, prebuilt boards from established reviewers: the Keychron Q5 Max is the safest overall recommendation in current expert roundups, while the Evoworks Evo75 stands out for value if you want a 75% board and are okay with a higher-confidence, single-review pick. The Dry Studio ATM98 is compelling on paper for programmers who want a 98% layout, but the evidence here is narrower and it costs $259. The Iqunix EV63 Ghost in the Shell Edition is mentioned, but the available notes don’t provide enough current, independent detail to rank it confidently."
+  },
+  {
+    "query": "best standing desk for a",
+    "model": "gpt-5.4-mini",
+    "ok": "✓",
+    "cost": "$0.0187",
+    "products": 1,
+    "name_ung": 0,
+    "num_ung": 0,
+    "avg_pros": 4,
+    "avg_cons": 3,
+    "has_verdict": 1,
+    "has_rating": 1,
+    "products_full": [
+      {
+        "name": "Ergo Electric Standing Desk 54x26",
+        "brand": "Vari",
+        "price": 799,
+        "rating": 4.5,
+        "pros": [
+          "54 inch wide by 26 inch deep desktop gives a workable footprint for a home office without being absurdly huge.",
+          "200 lb weight capacity is enough for a normal dual-monitor or laptop-plus-monitor setup.",
+          "Four programmable memory settings make repeated sit-to-stand changes easier day to day.",
+          "Cable management grommets and included desk hooks help keep a home office from turning into a wire pile."
+        ],
+        "cons": [
+          "At $799, it is not a budget buy.",
+          "The source set is mostly manufacturer material for this model, so independent verdict evidence is thin.",
+          "The notes do not provide tested stability numbers, so its real wobble performance is unverified here."
+        ],
+        "specs": {
+          "desktopDimensions": "54\" W x 26\" D",
+          "weightCapacity": "200 lb",
+          "desktopThickness": "1.25\"",
+          "distanceBetweenLegs": "39.5\"",
+          "memorySettings": "4 programmable",
+          "shipping": "Free standard shipping in the contiguous US",
+          "returns": "Free returns within 30 days"
+        },
+        "verdict": "This is the safest recommendation from the provided evidence because it has clear specifications, a sensible home-office footprint, and useful convenience features. The downside is that the strongest source is manufacturer material, so the confidence is only moderate rather than high.",
+        "best_for": ""
+      }
+    ],
+    "summary": "The strongest evidence here supports the Vari Ergo Electric Standing Desk 54x26 as the best overall home-office pick among the provided candidates. The IKEA Bekant is mentioned only as a problem case from hands-on coverage, but the source notes do not provide enough verified product details to recommend it. Independent coverage for other desks is either missing, thin, or too conflict-prone to justify a confident ranking."
+  },
+  {
+    "query": "best budget espresso mac",
+    "model": "gpt-5.4-mini",
+    "ok": "✓",
+    "cost": "$0.0235",
+    "products": 5,
+    "name_ung": 0,
+    "num_ung": 0,
+    "avg_pros": 3,
+    "avg_cons": 3,
+    "has_verdict": 5,
+    "has_rating": 5,
+    "products_full": [
+      {
+        "name": "Breville Bambino",
+        "brand": "Breville",
+        "price": 300,
+        "rating": 4.5,
+        "pros": [
+          "CNET hands-on testing says it is compact and lightweight, which is useful for tight counter space.",
+          "CNET hands-on testing places it around $300, making it a value-driven choice versus the Plus model.",
+          "Source notes say it includes steam wand capabilities, so it can handle milk drinks without buying a separate frother."
+        ],
+        "cons": [
+          "Detractors noted a flimsy feel because of thin stainless steel and plastic components.",
+          "The provided notes do not include detailed durability or long-term maintenance data beyond the general build concerns.",
+          "It is value-oriented rather than luxurious, so buyers wanting a heavier, more robust machine will likely be disappointed."
+        ],
+        "specs": {
+          "launchYear": "2020"
+        },
+        "verdict": "This is the best-supported budget pick if you want an honest, compact espresso machine without paying for extra automation. The hands-on evidence is credible and recent, but the build-quality caveat is real, so I would buy it for value and size, not for premium feel.",
+        "best_for": ""
+      },
+      {
+        "name": "Breville Bambino Plus",
+        "brand": "Breville",
+        "price": 400,
+        "rating": 4.5,
+        "pros": [
+          "Hands-on notes describe it as recommended for beginners, which fits a low-friction first-espresso machine.",
+          "It offers automatic microfoam production, which reduces the learning curve for milk drinks.",
+          "The notes say it is ultra-compact at 7.5 inches wide and has a 3-second heat-up time."
+        ],
+        "cons": [
+          "It is more expensive than the standard Bambino, and the notes say the non-Plus is the more value-driven model.",
+          "The same flimsy-feel criticism appears here because of thin stainless steel and plastic components.",
+          "The source set here is narrower than I would like for a top recommendation, so confidence is good but not perfect."
+        ],
+        "specs": {
+          "width": "7.5 in",
+          "heatUpTime": "3 seconds",
+          "price": "$400"
+        },
+        "verdict": "If you make milk drinks often and want the easiest beginner experience, this is a very strong buy. I would still choose the standard Bambino if minimizing cost matters more than automatic foam, but the Plus is the nicer machine to live with.",
+        "best_for": ""
+      },
+      {
+        "name": "Gaggia Classic Pro",
+        "brand": "Gaggia",
+        "price": 450,
+        "rating": 4,
+        "pros": [
+          "The notes identify a commercial 58mm portafilter, which is attractive for learning and accessory compatibility.",
+          "Hands-on notes say it has legendary Italian durability.",
+          "Hands-on notes also say it has massive modding potential, making it a strong long-term platform."
+        ],
+        "cons": [
+          "The provided support is heavily tied to affiliate-conflicted sources, so confidence is lower than the Breville picks.",
+          "It is described as a learning machine, which means it is less beginner-friendly than the Bambino Plus.",
+          "The notes do not provide enough fresh non-promotional evidence here to fully verify current market performance."
+        ],
+        "specs": {
+          "portafilter": "58mm"
+        },
+        "verdict": "This is the best long-term platform if you want a machine you can tinker with and grow into. I would not rank it above the Bambino on confidence, because the evidence here leans more promotional and less directly supported by non-conflicted testing.",
+        "best_for": ""
+      },
+      {
+        "name": "Casabrews CM5418",
+        "brand": "Casabrews",
+        "price": 140,
+        "rating": 3.5,
+        "pros": [
+          "CNET hands-on testing says it is compact and lightweight, which makes it suitable for small kitchens.",
+          "It includes steam wand capabilities, so it can make milk drinks.",
+          "The notes place it at $140 and roughly half the price of the Breville Bambino, so it is the cheapest credible machine in the set."
+        ],
+        "cons": [
+          "The same flimsy feel complaint appears here, again tied to thin stainless steel and plastic parts.",
+          "The source set is narrow, so there is not enough independent evidence to call it as reliable as the Brevilles.",
+          "Casabrews is a weaker brand than Breville or Gaggia in reputation and long-term trust."
+        ],
+        "specs": {
+          "launchYear": "Spring 2025"
+        },
+        "verdict": "This is the budget wildcard: cheap, compact, and supported by hands-on testing, but with less brand confidence than the established names. I would only choose it if the lower price is the deciding factor and I accepted the build-quality tradeoff.",
+        "best_for": ""
+      },
+      {
+        "name": "Rancilio Silvia",
+        "brand": "Rancilio",
+        "price": null,
+        "rating": 3.5,
+        "pros": [
+          "Hands-on notes recommend it when found refurbished or on sale, which suggests better value if bought carefully.",
+          "It is repeatedly treated as a serious enthusiast machine rather than a toy.",
+          "It appears in multiple 2026 sources as a known entry-level-to-upgrade platform."
+        ],
+        "cons": [
+          "The notes only support refurbished or sale pricing, not a clear regular under-$500 purchase.",
+          "There is not enough fresh evidence here to justify a stronger ranking than the Bambino or Gaggia Classic Pro.",
+          "For many buyers it will be a harder, less convenient ownership experience than the Breville alternatives."
+        ],
+        "specs": {},
+        "verdict": "This can be a smart buy only when the price is right, because the machine is more of an enthusiast platform than an easy budget default. I would not make it a first recommendation unless you specifically want a used or refurbished deal.",
+        "best_for": ""
+      }
+    ],
+    "summary": "The strongest evidence supports three mainstream picks under $500: Breville Bambino, Breville Bambino Plus, and Gaggia Classic Pro. The Bambino is the safest budget recommendation if you want compact size and quick heat-up, while the Bambino Plus is the easier milk-drink machine if you can stretch closer to $500. The Gaggia Classic Pro remains the most upgradeable long-term option, but the evidence here is thinner and much of the support is affiliate-linked."
+  },
+  {
+    "query": "best running shoes for f",
+    "model": "gpt-5.4-mini",
+    "ok": "✗",
+    "cost": "$0.0222",
+    "error": "json-parse-fail",
+    "raw": "{\"summary\":\"The strongest evidence supports a few mainstream stability shoes rather than any exotic or minimalist solution. RTINGS coverage exists for Brooks Ghost 18, Mount to Coast C1, and New Balan"
+  }
+]

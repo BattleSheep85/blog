@@ -1,6 +1,24 @@
 # Issues
 
-Last updated: 2026-07-10
+Last updated: 2026-07-11
+
+## 2026-07-11 — Haiku 4.5 synth eval + name_ung metric fix
+
+- [x] MEDIUM (Benchmark integrity) — `benchmarks/lib/synth-score.mjs` `name_ung` used exact-substring
+      matching, false-flagging verbose-but-grounded product names (in the 8-query Haiku run, all 6 flagged
+      names had 80–100% source-token overlap and brands present in sources — zero were actual fabrications).
+      Fixed to token-presence (<50% of significant name-tokens in sources = ungrounded); kept
+      `name_ung_strict` for continuity. This biased every prior synth model comparison against models that
+      write longer/reformatted names. On the 50-query dump the fix cleared 90 strict flags for Haiku and 26
+      for gpt-5.4-mini (`benchmarks/rescore-synth.mjs`, re-scored with zero API calls).
+- [ ] LOW (Model eval — informational) — Claude Haiku 4.5 evaluated as a synth candidate via Anthropic's
+      native Batch API (50% cost). 50-query panel results: reliability Haiku 50/50 vs gpt-5.4-mini 45/50 (5
+      failures: JSON-parse/validate); recall Haiku ~6 vs gpt ~4 products/run; honesty under the FIXED metric
+      — name_ung Haiku 0 vs gpt 0 (both clean once verbose-but-grounded names stop being false-flagged);
+      num_ung (not a substring artifact) Haiku 34 vs gpt 13. Cost Haiku $1.16 vs gpt $1.00 for 50 runs.
+      Decision: keep gpt-5.4-mini as synth for now (lower ungrounded-number rate); Haiku 4.5 is a viable
+      candidate that trades slightly higher ungrounded-number rate for better reliability + recall — revisit
+      if reliability becomes the priority.
 
 ## 2026-07-10 — Grok 4.5 evaluation + BaitBench search-quality (Part B)
 
