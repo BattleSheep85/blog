@@ -124,6 +124,7 @@ ${extra_head}
 <a href="/history" class="hidden text-body-sm text-ink-2 transition-colors hover:text-ink sm:inline" title="Your past searches">Your searches</a>
 <a href="/reviews" class="hidden text-body-sm text-ink-2 transition-colors hover:text-ink sm:inline">Reviews</a>
 <a href="/best/" class="hidden text-body-sm text-ink-2 transition-colors hover:text-ink sm:inline">Guides</a>
+<a href="/verify" class="hidden text-body-sm text-ink-2 transition-colors hover:text-ink sm:inline">Verify</a>
 <a href="/about" class="hidden text-body-sm text-ink-2 transition-colors hover:text-ink sm:inline">About</a>
 <a href="/account" class="text-body-sm text-ink-2 transition-colors hover:text-ink" title="Your past searches">Account</a>
 <details class="nav-menu relative sm:hidden">
@@ -136,6 +137,7 @@ ${extra_head}
 <a href="/history" class="rounded px-3 py-2 text-body-sm text-ink-2 hover:text-ink">Your searches</a>
 <a href="/reviews" class="rounded px-3 py-2 text-body-sm text-ink-2 hover:text-ink">Reviews</a>
 <a href="/best/" class="rounded px-3 py-2 text-body-sm text-ink-2 hover:text-ink">Guides</a>
+<a href="/verify" class="rounded px-3 py-2 text-body-sm text-ink-2 hover:text-ink">Verify</a>
 <a href="/about" class="rounded px-3 py-2 text-body-sm text-ink-2 hover:text-ink">About</a>
 <a href="/account" class="rounded px-3 py-2 text-body-sm text-ink-2 hover:text-ink">Account</a>
 </div>

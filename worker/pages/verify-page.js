@@ -8,8 +8,9 @@
 
 import { layout } from '../lib/html.js';
 import { escapeHtml, displayQuery, isValidHttpsUrl, parseJsonSafe } from '../lib/utils.js';
-import { getResearchBySlug } from '../lib/db.js';
+import { getResearchBySlug, findRankingForCategory } from '../lib/db.js';
 import { buildAffiliateUrl, retailerLabel, resolveAmazonTag } from '../lib/affiliate-links.js';
+import { starMarkup, renderItemImage } from './research-page.js';
 
 /**
  * GET /verify — the product-entry form.
@@ -481,6 +482,75 @@ function renderBuyCta(productUrl, env) {
 </div>`;
 }
 
+// One alternative-product card — a smaller sibling of research-page.js's
+// renderProduct, reusing the same image fallback + star markup + affiliate
+// CTA path (buildAffiliateUrl/retailerLabel) so the link behavior is
+// identical to renderBuyCta above.
+function renderAlternativeCard(product, env) {
+    const name = String(product.name || '').trim() || 'Product';
+    const ids = { amazonTag: resolveAmazonTag(env) };
+    const affiliateUrl = buildAffiliateUrl(product.affiliate_url || product.product_url || '', ids);
+    const hasBuyLink = affiliateUrl && isValidHttpsUrl(affiliateUrl);
+    const buyLabel = hasBuyLink ? `Buy on ${retailerLabel(affiliateUrl)}` : '';
+    const oneLiner = product.best_for || product.verdict || '';
+
+    return `<div class="rounded-lg border border-line bg-surface-1 p-4">
+${renderItemImage(product.image_url, name, product.id)}
+<h3 class="mt-1 text-body-sm font-semibold text-ink">${escapeHtml(name)}</h3>
+${product.rating != null ? `<p class="mt-1 text-caption text-ink-2"><span aria-hidden="true">${starMarkup(product.rating)}</span> ${escapeHtml(String(product.rating))}/5</p>` : ''}
+${oneLiner ? `<p class="mt-2 text-body-sm text-ink-2">${escapeHtml(String(oneLiner).slice(0, 140))}</p>` : ''}
+${hasBuyLink ? `<a href="${escapeHtml(affiliateUrl)}" target="_blank" rel="noopener noreferrer nofollow sponsored" class="mt-3 inline-flex items-center justify-center gap-1 rounded-lg bg-accent-strong px-3 py-2 text-caption font-semibold text-white transition-colors hover:bg-accent-hover">${escapeHtml(buyLabel)} <span aria-hidden="true">&#8599;</span></a>` : ''}
+</div>`;
+}
+
+// "Better alternatives" section — reuses the ranking engine's OUTPUT (an
+// existing completed ranking research row for the same category) to point a
+// reader at independently-ranked picks. Falls back to a CTA into the ranking
+// flow when no matching ranking exists yet. `findRanking` is injected
+// (defaults to the real db.js helper) so the unit layer can test this
+// without a DB.
+export async function renderAlternatives(row, resultJson, env, findRanking = findRankingForCategory) {
+    const category = String(
+        resultJson.category || row.category || row.topical_category || displayQuery(row.query) || ''
+    ).trim();
+    if (!category) return '';
+
+    const score = Number(resultJson?.overall?.score);
+    const isLowScore = Number.isFinite(score) && score < 50;
+
+    const heading = isLowScore
+        ? 'This one falls short — here are better-rated options'
+        : 'Better-rated alternatives — independently ranked';
+
+    let match = null;
+    try {
+        match = await findRanking(env.DB, category);
+    } catch {
+        match = null;
+    }
+
+    const products = match && Array.isArray(match.products) ? match.products.slice(0, 3) : [];
+
+    if (match && match.research && products.length > 0) {
+        const cardsHtml = products.map((p) => renderAlternativeCard(p, env)).join('');
+        const rankingSlug = match.research.slug;
+        const linkHtml = rankingSlug
+            ? `<p class="mt-4 text-caption text-ink-3"><a href="/research/${escapeHtml(rankingSlug)}" class="text-accent underline hover:text-accent-hover">See the full ranking &rarr;</a></p>`
+            : '';
+        return `<div class="mt-8${isLowScore ? ' rounded-lg border border-trust-low bg-trust-low-bg p-5' : ''}">
+<h2 class="font-serif text-h3 font-semibold text-ink">${escapeHtml(heading)}</h2>
+<div class="mt-4 grid gap-4 md:grid-cols-3">${cardsHtml}</div>
+${linkHtml}
+</div>`;
+    }
+
+    const compareUrl = `/research/new?q=${encodeURIComponent(`best ${category}`)}`;
+    return `<div class="mt-8${isLowScore ? ' rounded-lg border border-trust-low bg-trust-low-bg p-5' : ''}">
+<h2 class="font-serif text-h3 font-semibold text-ink">${escapeHtml(heading)}</h2>
+<a href="${escapeHtml(compareUrl)}" class="mt-3 inline-flex items-center justify-center gap-2 rounded-lg bg-accent-strong px-4 py-2.5 text-body-sm font-semibold text-white transition-colors hover:bg-accent-hover">Compare the best ${escapeHtml(category)} <span aria-hidden="true">&rarr;</span></a>
+</div>`;
+}
+
 async function renderCompleteReport(row, env) {
     const prettyProduct = displayQuery(row.query);
     const result = parseJsonSafe(row.result, {});
@@ -495,6 +565,15 @@ ${sortedClaims(claims).map(renderClaimCard).join('')}
 </ul>`
         : `<p class="mt-4 text-body-sm text-ink-3">No individual claims were recorded for this run.</p>`;
 
+    // Low-score reports surface the alternatives section EARLY (right after the
+    // verdict header, before the claim ledger) — a reader whose subject just
+    // failed the audit should see better options before wading through why.
+    // Healthy scores keep the section at the bottom, after the buy CTA, as a
+    // lower-pressure "you might also like" nudge.
+    const score = Number(result?.overall?.score ?? row.overall_score);
+    const isLowScore = Number.isFinite(score) && score < 50;
+    const alternativesHtml = await renderAlternatives(row, result, env);
+
     const body = `<div class="mx-auto max-w-2xl px-6 py-12 md:py-16">
 <nav aria-label="Breadcrumb" class="mb-6 text-caption text-ink-3">
 <a href="/" class="hover:text-ink">Home</a>
@@ -508,6 +587,8 @@ ${sortedClaims(claims).map(renderClaimCard).join('')}
 
 ${renderVerdictHeader(prettyProduct, overall, claims.length, evidenceCount)}
 
+${isLowScore ? alternativesHtml : ''}
+
 <h2 class="mt-10 mb-2 font-serif text-h3 font-semibold text-ink">Claim ledger</h2>
 ${ledgerHtml}
 
@@ -515,7 +596,7 @@ ${renderMethodology()}
 
 ${renderBuyCta(productUrl, env)}
 
-<!-- TODO(2d): alternatives section -->
+${isLowScore ? '' : alternativesHtml}
 </div>`;
 
     return {

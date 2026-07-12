@@ -147,6 +147,22 @@ export async function gatherParallel(query, config, openrouterKey, env, onEvent,
     await emit(onEvent, 'status', `Checking self-hosted/open-source leaders: ${fossLeaders.slice(0, 5).join(', ')}...`);
   }
 
+  // Opt-in, additive: the Truth Audit verification pipeline sets
+  // config.measurementSeedQueries so claim-checking gets pages that contain
+  // actual measured numbers (a specific ANC-dB or battery-hour claim can only
+  // be corroborated by a source that measured it), not just opinion pieces.
+  // No-op for ranking (ENGINE_CONFIG in tiers.js never sets this flag), so the
+  // ranking gather/decompose is unaffected.
+  if (config.measurementSeedQueries) {
+    aspects.push({
+      title: 'Independent measurements & teardowns',
+      queries: [
+        `${query} rtings measured test`,
+        `${query} teardown battery test`,
+      ],
+    });
+  }
+
   // Flatten to (query, provider) tasks; cycle providers for source diversity.
   const tasks = [];
   for (const a of aspects) {

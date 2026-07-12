@@ -274,9 +274,17 @@ export async function claimNextPendingJob(env) {
     // once the month's recorded spend hits the cap. Uses D1 SUM(cost_usd) —
     // immutable per row, so no lost-update race like the KV counter.
     if (await monthlySpendUsd(env) >= monthlyBudgetUsd(env)) return null;
+    // Exclude kind='verification' rows: they are RANKING-pipeline claims only
+    // (this feeds runResearchPipeline via the off-CF worker). Verification rows
+    // are claimed/processed exclusively by the queue consumer's
+    // processVerificationMessage → runVerificationPipeline path.
     const claimed = await env.DB.prepare(
         `UPDATE research SET status = 'processing'
-         WHERE id = (SELECT id FROM research WHERE status = 'pending' ORDER BY created_at ASC LIMIT 1)
+         WHERE id = (
+             SELECT id FROM research
+             WHERE status = 'pending' AND (kind IS NULL OR kind != 'verification')
+             ORDER BY created_at ASC LIMIT 1
+         )
          RETURNING id, query, slug, tier, facets, topical_category, canonical_query, clarifications`
     ).first();
     if (!claimed) return null;

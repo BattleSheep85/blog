@@ -50,10 +50,11 @@ export async function handleNextJob(request, env) {
   const extEnabled = env.EXTERNAL_WORKER_ENABLED === true || env.EXTERNAL_WORKER_ENABLED === 'true' || env.EXTERNAL_WORKER_ENABLED === '1';
   if (!extEnabled) return json({ job: null });
   try {
-    // TODO: blackbox worker kind-branch — claimNextPendingJob only ever claims
-    // legacy ranking rows today. Verification jobs (kind='verification') aren't
-    // dispatched to the off-CF worker yet; that needs its own claim/complete
-    // shape (see worker/pipeline/verify-orchestrator.js) before this can serve them.
+    // claimNextPendingJob excludes kind='verification' rows (they run the
+    // RANKING pipeline via runResearchPipeline). Verification jobs are never
+    // dispatched to the off-CF worker — they are claimed/processed exclusively
+    // by the queue consumer's processVerificationMessage → runVerificationPipeline
+    // path (see worker/pipeline/verify-orchestrator.js).
     const job = await claimNextPendingJob(env);
     return json({ job: job || null });
   } catch (err) {

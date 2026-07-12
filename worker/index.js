@@ -455,9 +455,18 @@ export default {
                 try {
                     if (await monthlySpendUsd(env) >= monthlyBudgetUsd(env)) return;
                     const staleCut = Math.floor(now / 1000) - 5 * 60;
+                    // Exclude kind='verification' rows — this fallback runs
+                    // runResearchPipeline (the RANKING pipeline). Verification
+                    // rows are processed only by the queue consumer's
+                    // processVerificationMessage → runVerificationPipeline path.
                     const claimed = await env.DB.prepare(
                         `UPDATE research SET status = 'processing'
-                         WHERE id = (SELECT id FROM research WHERE status = 'pending' AND created_at < ?1 ORDER BY created_at ASC LIMIT 1)
+                         WHERE id = (
+                             SELECT id FROM research
+                             WHERE status = 'pending' AND created_at < ?1
+                               AND (kind IS NULL OR kind != 'verification')
+                             ORDER BY created_at ASC LIMIT 1
+                         )
                          RETURNING id, query`
                     ).bind(staleCut).first();
                     if (claimed) {

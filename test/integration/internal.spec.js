@@ -6,6 +6,7 @@ import { env } from 'cloudflare:test';
 import { beforeAll, describe, it, expect } from 'vitest';
 import { applySchema } from './_schema.js';
 import { handleNextJob, handleProgress, handleComplete } from '../../worker/handlers/internal.js';
+import { claimNextPendingJob } from '../../worker/pipeline/orchestrator.js';
 import { generateId, insertResearch, updateResearchStatus } from '../../worker/lib/db.js';
 
 const SECRET = 'test-worker-secret-123';
@@ -63,6 +64,43 @@ describe('handleNextJob', () => {
     const disabledEnv = { ...env, EXTERNAL_WORKER_ENABLED: 'false' };
     expect((await (await handleNextJob(authedReq(), disabledEnv)).json()).job).toBeNull();
     // the pending row is untouched (left for the CF-side consumer to process)
+    expect((await env.DB.prepare('SELECT status FROM research WHERE id = ?').bind(id).first()).status).toBe('pending');
+  });
+
+  it('skips a pending verification row and leaves it untouched (job-routing: verification rows must only be processed by the queue consumer)', async () => {
+    const id = generateId();
+    await insertResearch(env.DB, { id, slug: 's-' + id, query: 'is the anker soundcore legit', canonicalQuery: 'verifyclaim' });
+    await env.DB.prepare("UPDATE research SET kind = 'verification' WHERE id = ?").bind(id).run();
+    const extEnv = { ...env, EXTERNAL_WORKER_ENABLED: 'true' };
+    const job = (await (await handleNextJob(authedReq(), extEnv)).json()).job;
+    expect(job).toBeNull();
+    // the verification row was NOT claimed — still pending for the queue consumer
+    expect((await env.DB.prepare('SELECT status FROM research WHERE id = ?').bind(id).first()).status).toBe('pending');
+  });
+
+  it('claims a pending ranking row while an older pending verification row is skipped', async () => {
+    const verifyId = generateId();
+    await insertResearch(env.DB, { id: verifyId, slug: 's-' + verifyId, query: 'verify me', canonicalQuery: 'verifyclaim2' });
+    await env.DB.prepare("UPDATE research SET kind = 'verification', created_at = created_at - 100 WHERE id = ?").bind(verifyId).run();
+
+    const rankingId = generateId();
+    await insertResearch(env.DB, { id: rankingId, slug: 's-' + rankingId, query: 'best mouse', canonicalQuery: 'rankingclaim' });
+    await env.DB.prepare("UPDATE research SET facets = ?, topical_category = 'Mice' WHERE id = ?")
+      .bind(JSON.stringify({ is_buyable: true, sold_on_amazon: true }), rankingId).run();
+
+    const job = await claimNextPendingJob(env);
+    expect(job.reportId).toBe(rankingId);
+    // ranking row claimed (processing); verification row left pending
+    expect((await env.DB.prepare('SELECT status FROM research WHERE id = ?').bind(rankingId).first()).status).toBe('processing');
+    expect((await env.DB.prepare('SELECT status FROM research WHERE id = ?').bind(verifyId).first()).status).toBe('pending');
+  });
+
+  it('claimNextPendingJob returns null when only a verification row is pending', async () => {
+    const id = generateId();
+    await insertResearch(env.DB, { id, slug: 's-' + id, query: 'verify only', canonicalQuery: 'verifyonlyclaim' });
+    await env.DB.prepare("UPDATE research SET kind = 'verification' WHERE id = ?").bind(id).run();
+    const job = await claimNextPendingJob(env);
+    expect(job).toBeNull();
     expect((await env.DB.prepare('SELECT status FROM research WHERE id = ?').bind(id).first()).status).toBe('pending');
   });
 });

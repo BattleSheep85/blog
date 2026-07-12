@@ -24,9 +24,27 @@ import { incrementMonthlyCost } from './orchestrator.js';
  * runVerification). `opts.onProgress` — optional progress callback forwarded
  * to the engine's onEvent.
  */
+// Verification needs denser evidence than ranking: each claim must be
+// corroborated by an INDEPENDENT source's own testing/measurement (see
+// worker/engine/verify.js's STANCE_SYSTEM), which means actually reading the
+// pages that contain the specific numbers (RTINGS/teardown/measured-spec
+// pages), not just a search snippet. Ranking only needs a broad opinion
+// sample, so it stays on the shared ENGINE_CONFIG (tiers.js) untouched — this
+// override applies ONLY to the verification pipeline.
+const VERIFICATION_CONFIG = Object.freeze({
+    ...getTierConfig('full'),
+    maxFetches: 40,
+    maxSearches: 60,
+    maxToolCalls: 90,
+    // Biases gatherParallel's aspect list toward measurement/teardown sources
+    // (see worker/engine/parallel-engine.js) — a low-risk, additive opt-in
+    // that ranking's shared ENGINE_CONFIG never sets.
+    measurementSeedQueries: true,
+});
+
 export async function runVerificationPipeline(env, reportId, { product, productUrl }, opts = {}) {
     const verify = opts.verify || runVerification;
-    const config = getTierConfig('full');
+    const config = VERIFICATION_CONFIG;
 
     try {
         const row = await getResearchById(env.DB, reportId);

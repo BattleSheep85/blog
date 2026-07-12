@@ -20,6 +20,7 @@ import { runAsinResolverTests } from '../test/unit/asin-resolver.test.js';
 import { runVerdictTests } from '../test/unit/verdict.test.js';
 import { runVerifyTests } from '../test/unit/verify.test.js';
 import { runVerificationRenderTests } from '../test/unit/verification-render.test.js';
+import { runJinaTests } from '../test/unit/jina.test.js';
 
 const suites = [
   ['credibility', runCredibilityTests],
@@ -36,6 +37,7 @@ const suites = [
   ['verdict', runVerdictTests],
   ['verify', runVerifyTests],
   ['verification-render', runVerificationRenderTests],
+  ['jina', runJinaTests], // async suite (awaited below)
 ];
 
 let failed = 0;

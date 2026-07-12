@@ -2,55 +2,109 @@ const JINA_TIMEOUT_MS = 8000;
 const DIRECT_TIMEOUT_MS = 8000;
 const MAX_CONTENT_LENGTH = 15_000;
 
+// Retry-on-429/5xx tuning. Jina's free tier throttles hard (~20 req/min) and
+// under concurrent read bursts a large fraction of requests come back 429 —
+// those pages then silently fall through to the (usually thinner) direct-fetch
+// fallback. A couple of short, jittered backoff retries recover most of them
+// without materially slowing down a page that's genuinely blocked/down.
+const JINA_MAX_RETRIES = 2;
+const JINA_RETRY_BASE_MS = 400; // ~400ms, then ~1200ms (see backoffMs)
+const JINA_RETRY_JITTER_MS = 150;
+// Hard ceiling on the whole retry loop's added wall-clock so a hammered URL
+// still returns promptly instead of hanging the caller's read budget.
+const JINA_RETRY_BUDGET_MS = 3000;
+
+function backoffMs(attempt) {
+  // attempt 1 → ~400ms, attempt 2 → ~1200ms, plus small jitter.
+  const base = JINA_RETRY_BASE_MS * (2 ** (attempt - 1)) * (attempt === 1 ? 1 : 1.5);
+  return Math.round(base + Math.random() * JINA_RETRY_JITTER_MS);
+}
+
+function isRetryableStatus(status) {
+  return status === 429 || (status >= 500 && status <= 599);
+}
+
+const defaultSleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
 /**
  * Fetch full page content as markdown via Jina Reader.
  * Free tier: ~20 req/min. Returns clean markdown with headings, lists, tables preserved.
  *
  * Resilience: Jina's free tier throttles aggressively (~20 req/min), and under the
- * flywheel + organic load we routinely hit 429/5xx or empty bodies. When the Jina
- * path fails for any reason (network error, timeout, 429/5xx, or an empty/blocked
- * body) we fall back to fetching the URL directly with browser-like headers and a
- * dependency-free HTML-to-text extraction so the pipeline keeps making progress
- * instead of silently losing the page. Both paths return the same shape (a string,
- * capped at MAX_CONTENT_LENGTH). The graceful empty-string failure remains the final
- * fallback; this function never throws.
+ * flywheel + organic load we routinely hit 429/5xx or empty bodies. Before falling
+ * through to the direct-fetch fallback, a 429/5xx (or transient network error) is
+ * retried up to JINA_MAX_RETRIES times with short exponential backoff + jitter,
+ * bounded by JINA_RETRY_BUDGET_MS total so a persistently-throttled URL still
+ * returns promptly. When the Jina path still fails after retries (network error,
+ * timeout, 429/5xx, or an empty/blocked body) we fall back to fetching the URL
+ * directly with browser-like headers and a dependency-free HTML-to-text extraction
+ * so the pipeline keeps making progress instead of silently losing the page. Both
+ * paths return the same shape (a string, capped at MAX_CONTENT_LENGTH). The
+ * graceful empty-string failure remains the final fallback; this function never
+ * throws.
+ *
+ * `opts.fetchImpl`/`opts.sleepImpl` are injectable for tests (default to the
+ * global fetch and a real timer-based delay); they do not change the public
+ * two-arg call sites used throughout the codebase.
  */
-export async function fetchPageContent(url, apiKey) {
-  try {
-    // A Jina API key (free signup, generous limits) lifts the keyless rate cap that
-    // otherwise 429s most concurrent reads → far more pages actually return body text.
-    const headers = {
-      Accept: 'text/markdown',
-      'X-Return-Format': 'markdown',
-    };
-    if (apiKey) headers.Authorization = `Bearer ${apiKey}`;
-    const response = await fetch(`https://r.jina.ai/${url}`, {
-      signal: AbortSignal.timeout(JINA_TIMEOUT_MS),
-      headers,
-    });
+export async function fetchPageContent(url, apiKey, opts = {}) {
+  const fetchImpl = opts.fetchImpl ?? fetch;
+  const sleepImpl = opts.sleepImpl ?? defaultSleep;
+  const started = Date.now();
 
-    if (!response.ok) {
-      console.log(`[jina] HTTP ${response.status} for ${url}`);
-      return await fetchDirect(url);
+  // A Jina API key (free signup, generous limits) lifts the keyless rate cap that
+  // otherwise 429s most concurrent reads → far more pages actually return body text.
+  const headers = {
+    Accept: 'text/markdown',
+    'X-Return-Format': 'markdown',
+  };
+  if (apiKey) headers.Authorization = `Bearer ${apiKey}`;
+
+  for (let attempt = 0; attempt <= JINA_MAX_RETRIES; attempt++) {
+    try {
+      const response = await fetchImpl(`https://r.jina.ai/${url}`, {
+        signal: AbortSignal.timeout(JINA_TIMEOUT_MS),
+        headers,
+      });
+
+      if (!response.ok) {
+        console.log(`[jina] HTTP ${response.status} for ${url} (attempt ${attempt + 1})`);
+        const canRetry = isRetryableStatus(response.status)
+          && attempt < JINA_MAX_RETRIES
+          && Date.now() - started < JINA_RETRY_BUDGET_MS;
+        if (canRetry) {
+          await sleepImpl(backoffMs(attempt + 1));
+          continue;
+        }
+        return await fetchDirect(url, fetchImpl);
+      }
+
+      const text = await response.text();
+      // Jina sometimes returns boilerplate for blocked/empty pages
+      if (text.length < 100) return await fetchDirect(url, fetchImpl);
+      return text.slice(0, MAX_CONTENT_LENGTH);
+    } catch (err) {
+      console.log(`[jina] ERROR ${url} (attempt ${attempt + 1}): ${err instanceof Error ? err.message : String(err)}`);
+      const canRetry = attempt < JINA_MAX_RETRIES && Date.now() - started < JINA_RETRY_BUDGET_MS;
+      if (canRetry) {
+        await sleepImpl(backoffMs(attempt + 1));
+        continue;
+      }
+      return await fetchDirect(url, fetchImpl);
     }
-
-    const text = await response.text();
-    // Jina sometimes returns boilerplate for blocked/empty pages
-    if (text.length < 100) return await fetchDirect(url);
-    return text.slice(0, MAX_CONTENT_LENGTH);
-  } catch (err) {
-    console.log(`[jina] ERROR ${url}: ${err instanceof Error ? err.message : String(err)}`);
-    return await fetchDirect(url);
   }
+  // Unreachable in practice (the loop always returns), but keep the contract
+  // explicit: never throw, always resolve to a string.
+  return await fetchDirect(url, fetchImpl);
 }
 
 /**
  * Direct fallback: fetch the raw page with browser-like headers and extract
  * readable text without any DOM library. Returns '' on any failure; never throws.
  */
-async function fetchDirect(url) {
+async function fetchDirect(url, fetchImpl = fetch) {
   try {
-    const response = await fetch(url, {
+    const response = await fetchImpl(url, {
       signal: AbortSignal.timeout(DIRECT_TIMEOUT_MS),
       headers: {
         'User-Agent':
