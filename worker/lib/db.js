@@ -59,6 +59,13 @@ export async function getProductsByResearchId(db, researchId) {
         .bind(researchId).all();
 }
 
+// -- Claims (verification pipeline; see schema/010_claims.sql) --
+
+export async function getClaimsByResearchId(db, researchId) {
+    return db.prepare('SELECT * FROM claims WHERE research_id = ? ORDER BY created_at ASC')
+        .bind(researchId).all();
+}
+
 // -- Affiliate Clicks --
 
 export async function logAffiliateClick(db, { productId, reportId, network, ipHash }) {

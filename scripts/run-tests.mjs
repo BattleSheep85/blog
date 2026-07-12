@@ -19,6 +19,7 @@ import { runLibPureTests } from '../test/unit/lib-pure.test.js';
 import { runAsinResolverTests } from '../test/unit/asin-resolver.test.js';
 import { runVerdictTests } from '../test/unit/verdict.test.js';
 import { runVerifyTests } from '../test/unit/verify.test.js';
+import { runVerificationRenderTests } from '../test/unit/verification-render.test.js';
 
 const suites = [
   ['credibility', runCredibilityTests],
@@ -34,6 +35,7 @@ const suites = [
   ['asin-resolver', runAsinResolverTests],
   ['verdict', runVerdictTests],
   ['verify', runVerifyTests],
+  ['verification-render', runVerificationRenderTests],
 ];
 
 let failed = 0;

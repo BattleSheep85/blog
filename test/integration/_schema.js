@@ -8,9 +8,11 @@ import subscribers from '../../schema/005_subscribers.sql?raw';
 import subscribersConsent from '../../schema/009_subscribers_consent.sql?raw';
 import keywords from '../../schema/006_keyword_queue.sql?raw';
 import users from '../../schema/007_users.sql?raw';
+import claims from '../../schema/010_claims.sql?raw';
+import verification from '../../schema/011_verification.sql?raw';
 
 export async function applySchema(db) {
-  for (const sql of [init, guides, v2, subscribers, subscribersConsent, keywords, users]) {
+  for (const sql of [init, guides, v2, subscribers, subscribersConsent, keywords, users, claims, verification]) {
     const stmts = sql.replace(/--[^\n]*/g, '').split(';').map((s) => s.trim()).filter(Boolean);
     for (const s of stmts) await db.prepare(s).run();
   }
