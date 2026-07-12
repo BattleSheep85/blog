@@ -83,6 +83,85 @@ export function evidenceWeight(ev) {
   return cred * indep;
 }
 
+/**
+ * Evidence weight for a VERIFICATION context (strict-(a)): a genuine hands-on
+ * measurement counts even when the outlet carries affiliate links — a
+ * measurement is a measurement — but that forgiveness applies ONLY to
+ * hands-on/expert testing. Affiliate opinion without testing, sponsored
+ * posts, incentivized reviews, manufacturer restatements, and opinion
+ * listicles stay heavily discounted. Requires evidence items to carry `tags`
+ * (the array produced by `scoreSource` in `worker/lib/credibility.js`).
+ */
+export function verificationWeight(ev) {
+  const tags = (ev && ev.tags) || [];
+  const has = (t) => tags.includes(t);
+  if (has('ai-injection')) return 0; // manipulation — never counts
+
+  const handsOn = has('hands-on') || has('expert-domain'); // someone actually tested/measured
+  let testing;
+  if (handsOn) testing = 1.0;
+  else if (has('community')) testing = 0.6; // real unpaid users, but anecdotal
+  else testing = 0.3; // opinion/blog/listicle/manufacturer restatement, untested
+
+  let indep = clamp01((ev && ev.independence) / 100);
+  if (handsOn) indep = Math.max(indep, 0.5); // strict-(a): a measurement counts even from a monetized outlet
+
+  let mult = 1;
+  if (has('sponsored-content')) mult *= 0.15;
+  if (has('incentivized-review')) mult *= 0.15;
+  if (has('manufacturer')) mult *= 0.2; // maker restating its own claim ≠ corroboration
+  if (has('affiliate-conflict')) mult *= handsOn ? 0.9 : 0.4; // forgive ONLY when there's a measurement
+  if (has('listicle') && !handsOn) mult *= 0.4;
+
+  return clamp01(testing * indep * mult);
+}
+
+// Tags that disqualify an evidence item from counting as a genuine
+// independent corroborator under the verification policy, even if its weight
+// clears the threshold (e.g. a manufacturer restatement can still carry some
+// residual weight but must never count toward corroboration).
+const NON_INDEPENDENT_TAGS = Object.freeze([
+  'manufacturer',
+  'sponsored-content',
+  'incentivized-review',
+  'ai-injection',
+]);
+
+// Minimum weigh() score for an item to count as a "real, non-trivial" source
+// when tallying independent corroborators (tier-(iii) verification policy).
+const CORROBORATOR_MIN_WEIGHT = 0.25;
+
+/** Strips a leading "www." from a hostname (case-sensitive match, as hostnames are already lowercase). */
+function stripWww(hostname) {
+  return hostname.startsWith('www.') ? hostname.slice(4) : hostname;
+}
+
+/**
+ * Counts DISTINCT hostnames among `supporting` items that qualify as genuine
+ * independent corroborators: weigh(item) >= CORROBORATOR_MIN_WEIGHT AND none
+ * of NON_INDEPENDENT_TAGS present in item.tags. Two pages on the same host
+ * count once. Invalid/missing URLs are skipped (can't establish a distinct
+ * host). Pure — does not mutate `supporting`.
+ */
+export function independentCorroborators(supporting, weigh) {
+  const items = Array.isArray(supporting) ? supporting : [];
+  const hosts = new Set();
+  for (const item of items) {
+    if (!item) continue;
+    if (weigh(item) < CORROBORATOR_MIN_WEIGHT) continue;
+    const tags = item.tags || [];
+    if (NON_INDEPENDENT_TAGS.some((t) => tags.includes(t))) continue;
+    try {
+      hosts.add(stripWww(new URL(item.url).hostname));
+    } catch {
+      continue; // invalid/missing URL — can't establish a distinct host
+    }
+  }
+  return hosts.size;
+}
+
+const MIN_INDEPENDENT_CORROBORATORS = 2;
+
 function byWeightDescUrlAsc(a, b) {
   if (b._weight !== a._weight) return b._weight - a._weight;
   const ua = a.url || '';
@@ -92,9 +171,9 @@ function byWeightDescUrlAsc(a, b) {
   return 0;
 }
 
-function sortedSide(items) {
+function sortedSide(items, weigh) {
   return items
-    .map((ev) => ({ ...ev, _weight: evidenceWeight(ev) }))
+    .map((ev) => ({ ...ev, _weight: weigh(ev) }))
     .sort(byWeightDescUrlAsc)
     .map(({ _weight, ...rest }) => ({ ...rest, weight: round3(_weight) }));
 }
@@ -105,15 +184,35 @@ function sortedSide(items) {
  * order — no Date.now(), no randomness.
  *
  * Returns { status, confidence, support, contradict, supporting, contradicting }.
+ *
+ * `opts.weigh` overrides the per-evidence weighting function (default
+ * `evidenceWeight`) — e.g. pass `verificationWeight` for a verification
+ * context. Default behavior (no opts) is unchanged.
+ *
+ * `opts.policy === 'verification'` additionally applies tier-(iii)
+ * corroboration caps on top of the base status (see independentCorroborators
+ * above): marketing claims can never reach 'verified', and spec/warranty/
+ * support/unknown claims need >= 2 distinct-host independent corroborators
+ * to reach 'verified' — otherwise they're downgraded to 'partially-verified'.
+ * Contradicted is unchanged (evaluated first, always wins). When this policy
+ * is active and `opts.weigh` is not given, `weigh` defaults to
+ * verificationWeight (not evidenceWeight) since the policy is meaningless
+ * without tag-aware weighting. The returned object always carries
+ * `independentCount` (the distinct-host independent-corroborator count among
+ * `supporting`, per independentCorroborators() above) regardless of policy,
+ * so callers/UI can surface it either way.
  */
-export function verdictForClaim(claim, evidence) {
+export function verdictForClaim(claim, evidence, opts = {}) {
+  const policy = opts && opts.policy;
+  const defaultWeigh = policy === 'verification' ? verificationWeight : evidenceWeight;
+  const weigh = (opts && opts.weigh) || defaultWeigh;
   const list = Array.isArray(evidence) ? evidence : [];
 
   const supportItems = list.filter((ev) => ev && ev.stance === STANCE.SUPPORT);
   const contradictItems = list.filter((ev) => ev && ev.stance === STANCE.CONTRADICT);
 
-  const support = supportItems.reduce((sum, ev) => sum + evidenceWeight(ev), 0);
-  const contradict = contradictItems.reduce((sum, ev) => sum + evidenceWeight(ev), 0);
+  const support = supportItems.reduce((sum, ev) => sum + weigh(ev), 0);
+  const contradict = contradictItems.reduce((sum, ev) => sum + weigh(ev), 0);
 
   let status;
   if (contradict >= CONTRADICT_MIN && contradict > support) {
@@ -124,6 +223,16 @@ export function verdictForClaim(claim, evidence) {
     status = 'partially-verified';
   } else {
     status = 'unsubstantiated';
+  }
+
+  const independentCount = independentCorroborators(supportItems, weigh);
+
+  if (policy === 'verification' && status === 'verified') {
+    if (claim && claim.type === 'marketing') {
+      status = 'partially-verified'; // puffery is partially-verified at best
+    } else if (independentCount < MIN_INDEPENDENT_CORROBORATORS) {
+      status = 'partially-verified'; // spec/warranty/support need >=2 independent corroborators
+    }
   }
 
   // Confidence = winning-side strength × separation between the two sides.
@@ -139,8 +248,9 @@ export function verdictForClaim(claim, evidence) {
     confidence,
     support: round3(support),
     contradict: round3(contradict),
-    supporting: sortedSide(supportItems),
-    contradicting: sortedSide(contradictItems),
+    supporting: sortedSide(supportItems, weigh),
+    contradicting: sortedSide(contradictItems, weigh),
+    independentCount,
   };
 }
 

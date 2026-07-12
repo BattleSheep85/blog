@@ -4,8 +4,10 @@
 import {
   clamp01,
   evidenceWeight,
+  verificationWeight,
   verdictForClaim,
   overallVerdict,
+  independentCorroborators,
   CONTRADICT_MIN,
   WEAK_SUPPORT,
 } from '../../worker/lib/verdict.js';
@@ -159,6 +161,212 @@ export function runVerdictTests() {
     ]);
     ok('~10 band lands < 20', bottomBand.score < 20);
     eq('~10 band label', bottomBand.label, 'Does not live up to its claims');
+  }
+
+  // ── verificationWeight (strict-(a): hands-on measurement survives affiliate) ─
+  {
+    // hands-on + affiliate-conflict: the measurement forgiveness kicks in —
+    // weight should be materially higher than the SAME source's plain
+    // evidenceWeight (which has no hands-on forgiveness for affiliate taint).
+    const handsOnAffiliate = {
+      credibility: 70,
+      independence: 40,
+      tags: ['hands-on', 'affiliate-conflict'],
+    };
+    const vw = verificationWeight(handsOnAffiliate);
+    const ew = evidenceWeight(handsOnAffiliate);
+    ok('hands-on+affiliate verificationWeight >= 0.4', vw >= 0.4);
+    ok('hands-on+affiliate verificationWeight > its own evidenceWeight', vw > ew);
+
+    // affiliate-conflict WITHOUT hands-on stays strict.
+    const affiliateOnly = { credibility: 60, independence: 40, tags: ['affiliate-conflict'] };
+    ok('affiliate-conflict without hands-on stays <= 0.25', verificationWeight(affiliateOnly) <= 0.25);
+
+    // sponsored-content is heavily discounted regardless of independence.
+    const sponsored = { credibility: 60, independence: 50, tags: ['sponsored-content'] };
+    ok('sponsored-content weight <= 0.15', verificationWeight(sponsored) <= 0.15);
+
+    // manufacturer restatement is heavily discounted.
+    const manufacturer = { credibility: 50, independence: 100, tags: ['manufacturer'] };
+    ok('manufacturer weight <= 0.2', verificationWeight(manufacturer) <= 0.2);
+
+    // ai-injection is manipulation — always exactly 0, no matter the rest.
+    const injected = { credibility: 100, independence: 100, tags: ['ai-injection', 'hands-on'] };
+    eq('ai-injection weight === 0', verificationWeight(injected), 0);
+
+    // clean expert-domain hands-on source with decent independence clears 0.6.
+    const expertHandsOn = { credibility: 90, independence: 70, tags: ['hands-on', 'expert-domain'] };
+    ok('expert-domain hands-on clean weight >= 0.6', verificationWeight(expertHandsOn) >= 0.6);
+
+    // listicle opinion, no hands-on testing, stays low.
+    const listicleOnly = { credibility: 50, independence: 50, tags: ['listicle'] };
+    ok('listicle-only opinion weight <= 0.25', verificationWeight(listicleOnly) <= 0.25);
+  }
+
+  // ── verdictForClaim with opts.weigh: verification context vs default ───
+  {
+    // Low independence (20) keeps default evidenceWeight tiny (cred×indep),
+    // while verificationWeight's hands-on floor (indep >= 0.5) plus the
+    // affiliate-conflict forgiveness (×0.9 instead of ×0.4) lifts it well
+    // above the default — this is exactly the strict-(a) forgiveness case.
+    const handsOnAffiliateA = {
+      url: 'https://a.com',
+      stance: 'support',
+      credibility: 55,
+      independence: 20,
+      tags: ['hands-on', 'affiliate-conflict'],
+    };
+    const handsOnAffiliateB = {
+      url: 'https://b.com',
+      stance: 'support',
+      credibility: 55,
+      independence: 20,
+      tags: ['hands-on', 'affiliate-conflict'],
+    };
+    const evidence = [handsOnAffiliateA, handsOnAffiliateB];
+
+    const verificationVerdict = verdictForClaim('measured battery life', evidence, { weigh: verificationWeight });
+    ok(
+      'verification-weighted verdict reaches verified/partially-verified',
+      verificationVerdict.status === 'verified' || verificationVerdict.status === 'partially-verified',
+    );
+
+    const defaultVerdict = verdictForClaim('measured battery life', evidence);
+    eq('default-weighted verdict on the same evidence stays unsubstantiated', defaultVerdict.status, 'unsubstantiated');
+
+    ok('the two weighting modes disagree on status', verificationVerdict.status !== defaultVerdict.status);
+  }
+
+  // ── regression: verdictForClaim with no opts is unchanged ──────────────
+  {
+    // Re-assert one of the earlier no-opts scenarios explicitly to document
+    // that omitting opts is still byte-identical to the pre-change behavior.
+    const v = verdictForClaim('battery lasts 20 hours', [
+      { url: 'https://expert1.com', stance: 'support', credibility: 90, independence: 70 },
+      { url: 'https://expert2.com', stance: 'support', credibility: 85, independence: 65 },
+    ]);
+    eq('regression: no-opts verified status unchanged', v.status, 'verified');
+  }
+
+  // ── tier-(iii): opts.policy === 'verification' corroboration caps ──────
+  {
+    // ONE strong independent hands-on source alone (cred=100, indep=100 so
+    // default evidenceWeight reaches STRONG_SUPPORT on its own): verified
+    // without the policy, but the policy requires >= 2 independent
+    // corroborators, so the SAME evidence downgrades to partially-verified
+    // under the policy.
+    const oneHandsOn = {
+      url: 'https://expert1.com',
+      stance: 'support',
+      credibility: 100,
+      independence: 100,
+      tags: ['hands-on', 'expert-domain'],
+    };
+    const specClaim = { type: 'spec', text: 'battery lasts 20 hours' };
+
+    const withPolicy = verdictForClaim(specClaim, [oneHandsOn], { policy: 'verification' });
+    eq('spec + 1 independent hands-on source, policy=verification → partially-verified', withPolicy.status, 'partially-verified');
+    eq('independentCount === 1 for the single-source case', withPolicy.independentCount, 1);
+
+    const noPolicy = verdictForClaim(specClaim, [oneHandsOn]);
+    eq('same call withOUT policy → verified (default weighing, no caps)', noPolicy.status, 'verified');
+
+    // TWO independent hands-on sources on distinct hosts → verified.
+    const secondHandsOn = {
+      url: 'https://expert2.com',
+      stance: 'support',
+      credibility: 88,
+      independence: 68,
+      tags: ['hands-on', 'expert-domain'],
+    };
+    const twoIndependent = verdictForClaim(specClaim, [oneHandsOn, secondHandsOn], { policy: 'verification' });
+    eq('spec + 2 independent hands-on sources on distinct hosts → verified', twoIndependent.status, 'verified');
+    eq('independentCount === 2 for the two-distinct-host case', twoIndependent.independentCount, 2);
+
+    // TWO strong supports on the SAME host → counts as 1 independent corroborator.
+    const sameHostA = {
+      url: 'https://reviews.samehost.com/a',
+      stance: 'support',
+      credibility: 90,
+      independence: 70,
+      tags: ['hands-on', 'expert-domain'],
+    };
+    const sameHostB = {
+      url: 'https://reviews.samehost.com/b',
+      stance: 'support',
+      credibility: 88,
+      independence: 68,
+      tags: ['hands-on', 'expert-domain'],
+    };
+    const sameHostVerdict = verdictForClaim(specClaim, [sameHostA, sameHostB], { policy: 'verification' });
+    eq('two strong supports on the same host count as 1 → partially-verified', sameHostVerdict.status, 'partially-verified');
+    eq('independentCount === 1 for the same-host case', sameHostVerdict.independentCount, 1);
+
+    // ONE hands-on + ONE manufacturer-tagged support → manufacturer doesn't count.
+    const manufacturerSupport = {
+      url: 'https://manufacturer.com',
+      stance: 'support',
+      credibility: 50,
+      independence: 100,
+      tags: ['manufacturer'],
+    };
+    const withManufacturer = verdictForClaim(specClaim, [oneHandsOn, manufacturerSupport], { policy: 'verification' });
+    eq('manufacturer-tagged support excluded from corroborator count → independentCount === 1', withManufacturer.independentCount, 1);
+    eq('hands-on + manufacturer (not independent) → partially-verified', withManufacturer.status, 'partially-verified');
+
+    // Marketing claim + THREE strong independent sources → capped at partially-verified.
+    const marketingClaim = { type: 'marketing', text: 'the best headphones ever made' };
+    const marketingSupports = [1, 2, 3].map((i) => ({
+      url: `https://marketing-expert${i}.com`,
+      stance: 'support',
+      credibility: 90,
+      independence: 70,
+      tags: ['hands-on', 'expert-domain'],
+    }));
+    const marketingVerdict = verdictForClaim(marketingClaim, marketingSupports, { policy: 'verification' });
+    eq('marketing claim with 3 independent sources never reaches verified', marketingVerdict.status, 'partially-verified');
+    ok('marketing claim independentCount reflects the 3 distinct hosts', marketingVerdict.independentCount === 3);
+
+    // Contradicted case under policy:'verification' still returns contradicted:
+    // a weak (manufacturer-tagged, heavily discounted) support is dominated by
+    // a strong independent hands-on contradiction, so a real contradiction
+    // always wins regardless of the corroboration caps.
+    const weakManufacturerSupport = {
+      url: 'https://mfg.com',
+      stance: 'support',
+      credibility: 40,
+      independence: 100,
+      tags: ['manufacturer'],
+    };
+    const contradictingExpert = {
+      url: 'https://contradictor.com',
+      stance: 'contradict',
+      credibility: 90,
+      independence: 70,
+      tags: ['hands-on', 'expert-domain'],
+    };
+    const contradictedVerdict = verdictForClaim(specClaim, [weakManufacturerSupport, contradictingExpert], { policy: 'verification' });
+    eq('contradiction still wins under policy=verification', contradictedVerdict.status, 'contradicted');
+  }
+
+  // ── independentCorroborators() helper directly ──────────────────────────
+  {
+    const support = [
+      { url: 'https://one.example.com', tags: ['hands-on'] },
+      { url: 'https://www.one.example.com/other-page', tags: ['hands-on'] }, // same host as above (www stripped)
+      { url: 'https://two.example.com', tags: ['hands-on'] },
+      { url: 'https://sponsored.example.com', tags: ['hands-on', 'sponsored-content'] },
+      { url: 'not-a-valid-url', tags: ['hands-on'] },
+    ];
+    const weighAllStrong = () => 1.0; // every item clears the 0.25 threshold
+    eq(
+      'independentCorroborators: dedupes hosts, excludes disqualified tags, skips invalid URLs',
+      independentCorroborators(support, weighAllStrong),
+      2,
+    );
+
+    const weighAllWeak = () => 0.1; // below CORROBORATOR_MIN_WEIGHT
+    eq('independentCorroborators: below-threshold weight excludes all', independentCorroborators(support, weighAllWeak), 0);
   }
 
   // ── overallVerdict: claim-type weighting ────────────────────────────────
