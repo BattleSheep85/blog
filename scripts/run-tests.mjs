@@ -18,6 +18,7 @@ import { runAffiliateLinksTests } from '../test/unit/affiliate-links.test.js';
 import { runLibPureTests } from '../test/unit/lib-pure.test.js';
 import { runAsinResolverTests } from '../test/unit/asin-resolver.test.js';
 import { runVerdictTests } from '../test/unit/verdict.test.js';
+import { runVerifyTests } from '../test/unit/verify.test.js';
 
 const suites = [
   ['credibility', runCredibilityTests],
@@ -32,6 +33,7 @@ const suites = [
   ['llm', runLlmTests],
   ['asin-resolver', runAsinResolverTests],
   ['verdict', runVerdictTests],
+  ['verify', runVerifyTests],
 ];
 
 let failed = 0;
