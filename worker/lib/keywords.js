@@ -233,6 +233,10 @@ async function runReresearchSweep(env, now) {
         // products earned ZERO affiliate clicks in the last 30 days. LEFT JOIN
         // products → affiliate_clicks (only recent clicks survive the join's ON
         // filter); GROUP BY + HAVING COUNT(recent clicks)=0 selects the misses.
+        // Excludes kind='verification' rows: this sweep re-enqueues its candidate
+        // as a plain { reportId, query, tier } RESEARCH_QUEUE message (no `kind`),
+        // which the queue consumer routes to the RANKING pipeline
+        // (processResearchMessage → runResearchPipeline).
         const row = await env.DB.prepare(
             `SELECT r.id AS id, r.query AS query, r.view_count AS view_count
              FROM research r
@@ -240,6 +244,7 @@ async function runReresearchSweep(env, now) {
              LEFT JOIN affiliate_clicks ac
                ON ac.product_id = p.id AND ac.clicked_at >= ?1
              WHERE r.status = 'complete'
+               AND (r.kind IS NULL OR r.kind != 'verification')
                AND r.view_count >= 25
                AND r.completed_at IS NOT NULL
                AND r.completed_at < ?2
@@ -261,7 +266,8 @@ async function runReresearchSweep(env, now) {
             const staleCutoff = Math.floor(now / 1000) - staleDays * 86400;
             candidate = await env.DB.prepare(
                 `SELECT id, query, view_count FROM research
-                 WHERE status = 'complete' AND completed_at IS NOT NULL
+                 WHERE status = 'complete' AND (kind IS NULL OR kind != 'verification')
+                   AND completed_at IS NOT NULL
                    AND completed_at < ?1
                  ORDER BY completed_at ASC
                  LIMIT 1`

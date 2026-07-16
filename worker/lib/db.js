@@ -59,6 +59,67 @@ export async function getProductsByResearchId(db, researchId) {
         .bind(researchId).all();
 }
 
+// Normalize a category string for comparison: lowercase, trim, collapse
+// internal whitespace. Used both for the exact-match bind and to build the
+// LIKE fallback token, so the two comparisons agree on what "the same
+// category" means.
+function normalizeCategory(category) {
+    return String(category ?? '').trim().toLowerCase().replace(/\s+/g, ' ');
+}
+
+// Find the most recent COMPLETED ranking research row (i.e. NOT a
+// verification row — kind IS NULL or != 'verification') whose category best
+// matches the given category string, plus its top N products ordered by
+// rank. Used by the verification report's "Better alternatives" section to
+// surface an existing ranking for the same product category. Returns null
+// when no match exists. Both queries are fully parameterized.
+export async function findRankingForCategory(db, category, limit = 3) {
+    const normalized = normalizeCategory(category);
+    if (!normalized) return null;
+
+    // Prefer an exact normalized match against category/topical_category/
+    // canonical_query; fall back to a LIKE on the category token so close
+    // variants (e.g. "Mechanical Keyboards" vs "mechanical keyboard") still
+    // hit. Remote D1 rejects LIKE patterns over 50 bytes, so cap the token.
+    const likeToken = normalized.slice(0, 45);
+
+    const research = await db.prepare(
+        `SELECT * FROM research
+         WHERE status = 'complete'
+           AND (kind IS NULL OR kind != 'verification')
+           AND EXISTS (SELECT 1 FROM products p WHERE p.research_id = research.id)
+           AND (
+             LOWER(TRIM(category)) = ?1
+             OR LOWER(TRIM(topical_category)) = ?1
+             OR LOWER(TRIM(canonical_query)) = ?1
+             OR LOWER(category) LIKE ?2
+             OR LOWER(topical_category) LIKE ?2
+           )
+         ORDER BY
+           CASE WHEN LOWER(TRIM(category)) = ?1
+                  OR LOWER(TRIM(topical_category)) = ?1
+                  OR LOWER(TRIM(canonical_query)) = ?1
+                THEN 0 ELSE 1 END,
+           created_at DESC
+         LIMIT 1`
+    ).bind(normalized, `%${likeToken}%`).first();
+
+    if (!research) return null;
+
+    const productRows = await db.prepare(
+        'SELECT * FROM products WHERE research_id = ? ORDER BY rank ASC LIMIT ?'
+    ).bind(research.id, limit).all();
+
+    return { research, products: productRows.results ?? [] };
+}
+
+// -- Claims (verification pipeline; see schema/010_claims.sql) --
+
+export async function getClaimsByResearchId(db, researchId) {
+    return db.prepare('SELECT * FROM claims WHERE research_id = ? ORDER BY created_at ASC')
+        .bind(researchId).all();
+}
+
 // -- Affiliate Clicks --
 
 export async function logAffiliateClick(db, { productId, reportId, network, ipHash }) {

@@ -8,10 +8,13 @@
 import {
     handleStartResearch, handleResearchStatus, handleResearchStream, handleResearchEvents,
 } from './handlers/research.js';
+import { handleStartVerify, handleVerifyStatus } from './handlers/verify.js';
+import { renderVerifyEntryPage, renderVerifyResultPage } from './pages/verify-page.js';
 import { handleGetReport, handleFeedback } from './handlers/report.js';
 import { handleAffiliateClick, handleAffiliateSearch } from './handlers/affiliate.js';
 import { handleProductImage } from './handlers/image.js';
 import { runResearchPipeline, monthlySpendUsd, monthlyBudgetUsd } from './pipeline/orchestrator.js';
+import { runVerificationPipeline } from './pipeline/verify-orchestrator.js';
 import { renderResearchResult } from './pages/research-page.js';
 import { renderClarifyPage, extractClarifications } from './pages/clarify.js';
 import { classifyQuery, userFacingRejection, defaultQuestionsForQuery } from './lib/classifier.js';
@@ -105,6 +108,17 @@ export default {
             // ── API routes ──────────────────────────────────────────────────
             if (path === '/api/research' && method === 'POST') {
                 return handleStartResearch(request, env);
+            }
+
+            // Product-verification (Truth Audit) intake + poll. Additive —
+            // separate handler/pipeline from the ranking flow above.
+            if (path === '/api/verify' && method === 'POST') {
+                return handleStartVerify(request, env);
+            }
+
+            const verifyPollMatch = path.match(/^\/api\/verify\/([a-z0-9-]+)$/);
+            if (verifyPollMatch && method === 'GET') {
+                return handleVerifyStatus(verifyPollMatch[1], env);
             }
 
             // Pre-research classify: powers the inquisitive UX. The home search box
@@ -301,6 +315,21 @@ export default {
                     return handleResearchPage(slugMatch[1], url, request, env, ctx);
                 }
 
+                // Product-verification pages. /verify is the entry form; /verify/:slug
+                // is a live "verifying…" poll page until complete, then the minimal
+                // report (worker/pages/verify-page.js). Never KV-cached (mirrors the
+                // ranking page's cache split, but verification volume is low enough
+                // that a page cache isn't worth the complexity yet).
+                if (path === '/verify' || path === '/verify/') {
+                    return htmlPageResponse(renderVerifyEntryPage(), env, { cacheControl: 'no-store' });
+                }
+                const verifySlugMatch = path.match(/^\/verify\/([a-z0-9-]+)$/);
+                if (verifySlugMatch) {
+                    const result = await renderVerifyResultPage(verifySlugMatch[1], env);
+                    if (!result) return notFound();
+                    return htmlPageResponse(result.html, env, { cacheControl: 'no-store' });
+                }
+
                 // Legacy permalinks. Old ids were 16-char [a-z0-9]; the old
                 // tables are gone, but if an id happens to match a v2 research
                 // row, send the visitor to its permanent page.
@@ -357,49 +386,11 @@ export default {
      */
     async queue(batch, env) {
         for (const message of batch.messages) {
-            const { reportId, query } = message.body;
-            // Phase B: the off-CF worker is the primary processor — ack without
-            // processing and leave the row 'pending' for it to claim & run.
-            if (externalWorkerEnabled(env)) { message.ack(); continue; }
-            try {
-                // Idempotency guard: claim the row by flipping pending→processing
-                // atomically. If 0 rows changed, the row is already processing or
-                // complete/failed — a queue redelivery after success. Skip it so
-                // we never double-insert products or re-spend the LLM budget.
-                const claim = await env.DB.prepare(
-                    "UPDATE research SET status = 'processing' WHERE id = ?1 AND status = 'pending'"
-                ).bind(reportId).run();
-                if ((claim.meta?.changes ?? 0) === 0) {
-                    console.log(`[queue] skip ${reportId} — not in pending state (redelivery)`);
-                    message.ack();
-                    continue;
-                }
-
-                await runResearchPipeline(env, reportId, query);
-                message.ack();
-            } catch (err) {
-                console.error(`Queue processing error for ${reportId}:`, err);
-                // Fast-fail the row instead of leaving it 'processing' until the
-                // ~20-min scheduled reaper. runResearchPipeline already marks
-                // 'failed' for errors it catches internally; this covers the
-                // narrower case where an error escapes it (e.g. thrown before its
-                // own try, or during the claim/redelivery path) so the public page
-                // stops spinning promptly. Guarded by AND status = 'processing' so
-                // we never clobber a row another worker has since completed.
-                try {
-                    await env.DB.prepare(
-                        `UPDATE research SET status = 'failed', result = ?1, completed_at = ?2
-                           WHERE id = ?3 AND status = 'processing'`,
-                    ).bind(
-                        JSON.stringify({ error: err instanceof Error ? err.message : String(err) }),
-                        Math.floor(Date.now() / 1000),
-                        reportId,
-                    ).run();
-                } catch (markErr) {
-                    console.error(`Failed to fast-fail ${reportId}:`, markErr);
-                }
-                message.ack();
+            if (message.body?.kind === 'verification') {
+                await processVerificationMessage(message, env);
+                continue;
             }
+            await processResearchMessage(message, env);
         }
     },
 
@@ -464,9 +455,18 @@ export default {
                 try {
                     if (await monthlySpendUsd(env) >= monthlyBudgetUsd(env)) return;
                     const staleCut = Math.floor(now / 1000) - 5 * 60;
+                    // Exclude kind='verification' rows — this fallback runs
+                    // runResearchPipeline (the RANKING pipeline). Verification
+                    // rows are processed only by the queue consumer's
+                    // processVerificationMessage → runVerificationPipeline path.
                     const claimed = await env.DB.prepare(
                         `UPDATE research SET status = 'processing'
-                         WHERE id = (SELECT id FROM research WHERE status = 'pending' AND created_at < ?1 ORDER BY created_at ASC LIMIT 1)
+                         WHERE id = (
+                             SELECT id FROM research
+                             WHERE status = 'pending' AND created_at < ?1
+                               AND (kind IS NULL OR kind != 'verification')
+                             ORDER BY created_at ASC LIMIT 1
+                         )
                          RETURNING id, query`
                     ).bind(staleCut).first();
                     if (claimed) {
@@ -481,6 +481,92 @@ export default {
         }
     },
 };
+
+// --- Queue message processors ----------------------------------------------
+
+// Legacy ranking-pipeline path — UNCHANGED behavior, only extracted out of the
+// queue() loop body so it can sit alongside the new verification branch.
+async function processResearchMessage(message, env) {
+    const { reportId, query } = message.body;
+    // Phase B: the off-CF worker is the primary processor — ack without
+    // processing and leave the row 'pending' for it to claim & run.
+    if (externalWorkerEnabled(env)) { message.ack(); return; }
+    try {
+        // Idempotency guard: claim the row by flipping pending→processing
+        // atomically. If 0 rows changed, the row is already processing or
+        // complete/failed — a queue redelivery after success. Skip it so
+        // we never double-insert products or re-spend the LLM budget.
+        const claim = await env.DB.prepare(
+            "UPDATE research SET status = 'processing' WHERE id = ?1 AND status = 'pending'"
+        ).bind(reportId).run();
+        if ((claim.meta?.changes ?? 0) === 0) {
+            console.log(`[queue] skip ${reportId} — not in pending state (redelivery)`);
+            message.ack();
+            return;
+        }
+
+        await runResearchPipeline(env, reportId, query);
+        message.ack();
+    } catch (err) {
+        console.error(`Queue processing error for ${reportId}:`, err);
+        // Fast-fail the row instead of leaving it 'processing' until the
+        // ~20-min scheduled reaper. runResearchPipeline already marks
+        // 'failed' for errors it catches internally; this covers the
+        // narrower case where an error escapes it (e.g. thrown before its
+        // own try, or during the claim/redelivery path) so the public page
+        // stops spinning promptly. Guarded by AND status = 'processing' so
+        // we never clobber a row another worker has since completed.
+        try {
+            await env.DB.prepare(
+                `UPDATE research SET status = 'failed', result = ?1, completed_at = ?2
+                   WHERE id = ?3 AND status = 'processing'`,
+            ).bind(
+                JSON.stringify({ error: err instanceof Error ? err.message : String(err) }),
+                Math.floor(Date.now() / 1000),
+                reportId,
+            ).run();
+        } catch (markErr) {
+            console.error(`Failed to fast-fail ${reportId}:`, markErr);
+        }
+        message.ack();
+    }
+}
+
+// New verification-pipeline path. Same idempotency + ack/error semantics as
+// the research path above: claim pending→processing here, hand off to
+// runVerificationPipeline, fast-fail on an escaped error so the row never
+// hangs in 'processing' until the cron reaper.
+async function processVerificationMessage(message, env) {
+    const { reportId, product, productUrl } = message.body;
+    try {
+        const claim = await env.DB.prepare(
+            "UPDATE research SET status = 'processing' WHERE id = ?1 AND status = 'pending'"
+        ).bind(reportId).run();
+        if ((claim.meta?.changes ?? 0) === 0) {
+            console.log(`[queue] skip verification ${reportId} — not in pending state (redelivery)`);
+            message.ack();
+            return;
+        }
+
+        await runVerificationPipeline(env, reportId, { product, productUrl });
+        message.ack();
+    } catch (err) {
+        console.error(`Queue verification error for ${reportId}:`, err);
+        try {
+            await env.DB.prepare(
+                `UPDATE research SET status = 'failed', result = ?1, completed_at = ?2
+                   WHERE id = ?3 AND status = 'processing'`,
+            ).bind(
+                JSON.stringify({ error: err instanceof Error ? err.message : String(err) }),
+                Math.floor(Date.now() / 1000),
+                reportId,
+            ).run();
+        } catch (markErr) {
+            console.error(`Failed to fast-fail verification ${reportId}:`, markErr);
+        }
+        message.ack();
+    }
+}
 
 // --- Server-rendered research page with KV page cache ---------------------
 
