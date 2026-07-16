@@ -1,6 +1,23 @@
 # Issues
 
-Last updated: 2026-07-11
+Last updated: 2026-07-16
+
+## 2026-07-16 — Truth Audit (/verify) shipped to production
+
+- [x] Deployed: migrations 010/012/011 applied to prod D1 (012 added mid-deploy:
+      products→research FK blocked 011's table rebuild; products rebuilt FK-free,
+      2,993 rows preserved; research rebuilt, 671 rows preserved, kind + needs_input
+      live). Merge f126068 pushed → CI deploy green; blackbox worker rsynced +
+      restarted. Smoke: /verify + /api/verify live, first prod run completed
+      end-to-end (Anker A40 → "Mixed — 50/100", 2 claims persisted, $0.034).
+- [ ] MEDIUM (Verify quality) — prod A40 run extracted only 2 claims (bench runs got
+      6–9): claim-source gather variance. Consider retry/expansion when claim sources
+      come back thin.
+- [ ] LOW (Model eval) — local Ollama models fail both the stance bench (best:
+      cogito:32b 50% agreement) and the local-gate honesty sweep (0/21 pass;
+      nemotron 93% ungrounded specs). Keep gpt-5.4-mini; watchlist gemma4:26b
+      (0 fabrication, fails only legit_on_top — bar may be over-strict; also fails
+      opus-4.8 anchor). deepseek-r1: permanently excluded (user veto).
 
 ## 2026-07-11 — Haiku 4.5 synth eval + name_ung metric fix
 
