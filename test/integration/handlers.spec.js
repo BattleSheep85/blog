@@ -105,11 +105,19 @@ describe('auth flow', () => {
   const email = 'user@truerank.test';
   const PW = 'hunter2pass';
 
-  it('signup is under construction (503) and creates no user', async () => {
+  it('signup creates a user + session cookie', async () => {
     const res = await handleSignup(postJson({ email, password: PW }), env);
-    expect(res.status).toBe(503);
-    expect((await res.json()).error).toMatch(/under construction/i);
-    expect(await findUserByEmail(env.DB, email)).toBeFalsy();
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.ok).toBe(true);
+    expect(res.headers.get('Set-Cookie')).toContain('tr_sess=');
+    expect(await findUserByEmail(env.DB, email)).toBeTruthy();
+  });
+
+  it('signup rejects a duplicate email with 409', async () => {
+    await handleSignup(postJson({ email: 'dup@truerank.test', password: PW }), env);
+    const res = await handleSignup(postJson({ email: 'dup@truerank.test', password: PW }), env);
+    expect(res.status).toBe(409);
   });
 
   it('login succeeds with the right password, fails otherwise', async () => {

@@ -146,66 +146,74 @@
             </div>
 
             <div id="home-search-panel" role="tabpanel" aria-labelledby="home-tab-search">
-            <span class="text-overline uppercase text-accent">Product research without the BS</span>
-            <h1 class="mx-auto mt-4 max-w-3xl font-serif text-display font-semibold leading-tight text-ink">Find the best one. <span class="text-accent">Trust why.</span></h1>
-            <p class="mx-auto mt-5 max-w-[52ch] text-lead text-ink-2">We read the real reviews on Reddit, forums, and independent testers, strip out the affiliate bait and marketing fluff, then hand you one honest ranking with a clickable receipt for every claim.</p>
+            <span class="text-overline uppercase text-accent">Does it live up to its claims?</span>
+            <h1 class="mx-auto mt-4 max-w-3xl font-serif text-display font-semibold leading-tight text-ink">Verify before you buy. <span class="text-accent">Not after.</span></h1>
+            <p class="mx-auto mt-5 max-w-[52ch] text-lead text-ink-2">Tell us a product. We check what it claims about itself — specs, reviews, warranty terms — against independent sources, and score how well the claims hold up.</p>
 
-            <form class="search-form group mx-auto mt-10 flex w-full max-w-2xl items-center gap-2 rounded-xl border border-line bg-surface-1 p-2 shadow-card transition-colors focus-within:border-line-strong focus-within:ring-2 focus-within:ring-accent/25">
-                <svg class="ml-2 h-5 w-5 shrink-0 text-ink-3" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M11 18a7 7 0 110-14 7 7 0 010 14z"/></svg>
-                <label for="query-input" class="sr-only">What are you trying to buy?</label>
-                <input id="query-input" name="query" type="text" autocomplete="off" required minlength="3" maxlength="500"
-                    placeholder="What are you trying to buy? e.g. best air fryer under $150"
+            <form id="verify-hero-form" class="group mx-auto mt-10 flex w-full max-w-2xl items-center gap-2 rounded-xl border border-line bg-surface-1 p-2 shadow-card transition-colors focus-within:border-line-strong focus-within:ring-2 focus-within:ring-accent/25">
+                <svg class="ml-2 h-5 w-5 shrink-0 text-ink-3" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12.75l3 3 6-9M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <label for="verify-hero-input" class="sr-only">What product do you want to verify?</label>
+                <input id="verify-hero-input" name="product" type="text" autocomplete="off" required minlength="3" maxlength="200"
+                    placeholder="e.g. Anker Soundcore Liberty 4 NC"
                     class="w-full bg-transparent px-1 py-2 font-sans text-body text-ink placeholder:text-ink-3 focus:outline-none">
-                <button type="submit" class="shrink-0 rounded-lg bg-accent-strong px-4 py-2 font-sans text-body-sm font-semibold text-white transition-colors hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-1 disabled:opacity-60">
-                    <span data-btn-label>Research it</span>
-                </button>
+                <button type="submit" class="shrink-0 rounded-lg bg-accent-strong px-4 py-2 font-sans text-body-sm font-semibold text-white transition-colors hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-1 disabled:opacity-60">Verify it</button>
             </form>
 
-            <div class="mt-4 flex flex-wrap items-center justify-center gap-x-3 gap-y-2">
-                <span class="text-caption text-ink-3">Try</span>
-                <button class="example-query text-caption font-medium text-accent transition-colors hover:text-accent-hover" data-query="best air fryer for a family of four">air fryer</button>
-                <span class="text-ink-3">·</span>
-                <button class="example-query text-caption font-medium text-accent transition-colors hover:text-accent-hover" data-query="best running shoes for flat feet">running shoes</button>
-                <span class="text-ink-3">·</span>
-                <button class="example-query text-caption font-medium text-accent transition-colors hover:text-accent-hover" data-query="best cordless drill for home projects">cordless drill</button>
-                <span class="text-ink-3">·</span>
-                <button class="example-query text-caption font-medium text-accent transition-colors hover:text-accent-hover" data-query="best wireless earbuds under $100">wireless earbuds</button>
-                <span class="text-ink-3">·</span>
-                <button class="example-query text-caption font-medium text-accent transition-colors hover:text-accent-hover" data-query="best dog food for puppies">dog food</button>
-            </div>
-
-            <p class="mt-5 text-caption text-ink-3">Already researched? <a href="/research" class="font-medium text-accent hover:text-accent-hover">Browse every ranking →</a></p>
-
-            <!-- Talk it out: chat-to-refine before running a research -->
-            <div class="mt-6">
-                <button id="talk-toggle" type="button" class="inline-flex items-center gap-2 rounded-full border border-accent/40 bg-accent-quiet px-4 py-2 text-body-sm font-semibold text-accent transition-colors hover:bg-accent/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40">💬 Not sure what to search? Talk it out</button>
-            </div>
-            <div id="talk-section" class="hidden mx-auto mt-4 w-full max-w-2xl text-left">
-                <div class="rounded-xl border border-line bg-surface-1 p-4 shadow-card">
-                    <div id="talk-messages" class="mb-3 flex max-h-80 flex-col gap-2 overflow-y-auto" aria-live="polite"></div>
-                    <form id="talk-form" class="flex gap-2">
-                        <label for="talk-input" class="sr-only">Describe what you need</label>
-                        <input id="talk-input" type="text" maxlength="2000" autocomplete="off"
-                            placeholder="e.g. I need something to keep my garage cool in summer"
-                            class="w-full rounded-lg border border-line bg-bg px-3 py-2 font-sans text-body-sm text-ink placeholder:text-ink-3 focus:border-line-strong focus:outline-none focus:ring-2 focus:ring-accent/25">
-                        <button type="submit" class="shrink-0 rounded-lg bg-accent-strong px-4 py-2 font-sans text-body-sm font-semibold text-white transition-colors hover:bg-accent-hover">Send</button>
-                    </form>
-                    <p id="talk-status" role="status" aria-live="polite" class="mt-2 min-h-[1em] text-caption text-ink-3"></p>
-                </div>
-            </div>
-
             <div class="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-caption text-ink-3">
-                <span class="inline-flex items-center gap-1.5"><span class="h-1.5 w-1.5 rounded-full bg-trust-high"></span>Reddit and forums</span>
+                <span class="inline-flex items-center gap-1.5"><span class="h-1.5 w-1.5 rounded-full bg-trust-high"></span>Claims checked against independent sources</span>
                 <span class="inline-flex items-center gap-1.5"><span class="h-1.5 w-1.5 rounded-full bg-trust-high"></span>Affiliate bait filtered</span>
                 <span class="inline-flex items-center gap-1.5"><span class="h-1.5 w-1.5 rounded-full bg-trust-high"></span>Every claim sourced</span>
             </div>
 
-            <!-- Verify a product: co-primary CTA alongside the "best X" search above -->
+            <!-- Mass search: secondary card, demoted from the old hero flow -->
             <div class="mx-auto mt-10 max-w-2xl rounded-xl border border-line bg-surface-1 p-6 text-left shadow-card">
-                <span class="text-overline uppercase text-accent">Already have one in mind?</span>
-                <h2 class="mt-2 font-serif text-h3 font-semibold text-ink">Verify a product</h2>
-                <p class="mt-1 max-w-[52ch] text-body-sm text-ink-2">Thinking of buying something? Check if it actually lives up to its claims, before you spend.</p>
-                <a href="/verify" class="mt-4 inline-flex shrink-0 items-center justify-center gap-2 rounded-lg border border-line-strong bg-surface-1 px-4 py-2.5 font-sans text-body-sm font-semibold text-ink transition-colors hover:bg-surface-2">Verify a product <span aria-hidden="true">&rarr;</span></a>
+                <span class="text-overline uppercase text-accent">Mass search</span>
+                <h2 class="mt-2 font-serif text-h3 font-semibold text-ink">Compare a whole category</h2>
+                <p class="mt-1 max-w-[52ch] text-body-sm text-ink-2">Compare a whole category — we rank everything that holds up.</p>
+
+                <form class="search-form group mx-auto mt-4 flex w-full items-center gap-2 rounded-lg border border-line bg-bg p-2 transition-colors focus-within:border-line-strong focus-within:ring-2 focus-within:ring-accent/25">
+                    <svg class="ml-2 h-5 w-5 shrink-0 text-ink-3" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M11 18a7 7 0 110-14 7 7 0 010 14z"/></svg>
+                    <label for="query-input" class="sr-only">What are you trying to buy?</label>
+                    <input id="query-input" name="query" type="text" autocomplete="off" required minlength="3" maxlength="500"
+                        placeholder="What are you trying to buy? e.g. best air fryer under $150"
+                        class="w-full bg-transparent px-1 py-2 font-sans text-body-sm text-ink placeholder:text-ink-3 focus:outline-none">
+                    <button type="submit" class="shrink-0 rounded-lg bg-accent-strong px-4 py-2 font-sans text-body-sm font-semibold text-white transition-colors hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-1 disabled:opacity-60">
+                        <span data-btn-label>Research it</span>
+                    </button>
+                </form>
+
+                <div class="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2">
+                    <span class="text-caption text-ink-3">Try</span>
+                    <button class="example-query text-caption font-medium text-accent transition-colors hover:text-accent-hover" data-query="best air fryer for a family of four">air fryer</button>
+                    <span class="text-ink-3">·</span>
+                    <button class="example-query text-caption font-medium text-accent transition-colors hover:text-accent-hover" data-query="best running shoes for flat feet">running shoes</button>
+                    <span class="text-ink-3">·</span>
+                    <button class="example-query text-caption font-medium text-accent transition-colors hover:text-accent-hover" data-query="best cordless drill for home projects">cordless drill</button>
+                    <span class="text-ink-3">·</span>
+                    <button class="example-query text-caption font-medium text-accent transition-colors hover:text-accent-hover" data-query="best wireless earbuds under $100">wireless earbuds</button>
+                    <span class="text-ink-3">·</span>
+                    <button class="example-query text-caption font-medium text-accent transition-colors hover:text-accent-hover" data-query="best dog food for puppies">dog food</button>
+                </div>
+
+                <p class="mt-4 text-caption text-ink-3">Already researched? <a href="/research" class="font-medium text-accent hover:text-accent-hover">Browse every ranking →</a></p>
+
+                <!-- Talk it out: chat-to-refine before running a research -->
+                <div class="mt-6">
+                    <button id="talk-toggle" type="button" class="inline-flex items-center gap-2 rounded-full border border-accent/40 bg-accent-quiet px-4 py-2 text-body-sm font-semibold text-accent transition-colors hover:bg-accent/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40">💬 Not sure what to search? Talk it out</button>
+                </div>
+                <div id="talk-section" class="hidden mt-4 w-full text-left">
+                    <div class="rounded-xl border border-line bg-surface-2 p-4">
+                        <div id="talk-messages" class="mb-3 flex max-h-80 flex-col gap-2 overflow-y-auto" aria-live="polite"></div>
+                        <form id="talk-form" class="flex gap-2">
+                            <label for="talk-input" class="sr-only">Describe what you need</label>
+                            <input id="talk-input" type="text" maxlength="2000" autocomplete="off"
+                                placeholder="e.g. I need something to keep my garage cool in summer"
+                                class="w-full rounded-lg border border-line bg-bg px-3 py-2 font-sans text-body-sm text-ink placeholder:text-ink-3 focus:border-line-strong focus:outline-none focus:ring-2 focus:ring-accent/25">
+                            <button type="submit" class="shrink-0 rounded-lg bg-accent-strong px-4 py-2 font-sans text-body-sm font-semibold text-white transition-colors hover:bg-accent-hover">Send</button>
+                        </form>
+                        <p id="talk-status" role="status" aria-live="polite" class="mt-2 min-h-[1em] text-caption text-ink-3"></p>
+                    </div>
+                </div>
             </div>
             </div>
 
@@ -235,6 +243,7 @@
             <div class="rounded-xl border border-trust-low/40 bg-trust-low-bg p-6 text-center">
                 <h2 class="mb-2 font-serif text-h3 font-semibold text-trust-low">Research failed</h2>
                 <p id="error-message" class="text-body-sm text-ink-2"></p>
+                <a id="error-signup-cta" href="/account" class="mt-4 hidden items-center justify-center gap-2 rounded-lg bg-accent-strong px-4 py-2.5 text-body-sm font-semibold text-white transition-colors hover:bg-accent-hover">Create a free account</a>
                 <button onclick="resetUI()" class="mt-4 rounded-lg border border-line bg-surface-1 px-4 py-2 text-body-sm font-semibold text-ink transition-colors hover:bg-surface-2">Try again</button>
             </div>
         </section>

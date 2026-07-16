@@ -40,9 +40,6 @@ async function readCredentials(request) {
 }
 
 export async function handleSignup(request, env) {
-    // TEMPORARY: account creation is under construction. Sign-in still works.
-    // To re-enable, delete this return. (Guards direct POSTs to /api/auth/signup.)
-    return jsonResponse({ ok: false, error: 'Account creation is under construction — check back soon.' }, 503);
     if (await authRateLimited(request, env)) {
         return jsonResponse({ error: 'Too many attempts. Try again later.' }, 429);
     }
@@ -176,7 +173,7 @@ export async function renderLoginPage(request, env) {
 <button type="button" role="tab" aria-selected="false" data-auth-tab="signup" class="border-b-2 border-transparent px-4 py-2 text-body-sm font-semibold text-ink-3">Create account</button>
 </div>
 <div data-auth-panel="login">${authForm('login-form', 'Sign in', 'current-password')}</div>
-<div data-auth-panel="signup" class="hidden"><div class="rounded-lg border border-line bg-surface-2 p-5 text-center"><p class="text-body font-semibold text-ink">🚧 Under construction</p><p class="mt-2 text-body-sm text-ink-2">Account creation isn't available yet — we're still building it. Check back soon.</p></div></div>
+<div data-auth-panel="signup" class="hidden">${authForm('signup-form', 'Create account', 'new-password')}</div>
 </div>
 <p class="mt-4 text-caption text-ink-3">We only use your email for sign-in and the research notifications you ask for. No spam, ever.</p>
 </div>`;

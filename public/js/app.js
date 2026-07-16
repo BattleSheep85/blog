@@ -63,6 +63,20 @@
         });
     });
 
+    // -- Verify (hero, primary) form: no direct API call from home — just
+    //    hand the typed text to /verify, which prefills but does not
+    //    auto-submit (the user still confirms there before spending a run).
+    var verifyHeroForm = document.getElementById('verify-hero-form');
+    if (verifyHeroForm) {
+        verifyHeroForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            var input = document.getElementById('verify-hero-input');
+            var product = (input && input.value || '').trim();
+            if (product.length < 3) return;
+            window.location.href = '/verify?product=' + encodeURIComponent(product);
+        });
+    }
+
     function esc(s) {
         return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
             return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
@@ -235,7 +249,7 @@
         })
             .then(readJson)
             .then(function (data) {
-                if (data.error) { showError(data.error); return; }
+                if (data.error) { showError(data.error, { signupRequired: data.code === 'signup_required' }); return; }
                 if (data.cached && data.slug) {
                     recordHistory(data.slug, pendingQuery);
                     addProgress('Found existing research. Redirecting…');
@@ -352,10 +366,12 @@
         log.scrollTop = log.scrollHeight;
     }
 
-    function showError(message) {
+    function showError(message, opts) {
         showSection('error');
         var el = document.getElementById('error-message');
         if (el) el.textContent = message || 'Something went wrong.';
+        var cta = document.getElementById('error-signup-cta');
+        if (cta) cta.classList.toggle('hidden', !(opts && opts.signupRequired));
         setFormsBusy(false);
     }
 

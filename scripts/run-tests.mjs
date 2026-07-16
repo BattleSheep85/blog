@@ -21,6 +21,7 @@ import { runVerdictTests } from '../test/unit/verdict.test.js';
 import { runVerifyTests } from '../test/unit/verify.test.js';
 import { runVerificationRenderTests } from '../test/unit/verification-render.test.js';
 import { runJinaTests } from '../test/unit/jina.test.js';
+import { runQuotaTests } from '../test/unit/quota.test.js';
 
 const suites = [
   ['credibility', runCredibilityTests],
@@ -38,6 +39,7 @@ const suites = [
   ['verify', runVerifyTests],
   ['verification-render', runVerificationRenderTests],
   ['jina', runJinaTests], // async suite (awaited below)
+  ['quota', runQuotaTests], // async suite (awaited below)
 ];
 
 let failed = 0;

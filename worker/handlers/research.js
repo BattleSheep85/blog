@@ -17,6 +17,7 @@ import { budgetExhausted } from '../pipeline/orchestrator.js';
 import { checkRateLimit } from '../lib/rate-limit.js';
 import { getSessionUser, recordUserSearch } from '../lib/auth.js';
 import { apiStatus } from '../lib/status.js';
+import { getQuota, consumeQuota, FREE_SEARCHES } from '../lib/quota.js';
 
 /**
  * Handle POST /api/research
@@ -130,6 +131,22 @@ export async function handleStartResearch(request, env) {
         return jsonResponse({ error: 'Monthly research budget exhausted — resets at the start of next month.' }, 503);
     }
 
+    // Free-tier gate: signed-out IPs get a lifetime allowance of new (paid)
+    // search runs before a free account is required. Cache/cluster hits
+    // already returned above and never reach this check. Signed-in users are
+    // exempt entirely.
+    if (!sessionUser) {
+        const quota = await getQuota(env.KV, 'search', clientIp);
+        if (quota.remaining <= 0) {
+            return jsonResponse({
+                error: 'Free limit reached — create a free account to keep searching.',
+                code: 'signup_required',
+                kind: 'search',
+                limit: FREE_SEARCHES,
+            }, 403);
+        }
+    }
+
     // Create the permanent research row. Slug mirrors Exhaustive's shape:
     // slugify(query) + '-' + first 8 chars of the id.
     const id = generateId();
@@ -145,6 +162,8 @@ export async function handleStartResearch(request, env) {
 
     if (sessionUser) {
         await recordUserSearch(env.DB, sessionUser.id, id, normalizedQuery);
+    } else {
+        await consumeQuota(env.KV, 'search', clientIp);
     }
 
     // Enqueue research job (message shape unchanged — queue consumer keys on it).

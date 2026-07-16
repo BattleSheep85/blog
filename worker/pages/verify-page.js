@@ -13,9 +13,13 @@ import { buildAffiliateUrl, retailerLabel, resolveAmazonTag } from '../lib/affil
 import { starMarkup, renderItemImage } from './research-page.js';
 
 /**
- * GET /verify — the product-entry form.
+ * GET /verify — the product-entry form. `prefillProduct` comes from the
+ * home page's ?product= handoff (Mass search demoted the direct API call;
+ * home now just navigates here with the typed text) — pre-filled but never
+ * auto-submitted, so the user still confirms before spending a verify run.
  */
-export function renderVerifyEntryPage() {
+export function renderVerifyEntryPage(prefillProduct = '') {
+    const prefill = String(prefillProduct || '').slice(0, 200);
     const body = `<div class="mx-auto max-w-2xl px-6 py-12 md:py-16">
 <nav aria-label="Breadcrumb" class="mb-6 text-caption text-ink-3">
 <a href="/" class="hover:text-ink">Home</a>
@@ -28,7 +32,7 @@ export function renderVerifyEntryPage() {
 
 <form id="verify-form" class="verify-form">
 <label for="verify-product" class="mb-2 block text-body-sm font-semibold text-ink">Product</label>
-<input type="text" id="verify-product" name="product" required minlength="3" maxlength="200" placeholder="e.g. Anker Soundcore Liberty 4 NC" class="mb-4 w-full rounded-lg border border-line bg-surface-1 px-3 py-2.5 font-sans text-body text-ink placeholder:text-ink-3 focus:border-line-strong focus:outline-none focus:ring-2 focus:ring-accent/25">
+<input type="text" id="verify-product" name="product" required minlength="3" maxlength="200" placeholder="e.g. Anker Soundcore Liberty 4 NC" value="${escapeHtml(prefill)}" class="mb-4 w-full rounded-lg border border-line bg-surface-1 px-3 py-2.5 font-sans text-body text-ink placeholder:text-ink-3 focus:border-line-strong focus:outline-none focus:ring-2 focus:ring-accent/25">
 <button type="submit" id="verify-submit" class="inline-flex items-center justify-center gap-2 rounded-lg bg-accent-strong px-4 py-2.5 text-body-sm font-semibold text-white transition-colors hover:bg-accent-hover">Verify it</button>
 </form>
 
@@ -47,12 +51,19 @@ export function renderVerifyEntryPage() {
     submitBtn.textContent = busy ? 'Verifying…' : 'Verify it';
   }
 
-  function showMessage(text, isError) {
+  function showMessage(text, isError, signupRequired) {
     statusBox.innerHTML = '';
     var p = document.createElement('p');
     p.className = isError ? 'text-body-sm text-trust-low' : 'text-body-sm text-ink-2';
     p.textContent = text;
     statusBox.appendChild(p);
+    if (signupRequired) {
+      var link = document.createElement('a');
+      link.href = '/account';
+      link.className = 'mt-3 inline-flex items-center justify-center gap-2 rounded-lg bg-accent-strong px-4 py-2.5 text-body-sm font-semibold text-white transition-colors hover:bg-accent-hover';
+      link.textContent = 'Create a free account';
+      statusBox.appendChild(link);
+    }
   }
 
   function renderUrlPrompt(reportId, product, message) {
@@ -123,7 +134,7 @@ export function renderVerifyEntryPage() {
       .then(function (data) {
         if (data.error) {
           setBusy(false);
-          showMessage(data.error, true);
+          showMessage(data.error, true, data.code === 'signup_required');
           return;
         }
         showMessage('Queued. Checking on it…', false);

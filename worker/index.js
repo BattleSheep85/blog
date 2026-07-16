@@ -321,7 +321,8 @@ export default {
                 // ranking page's cache split, but verification volume is low enough
                 // that a page cache isn't worth the complexity yet).
                 if (path === '/verify' || path === '/verify/') {
-                    return htmlPageResponse(renderVerifyEntryPage(), env, { cacheControl: 'no-store' });
+                    const prefillProduct = url.searchParams.get('product') || '';
+                    return htmlPageResponse(renderVerifyEntryPage(prefillProduct), env, { cacheControl: 'no-store' });
                 }
                 const verifySlugMatch = path.match(/^\/verify\/([a-z0-9-]+)$/);
                 if (verifySlugMatch) {

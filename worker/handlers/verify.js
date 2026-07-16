@@ -16,6 +16,8 @@ import { generateSlug } from '../lib/utils.js';
 import { screenQuery, rejectionMessage } from '../lib/safety.js';
 import { budgetExhausted } from '../pipeline/orchestrator.js';
 import { checkRateLimit } from '../lib/rate-limit.js';
+import { getSessionUser } from '../lib/auth.js';
+import { getQuota, consumeQuota, FREE_VERIFIES } from '../lib/quota.js';
 
 const PRODUCT_MIN_LEN = 3;
 const PRODUCT_MAX_LEN = 200;
@@ -84,10 +86,26 @@ export async function handleStartVerify(request, env) {
         return handleResubmit(env, reportId, product, productUrl);
     }
 
-    return handleNewSubmission(env, product, productUrl);
+    const sessionUser = await getSessionUser(request, env);
+    return handleNewSubmission(env, product, productUrl, sessionUser, clientIp);
 }
 
-async function handleNewSubmission(env, product, productUrl) {
+async function handleNewSubmission(env, product, productUrl, sessionUser, clientIp) {
+    // Free-tier gate: only a brand-new verification submission consumes
+    // quota — a needs_input resubmit is a continuation of a run already
+    // paid for, so it goes through handleResubmit below untouched.
+    if (!sessionUser) {
+        const quota = await getQuota(env.KV, 'verify', clientIp);
+        if (quota.remaining <= 0) {
+            return jsonResponse({
+                error: 'Free limit reached — create a free account to keep verifying products.',
+                code: 'signup_required',
+                kind: 'verify',
+                limit: FREE_VERIFIES,
+            }, 403);
+        }
+    }
+
     const id = generateId();
     const slug = generateSlug(product, id);
 
@@ -104,6 +122,10 @@ async function handleNewSubmission(env, product, productUrl) {
             await env.DB.prepare("UPDATE research SET status = 'failed' WHERE id = ?").bind(id).run();
         } catch { /* best-effort cleanup */ }
         return jsonResponse({ error: 'Could not enqueue verification job — please retry' }, 503);
+    }
+
+    if (!sessionUser) {
+        await consumeQuota(env.KV, 'verify', clientIp);
     }
 
     return jsonResponse({ id, slug, status: 'pending' });
