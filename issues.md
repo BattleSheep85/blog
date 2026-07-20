@@ -21,6 +21,16 @@ Last updated: 2026-07-20
       Blinded juror panel (grounding/usefulness) not run: no committed judge-runner
       reproduces judge-results.json.
 
+## 2026-07-20 — Synth grounding scorer false-positive (Benchmark/Testing, Data Integrity)
+
+- [x] HIGH (Data Integrity) — synth grounding scorer false-positive: norm() stripped commas
+      before number extraction, so comma-grouped source numbers (e.g. '6,650') were fractured
+      and never matched, mis-flagging truthful specs as fabricated (all 7 gpt-5.4-mini
+      "best ssd for pc" flags were false). Fixed benchmarks/lib/synth-score.mjs to build
+      srcNums from raw source text. Now auditable via num_ung_list. Reinforces: deterministic
+      graders must emit flagged strings, not bare counts — the counts alone falsely condemned
+      gpt-5.4-mini.
+
 ## 2026-07-16 — Truth Audit (/verify) shipped to production
 
 - [x] Deployed: migrations 010/012/011 applied to prod D1 (012 added mid-deploy:

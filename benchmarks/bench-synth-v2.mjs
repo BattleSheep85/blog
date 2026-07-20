@@ -40,6 +40,10 @@ if (!KEY) { console.error('need OPENROUTER_API_KEY in .dev.vars'); process.exit(
 const CANDIDATES = [
   // aa_intel=40.0, ifb=0.733, 178tok/s, $0.047/synth | bench winner: most products, zero fab
   { label: 'gpt-5.4-mini',     model: 'openai/gpt-5.4-mini',            reasoning: undefined },
+  // Stage 2 re-verification (2026-07-20): BaitBench Stage 1 winner (ARS 95.46, FCER 0, MDR 91.94).
+  // Prior no-go (2026-07-10, issues.md) used the buggy name_ung_strict substring metric, fixed
+  // 2026-07-11 (lib/synth-score.mjs token-presence). Re-running against the current gate.
+  { label: 'grok-4.5',         model: 'x-ai/grok-4.5',                  reasoning: undefined },
   // current planner — deepest pros/cons, zero fab, 8/8 reliable, $0.025/synth
   { label: 'gemini-flash',     model: 'google/gemini-2.5-flash',        reasoning: { effort: 'none' } },
   // aa_intel=37.0, ifb=0.812, 242tok/s, $0.039/synth | fastest, clean grounding

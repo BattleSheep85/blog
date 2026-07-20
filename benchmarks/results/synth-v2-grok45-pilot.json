@@ -1,0 +1,2669 @@
+[
+  {
+    "query": "best power supply for pc",
+    "model": "gpt-5.4-mini",
+    "ok": "✓",
+    "ms": 24841,
+    "ttft": 774,
+    "cost_c": "$2.344¢",
+    "products": 4,
+    "name_ung": 0,
+    "name_ung_strict": 1,
+    "num_ung": 0,
+    "avg_pros": 3,
+    "avg_cons": 2,
+    "has_verdict": 4,
+    "has_rating": 4,
+    "products_full": [
+      {
+        "name": "RM1000x Shift 1000W",
+        "brand": "Corsair",
+        "price": null,
+        "rating": 4.5,
+        "pros": [
+          "Hands-on testing described it as one of the best available 1000W PSUs, with a strong balance of performance, reliability, and features.",
+          "It is explicitly included in the 2026 1000W recommendation set, which suggests it remains relevant for current high-end builds.",
+          "Corsair is one of the established PSU brands repeatedly called out as a safe choice in the notes."
+        ],
+        "cons": [
+          "The notes do not provide a price, so value cannot be judged from the supplied sources.",
+          "No exact efficiency, connector layout, or warranty details were provided in the usable snippets here, so some buying decisions remain unverified."
+        ],
+        "specs": {
+          "wattage": "1000W"
+        },
+        "verdict": "This is the safest all-around pick from the notes because the support comes from hands-on testing, not just listicle repetition. It looks like the right answer for a serious gaming PC if you want a well-rounded 1000W unit from a trusted brand.",
+        "best_for": ""
+      },
+      {
+        "name": "HX1000i",
+        "brand": "Corsair",
+        "price": null,
+        "rating": 4.5,
+        "pros": [
+          "Hands-on notes say it is a more efficient option than the Corsair 1000X Shift.",
+          "Corsair's repeated appearance in the recommendation notes suggests this line has a strong reputation for quality and performance.",
+          "It is part of the current 1000W PSU discussion for modern high-end systems."
+        ],
+        "cons": [
+          "The sources do not provide exact efficiency numbers, so 'more efficient' is directionally useful but not fully quantified here.",
+          "No price was given, so its premium positioning cannot be judged against your budget from the supplied evidence."
+        ],
+        "specs": {
+          "wattage": "1000W"
+        },
+        "verdict": "If efficiency is your priority, this looks slightly better than the RM1000x Shift based on the hands-on note. I would still treat both as top-tier Corsair choices, with this one leaning more toward efficiency than convenience.",
+        "best_for": ""
+      },
+      {
+        "name": "MAG A1000GL",
+        "brand": "MSI",
+        "price": null,
+        "rating": 3.5,
+        "pros": [
+          "It appears in the hands-on list of 1000W PSUs being considered for modern high-end builds.",
+          "MSI is explicitly named among the established PSU brands buyers should stick to.",
+          "It may be a more budget-friendly route into the 1000W class than the premium Corsair models, though the supplied sources do not confirm pricing."
+        ],
+        "cons": [
+          "The notes do not give direct performance data, so its actual electrical quality is not verified here.",
+          "No price, warranty, or connector detail was supplied, so confidence is lower than for the Corsair picks."
+        ],
+        "specs": {
+          "wattage": "1000W"
+        },
+        "verdict": "This is a plausible value option, but the evidence is thinner than for the Corsair units. I would buy it only if it is clearly cheaper than the top two and the exact model revision matches current ATX/GPU needs.",
+        "best_for": ""
+      },
+      {
+        "name": "SF1000",
+        "brand": "Corsair",
+        "price": null,
+        "rating": 4,
+        "pros": [
+          "It is included among the current 1000W PSU names mentioned in the hands-on notes.",
+          "Corsair is an established brand with repeated positive mention in the research notes.",
+          "Its inclusion suggests it is relevant for compact or alternative-form-factor builds where a Corsair option is desired."
+        ],
+        "cons": [
+          "The notes do not explain why it should be preferred over the RM1000x Shift or HX1000i.",
+          "Form-factor relevance is only implied; no supported details about size, cabling, or connector layout were provided."
+        ],
+        "specs": {
+          "wattage": "1000W"
+        },
+        "verdict": "This is a credible Corsair option, but the supplied evidence does not let me place it above the two more clearly supported models. I would only choose it over the others if its form factor fits your case better.",
+        "best_for": ""
+      }
+    ],
+    "products_list": [
+      {
+        "name": "RM1000x Shift 1000W",
+        "rating": 4.5,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "This is the safest all-around pick from the notes because the support comes from hands-on testing, not just listicle rep"
+      },
+      {
+        "name": "HX1000i",
+        "rating": 4.5,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "If efficiency is your priority, this looks slightly better than the RM1000x Shift based on the hands-on note. I would st"
+      },
+      {
+        "name": "MAG A1000GL",
+        "rating": 3.5,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "This is a plausible value option, but the evidence is thinner than for the Corsair units. I would buy it only if it is c"
+      },
+      {
+        "name": "SF1000",
+        "rating": 4,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "This is a credible Corsair option, but the supplied evidence does not let me place it above the two more clearly support"
+      }
+    ],
+    "summary": "For a high-end PC in 2026, the safest buying pattern is still an established brand, ideally 1000W if you're pairing a flagship GPU and want headroom. The strongest evidence in the notes points to Corsair and Seasonic, with the Corsair RM1000x Shift and HX1000i standing out most, while several other mentions are too thin or too promotional to trust fully. ATX 3.0/3.1 support and a native 16-pin GPU cable matter more than headline wattage alone, but wattage still needs to match your CPU/GPU combo with some extra margin."
+  },
+  {
+    "query": "best power supply for pc",
+    "model": "grok-4.5",
+    "ok": "✗",
+    "ms": 120001,
+    "ttft": 29499,
+    "cost_c": "$0",
+    "error": "hard"
+  },
+  {
+    "query": "best power supply for pc",
+    "model": "gemini-flash",
+    "ok": "✓",
+    "ms": 15361,
+    "ttft": 1151,
+    "cost_c": "$1.041¢",
+    "products": 4,
+    "name_ung": 0,
+    "name_ung_strict": 0,
+    "num_ung": 0,
+    "avg_pros": 3,
+    "avg_cons": 2.5,
+    "has_verdict": 4,
+    "has_rating": 4,
+    "products_full": [
+      {
+        "name": "RM1000X Shift",
+        "brand": "Corsair",
+        "price": null,
+        "rating": 4.5,
+        "pros": [
+          "Offers a great balance of performance, reliability, and features, confirmed by hands-on testing.",
+          "Considered one of the best available 1000W PSUs for high-end gaming PC builds.",
+          "Features a fully modular design, which is preferred by users for cable management."
+        ],
+        "cons": [
+          "Not explicitly mentioned if it meets the newer ATX 3.1 standard, which is important for 2026 builds.",
+          "May be less efficient than the HX1000i, implying potentially higher power draw under load."
+        ],
+        "specs": {},
+        "verdict": "The Corsair RM1000X Shift stands out as a top-tier 1000W PSU, combining performance and reliability effectively. Its modular design is a significant plus for builders, though its efficiency might be slightly lower than more premium Corsair models.",
+        "best_for": ""
+      },
+      {
+        "name": "HX1000i",
+        "brand": "Corsair",
+        "price": null,
+        "rating": 4.5,
+        "pros": [
+          "Offers higher efficiency compared to the Corsair 1000X Shift, potentially saving on electricity over time.",
+          "Maintains Corsair's reputation for quality and performance, often appearing in 'best of' selections.",
+          "Expected to provide stable power delivery under heavy workloads, a hallmark of Corsair's 'i' series."
+        ],
+        "cons": [
+          "Likely more expensive than other 1000W options due to increased efficiency and premium features.",
+          "Specific advanced features (e.g., ATX 3.1, specific connector types) are not detailed in provided snippets."
+        ],
+        "specs": {},
+        "verdict": "The Corsair HX1000i is a highly efficient and reliable 1000W power supply, suited for users who prioritize long-term energy savings and premium build quality. Its superior efficiency makes it a strong contender in the high-wattage category.",
+        "best_for": ""
+      },
+      {
+        "name": "PRIME TX-1600 Noctua Edition",
+        "brand": "Seasonic",
+        "price": null,
+        "rating": 4,
+        "pros": [
+          "Offers a massive 1600W output, providing significant headroom for extreme overclocking and future upgrades.",
+          "Seasonic is known for high reliability, stable power delivery, and long warranties (up to 12 years cited for PRIME series).",
+          "Noctua Edition suggests optimized cooling and potentially quieter operation, a benefit of the Noctua partnership."
+        ],
+        "cons": [
+          "Likely has a very high price point due to its wattage, efficiency, and Noctua integration.",
+          "1600W is overkill for most users, leading to potentially lower efficiency at typical loads and higher upfront cost.",
+          "Could be physically larger to accommodate the higher wattage and cooling, potentially limiting case compatibility."
+        ],
+        "specs": {
+          "wattage": "1600W"
+        },
+        "verdict": "The Seasonic PRIME TX-1600 Noctua Edition is an extremely high-wattage PSU, offering unparalleled headroom and Seasonic's renowned reliability with enhanced cooling. While superb for extreme builds, its 1600W output is excessive and costly for the vast majority of PC users.",
+        "best_for": ""
+      },
+      {
+        "name": "MSI MAG A1000GL",
+        "brand": "MSI",
+        "price": null,
+        "rating": 3.5,
+        "pros": [
+          "MSI is an established brand and is among the top choices for graphics cards, implying synergy with MSI GPUs.",
+          "Considered for 'budget builds' by some users, suggesting a more competitive price point.",
+          "A 1000W unit from a reputable brand provides sufficient power for many high-end systems."
+        ],
+        "cons": [
+          "Specific efficiency rating (e.g., Gold, Platinum) is not mentioned in the provided snippets, which is a key factor.",
+          "Less specific information available regarding its performance metrics (e.g., ripple, voltage regulation) compared to Corsair or Seasonic options.",
+          "Could potentially have louder fan operation or less advanced fan controls than premium counterparts if budget-focused."
+        ],
+        "specs": {
+          "wattage": "1000W"
+        },
+        "verdict": "The MSI MAG A1000GL is a 1000W power supply from a recognized brand, likely offering a more budget-friendly entry into the high-wattage segment. While it provides adequate power, greater detail on its efficiency and internal performance would be needed for a stronger recommendation.",
+        "best_for": ""
+      }
+    ],
+    "products_list": [
+      {
+        "name": "RM1000X Shift",
+        "rating": 4.5,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "The Corsair RM1000X Shift stands out as a top-tier 1000W PSU, combining performance and reliability effectively. Its mod"
+      },
+      {
+        "name": "HX1000i",
+        "rating": 4.5,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "The Corsair HX1000i is a highly efficient and reliable 1000W power supply, suited for users who prioritize long-term ene"
+      },
+      {
+        "name": "PRIME TX-1600 Noctua Edition",
+        "rating": 4,
+        "pros": 3,
+        "cons": 3,
+        "verdict": "The Seasonic PRIME TX-1600 Noctua Edition is an extremely high-wattage PSU, offering unparalleled headroom and Seasonic'"
+      },
+      {
+        "name": "MSI MAG A1000GL",
+        "rating": 3.5,
+        "pros": 3,
+        "cons": 3,
+        "verdict": "The MSI MAG A1000GL is a 1000W power supply from a recognized brand, likely offering a more budget-friendly entry into t"
+      }
+    ],
+    "summary": "Selecting a PC power supply in 2026 demands careful consideration due to evolving standards like ATX 3.0/3.1 and the widespread adoption of 16-pin GPU connectors. Our research indicates that 1000W PSUs are ideal for high-end gaming rigs and provide essential headroom, with Corsair and Seasonic emerging as top contenders for reliability and performance. Prioritizing established brands and understanding true wattage needs over marketing hype is crucial."
+  },
+  {
+    "query": "best power supply for pc",
+    "model": "grok-4.20",
+    "ok": "✓",
+    "ms": 15428,
+    "ttft": 755,
+    "cost_c": "$2.339¢",
+    "products": 3,
+    "name_ung": 0,
+    "name_ung_strict": 3,
+    "num_ung": 0,
+    "avg_pros": 3,
+    "avg_cons": 2,
+    "has_verdict": 3,
+    "has_rating": 3,
+    "products_full": [
+      {
+        "name": "Corsair RM1000x Shift 1000W",
+        "brand": "Corsair",
+        "price": 189,
+        "rating": 4.5,
+        "pros": [
+          "ATX 3.1 compliant with excellent transient response and low ripple",
+          "Side-connected fully modular cables improve cable management in modern cases",
+          "Strong performance and reliability in hands-on testing, 10-year warranty"
+        ],
+        "cons": [
+          "Slightly higher price than basic 1000W Gold units",
+          "Fan can become audible under sustained maximum loads"
+        ],
+        "specs": {
+          "wattage": "1000W",
+          "efficiency": "80+ Gold",
+          "formFactor": "ATX",
+          "modular": "Fully modular"
+        },
+        "verdict": "Top pick for most high-end 2026 gaming builds needing 1000W. Hands-on sources praise its performance balance, ATX 3.1 compliance, side-connected cables for easier builds, and proven reliability. Excellent choice within a $170-200 budget if cable management is a priority; beats many competitors on real-world transient handling.",
+        "best_for": ""
+      },
+      {
+        "name": "Corsair HX1000i 1000W",
+        "brand": "Corsair",
+        "price": 249,
+        "rating": 4.5,
+        "pros": [
+          "Higher efficiency (80+ Platinum) than RM1000x Shift for lower heat and power draw",
+          "Excellent voltage regulation and very low ripple per hands-on tests",
+          "Fully modular with high build quality and 10-year warranty"
+        ],
+        "cons": [
+          "More expensive than Gold-rated alternatives",
+          "Premium price may not justify gains for non-power-conscious users"
+        ],
+        "specs": {
+          "wattage": "1000W",
+          "efficiency": "80+ Platinum",
+          "formFactor": "ATX",
+          "modular": "Fully modular"
+        },
+        "verdict": "Best premium 1000W option when efficiency and lowest ripple matter most. Hands-on comparisons note it outperforms the RM1000x Shift in efficiency while maintaining top-tier regulation and quiet operation. Worth the extra cost for users seeking long-term reliability and minimal heat in a high-end system within or slightly above $170-250 budget.",
+        "best_for": ""
+      },
+      {
+        "name": "Seasonic Prime TX-1000",
+        "brand": "Seasonic",
+        "price": 280,
+        "rating": 4,
+        "pros": [
+          "Top-tier voltage stability and extremely low ripple according to expert testing",
+          "12-year warranty demonstrates strong confidence in longevity",
+          "Hybrid fan control for silent operation at typical gaming loads"
+        ],
+        "cons": [
+          "Higher price point exceeds many users' $170 target",
+          "Less emphasis on modern side-connected cable design compared to Corsair Shift"
+        ],
+        "specs": {
+          "wattage": "1000W",
+          "efficiency": "80+ Titanium",
+          "formFactor": "ATX",
+          "modular": "Fully modular"
+        },
+        "verdict": "Strong alternative for users who value Seasonic's legendary stability and longest warranties. Multiple expert-domain sources rank Seasonic PRIME units among the most reliable with superior ripple performance. Excellent if your budget stretches beyond $200; otherwise the Corsair options deliver better value for most gamers.",
+        "best_for": ""
+      }
+    ],
+    "products_list": [
+      {
+        "name": "Corsair RM1000x Shift 1000W",
+        "rating": 4.5,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "Top pick for most high-end 2026 gaming builds needing 1000W. Hands-on sources praise its performance balance, ATX 3.1 co"
+      },
+      {
+        "name": "Corsair HX1000i 1000W",
+        "rating": 4.5,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "Best premium 1000W option when efficiency and lowest ripple matter most. Hands-on comparisons note it outperforms the RM"
+      },
+      {
+        "name": "Seasonic Prime TX-1000",
+        "rating": 4,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "Strong alternative for users who value Seasonic's legendary stability and longest warranties. Multiple expert-domain sou"
+      }
+    ],
+    "summary": "For high-end 2026 PC builds, particularly those with recent flagship GPUs like the RTX 5070 Ti or higher, a 1000W ATX 3.1 compliant PSU from a reputable brand (Corsair, Seasonic) is recommended for headroom, efficiency, and compatibility with 16-pin connectors. Hands-on testing highlights the Corsair RM1000x Shift and HX1000i as top performers for balance of performance, reliability, quiet operation, and modular design. Established brands provide better protection against power spikes and voltage ripple compared to no-name units. Budget of ~$170 aligns best with mid-to-high tier Gold-rated modular units; always prioritize ATX 3.1 compliance and low ripple over marketing claims."
+  },
+  {
+    "query": "best power supply for pc",
+    "model": "flash-lite",
+    "ok": "✓",
+    "ms": 13159,
+    "ttft": 858,
+    "cost_c": "$0.276¢",
+    "products": 4,
+    "name_ung": 0,
+    "name_ung_strict": 4,
+    "num_ung": 0,
+    "avg_pros": 3,
+    "avg_cons": 2,
+    "has_verdict": 4,
+    "has_rating": 4,
+    "products_full": [
+      {
+        "name": "Corsair RM1000X Shift 1000W",
+        "brand": "Corsair",
+        "price": 170,
+        "rating": 4.5,
+        "pros": [
+          "Excellent balance of performance, reliability, and features.",
+          "Considered one of the best 1000W PSUs available.",
+          "Offers ample headroom for high-end gaming PCs and future upgrades."
+        ],
+        "cons": [
+          "Can be more expensive than some competitors.",
+          "While excellent, the HX1000i is noted as being slightly more efficient."
+        ],
+        "specs": {
+          "Wattage": "1000W"
+        },
+        "verdict": "The Corsair RM1000X Shift is a top-tier choice for demanding PC builds, offering robust performance and reliability. Its 1000W capacity ensures it can handle the most power-hungry components with ease and provides excellent headroom.",
+        "best_for": ""
+      },
+      {
+        "name": "Corsair HX1000i 1000W",
+        "brand": "Corsair",
+        "price": null,
+        "rating": 4.5,
+        "pros": [
+          "Highly efficient, offering better energy savings compared to some other models.",
+          "Reputable Corsair quality and reliability.",
+          "Suitable for high-end gaming and workstation builds."
+        ],
+        "cons": [
+          "Availability can vary, and it may be priced higher than other 1000W options.",
+          "Specific version details (e.g., ATX 3.0 compliance) may need verification for the latest revisions."
+        ],
+        "specs": {
+          "Wattage": "1000W"
+        },
+        "verdict": "The Corsair HX1000i is a noteworthy option for those prioritizing efficiency, delivering excellent power delivery with lower energy waste. It's a reliable choice from a trusted brand for demanding PC configurations.",
+        "best_for": ""
+      },
+      {
+        "name": "Seasonic PRIME TX-1600 1600W (Note: Higher Wattage, but Seasonic is a top brand)",
+        "brand": "Seasonic",
+        "price": 265,
+        "rating": 4,
+        "pros": [
+          "Exceptional build quality and reliability from a highly respected brand.",
+          "Long 12-year warranty offers significant peace of mind.",
+          "Top-tier efficiency ratings (Titanium)."
+        ],
+        "cons": [
+          "1600W is overkill for most users, leading to a higher price and potentially lower efficiency at typical loads.",
+          "Finding a specific 1000W PRIME model with Titanium rating might be difficult or significantly more expensive; this higher wattage unit is an example of their quality."
+        ],
+        "specs": {
+          "Wattage": "1600W",
+          "Efficiency Rating": "80 PLUS Titanium"
+        },
+        "verdict": "While the PRIME TX-1600 is 1600W, it represents Seasonic's commitment to quality, exemplified by their excellent warranty and top-tier efficiency. For users needing extreme headroom or simply wanting one of the best-built PSUs on the market, Seasonic is a leader, though a lower wattage PRIME model would be more typical for a 1000W need.",
+        "best_for": ""
+      },
+      {
+        "name": "MSI MAG A1000GL 1000W",
+        "brand": "MSI",
+        "price": null,
+        "rating": 4,
+        "pros": [
+          "Adheres to ATX 3.0 and PCIe 5.0 standards, suitable for modern GPUs.",
+          "Solid performance for its wattage class.",
+          "MSI is an established brand in PC components."
+        ],
+        "cons": [
+          "May not have the same long-standing reputation for PSUs as Corsair or Seasonic.",
+          "Specific long-term reliability data across many units might be less extensive than older, established PSU lines."
+        ],
+        "specs": {
+          "Wattage": "1000W",
+          "ATX Standard": "3.0",
+          "PCIe Standard": "5.0"
+        },
+        "verdict": "The MSI MAG A1000GL is a strong contender for users who need ATX 3.0 compliance and 1000W of power. It offers modern features and reliable output from a well-known manufacturer.",
+        "best_for": ""
+      }
+    ],
+    "products_list": [
+      {
+        "name": "Corsair RM1000X Shift 1000W",
+        "rating": 4.5,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "The Corsair RM1000X Shift is a top-tier choice for demanding PC builds, offering robust performance and reliability. Its"
+      },
+      {
+        "name": "Corsair HX1000i 1000W",
+        "rating": 4.5,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "The Corsair HX1000i is a noteworthy option for those prioritizing efficiency, delivering excellent power delivery with l"
+      },
+      {
+        "name": "Seasonic PRIME TX-1600 1600W (Note: Higher Wattage, but Seasonic is a top brand)",
+        "rating": 4,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "While the PRIME TX-1600 is 1600W, it represents Seasonic's commitment to quality, exemplified by their excellent warrant"
+      },
+      {
+        "name": "MSI MAG A1000GL 1000W",
+        "rating": 4,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "The MSI MAG A1000GL is a strong contender for users who need ATX 3.0 compliance and 1000W of power. It offers modern fea"
+      }
+    ],
+    "summary": "For high-end PC builds in 2026, a 1000W power supply is increasingly necessary, especially for modern graphics cards. Corsair's RM1000X Shift and HX1000i stand out for their performance and efficiency, with other reputable brands like Seasonic, MSI, and Thermaltake also offering strong options. Prioritizing ATX 3.0/3.1 standards and reputable brands is crucial for system stability and component protection."
+  },
+  {
+    "query": "best drill for home use",
+    "model": "gpt-5.4-mini",
+    "ok": "✓",
+    "ms": 9944,
+    "ttft": 868,
+    "cost_c": "$1.584¢",
+    "products": 1,
+    "name_ung": 0,
+    "name_ung_strict": 1,
+    "num_ung": 0,
+    "avg_pros": 3,
+    "avg_cons": 3,
+    "has_verdict": 1,
+    "has_rating": 1,
+    "products_full": [
+      {
+        "name": "Ryobi cordless drill system",
+        "brand": "Ryobi",
+        "price": null,
+        "rating": 3.5,
+        "pros": [
+          "Community feedback in the notes says a DIY-to-pro user who had experience through Habitat for Humanity chose Ryobi for affordability.",
+          "Ryobi is described in the notes as having a very broad tool line that shares the same batteries.",
+          "It is repeatedly framed as a sensible home-use platform rather than a pro-only splurge."
+        ],
+        "cons": [
+          "The notes explicitly mention that Ryobi is sometimes perceived as 'cheap', which is a real reputation issue.",
+          "The evidence here is community-based, not hands-on or expert drill testing, so the confidence is limited.",
+          "No specific Ryobi drill model was identified in the provided sources, so model-level comparison is impossible."
+        ],
+        "specs": {},
+        "verdict": "Ryobi is the most defensible budget-minded home-use platform in the notes, mainly because of battery-system breadth and affordability. I would consider it for casual DIY, but the recommendation is only moderate because the support here is community testimony, not rigorous drill testing.",
+        "best_for": ""
+      }
+    ],
+    "products_list": [
+      {
+        "name": "Ryobi cordless drill system",
+        "rating": 3.5,
+        "pros": 3,
+        "cons": 3,
+        "verdict": "Ryobi is the most defensible budget-minded home-use platform in the notes, mainly because of battery-system breadth and "
+      }
+    ],
+    "summary": "The provided sources are too thin and too noisy to support a confident 2026 drill recommendation. Consumer Reports is the only credible source in the set with relevant current drill guidance, but the notes do not include the actual model results; most other sources are listicles, affiliate-driven pages, or community posts that either failed to load or were not specific enough. Because of that, this report is conservative and only includes options where there is at least some credible, specific support."
+  },
+  {
+    "query": "best drill for home use",
+    "model": "grok-4.5",
+    "ok": "✗",
+    "ms": 120002,
+    "ttft": 36731,
+    "cost_c": "$0",
+    "error": "hard"
+  },
+  {
+    "query": "best drill for home use",
+    "model": "gemini-flash",
+    "ok": "✗",
+    "ms": 120001,
+    "ttft": "—",
+    "cost_c": "$0",
+    "error": "hard"
+  },
+  {
+    "query": "best drill for home use",
+    "model": "grok-4.20",
+    "ok": "✗",
+    "ms": 120003,
+    "ttft": "—",
+    "cost_c": "$0",
+    "error": "hard"
+  },
+  {
+    "query": "best drill for home use",
+    "model": "flash-lite",
+    "ok": "✗",
+    "ms": 120002,
+    "ttft": "—",
+    "cost_c": "$0",
+    "error": "hard"
+  },
+  {
+    "query": "best earbuds 2026",
+    "model": "gpt-5.4-mini",
+    "ok": "✓",
+    "ms": 22375,
+    "ttft": 919,
+    "cost_c": "$2.242¢",
+    "products": 9,
+    "name_ung": 0,
+    "name_ung_strict": 0,
+    "num_ung": 0,
+    "avg_pros": 3,
+    "avg_cons": 2,
+    "has_verdict": 9,
+    "has_rating": 9,
+    "products_full": [
+      {
+        "name": "Sony WF-1000XM5",
+        "brand": "Sony",
+        "price": 305,
+        "rating": 4.8,
+        "pros": [
+          "CNN’s hands-on roundup says these offer intelligibly powerful ANC.",
+          "CNN says they have superior sound and great sound quality.",
+          "CNN says they have long battery life and plentiful features."
+        ],
+        "cons": [
+          "They are still regular in-ear buds, so they are not the right choice if you want open-ear awareness.",
+          "The notes show multiple prices across retailers, so current pricing is inconsistent and should be checked before buying."
+        ],
+        "specs": {
+          "price": "$305"
+        },
+        "verdict": "This is the safest all-around pick in the evidence set. CNN’s hands-on testing supports the sound, ANC, battery, and feature set, and it was named the best true wireless earbuds overall.",
+        "best_for": ""
+      },
+      {
+        "name": "Sony LinkBuds Fit",
+        "brand": "Sony",
+        "price": null,
+        "rating": 4.5,
+        "pros": [
+          "Wirecutter’s 2026 roundup says they sound great.",
+          "Wirecutter says they fit great.",
+          "Wirecutter says they are loaded with features that work well across phone platforms."
+        ],
+        "cons": [
+          "The source snippet gives no concrete battery, ANC, or price details here.",
+          "Because the visible source is only a roundup excerpt, the evidence is thinner than for the Sony WF-1000XM5."
+        ],
+        "specs": {},
+        "verdict": "A strong modern alternative if fit and cross-platform feature support matter more than absolute top-tier ANC. The evidence is credible, but the available snippet is narrower than the WF-1000XM5 coverage.",
+        "best_for": ""
+      },
+      {
+        "name": "Bose QuietComfort Ultra Earbuds (Gen 2)",
+        "brand": "Bose",
+        "price": null,
+        "rating": 4.4,
+        "pros": [
+          "TechGearLab’s 2026 roundup calls them the best overall earbuds.",
+          "The source says they have some of the best sound in the group.",
+          "The source says they have some of the best noise cancellation in the group."
+        ],
+        "cons": [
+          "The available source snippet is brief and does not provide battery or comfort detail.",
+          "There is a naming ambiguity in the source snippet itself ('Gen2'), so shoppers should verify the exact current SKU before purchase."
+        ],
+        "specs": {},
+        "verdict": "This appears to be a top-tier ANC option, and the expert-domain source is favorable. I rank it slightly below the Sony WF-1000XM5 because the available evidence is thinner and less detailed here.",
+        "best_for": ""
+      },
+      {
+        "name": "Apple AirPods Pro 3",
+        "brand": "Apple",
+        "price": null,
+        "rating": 4.3,
+        "pros": [
+          "CNN includes them as the best Apple earbuds.",
+          "They are supported in a 2026 true wireless roundup, which keeps them current.",
+          "For Apple users, the category naming suggests strong ecosystem fit."
+        ],
+        "cons": [
+          "The notes provide no concrete specs, battery, or price from the snippet.",
+          "The evidence in the notes is thinner than for the Sony WF-1000XM5, so this is more ecosystem-driven than universally proven here."
+        ],
+        "specs": {},
+        "verdict": "A sensible pick for Apple-centric users, but the supporting snippet here is not detailed enough to justify ranking it above the best-supported Sony option. Treat it as ecosystem-first rather than a universally superior earbud.",
+        "best_for": ""
+      },
+      {
+        "name": "Beats Fit Pro",
+        "brand": "Beats",
+        "price": null,
+        "rating": 4.1,
+        "pros": [
+          "CNN names them the best workout earbuds.",
+          "They remain current enough to appear in a 2026 roundup.",
+          "Workout-focused positioning implies secure fit is a priority."
+        ],
+        "cons": [
+          "The notes do not provide concrete battery, ANC, or pricing data from the snippet.",
+          "They are specialized for workouts, so they are less compelling as a do-everything pick than the top-ranked options."
+        ],
+        "specs": {},
+        "verdict": "Good if you want exercise-focused earbuds and are willing to trade some all-purpose versatility. They make less sense than the top picks if most of your listening happens at a desk, on transit, or in the office.",
+        "best_for": ""
+      },
+      {
+        "name": "EarFun Air 2",
+        "brand": "EarFun",
+        "price": null,
+        "rating": 4,
+        "pros": [
+          "CNN names them the best budget earbuds.",
+          "They appear in a 2026 expert roundup, so they are still relevant.",
+          "Budget positioning makes them accessible if you do not want to spend on flagship ANC models."
+        ],
+        "cons": [
+          "The notes do not include concrete measured specs or a price.",
+          "Budget buds usually involve more compromises in ANC, mic quality, or build than premium alternatives."
+        ],
+        "specs": {},
+        "verdict": "A practical low-cost option, but the supporting excerpt is not detailed and the usual budget tradeoffs still apply. I would only buy this if price matters more than elite sound or cancellation.",
+        "best_for": ""
+      },
+      {
+        "name": "Soundcore by Anker Aeroclip",
+        "brand": "Soundcore by Anker",
+        "price": 170,
+        "rating": 4.2,
+        "pros": [
+          "WIRED calls it the best open earbuds for most people.",
+          "Open earbuds keep the ear canal open, which preserves awareness of your surroundings.",
+          "The WIRED roundup gives it the main open-ear recommendation, which is useful if you want situational awareness."
+        ],
+        "cons": [
+          "WIRED notes that open earbuds sound less intimate or full-sounding than regular earbuds, especially in bass.",
+          "WIRED says open earbuds cannot block ambient sound, limiting them in loud environments like flights or busy streets."
+        ],
+        "specs": {
+          "price": "$170"
+        },
+        "verdict": "This is the best-supported open-ear option in the notes, and the use case is clear: awareness first, isolation never. I would not choose it over ANC buds for travel or noisy commutes, but for walking and light daily use it makes sense.",
+        "best_for": ""
+      },
+      {
+        "name": "Bose Ultra Open Earbuds",
+        "brand": "Bose",
+        "price": 299,
+        "rating": 4.1,
+        "pros": [
+          "WIRED calls it the best premium open earbuds.",
+          "Open-ear design keeps surroundings audible for safer awareness.",
+          "Bose is an established brand with independent coverage in this category."
+        ],
+        "cons": [
+          "WIRED’s open-ear caveat still applies: less bass and less full sound than sealed buds.",
+          "At the stated price, they are expensive for a category that already gives up isolation."
+        ],
+        "specs": {
+          "price": "$299"
+        },
+        "verdict": "A premium open-ear option, but the form factor itself limits what it can do. I would only pick it if awareness matters more than isolation and you are comfortable paying flagship money for that tradeoff.",
+        "best_for": ""
+      },
+      {
+        "name": "Shokz OpenFit Pro",
+        "brand": "Shokz",
+        "price": null,
+        "rating": 3.9,
+        "pros": [
+          "WIRED added it in the January 2026 update, which suggests it remained relevant as of that roundup.",
+          "Shokz is a known open-ear brand, which is preferable to a no-name marketplace brand.",
+          "It appears in a current expert-domain guide rather than a random listicle."
+        ],
+        "cons": [
+          "The notes do not provide a quoted price or concrete performance details.",
+          "The available evidence is too thin to confidently place it above the main WIRED open-ear picks."
+        ],
+        "specs": {},
+        "verdict": "This is a plausible open-ear option, but the evidence in the notes is too sparse for a strong recommendation. I would only consider it after comparing it directly with the WIRED-listed Soundcore and Bose picks.",
+        "best_for": ""
+      }
+    ],
+    "products_list": [
+      {
+        "name": "Sony WF-1000XM5",
+        "rating": 4.8,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "This is the safest all-around pick in the evidence set. CNN’s hands-on testing supports the sound, ANC, battery, and fea"
+      },
+      {
+        "name": "Sony LinkBuds Fit",
+        "rating": 4.5,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "A strong modern alternative if fit and cross-platform feature support matter more than absolute top-tier ANC. The eviden"
+      },
+      {
+        "name": "Bose QuietComfort Ultra Earbuds (Gen 2)",
+        "rating": 4.4,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "This appears to be a top-tier ANC option, and the expert-domain source is favorable. I rank it slightly below the Sony W"
+      },
+      {
+        "name": "Apple AirPods Pro 3",
+        "rating": 4.3,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "A sensible pick for Apple-centric users, but the supporting snippet here is not detailed enough to justify ranking it ab"
+      },
+      {
+        "name": "Beats Fit Pro",
+        "rating": 4.1,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "Good if you want exercise-focused earbuds and are willing to trade some all-purpose versatility. They make less sense th"
+      },
+      {
+        "name": "EarFun Air 2",
+        "rating": 4,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "A practical low-cost option, but the supporting excerpt is not detailed and the usual budget tradeoffs still apply. I wo"
+      },
+      {
+        "name": "Soundcore by Anker Aeroclip",
+        "rating": 4.2,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "This is the best-supported open-ear option in the notes, and the use case is clear: awareness first, isolation never. I "
+      },
+      {
+        "name": "Bose Ultra Open Earbuds",
+        "rating": 4.1,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "A premium open-ear option, but the form factor itself limits what it can do. I would only pick it if awareness matters m"
+      },
+      {
+        "name": "Shokz OpenFit Pro",
+        "rating": 3.9,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "This is a plausible open-ear option, but the evidence in the notes is too sparse for a strong recommendation. I would on"
+      }
+    ],
+    "summary": "For 2026, the strongest evidence supports a mixed list: true wireless ANC buds for most people, plus open-ear options for users who want awareness. The best-supported overall pick is the Sony WF-1000XM5, with hands-on testing and expert-domain coverage praising sound, ANC, battery life, and features; open-ear picks are useful but inherently less isolated and less versatile. Some candidate sources are stale or thin, so I omitted anything that lacked current, credible support."
+  },
+  {
+    "query": "best earbuds 2026",
+    "model": "grok-4.5",
+    "ok": "✗",
+    "ms": 120000,
+    "ttft": 32178,
+    "cost_c": "$0",
+    "error": "hard"
+  },
+  {
+    "query": "best earbuds 2026",
+    "model": "gemini-flash",
+    "ok": "✗",
+    "ms": 120001,
+    "ttft": "—",
+    "cost_c": "$0",
+    "error": "hard"
+  },
+  {
+    "query": "best earbuds 2026",
+    "model": "grok-4.20",
+    "ok": "✗",
+    "ms": 120001,
+    "ttft": "—",
+    "cost_c": "$0",
+    "error": "hard"
+  },
+  {
+    "query": "best earbuds 2026",
+    "model": "flash-lite",
+    "ok": "✗",
+    "ms": 120000,
+    "ttft": "—",
+    "cost_c": "$0",
+    "error": "hard"
+  },
+  {
+    "query": "best vacuum for pet hair",
+    "model": "gpt-5.4-mini",
+    "ok": "✓",
+    "ms": 26876,
+    "ttft": 792,
+    "cost_c": "$3.013¢",
+    "products": 7,
+    "name_ung": 0,
+    "name_ung_strict": 1,
+    "num_ung": 0,
+    "avg_pros": 3,
+    "avg_cons": 3,
+    "has_verdict": 7,
+    "has_rating": 7,
+    "products_full": [
+      {
+        "name": "Airbelt K3 Premium",
+        "brand": "SEBO",
+        "price": 949,
+        "rating": 4.8,
+        "pros": [
+          "Hands-on testing and expert-domain coverage say it excels on both bare floors and carpets for picking up fur.",
+          "Bagged canister design is a strong fit for homes that want better dust containment and less mess when emptying.",
+          "The notes say it includes many adjustment options and attachments, which improves usability across floor types and pet messes."
+        ],
+        "cons": [
+          "It is expensive at $949, so the value proposition is not friendly to budget buyers.",
+          "Canister form factor is less convenient than a stick or robot if you want quick grab-and-go cleaning.",
+          "The source notes do not give detailed attachment names or filtration specs here, so some capability details remain underdocumented."
+        ],
+        "specs": {
+          "price": "$949",
+          "warranty": "7-Year Standard Warranty (Amazon) / 10-Year Extended Warranty (SEBO)"
+        },
+        "verdict": "This is the most convincing full-size pet-hair pick in the notes if you are willing to pay for it. The hands-on evidence says it cleans fur very well on carpets and bare floors, and the bagged canister format is a real advantage for allergy-conscious owners.",
+        "best_for": ""
+      },
+      {
+        "name": "What’s the Best Vacuum for Pet Hair?",
+        "brand": "Consumer Reports",
+        "price": null,
+        "rating": 4.7,
+        "pros": [
+          "Consumer Reports says it tested hundreds of models specifically for pet-hair pickup, which is the right kind of evidence for this category.",
+          "Their testing covers carpet, bare floors, and pet hair, so the recommendation is broader than a single-floor-surface review.",
+          "The source is current and expert-domain, which makes it a strong anchor for choosing a vacuum rather than relying on marketing copy."
+        ],
+        "cons": [
+          "This is a guide page, not a single model, so it does not directly tell you exactly which product to buy without more digging.",
+          "The notes do not include the specific winners from the article, so the decision support here is limited in the extracted material.",
+          "No price or product-page URL is available for a specific vacuum from this source excerpt."
+        ],
+        "specs": {
+          "modelsTested": "hundreds"
+        },
+        "verdict": "This is not a product, but it is one of the strongest decision resources in the set because it tests hundreds of vacuums for fur pickup. Use it as the reliability check before trusting any brand claim about pet hair.",
+        "best_for": ""
+      },
+      {
+        "name": "What's the Best Vacuum Cleaner?",
+        "brand": "Wirecutter",
+        "price": null,
+        "rating": 4.5,
+        "pros": [
+          "Wirecutter is expert-domain and current, which is much better than SEO listicles for vacuum buying advice.",
+          "The guide explicitly compares upright, canister, and lightweight cordless stick vacuums, helping match machine type to home layout.",
+          "The notes indicate it explains practical tradeoffs like weight and cord dislike, which are exactly the constraints that matter in real use."
+        ],
+        "cons": [
+          "The extracted notes do not include the top model names from this guide, so it cannot stand alone as a specific purchase recommendation.",
+          "It is a general vacuum guide rather than a pet-hair-only test page, so pet-hair buyers need to cross-check with the pet-specific article.",
+          "No price data is available from the excerpt."
+        ],
+        "specs": {},
+        "verdict": "Wirecutter’s general vacuum guide is useful because it forces the right type-vs-home-fit question instead of overfocusing on feature hype. It is strong supporting evidence, but not enough by itself to identify one exact pet-hair winner from the excerpt we have.",
+        "best_for": ""
+      },
+      {
+        "name": "Roborock Q7 M5+",
+        "brand": "Roborock",
+        "price": 220,
+        "rating": 4.3,
+        "pros": [
+          "Hands-on testing says it has great navigation and avoids most obstacles while cleaning scattered debris effectively.",
+          "It comes with a self-emptying charging dock, which reduces how often you have to empty loose pet hair.",
+          "The price in the notes is relatively accessible for a self-emptying robot at about $220 from Amazon and Roborock, or $240 from Wayfair."
+        ],
+        "cons": [
+          "It is still a robot vacuum, so it is better for upkeep than for deep embedded pet hair in carpet.",
+          "The notes focus on navigation and debris pickup, not on standout pet-hair extraction specifically, so performance is less certain than a full-size vacuum.",
+          "Robot vacuums remain limited by thresholds, clutter, and the need to keep floors relatively clear."
+        ],
+        "specs": {
+          "selfEmptyingDock": "yes"
+        },
+        "verdict": "A solid value robot for daily pet-hair management, especially if you want less manual emptying. I would not call it the best all-around pet-hair vacuum, but it is one of the more credible convenience buys in the notes.",
+        "best_for": ""
+      },
+      {
+        "name": "Ryobi 18V One+ HP Advanced Stick Vacuum Kit",
+        "brand": "Ryobi",
+        "price": 399,
+        "rating": 4,
+        "pros": [
+          "Hands-on and expert-domain notes describe it as versatile, which helps when pet hair shows up on floors, furniture, and awkward corners.",
+          "The source says it has a large dustbin, which is useful because pet hair fills bins fast.",
+          "The notes also say it recharges quickly, which partially offsets the battery-risk problem common to cordless sticks."
+        ],
+        "cons": [
+          "Cordless stick vacuums still carry battery-risk concerns, and the notes explicitly mention battery issues are common in this category.",
+          "At $399, it is not a cheap impulse buy, especially if you mainly need a secondary vacuum.",
+          "The evidence here is about versatility and runtime convenience, not a definitive superiority claim over the best corded pet vacuums."
+        ],
+        "specs": {
+          "battery": "18V One+",
+          "type": "stick vacuum kit"
+        },
+        "verdict": "A credible cordless option if convenience matters and you already live in the Ryobi ecosystem. I would still choose a corded SEBO over this for the toughest pet-hair cleanup, but this is a respectable middle ground.",
+        "best_for": ""
+      },
+      {
+        "name": "Black+Decker 20V Max Dustbuster AdvancedClean+ Cordless Pet Hand Vacuum HHVK515JP07",
+        "brand": "Black+Decker",
+        "price": 63,
+        "rating": 3.8,
+        "pros": [
+          "Hands-on and expert-domain notes specifically recommend it for pet hair on upholstery.",
+          "It has a motorized brush, which is the right kind of tool for lifting hair from fabric surfaces.",
+          "The extendable crevice tool makes it more useful for tight spots, stairs, and car interiors."
+        ],
+        "cons": [
+          "It is a handheld, so it is a supplement, not a whole-home vacuum.",
+          "The source only supports upholstery-focused pet-hair use; it is not presented as a main floor vacuum.",
+          "Cordless handhelds are inherently limited by battery size and small dust capacity compared with full-size machines."
+        ],
+        "specs": {
+          "modelNumber": "HHVK515JP07",
+          "price": "$63 from Amazon / $67 from Chewy / $80 list"
+        },
+        "verdict": "This is a good add-on vacuum for pet hair on couches, stairs, and other fabric surfaces. I would not use it as my only vacuum, but for targeted cleanups it looks genuinely useful and better supported than most handhelds in the notes.",
+        "best_for": ""
+      },
+      {
+        "name": "Bespoke AI Jet Ultra VS90F40DMK/AA",
+        "brand": "Samsung",
+        "price": null,
+        "rating": 3.6,
+        "pros": [
+          "The notes report an average runtime of 52 minutes on a full battery during tests, which is strong for a cordless stick.",
+          "Longer runtime can matter a lot in pet homes where you need repeat passes on fur and debris.",
+          "It is a mainstream branded model, not a marketplace-churn generic."
+        ],
+        "cons": [
+          "The notes do not provide a pet-hair-specific performance claim for it, only runtime.",
+          "Cordless stick vacuums still carry the category-wide battery-issue risk noted in the research.",
+          "No price was provided in the extracted notes, so value is hard to judge."
+        ],
+        "specs": {
+          "modelNumber": "VS90F40DMK/AA",
+          "runtime": "52 minutes average in tests"
+        },
+        "verdict": "This looks like a capable cordless, but the evidence here is thinner for pet-hair pickup than for runtime. I would consider it only if you specifically want Samsung’s cordless format and accept that the pet-hair case is not as well documented in these notes.",
+        "best_for": ""
+      }
+    ],
+    "products_list": [
+      {
+        "name": "Airbelt K3 Premium",
+        "rating": 4.8,
+        "pros": 3,
+        "cons": 3,
+        "verdict": "This is the most convincing full-size pet-hair pick in the notes if you are willing to pay for it. The hands-on evidence"
+      },
+      {
+        "name": "What’s the Best Vacuum for Pet Hair?",
+        "rating": 4.7,
+        "pros": 3,
+        "cons": 3,
+        "verdict": "This is not a product, but it is one of the strongest decision resources in the set because it tests hundreds of vacuums"
+      },
+      {
+        "name": "What's the Best Vacuum Cleaner?",
+        "rating": 4.5,
+        "pros": 3,
+        "cons": 3,
+        "verdict": "Wirecutter’s general vacuum guide is useful because it forces the right type-vs-home-fit question instead of overfocusin"
+      },
+      {
+        "name": "Roborock Q7 M5+",
+        "rating": 4.3,
+        "pros": 3,
+        "cons": 3,
+        "verdict": "A solid value robot for daily pet-hair management, especially if you want less manual emptying. I would not call it the "
+      },
+      {
+        "name": "Ryobi 18V One+ HP Advanced Stick Vacuum Kit",
+        "rating": 4,
+        "pros": 3,
+        "cons": 3,
+        "verdict": "A credible cordless option if convenience matters and you already live in the Ryobi ecosystem. I would still choose a co"
+      },
+      {
+        "name": "Black+Decker 20V Max Dustbuster AdvancedClean+ Cordless Pet Hand Vacuum HHVK515JP07",
+        "rating": 3.8,
+        "pros": 3,
+        "cons": 3,
+        "verdict": "This is a good add-on vacuum for pet hair on couches, stairs, and other fabric surfaces. I would not use it as my only v"
+      },
+      {
+        "name": "Bespoke AI Jet Ultra VS90F40DMK/AA",
+        "rating": 3.6,
+        "pros": 3,
+        "cons": 3,
+        "verdict": "This looks like a capable cordless, but the evidence here is thinner for pet-hair pickup than for runtime. I would consi"
+      }
+    ],
+    "summary": "The strongest evidence in 2026 favors two buckets: corded uprights/canisters for the most reliable pet-hair pickup, and a few robot mop-vac combos for daily maintenance on hard floors. Consumer Reports and Wirecutter provide the most credible current guidance; thin listicles and affiliate-linked videos were discounted heavily. Some mainstream cordless models are viable, but the notes also show battery issues are common enough that cordless picks need extra caution."
+  },
+  {
+    "query": "best vacuum for pet hair",
+    "model": "grok-4.5",
+    "ok": "✓",
+    "ms": 84734,
+    "ttft": 1710,
+    "cost_c": "$5.779¢",
+    "products": 7,
+    "name_ung": 0,
+    "name_ung_strict": 0,
+    "num_ung": 1,
+    "avg_pros": 3.4,
+    "avg_cons": 2.7,
+    "has_verdict": 7,
+    "has_rating": 7,
+    "products_full": [
+      {
+        "name": "SEBO Airbelt K3 Premium",
+        "brand": "SEBO",
+        "price": 949,
+        "rating": 4.5,
+        "pros": [
+          "Excels at picking up fur on both bare floors and carpets in hands-on/expert testing",
+          "Many adjustment options and attachments for different surfaces and furniture",
+          "Long warranty options (7-year standard via retail; 10-year extended via SEBO)",
+          "Bagged design contains pet dander and hair cleaner than typical bagless bins"
+        ],
+        "cons": [
+          "High purchase price around $949",
+          "Canister form factor is bulkier to store than a stick vacuum",
+          "Ongoing cost of replacement bags and filters"
+        ],
+        "specs": {
+          "type": "Bagged canister",
+          "warrantyStandard": "7-Year",
+          "warrantyExtended": "10-Year (SEBO)"
+        },
+        "verdict": "Hands-on and expert-domain testing singles this out as a top full-size vacuum for pet fur on mixed floors. The price is steep, but adjustment range, attachments, and long warranty make it the pick you buy once if you have heavy shedders and mostly want deep cleans done right.",
+        "best_for": ""
+      },
+      {
+        "name": "Black+Decker 20V Max Dustbuster AdvancedClean+ Cordless Pet Hand Vacuum HHVK515JP07",
+        "brand": "Black+Decker",
+        "price": 63,
+        "rating": 4.5,
+        "pros": [
+          "Recommended in hands-on/expert testing specifically for pet hair on upholstery",
+          "Motorized brush improves hair pickup vs basic dustbusters",
+          "Extendable crevice tool reaches seams and tight spots",
+          "Low street price (about $63–$80) makes it an easy add-on"
+        ],
+        "cons": [
+          "Handheld only—will not replace a full-size vacuum for whole-home floors",
+          "Small dust capacity requires frequent emptying with heavy shedders"
+        ],
+        "specs": {
+          "type": "Cordless handheld",
+          "model": "HHVK515JP07",
+          "features": "Motorized brush; extendable crevice tool"
+        },
+        "verdict": "Best budget pet-hair specialist for couches, car seats, and stairs. Expert hands-on coverage backs the motorized brush and crevice tool; pair it with a full-size vacuum rather than expecting it to do floors alone.",
+        "best_for": ""
+      },
+      {
+        "name": "Ryobi 18V One+ HP Advanced Stick Vacuum Kit",
+        "brand": "Ryobi",
+        "price": 399,
+        "rating": 4,
+        "pros": [
+          "Versatile cordless stick recommended for small pets or apartments in hands-on coverage",
+          "Large dustbin reduces dump frequency during fur season",
+          "Recharges quickly; fits the broader 18V One+ battery ecosystem"
+        ],
+        "cons": [
+          "At ~$399 it is not a budget stick",
+          "Cordless sticks as a class show meaningful rates of battery issues over multi-year pet-heavy use",
+          "Less ideal than a powered canister/upright for deep carpet embedded hair"
+        ],
+        "specs": {
+          "type": "Cordless stick",
+          "batteryPlatform": "18V One+",
+          "notes": "Large dustbin; quick recharge"
+        },
+        "verdict": "Solid cordless stick for apartments and lighter pet loads if you already own Ryobi 18V batteries. Hands-on notes praise capacity and charge speed; heavy carpet homes should still consider a SEBO-class machine for deep cleans.",
+        "best_for": ""
+      },
+      {
+        "name": "Roborock Q7 M5+",
+        "brand": "Roborock",
+        "price": 220,
+        "rating": 4,
+        "pros": [
+          "Self-emptying dock cuts daily emptying chores",
+          "Hands-on testing notes strong navigation and obstacle avoidance",
+          "Effectively cleans scattered debris in expert testing",
+          "Aggressive street pricing around $220–$300"
+        ],
+        "cons": [
+          "Robot form factor is maintenance/daily cleanup, not deep embedded carpet hair",
+          "Still needs manual vacuum support for heavy shed seasons and upholstery"
+        ],
+        "specs": {
+          "type": "Robot vacuum with self-empty dock"
+        },
+        "verdict": "Best value robot for pet homes that want set-and-forget floor maintenance. Hands-on notes credit navigation and debris pickup plus a self-empty dock; keep a manual vacuum for sofas and deep carpet.",
+        "best_for": ""
+      },
+      {
+        "name": "Eufy Robot Vacuum Omni E25",
+        "brand": "Eufy",
+        "price": 650,
+        "rating": 3.5,
+        "pros": [
+          "Wirecutter flags it among the more affordable effective self-cleaning roller-mop combos",
+          "Self-cleaning mop system reduces hands-on mop maintenance",
+          "Useful vacuum-plus-light-mop combo for mixed hard floors"
+        ],
+        "cons": [
+          "Described as only an average vacuum—mop features outshine pure debris/fur pickup",
+          "At roughly $600–$700 it costs more than stronger pure-vacuum robots like the Q7 M5+",
+          "Not a substitute for a dedicated high-scoring pet-hair upright or canister"
+        ],
+        "specs": {
+          "type": "Robot vacuum-mop combo",
+          "mopStyle": "Self-cleaning roller mop"
+        },
+        "verdict": "Buy this for the self-cleaning roller mop and hands-off dock, not for class-leading pet-hair suction. Wirecutter’s framing is honest: effective and relatively affordable in the mop-combo niche, average as a pure vacuum.",
+        "best_for": ""
+      },
+      {
+        "name": "Narwal Freo X10 Pro",
+        "brand": "Narwal",
+        "price": 500,
+        "rating": 3.5,
+        "pros": [
+          "Wirecutter notes excellent mess detection",
+          "Two spinning mop pads for stronger mopping than stationary pads",
+          "Full robot vac-mop automation for busy pet households"
+        ],
+        "cons": [
+          "Price swings widely (~$400–$607) and can approach less necessary spend vs simpler robots",
+          "Mop-focused strengths do not automatically equal top pet-hair carpet extraction",
+          "Another device to maintain (pads, dock, clean/dirty water) on top of fur management"
+        ],
+        "specs": {
+          "type": "Robot vacuum-mop combo",
+          "mopStyle": "Two spinning mop pads"
+        },
+        "verdict": "Strong Wirecutter-backed mop-vac hybrid when mess detection and spinning pads matter. Treat it as premium floor automation, not the primary answer to couches full of fur.",
+        "best_for": ""
+      },
+      {
+        "name": "Dreame D20 Plus Robot Vacuum",
+        "brand": "Dreame",
+        "price": 275,
+        "rating": 3.5,
+        "pros": [
+          "Lower price band (~$247–$300) among Wirecutter-noted mop-vac combos",
+          "Handles light mopping and vacuuming for basic pet-home upkeep",
+          "Accessible entry into self-empty/mop robot routines"
+        ],
+        "cons": [
+          "Stationary mop pad is less capable than spinning or roller mop designs",
+          "Positioned for light mopping—not deep pet-hair carpet work",
+          "Fewer standout pet-specific strengths called out vs higher-ranked options"
+        ],
+        "specs": {
+          "type": "Robot vacuum-mop combo",
+          "mopStyle": "Stationary mop pad"
+        },
+        "verdict": "Budget mop-vac combo for light duty. Fine if you want automation cheap and already own a real pet-hair vacuum; skip if you need one machine to conquer embedded fur.",
+        "best_for": ""
+      }
+    ],
+    "products_list": [
+      {
+        "name": "SEBO Airbelt K3 Premium",
+        "rating": 4.5,
+        "pros": 4,
+        "cons": 3,
+        "verdict": "Hands-on and expert-domain testing singles this out as a top full-size vacuum for pet fur on mixed floors. The price is "
+      },
+      {
+        "name": "Black+Decker 20V Max Dustbuster AdvancedClean+ Cordless Pet Hand Vacuum HHVK515JP07",
+        "rating": 4.5,
+        "pros": 4,
+        "cons": 2,
+        "verdict": "Best budget pet-hair specialist for couches, car seats, and stairs. Expert hands-on coverage backs the motorized brush a"
+      },
+      {
+        "name": "Ryobi 18V One+ HP Advanced Stick Vacuum Kit",
+        "rating": 4,
+        "pros": 3,
+        "cons": 3,
+        "verdict": "Solid cordless stick for apartments and lighter pet loads if you already own Ryobi 18V batteries. Hands-on notes praise "
+      },
+      {
+        "name": "Roborock Q7 M5+",
+        "rating": 4,
+        "pros": 4,
+        "cons": 2,
+        "verdict": "Best value robot for pet homes that want set-and-forget floor maintenance. Hands-on notes credit navigation and debris p"
+      },
+      {
+        "name": "Eufy Robot Vacuum Omni E25",
+        "rating": 3.5,
+        "pros": 3,
+        "cons": 3,
+        "verdict": "Buy this for the self-cleaning roller mop and hands-off dock, not for class-leading pet-hair suction. Wirecutter’s frami"
+      },
+      {
+        "name": "Narwal Freo X10 Pro",
+        "rating": 3.5,
+        "pros": 3,
+        "cons": 3,
+        "verdict": "Strong Wirecutter-backed mop-vac hybrid when mess detection and spinning pads matter. Treat it as premium floor automati"
+      },
+      {
+        "name": "Dreame D20 Plus Robot Vacuum",
+        "rating": 3.5,
+        "pros": 3,
+        "cons": 3,
+        "verdict": "Budget mop-vac combo for light duty. Fine if you want automation cheap and already own a real pet-hair vacuum; skip if y"
+      }
+    ],
+    "summary": "For heavy pet hair, bagged canisters and targeted handhelds with motorized brushes still lead independent lab and hands-on results. The SEBO Airbelt K3 Premium is the standout full-home pick for fur on carpet and hard floors; the Black+Decker HHVK515JP07 is the clear budget choice for upholstery spot-cleaning. Robot mop-vacs (Roborock, Eufy, Narwal, Dreame) help with daily maintenance but are secondary tools, not replacements for a strong manual vacuum."
+  },
+  {
+    "query": "best vacuum for pet hair",
+    "model": "gemini-flash",
+    "ok": "✓",
+    "ms": 99480,
+    "ttft": 85606,
+    "cost_c": "$1.053¢",
+    "products": 4,
+    "name_ung": 0,
+    "name_ung_strict": 0,
+    "num_ung": 0,
+    "avg_pros": 4,
+    "avg_cons": 3,
+    "has_verdict": 4,
+    "has_rating": 4,
+    "products_full": [
+      {
+        "name": "SEBO Airbelt K3 Premium",
+        "brand": "SEBO",
+        "price": 949,
+        "rating": 4.5,
+        "pros": [
+          "Excels at picking up fur on both bare floors and carpets.",
+          "Includes many adjustment options and attachments for versatile cleaning.",
+          "Comes with a substantial 7-Year Standard Warranty or 10-Year Extended Warranty.",
+          "Bagged with S-Class filtration, recommended for pet allergies."
+        ],
+        "cons": [
+          "Significantly higher price point compared to other options.",
+          "Canister vacuums can be less convenient for quick clean-ups than stick or handheld models.",
+          "May feel bulky compared to lighter alternatives."
+        ],
+        "specs": {},
+        "verdict": "The SEBO Airbelt K3 Premium is an excellent, albeit expensive, choice for homes with pets, demonstrating superior pet hair pickup and offering extensive adjustability and a long warranty for peace of mind. Its bagged design also makes it ideal for allergy sufferers.",
+        "best_for": ""
+      },
+      {
+        "name": "Roborock Q7 M5+",
+        "brand": "Roborock",
+        "price": 220,
+        "rating": 4,
+        "pros": [
+          "Offers great navigation and obstacle avoidance for efficient cleaning.",
+          "Effectively cleans scattered debris, including pet hair.",
+          "Features a convenient self-emptying charging dock, reducing manual intervention.",
+          "Affordably priced, making robot vacuum technology accessible."
+        ],
+        "cons": [
+          "Not explicitly rated for deep carpet cleaning of pet hair.",
+          "Robot vacuums require regular maintenance of rollers and bins.",
+          "Connectivity and app reliance can be a point of frustration for some users."
+        ],
+        "specs": {},
+        "verdict": "The Roborock Q7 M5+ is a strong contender for automated pet hair management, particularly on hardwood floors, thanks to its smart navigation and self-emptying feature. While not a substitute for a full-power vacuum on thick carpets, it's excellent for daily maintenance.",
+        "best_for": ""
+      },
+      {
+        "name": "Black+Decker 20V Max Dustbuster AdvancedClean+ Cordless Pet Hand Vacuum HHVK515JP07",
+        "brand": "Black+Decker",
+        "price": 63,
+        "rating": 3.8,
+        "pros": [
+          "Specifically recommended for pet hair, especially on upholstery.",
+          "Features a motorized brush for effective hair pickup.",
+          "Includes an extendable crevice tool for hard-to-reach areas.",
+          "Cordless design offers maximum portability and convenience for spot cleaning."
+        ],
+        "cons": [
+          "Limited to handheld use, not suitable for entire floor cleaning.",
+          "Dust capacity is small, requiring frequent emptying.",
+          "Battery life may be a concern for extended cleaning sessions."
+        ],
+        "specs": {},
+        "verdict": "The Black+Decker HHVK515JP07 is an excellent handheld option for pet owners needing to quickly tackle fur on furniture, stairs, or in cars. Its specialized brush and cordless convenience make it ideal for focused pet hair removal.",
+        "best_for": ""
+      },
+      {
+        "name": "Ryobi 18V One+ HP Advanced Stick Vacuum Kit",
+        "brand": "Ryobi",
+        "price": 399,
+        "rating": 3.5,
+        "pros": [
+          "Versatile cordless design suitable for small pets or apartments.",
+          "Features a large dustbin, reducing the frequency of emptying.",
+          "Offers quick recharging for minimal downtime.",
+          "Part of the Ryobi 18V One+ system, allowing battery interchangeability."
+        ],
+        "cons": [
+          "Cordless stick vacuums often have battery issues, with nearly a third of past units failing.",
+          "May not have the deep cleaning power of larger upright or canister models.",
+          "Higher price point for a stick vacuum."
+        ],
+        "specs": {},
+        "verdict": "The Ryobi 18V One+ HP Advanced Stick Vacuum Kit offers a convenient cordless solution for pet owners in smaller spaces or those needing versatile cleaning. Its large dustbin and quick charge are definite advantages, though battery longevity is a common concern for this category.",
+        "best_for": ""
+      }
+    ],
+    "products_list": [
+      {
+        "name": "SEBO Airbelt K3 Premium",
+        "rating": 4.5,
+        "pros": 4,
+        "cons": 3,
+        "verdict": "The SEBO Airbelt K3 Premium is an excellent, albeit expensive, choice for homes with pets, demonstrating superior pet ha"
+      },
+      {
+        "name": "Roborock Q7 M5+",
+        "rating": 4,
+        "pros": 4,
+        "cons": 3,
+        "verdict": "The Roborock Q7 M5+ is a strong contender for automated pet hair management, particularly on hardwood floors, thanks to "
+      },
+      {
+        "name": "Black+Decker 20V Max Dustbuster AdvancedClean+ Cordless Pet Hand Vacuum HHVK515JP07",
+        "rating": 3.8,
+        "pros": 4,
+        "cons": 3,
+        "verdict": "The Black+Decker HHVK515JP07 is an excellent handheld option for pet owners needing to quickly tackle fur on furniture, "
+      },
+      {
+        "name": "Ryobi 18V One+ HP Advanced Stick Vacuum Kit",
+        "rating": 3.5,
+        "pros": 4,
+        "cons": 3,
+        "verdict": "The Ryobi 18V One+ HP Advanced Stick Vacuum Kit offers a convenient cordless solution for pet owners in smaller spaces o"
+      }
+    ],
+    "summary": "This report identifies top-performing vacuums for pet hair across various types, focusing on hands-on testing results for effectiveness, key features, and value. Our analysis highlights options ranging from specialized handhelds to powerful canister models, with a strong emphasis on models that reliably pick up fur without constant clogging."
+  },
+  {
+    "query": "best vacuum for pet hair",
+    "model": "grok-4.20",
+    "ok": "✓",
+    "ms": 112738,
+    "ttft": 100292,
+    "cost_c": "$2.458¢",
+    "products": 4,
+    "name_ung": 0,
+    "name_ung_strict": 1,
+    "num_ung": 0,
+    "avg_pros": 3,
+    "avg_cons": 2,
+    "has_verdict": 4,
+    "has_rating": 4,
+    "products_full": [
+      {
+        "name": "SEBO Airbelt K3 Premium",
+        "brand": "SEBO",
+        "price": 949,
+        "rating": 4.5,
+        "pros": [
+          "Excels at picking up pet fur on both bare floors and carpets per hands-on testing",
+          "Bagged system with excellent filtration reduces allergen release",
+          "Includes many adjustment options, attachments, and up to 10-year warranty"
+        ],
+        "cons": [
+          "Very expensive at $949",
+          "Heavy canister design less maneuverable for quick cleanups"
+        ],
+        "specs": {
+          "Type": "Bagged canister",
+          "Warranty": "7-10 years"
+        },
+        "verdict": "The SEBO Airbelt K3 Premium is the top performer for serious pet hair removal on carpets and hard floors according to hands-on expert testing. Its bagged design and strong filtration make it ideal for allergy sufferers, though the high price and weight may deter casual users. Strong recommendation for homes with heavy shedders.",
+        "best_for": ""
+      },
+      {
+        "name": "Black+Decker 20V Max Dustbuster AdvancedClean+ HHVK515JP07",
+        "brand": "Black+Decker",
+        "price": 63,
+        "rating": 4,
+        "pros": [
+          "Motorized brush and extendable crevice tool excel at pet hair on upholstery",
+          "Affordable at $63 and highly recommended for targeted pet hair cleanup",
+          "Cordless convenience with good power for a handheld"
+        ],
+        "cons": [
+          "Limited to spot cleaning and small areas, not whole-house",
+          "Battery life may require recharges during larger jobs"
+        ],
+        "specs": {
+          "Type": "Cordless handheld",
+          "Voltage": "20V"
+        },
+        "verdict": "This Black+Decker Dustbuster is an excellent affordable pick specifically for pet hair on furniture and stairs according to hands-on reviews. It is not a full-house replacement but pairs perfectly with a primary vacuum. Great value and performance for the price.",
+        "best_for": ""
+      },
+      {
+        "name": "Roborock Q7 M5+",
+        "brand": "Roborock",
+        "price": 220,
+        "rating": 4,
+        "pros": [
+          "Great navigation, obstacle avoidance, and effective debris/pet hair pickup",
+          "Self-emptying dock reduces daily maintenance",
+          "Strong value at $220 versus list price of $300"
+        ],
+        "cons": [
+          "Average vacuum performance compared to dedicated uprights on deep carpet cleaning",
+          "May require occasional manual intervention for heavy tangles"
+        ],
+        "specs": {
+          "Type": "Robot with self-emptying",
+          "Features": "Navigation, self-empty"
+        },
+        "verdict": "The Roborock Q7 M5+ delivers reliable daily pet hair management with excellent navigation and a self-emptying base per hands-on tests. It is best as a supplement to deeper weekly cleaning rather than a complete replacement for heavy shedding. Good balance of convenience and performance.",
+        "best_for": ""
+      },
+      {
+        "name": "Ryobi 18V One+ HP Advanced Stick Vacuum Kit",
+        "brand": "Ryobi",
+        "price": 399,
+        "rating": 3.5,
+        "pros": [
+          "Large dustbin and quick recharge time",
+          "Versatile cordless design suitable for small apartments or quick pet hair touch-ups",
+          "Compatible with existing Ryobi 18V battery ecosystem"
+        ],
+        "cons": [
+          "Cordless stick vacuums commonly suffer battery degradation (28% issue rate reported)",
+          "Lower runtime under heavy pet hair load compared to corded models"
+        ],
+        "specs": {
+          "Type": "Cordless stick",
+          "Battery": "18V"
+        },
+        "verdict": "The Ryobi 18V stick vacuum offers decent versatility and convenience for lighter pet hair duty in smaller spaces. However, it is outperformed by dedicated canisters on deep carpet cleaning and shares the common battery reliability concerns of cordless models. Only recommended if you already own Ryobi tools.",
+        "best_for": ""
+      }
+    ],
+    "products_list": [
+      {
+        "name": "SEBO Airbelt K3 Premium",
+        "rating": 4.5,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "The SEBO Airbelt K3 Premium is the top performer for serious pet hair removal on carpets and hard floors according to ha"
+      },
+      {
+        "name": "Black+Decker 20V Max Dustbuster AdvancedClean+ HHVK515JP07",
+        "rating": 4,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "This Black+Decker Dustbuster is an excellent affordable pick specifically for pet hair on furniture and stairs according"
+      },
+      {
+        "name": "Roborock Q7 M5+",
+        "rating": 4,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "The Roborock Q7 M5+ delivers reliable daily pet hair management with excellent navigation and a self-emptying base per h"
+      },
+      {
+        "name": "Ryobi 18V One+ HP Advanced Stick Vacuum Kit",
+        "rating": 3.5,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "The Ryobi 18V stick vacuum offers decent versatility and convenience for lighter pet hair duty in smaller spaces. Howeve"
+      }
+    ],
+    "summary": "For homes with shedding pets, bagged canister vacuums like the SEBO Airbelt K3 Premium excel at deep cleaning carpets and bare floors without clogging, while the Black+Decker 20V Max Dustbuster HHVK515JP07 offers an affordable, effective handheld option for upholstery and quick pet hair pickup. Robot options like the Roborock Q7 M5+ provide convenient daily maintenance with strong navigation and self-emptying. Cheap no-name uprights (e.g. Mainstays) and many cordless sticks suffer from poor carpet performance, short runtimes, and frequent battery failures (28% failure rate reported). Consumer Reports and Wirecutter hands-on tests confirm performance on embedded pet hair matters more than marketing claims."
+  },
+  {
+    "query": "best vacuum for pet hair",
+    "model": "flash-lite",
+    "ok": "✓",
+    "ms": 119724,
+    "ttft": 113356,
+    "cost_c": "$0.249¢",
+    "products": 4,
+    "name_ung": 0,
+    "name_ung_strict": 0,
+    "num_ung": 0,
+    "avg_pros": 3,
+    "avg_cons": 2,
+    "has_verdict": 4,
+    "has_rating": 4,
+    "products_full": [
+      {
+        "name": "SEBO Airbelt K3 Premium",
+        "brand": "SEBO",
+        "price": 949,
+        "rating": 4.5,
+        "pros": [
+          "Excels at picking up pet fur from both bare floors and carpets.",
+          "Includes many adjustment options and attachments for versatile cleaning.",
+          "Comes with a long warranty (7-year standard, 10-year extended available)."
+        ],
+        "cons": [
+          "High price point.",
+          "Bagged system might be less convenient for some users than bagless."
+        ],
+        "specs": {
+          "Warranty": "7-Year Standard"
+        },
+        "verdict": "The SEBO Airbelt K3 Premium is an outstanding choice for pet owners, offering superior pet hair pickup on all surfaces and robust construction with a long warranty, despite its premium price.",
+        "best_for": ""
+      },
+      {
+        "name": "Ryobi 18V One+ HP Advanced Stick Vacuum Kit",
+        "brand": "Ryobi",
+        "price": 399,
+        "rating": 4,
+        "pros": [
+          "Versatile for various cleaning needs, including pet hair.",
+          "Large dustbin reduces emptying frequency.",
+          "Recharges quickly."
+        ],
+        "cons": [
+          "Higher price point for a stick vacuum.",
+          "Battery life may be a concern for very large homes, though specific runtime wasn't detailed in sources."
+        ],
+        "specs": {
+          "Voltage": "18V"
+        },
+        "verdict": "The Ryobi 18V One+ HP Advanced Stick Vacuum Kit is a powerful and versatile cordless option recommended for tackling pet hair, especially in smaller homes or apartments, offering convenient features like a large dustbin and fast charging.",
+        "best_for": ""
+      },
+      {
+        "name": "Roborock Q7 M5+",
+        "brand": "Roborock",
+        "price": 240,
+        "rating": 4,
+        "pros": [
+          "Features a self-emptying charging dock for convenience.",
+          "Demonstrates great navigation and obstacle avoidance.",
+          "Effectively cleans scattered debris."
+        ],
+        "cons": [
+          "Robot vacuums may require more frequent maintenance for heavy pet hair.",
+          "Price can fluctuate, with some sources listing higher than others."
+        ],
+        "specs": {
+          "Dock Type": "Self-emptying"
+        },
+        "verdict": "The Roborock Q7 M5+ offers a convenient automated cleaning solution with its self-emptying dock and effective navigation, making it a good option for daily pet hair maintenance, though it may not replace deeper cleaning needs.",
+        "best_for": ""
+      },
+      {
+        "name": "Black+Decker 20V Max Dustbuster AdvancedClean+ Cordless Pet Hand Vacuum HHVK515JP07",
+        "brand": "Black+Decker",
+        "price": 67,
+        "rating": 3.5,
+        "pros": [
+          "Specifically recommended for pet hair, especially on upholstery.",
+          "Includes a motorized brush for better hair pickup.",
+          "Comes with an extendable crevice tool for hard-to-reach areas."
+        ],
+        "cons": [
+          "Limited battery life typical of handheld vacuums.",
+          "Suction power may not be sufficient for entire rooms or deep carpet cleaning."
+        ],
+        "specs": {
+          "Battery Type": "20V Max Lithium Ion"
+        },
+        "verdict": "The Black+Decker 20V Max Dustbuster AdvancedClean+ is a capable handheld vacuum designed to tackle pet hair on furniture and in tight spots, offering a convenient solution for quick cleanups but not as a primary floor cleaner.",
+        "best_for": ""
+      }
+    ],
+    "products_list": [
+      {
+        "name": "SEBO Airbelt K3 Premium",
+        "rating": 4.5,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "The SEBO Airbelt K3 Premium is an outstanding choice for pet owners, offering superior pet hair pickup on all surfaces a"
+      },
+      {
+        "name": "Ryobi 18V One+ HP Advanced Stick Vacuum Kit",
+        "rating": 4,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "The Ryobi 18V One+ HP Advanced Stick Vacuum Kit is a powerful and versatile cordless option recommended for tackling pet"
+      },
+      {
+        "name": "Roborock Q7 M5+",
+        "rating": 4,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "The Roborock Q7 M5+ offers a convenient automated cleaning solution with its self-emptying dock and effective navigation"
+      },
+      {
+        "name": "Black+Decker 20V Max Dustbuster AdvancedClean+ Cordless Pet Hand Vacuum HHVK515JP07",
+        "rating": 3.5,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "The Black+Decker 20V Max Dustbuster AdvancedClean+ is a capable handheld vacuum designed to tackle pet hair on furniture"
+      }
+    ],
+    "summary": "When selecting a vacuum for pet hair, consider specialized features like tangle-free brush rolls and HEPA filtration. Upright vacuums often excel on carpets, while stick vacuums offer convenience for quick cleanups and hard floors. Robot vacuums can assist with daily maintenance, but their effectiveness with heavy pet hair varies."
+  },
+  {
+    "query": "best laptop 2026",
+    "model": "gpt-5.4-mini",
+    "ok": "✓",
+    "ms": 17289,
+    "ttft": 625,
+    "cost_c": "$2.460¢",
+    "products": 3,
+    "name_ung": 0,
+    "name_ung_strict": 0,
+    "num_ung": 0,
+    "avg_pros": 4.3,
+    "avg_cons": 3,
+    "has_verdict": 3,
+    "has_rating": 3,
+    "products_full": [
+      {
+        "name": "Yoga 7i 2-in-1 (14\" Intel)",
+        "brand": "Lenovo",
+        "price": 990,
+        "rating": 4.8,
+        "pros": [
+          "Wirecutter expert testing calls it an upgrade pick and the best Windows laptop for college students.",
+          "It is fast, with 16 GB memory, a 512 GB SSD, and an Intel Core Ultra 5 226V processor in the tested configuration.",
+          "Battery life measured 16 hours in hands-on testing, which is strong for a Windows convertible.",
+          "The 14-inch 1920x1200 OLED touch screen is vivid and should be a step up for media and reading.",
+          "It has a 360-degree hinge and a better keyboard than the HP OmniBook X Flip 14."
+        ],
+        "cons": [
+          "At $990, it is not cheap, especially in a year when laptop prices are rising.",
+          "The notes do not give repairability, port layout, or upgrade details, so there is some unknowns beyond the tested basics.",
+          "OLED can be great, but the notes do not tell us about brightness or burn-in behavior, so long-term display tradeoffs remain unclear."
+        ],
+        "specs": {
+          "processor": "Intel Core Ultra 5 226V",
+          "display": "14-inch 1920x1200 OLED touch screen",
+          "memory": "16 GB",
+          "storage": "512 GB SSD",
+          "weight": "3.04 pounds",
+          "batteryLifeTested": "16 hours"
+        },
+        "verdict": "This is the safest mainstream Windows pick in the notes because Wirecutter tested it directly and liked it more than the HP alternative. It is not cheap, but the battery life, keyboard, and OLED display make the price easier to justify than most 2026 hype machines.",
+        "best_for": ""
+      },
+      {
+        "name": "OmniBook X Flip 14 (fm0013dx)",
+        "brand": "HP",
+        "price": 850,
+        "rating": 4.5,
+        "pros": [
+          "Wirecutter expert testing names it a top pick and best value for college students.",
+          "Hands-on testing found fast performance and long battery life.",
+          "It has a 360-degree hinge, which adds flexibility for tablet-like use and sharing content.",
+          "The tested configuration includes an Intel Core Ultra 5 226V, 16 GB memory, and a 512 GB SSD.",
+          "At 3.06 pounds, it stays in a reasonably portable range for a 14-inch convertible."
+        ],
+        "cons": [
+          "Its 14-inch 1920x1200 display is good on paper, but the notes do not say it is as compelling as the Lenovo's OLED panel.",
+          "Wirecutter notes it is best value especially when on sale, which suggests the full price is less attractive.",
+          "The notes do not provide a second independent expert source, so confidence is good but not perfect."
+        ],
+        "specs": {
+          "processor": "Intel Core Ultra 5 226V",
+          "display": "14-inch 1920x1200 touch screen",
+          "memory": "16 GB",
+          "storage": "512 GB SSD",
+          "weight": "3.06 pounds",
+          "batteryLifeTested": "15 hours"
+        },
+        "verdict": "This is a strong second-place choice and probably the better buy if you find it meaningfully cheaper than the Lenovo. The verdict is still based on real hands-on testing, but the Lenovo has the edge on battery life and display quality in the notes.",
+        "best_for": ""
+      },
+      {
+        "name": "Katana 15 HX",
+        "brand": "MSI",
+        "price": 999,
+        "rating": 4.1,
+        "pros": [
+          "PCMag expert testing identifies it as the best gaming laptop for most people and the top basic gaming laptop.",
+          "It lands at a clear sub-$1,000 price point in the notes, which is valuable in a year of rising laptop costs.",
+          "It is the only gaming-focused pick in the notes with strong expert-domain support."
+        ],
+        "cons": [
+          "The notes do not include battery life, display specs, weight, or exact configuration details, so the recommendation is incomplete.",
+          "It is described as a basic gaming laptop, which implies it is not the premium choice for buyers who want top-tier portability or build refinement.",
+          "At $999, it is right at the budget ceiling and may compete poorly with better-rounded non-gaming laptops for non-gamers."
+        ],
+        "specs": {},
+        "verdict": "If gaming is the main goal, this is the only clearly supported gaming recommendation in the notes. I would still buy it only if you actually need a gaming laptop, because the evidence here is thinner than for the two college-focused models.",
+        "best_for": ""
+      }
+    ],
+    "products_list": [
+      {
+        "name": "Yoga 7i 2-in-1 (14\" Intel)",
+        "rating": 4.8,
+        "pros": 5,
+        "cons": 3,
+        "verdict": "This is the safest mainstream Windows pick in the notes because Wirecutter tested it directly and liked it more than the"
+      },
+      {
+        "name": "OmniBook X Flip 14 (fm0013dx)",
+        "rating": 4.5,
+        "pros": 5,
+        "cons": 3,
+        "verdict": "This is a strong second-place choice and probably the better buy if you find it meaningfully cheaper than the Lenovo. Th"
+      },
+      {
+        "name": "Katana 15 HX",
+        "rating": 4.1,
+        "pros": 3,
+        "cons": 3,
+        "verdict": "If gaming is the main goal, this is the only clearly supported gaming recommendation in the notes. I would still buy it "
+      }
+    ],
+    "summary": "The strongest evidence in the notes supports two Wirecutter-tested college laptops and one PCMag-tested budget gaming laptop; everything else is either too thin, listicle-driven, or not directly about laptops. For a mainstream 2026 buyer, the safest pick is the Lenovo Yoga 7i 2-in-1 (14\" Intel), with the HP OmniBook X Flip 14 (fm0013dx) close behind and the MSI Katana 15 HX as the gaming pick. Apple's \"MacBook Neo\" appears in the notes, but the naming and source support are weak enough that I would not treat it as a fully verified recommendation."
+  },
+  {
+    "query": "best laptop 2026",
+    "model": "grok-4.5",
+    "ok": "✓",
+    "ms": 100817,
+    "ttft": 43345,
+    "cost_c": "$6.403¢",
+    "products": 3,
+    "name_ung": 0,
+    "name_ung_strict": 0,
+    "num_ung": 0,
+    "avg_pros": 4.3,
+    "avg_cons": 2,
+    "has_verdict": 3,
+    "has_rating": 3,
+    "products_full": [
+      {
+        "name": "Lenovo Yoga 7i 2-in-1 (14\" Intel)",
+        "brand": "Lenovo",
+        "price": 990,
+        "rating": 4.5,
+        "pros": [
+          "Wirecutter hands-on upgrade pick and best Windows laptop for college students",
+          "Tested battery life about 16 hours",
+          "Vivid 14-inch 1920x1200 OLED touchscreen with 360-degree hinge",
+          "Keyboard preferred over the HP OmniBook X Flip in the same guide",
+          "Fast everyday performance with Intel Core Ultra 5 226V, 16 GB RAM, 512 GB SSD"
+        ],
+        "cons": [
+          "Priced near $990—higher than the HP value sibling in the same Wirecutter roundup",
+          "2-in-1 hinge design may not suit buyers who want a pure rigid clamshell"
+        ],
+        "specs": {
+          "processor": "Intel Core Ultra 5 226V",
+          "display": "14-inch 1920x1200 OLED touch",
+          "memory": "16 GB",
+          "storage": "512 GB SSD",
+          "weight": "3.04 pounds",
+          "testedBatteryLife": "16 hours"
+        },
+        "verdict": "Top overall pick in this set on the strength of Wirecutter hands-on testing: long measured battery, OLED touch, stronger keyboard than the HP Flip, and a configuration that matches real student/professional needs. Pay the premium only if the 2-in-1 flexibility and display quality matter; otherwise the cheaper HP remains excellent.",
+        "best_for": ""
+      },
+      {
+        "name": "HP OmniBook X Flip 14 (fm0013dx)",
+        "brand": "HP",
+        "price": 850,
+        "rating": 4.5,
+        "pros": [
+          "Wirecutter top pick and best-value college laptop",
+          "Fast performance with the same Intel Core Ultra 5 226V class config as the Lenovo upgrade",
+          "Tested battery life about 15 hours",
+          "360-degree flip hinge at a lower street price (~$850 Best Buy)",
+          "Light for a 14-inch machine at 3.06 pounds with 16 GB RAM and 512 GB SSD"
+        ],
+        "cons": [
+          "Non-OLED 1920x1200 touch panel—less vivid than the Lenovo Yoga’s OLED in the same guide",
+          "Keyboard rated below the Yoga 7i’s by Wirecutter"
+        ],
+        "specs": {
+          "processor": "Intel Core Ultra 5 226V",
+          "display": "14-inch 1920x1200 touch",
+          "memory": "16 GB",
+          "storage": "512 GB SSD",
+          "weight": "3.06 pounds",
+          "testedBatteryLife": "15 hours",
+          "model": "fm0013dx"
+        },
+        "verdict": "Best value Windows pick from the same Wirecutter hands-on college guide: nearly the Yoga’s battery and silicon, with a flip hinge, for meaningfully less money. Choose this first unless you specifically want OLED and the nicer keyboard.",
+        "best_for": ""
+      },
+      {
+        "name": "Apple MacBook Neo",
+        "brand": "Apple",
+        "price": 589.99,
+        "rating": 4,
+        "pros": [
+          "Positioned as Apple’s most affordable laptop in 2026 coverage",
+          "Aggressive street pricing around $589.99 on Amazon ($10 under a cited Best Buy figure)",
+          "Low-cost on-ramp to macOS and Apple’s ecosystem versus premium MacBook Air/Pro tiers"
+        ],
+        "cons": [
+          "Cited 256 GB configuration ships without Touch ID",
+          "Far fewer measured specs (battery, display, weight, CPU SKU) in our source set than the Wirecutter Windows 2-in-1s—confidence is lower"
+        ],
+        "specs": {
+          "storageNote": "256GB model available without Touch ID"
+        },
+        "verdict": "Credible cheapest Mac path if you need macOS under about $600, with the important caveat that our notes mainly establish price/positioning and a bare 256 GB / no-Touch-ID config—not a full lab profile. Prefer it for Apple lock-in on a budget; if you want verified 15–16 hour runtimes and detailed configs, the Wirecutter Windows picks are better documented.",
+        "best_for": ""
+      }
+    ],
+    "products_list": [
+      {
+        "name": "Lenovo Yoga 7i 2-in-1 (14\" Intel)",
+        "rating": 4.5,
+        "pros": 5,
+        "cons": 2,
+        "verdict": "Top overall pick in this set on the strength of Wirecutter hands-on testing: long measured battery, OLED touch, stronger"
+      },
+      {
+        "name": "HP OmniBook X Flip 14 (fm0013dx)",
+        "rating": 4.5,
+        "pros": 5,
+        "cons": 2,
+        "verdict": "Best value Windows pick from the same Wirecutter hands-on college guide: nearly the Yoga’s battery and silicon, with a f"
+      },
+      {
+        "name": "Apple MacBook Neo",
+        "rating": 4,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "Credible cheapest Mac path if you need macOS under about $600, with the important caveat that our notes mainly establish"
+      }
+    ],
+    "summary": "Hands-on expert picks for 2026 center on capable midrange Windows 2-in-1s rather than unverified “best laptop” listicles. Wirecutter’s testing backs the Lenovo Yoga 7i 2-in-1 and HP OmniBook X Flip 14 as strong college/everyday Windows choices with long measured battery life; Apple’s MacBook Neo is the clearest low-cost Apple entry in the notes. Memory/AI-driven price pressure is a real market factor this year, and chassis-material hype outruns independent durability data for several other names."
+  },
+  {
+    "query": "best laptop 2026",
+    "model": "gemini-flash",
+    "ok": "✓",
+    "ms": 114338,
+    "ttft": 101669,
+    "cost_c": "$1.071¢",
+    "products": 4,
+    "name_ung": 0,
+    "name_ung_strict": 0,
+    "num_ung": 0,
+    "avg_pros": 3.3,
+    "avg_cons": 2.5,
+    "has_verdict": 4,
+    "has_rating": 4,
+    "products_full": [
+      {
+        "name": "HP OmniBook X Flip 14 (fm0013dx)",
+        "brand": "HP",
+        "price": 850,
+        "rating": 4.5,
+        "pros": [
+          "Offers fast performance for a student-focused laptop",
+          "Impressive long battery life of 15 hours in tested conditions",
+          "Versatile 360-degree hinge for tablet and laptop modes"
+        ],
+        "cons": [
+          "Keyboard is noted as being less comfortable than the Lenovo Yoga 7i",
+          "May not be suitable for heavy graphics tasks despite good general performance"
+        ],
+        "specs": {
+          "processor": "Intel Core Ultra 5 226V",
+          "screen_size": "14-inch",
+          "resolution": "1920x1200",
+          "touchscreen": "Yes",
+          "memory": "16 GB",
+          "storage": "512 GB SSD",
+          "weight": "3.06 pounds",
+          "battery_life": "15 hours"
+        },
+        "verdict": "The HP OmniBook X Flip 14 is an excellent value pick for students, combining solid performance, a flexible 2-in-1 design, and exceptional battery life, as validated by Wirecutter's hands-on testing.",
+        "best_for": ""
+      },
+      {
+        "name": "Lenovo Yoga 7i 2-in-1 (14\" Intel)",
+        "brand": "Lenovo",
+        "price": 990,
+        "rating": 4.5,
+        "pros": [
+          "Delivers fast performance for everyday tasks and multitasking",
+          "Exceptional battery life, measured at 16 hours",
+          "Features a vivid OLED touchscreen display",
+          "Includes a comfortable and responsive keyboard"
+        ],
+        "cons": [
+          "Slightly higher price point compared to the top budget picks",
+          "OLED screen might not be necessary for all users, potentially increasing cost"
+        ],
+        "specs": {
+          "processor": "Intel Core Ultra 5 226V",
+          "screen_size": "14-inch",
+          "resolution": "1920x1200",
+          "display_type": "OLED touchscreen",
+          "memory": "16 GB",
+          "storage": "512 GB SSD",
+          "weight": "3.04 pounds",
+          "battery_life": "16 hours"
+        },
+        "verdict": "The Lenovo Yoga 7i 2-in-1 is a strong 'upgrade pick' for Windows users, offering superior battery life, performance, and a premium OLED display and keyboard experience, confirmed by Wirecutter testing.",
+        "best_for": ""
+      },
+      {
+        "name": "MSI Katana 15 HX",
+        "brand": "MSI",
+        "price": 999,
+        "rating": 4,
+        "pros": [
+          "Identified as a top basic gaming laptop for most users",
+          "Offers a balance of performance and affordability for gaming",
+          "Good entry point into dedicated gaming laptops"
+        ],
+        "cons": [
+          "Likely larger and heavier than general-purpose laptops due to gaming focus",
+          "Battery life may be shorter compared to productivity laptops",
+          "Specific advanced features (e.g., cooling, display refresh rate) not detailed in sources"
+        ],
+        "specs": {},
+        "verdict": "The MSI Katana 15 HX stands out as the 'Best Gaming Laptop for Most People' according to PCMag's hands-on review, providing a solid gaming experience at a reasonable price, though specific performance metrics are not detailed.",
+        "best_for": ""
+      },
+      {
+        "name": "Apple MacBook Neo",
+        "brand": "Apple",
+        "price": 589.99,
+        "rating": 3.5,
+        "pros": [
+          "Apple's most affordable laptop in 2026",
+          "Benefits from Apple's M-series chips for efficiency and performance",
+          "Offers a gateway into the Apple ecosystem at a lower price point"
+        ],
+        "cons": [
+          "Basic configuration lacking features like TouchID (256GB model)",
+          "Sources for specific specs and hands-on testing are less detailed, relying on listicles",
+          "Potential limitations in ports or upgradeability common to entry-level Apple products"
+        ],
+        "specs": {
+          "storage_variant": "256GB"
+        },
+        "verdict": "The Apple MacBook Neo serves as Apple's most affordable laptop, making it an option for those entering the Apple ecosystem on a budget. However, its lower price point implies compromises, and concrete hands-on review details are limited.",
+        "best_for": ""
+      }
+    ],
+    "products_list": [
+      {
+        "name": "HP OmniBook X Flip 14 (fm0013dx)",
+        "rating": 4.5,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "The HP OmniBook X Flip 14 is an excellent value pick for students, combining solid performance, a flexible 2-in-1 design"
+      },
+      {
+        "name": "Lenovo Yoga 7i 2-in-1 (14\" Intel)",
+        "rating": 4.5,
+        "pros": 4,
+        "cons": 2,
+        "verdict": "The Lenovo Yoga 7i 2-in-1 is a strong 'upgrade pick' for Windows users, offering superior battery life, performance, and"
+      },
+      {
+        "name": "MSI Katana 15 HX",
+        "rating": 4,
+        "pros": 3,
+        "cons": 3,
+        "verdict": "The MSI Katana 15 HX stands out as the 'Best Gaming Laptop for Most People' according to PCMag's hands-on review, provid"
+      },
+      {
+        "name": "Apple MacBook Neo",
+        "rating": 3.5,
+        "pros": 3,
+        "cons": 3,
+        "verdict": "The Apple MacBook Neo serves as Apple's most affordable laptop, making it an option for those entering the Apple ecosyst"
+      }
+    ],
+    "summary": "In 2026, the laptop market is characterized by rising prices due to AI-driven shortages and continued innovation in materials and chip technology. Consumers prioritize reliability, with many opting for repairs over replacements. Top picks balance performance, battery life, and value, with Apple's M-series and Intel's Core Ultra chips leading in efficiency and performance respectively."
+  },
+  {
+    "query": "best laptop 2026",
+    "model": "grok-4.20",
+    "ok": "✗",
+    "ms": 120001,
+    "ttft": 115069,
+    "cost_c": "$0",
+    "error": "hard"
+  },
+  {
+    "query": "best laptop 2026",
+    "model": "flash-lite",
+    "ok": "✗",
+    "ms": 120001,
+    "ttft": "—",
+    "cost_c": "$0",
+    "error": "hard"
+  },
+  {
+    "query": "best hiking boots for me",
+    "model": "gpt-5.4-mini",
+    "ok": "✓",
+    "ms": 17712,
+    "ttft": 1769,
+    "cost_c": "$1.623¢",
+    "products": 3,
+    "name_ung": 0,
+    "name_ung_strict": 1,
+    "num_ung": 0,
+    "avg_pros": 4,
+    "avg_cons": 3,
+    "has_verdict": 3,
+    "has_rating": 3,
+    "products_full": [
+      {
+        "name": "Quest 4 Gore-Tex Hiking Boots",
+        "brand": "Salomon",
+        "price": 229,
+        "rating": 4.8,
+        "pros": [
+          "Wirecutter’s hands-on review says these are the top pick for men’s hiking boots.",
+          "The boot was praised for trustworthy traction, top-notch cushioning, and the widest toe box of any tested by Wirecutter.",
+          "The review says they are versatile and especially well-suited to longer treks with heavier packs.",
+          "A user test described them as feeling great through 16 miles of slot canyons with a 40-pound backpack."
+        ],
+        "cons": [
+          "They are not cheap, with cited prices of $172 at REI, $229 at Amazon, and $230 at Zappos.",
+          "The evidence here is strongest for long hikes and heavier loads; that does not prove they are the best lightweight everyday option.",
+          "The available source material is focused on fit and trail use, not long-term durability data across many owners."
+        ],
+        "specs": {
+          "priceAtREI": "$172",
+          "priceAtAmazon": "$229",
+          "priceAtZappos": "$230"
+        },
+        "verdict": "This is the most defensible #1 pick because the strongest source is a Wirecutter hands-on review, not a thin listicle. It looks especially good for long treks, heavier packs, and hikers who need more toe room, but the price is high and the fit may not suit everyone.",
+        "best_for": ""
+      },
+      {
+        "name": "Moab 3 Mid Hiking Boots",
+        "brand": "Merrell",
+        "price": 150,
+        "rating": 4.1,
+        "pros": [
+          "Hands-on sources describe it as a tried-and-true classic and a great value option.",
+          "It uses Vibram traction and has ample padding for the ankle.",
+          "The boot has a wide, stable platform and a traditional mid-height shape.",
+          "The cited hands-on note says the non-waterproof version mixes leather and mesh for breathability."
+        ],
+        "cons": [
+          "The cited 11.5 mm drop is relatively high, which may not suit everyone.",
+          "The leather overlay may add durability, but the note says it might not be ideal for dry conditions.",
+          "Compared with the Salomon top pick, the sources do not make a stronger case for all-day support under heavier loads."
+        ],
+        "specs": {
+          "heelToToeDrop": "11.5mm"
+        },
+        "verdict": "This is the safest budget/value recommendation because hands-on testing and multiple 2026 roundups keep returning to it. It is not the most exciting boot, but it is credible, familiar, and easier to justify than promotional budget brands.",
+        "best_for": ""
+      },
+      {
+        "name": "Lone Peak Hiker (non-waterproof)",
+        "brand": "Altra",
+        "price": 160,
+        "rating": 3.9,
+        "pros": [
+          "Hands-on notes describe it as lightweight and mid-height.",
+          "It has zero heel-to-toe drop, which will appeal to people who prefer a natural stance.",
+          "The toe room is described as generous.",
+          "The mesh construction is breathable, making it attractive for summer conditions."
+        ],
+        "cons": [
+          "The non-waterproof build is less suitable for wet, cold, or muddy conditions.",
+          "Zero-drop geometry is not for everyone and can feel unusual if you are used to traditional boots.",
+          "The evidence provided is stronger for warm-weather comfort than for heavy-load stability or rugged durability."
+        ],
+        "specs": {
+          "price": "$160",
+          "drop": "0mm"
+        },
+        "verdict": "This is a legitimate niche choice, but not the universal answer. I would only pick it if I wanted a lighter, breathable boot with zero drop and roomy toe space, and I knew I liked that geometry already.",
+        "best_for": ""
+      }
+    ],
+    "products_list": [
+      {
+        "name": "Quest 4 Gore-Tex Hiking Boots",
+        "rating": 4.8,
+        "pros": 4,
+        "cons": 3,
+        "verdict": "This is the most defensible #1 pick because the strongest source is a Wirecutter hands-on review, not a thin listicle. I"
+      },
+      {
+        "name": "Moab 3 Mid Hiking Boots",
+        "rating": 4.1,
+        "pros": 4,
+        "cons": 3,
+        "verdict": "This is the safest budget/value recommendation because hands-on testing and multiple 2026 roundups keep returning to it."
+      },
+      {
+        "name": "Lone Peak Hiker (non-waterproof)",
+        "rating": 3.9,
+        "pros": 4,
+        "cons": 3,
+        "verdict": "This is a legitimate niche choice, but not the universal answer. I would only pick it if I wanted a lighter, breathable "
+      }
+    ],
+    "summary": "The strongest evidence supports the Salomon Quest 4 Gore-Tex as the top overall men’s hiking boot: Wirecutter’s hands-on testing says it has excellent traction, support, comfort, and the widest toe box they tested. Merrell’s Moab 3 Mid is the best-supported budget/value option, but the cited evidence is for comfort and value rather than standout performance. Altra’s Lone Peak Hiker is a niche but credible lightweight, zero-drop choice for warm weather; the Nortiv 8 option is heavily promotion-backed and should be treated as low-confidence."
+  },
+  {
+    "query": "best hiking boots for me",
+    "model": "grok-4.5",
+    "ok": "✓",
+    "ms": 80891,
+    "ttft": 24672,
+    "cost_c": "$3.774¢",
+    "products": 3,
+    "name_ung": 0,
+    "name_ung_strict": 1,
+    "num_ung": 0,
+    "avg_pros": 3.7,
+    "avg_cons": 2,
+    "has_verdict": 3,
+    "has_rating": 3,
+    "products_full": [
+      {
+        "name": "Salomon Quest 4 Gore-Tex Hiking Boots (Men's)",
+        "brand": "Salomon",
+        "price": 229,
+        "rating": 4.5,
+        "pros": [
+          "Wirecutter hands-on testing after a 46-mile backpack trip found feet remained comfortable with a ~40 lb pack through slot canyons",
+          "Trustworthy traction, strong cushioning, and the widest toe box among boots Wirecutter tested",
+          "Forefoot flex for natural stride plus toe-to-heel stiffness for steep/rough terrain support",
+          "Versatile for longer treks with heavier packs yet comfortable on shorter hikes"
+        ],
+        "cons": [
+          "Retail price typically around $230 (though sometimes lower at REI)—not a budget buy",
+          "Gore-Tex membrane trades some breathability versus non-waterproof mesh builds in hot dry weather"
+        ],
+        "specs": {},
+        "verdict": "Strongest evidence-backed pick: Wirecutter hands-on and expert-domain coverage (including a multi-day 46-mile test) confirms real comfort, traction, and support under load. Top choice when you need a true midweight backpacking boot rather than a fashion trail shoe. Rank reflects high-credibility sources, not affiliate listicles.",
+        "best_for": ""
+      },
+      {
+        "name": "Merrell Moab 3 Mid (Men's, non-waterproof)",
+        "brand": "Merrell",
+        "price": 150,
+        "rating": 4,
+        "pros": [
+          "Established trail boot with Vibram soles and a traditional mid-height cut for ankle coverage",
+          "Leather-and-mesh upper mix aims at durability plus some breathability under $160",
+          "Frequently cited as a solid value/high-performing option for casual and day hikers across repeated hands-on and expert roundups",
+          "Higher 11.5 mm drop suits hikers who prefer a more conventional heel-elevated feel"
+        ],
+        "cons": [
+          "Leather overlays add durability over pure mesh but can feel less ideal in hot dry conditions",
+          "Less specialized for heavy multi-day packs than stiffer backpacking boots like the Quest 4"
+        ],
+        "specs": {
+          "drop": "11.5mm"
+        },
+        "verdict": "Credible budget-to-mid pick from an established brand with repeated hands-on mentions—not just listicle filler. Best when you want familiar trail comfort and Vibram grip without spending Quest money; skip if you need serious loaded backpacking stiffness or max summer breathability.",
+        "best_for": ""
+      },
+      {
+        "name": "Altra Lone Peak Hiker (Men's series, non-waterproof)",
+        "brand": "Altra",
+        "price": 160,
+        "rating": 4,
+        "pros": [
+          "Zero heel-to-toe drop with trail-running heritage and enough stack for moderate cushioning",
+          "Mesh breathable construction and generous toe room suited to warm-weather hiking",
+          "Lightweight mid-height option that prioritizes natural foot splay and summer comfort"
+        ],
+        "cons": [
+          "Non-waterproof mesh is a liability in sustained wet or muddy conditions",
+          "Zero-drop geometry requires adaptation and will not suit every gait or pack-heavy backpacker"
+        ],
+        "specs": {
+          "drop": "0mm (zero drop)"
+        },
+        "verdict": "Hands-on trail coverage supports this as a smart summer/midweight choice if you already like Altra’s wide toe box and zero drop. Not a universal boot—skip for heavy loads, cold wet climates, or anyone who needs a traditional raised heel and waterproof shell.",
+        "best_for": ""
+      }
+    ],
+    "products_list": [
+      {
+        "name": "Salomon Quest 4 Gore-Tex Hiking Boots (Men's)",
+        "rating": 4.5,
+        "pros": 4,
+        "cons": 2,
+        "verdict": "Strongest evidence-backed pick: Wirecutter hands-on and expert-domain coverage (including a multi-day 46-mile test) conf"
+      },
+      {
+        "name": "Merrell Moab 3 Mid (Men's, non-waterproof)",
+        "rating": 4,
+        "pros": 4,
+        "cons": 2,
+        "verdict": "Credible budget-to-mid pick from an established brand with repeated hands-on mentions—not just listicle filler. Best whe"
+      },
+      {
+        "name": "Altra Lone Peak Hiker (Men's series, non-waterproof)",
+        "rating": 4,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "Hands-on trail coverage supports this as a smart summer/midweight choice if you already like Altra’s wide toe box and ze"
+      }
+    ],
+    "summary": "Wirecutter’s hands-on testing elevates the Salomon Quest 4 Gore-Tex as the clear top men’s hiking boot for pack-carrying treks, with proven comfort over multi-day mileage. Established midweight options from Merrell and Altra fill budget and warm-weather niches with credible trail use evidence. Marketplace-only budget clones lack independent testing and are omitted; fit and intended terrain matter more than marketing star counts."
+  },
+  {
+    "query": "best hiking boots for me",
+    "model": "gemini-flash",
+    "ok": "✓",
+    "ms": 95675,
+    "ttft": 81483,
+    "cost_c": "$0.811¢",
+    "products": 3,
+    "name_ung": 0,
+    "name_ung_strict": 0,
+    "num_ung": 0,
+    "avg_pros": 3,
+    "avg_cons": 2.7,
+    "has_verdict": 3,
+    "has_rating": 3,
+    "products_full": [
+      {
+        "name": "Salomon Quest 4 Gore-Tex Hiking Boots",
+        "brand": "Salomon",
+        "price": 229,
+        "rating": 4.5,
+        "pros": [
+          "Offers trustworthy traction, top-notch cushioning, and a wide toe box, confirmed by Wirecutter's hands-on testing.",
+          "Versatile and comfortable for any hike length, best suited for longer treks with heavier packs.",
+          "Provided comfort during a 46-mile hike through slot canyons with a 40-pound backpack, showing exceptional performance under duress."
+        ],
+        "cons": [
+          "Can be pricier than other options, with prices typically above $200.",
+          "May be overkill for short, easy day hikes due to their robust design for longer treks."
+        ],
+        "specs": {},
+        "verdict": "The Salomon Quest 4 Gore-Tex boots are the top pick for their outstanding comfort, support, and traction, especially for demanding long-distance hikes with heavy loads. Wirecutter's hands-on testing strongly supports its excellent performance and wide toe box. This is a premium option for serious hikers.",
+        "best_for": ""
+      },
+      {
+        "name": "Altra Lone Peak Hiker series",
+        "brand": "Altra",
+        "price": 160,
+        "rating": 4,
+        "pros": [
+          "Lightweight and breathable due to mesh construction, making it ideal for summer and dry conditions.",
+          "Features a zero heel-to-toe drop, which can promote a more natural foot strike.",
+          "Offers generous toe room, enhancing comfort during long walks."
+        ],
+        "cons": [
+          "Non-waterproof design limits its suitability for wet weather or muddy trails.",
+          "Lacks the ankle support of traditional hiking boots due to its mid-height trail-runner inspired design.",
+          "The specific stack height for cushioning is not detailed, though noted as sufficient."
+        ],
+        "specs": {},
+        "verdict": "The Altra Lone Peak Hiker series offers a comfortable and breathable option for hikers preferring a lightweight, trail-running shoe feel. Its zero-drop design and ample toe room are great for natural foot movement, but its non-waterproof construction makes it best suited for dry, warmer conditions.",
+        "best_for": ""
+      },
+      {
+        "name": "Merrell Moab 3 Mid",
+        "brand": "Merrell",
+        "price": 150,
+        "rating": 3.8,
+        "pros": [
+          "Offers a traditional mid-height design with a good balance of leather and mesh for durability and breathability.",
+          "Equipped with Vibram soles, suggesting reliable traction.",
+          "Considered a good budget option for more casual hikers, offering solid value."
+        ],
+        "cons": [
+          "The leather overlay, while durable, might not be ideal for very hot and dry climates as it can reduce overall breathability compared to full mesh.",
+          "Features a higher 11.5mm drop which might not suit all users, especially those preferring a flatter feel.",
+          "Received a lower GearJunkie rating (7.9/10) compared to competitor's top picks."
+        ],
+        "specs": {
+          "heel_to_toe_drop": "11.5mm"
+        },
+        "verdict": "The Merrell Moab 3 Mid is a solid, budget-friendly choice for casual to moderate hikers, offering a traditional design with decent breathability and reliable Vibram soles. Its blend of leather and mesh provides a good compromise between durability and comfort, though the higher heel-to-toe drop and the leather's breathability in extreme heat are points to consider.",
+        "best_for": ""
+      }
+    ],
+    "products_list": [
+      {
+        "name": "Salomon Quest 4 Gore-Tex Hiking Boots",
+        "rating": 4.5,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "The Salomon Quest 4 Gore-Tex boots are the top pick for their outstanding comfort, support, and traction, especially for"
+      },
+      {
+        "name": "Altra Lone Peak Hiker series",
+        "rating": 4,
+        "pros": 3,
+        "cons": 3,
+        "verdict": "The Altra Lone Peak Hiker series offers a comfortable and breathable option for hikers preferring a lightweight, trail-r"
+      },
+      {
+        "name": "Merrell Moab 3 Mid",
+        "rating": 3.8,
+        "pros": 3,
+        "cons": 3,
+        "verdict": "The Merrell Moab 3 Mid is a solid, budget-friendly choice for casual to moderate hikers, offering a traditional design w"
+      }
+    ],
+    "summary": "This report identifies the top hiking boots for men based on hands-on testing and expert reviews, focusing on comfort, support, and durability for various trail conditions. The Salomon Quest 4 Gore-Tex emerges as the top recommendation for its versatility and superior comfort on longer treks, while other options cater to budget-conscious hikers or those preferring a lighter, more breathable design. Fit is highlighted as a critical factor for all selections."
+  },
+  {
+    "query": "best hiking boots for me",
+    "model": "grok-4.20",
+    "ok": "✓",
+    "ms": 107008,
+    "ttft": 96353,
+    "cost_c": "$1.446¢",
+    "products": 3,
+    "name_ung": 0,
+    "name_ung_strict": 0,
+    "num_ung": 0,
+    "avg_pros": 3,
+    "avg_cons": 2,
+    "has_verdict": 3,
+    "has_rating": 3,
+    "products_full": [
+      {
+        "name": "Salomon Quest 4 Gore-Tex",
+        "brand": "Salomon",
+        "price": 229,
+        "rating": 4.5,
+        "pros": [
+          "Top-notch cushioning and trustworthy traction on rough terrain and slot canyons",
+          "Widest toe box among tested boots plus excellent support for heavier packs and long treks",
+          "Remained comfortable through 46-mile multi-day hike with 40 lb backpack"
+        ],
+        "cons": [
+          "Higher price point around $230 compared to lighter options",
+          "Less ideal for hot/dry summer day hikes due to waterproof Gore-Tex construction"
+        ],
+        "specs": {
+          "priceRange": "$172-$230",
+          "waterproof": "Gore-Tex"
+        },
+        "verdict": "Wirecutter's hands-on top pick after 46-mile testing excels for serious multi-day hikes and backpacking with superior cushioning, traction, and wide fit. Best overall men's hiking boot for most users who value durability and support over minimal weight. Strongly recommended over untested budget alternatives.",
+        "best_for": ""
+      },
+      {
+        "name": "Merrell Moab 3 Mid",
+        "brand": "Merrell",
+        "price": 150,
+        "rating": 4,
+        "pros": [
+          "Breathable leather/mesh mix with Vibram sole for reliable traction",
+          "Good value as a traditional mid-height boot suitable for casual and moderate hiking",
+          "Ample ankle padding and stable platform per multiple 2026 tests"
+        ],
+        "cons": [
+          "Leather overlay can retain heat in dry/hot conditions",
+          "Higher 11.5mm drop may not suit users preferring zero-drop natural feel"
+        ],
+        "specs": {
+          "drop": "11.5mm",
+          "priceRange": "$150"
+        },
+        "verdict": "A solid budget-friendly traditional mid boot with Vibram traction that has retained strong recommendations across Switchback, GearJunkie, and REI testing. Performs well for day hikes and casual use but lacks the cushioning and wide fit of the Salomon Quest 4. Good pick when price matters more than all-day backpacking comfort.",
+        "best_for": ""
+      },
+      {
+        "name": "Altra Lone Peak Hiker",
+        "brand": "Altra",
+        "price": 160,
+        "rating": 4,
+        "pros": [
+          "Zero-drop design with generous toe room and breathable mesh for summer trails",
+          "Lightweight mid-height construction with trail-running heritage and moderate cushioning",
+          "Excellent for users who prefer natural foot movement on non-technical terrain"
+        ],
+        "cons": [
+          "Non-waterproof version unsuitable for wet or muddy conditions",
+          "May lack the stiffness and heavy-pack support of traditional boots like the Quest 4"
+        ],
+        "specs": {
+          "drop": "0mm",
+          "priceRange": "$160"
+        },
+        "verdict": "Hands-on tested by Switchback as a strong lightweight option for summer hiking with zero-drop and wide toe box. Ideal for hikers who like trail-runner feel in a mid boot but not the best for wet conditions or heavy backpacking. Solid #3 choice behind the more versatile Salomon and Merrell.",
+        "best_for": ""
+      }
+    ],
+    "products_list": [
+      {
+        "name": "Salomon Quest 4 Gore-Tex",
+        "rating": 4.5,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "Wirecutter's hands-on top pick after 46-mile testing excels for serious multi-day hikes and backpacking with superior cu"
+      },
+      {
+        "name": "Merrell Moab 3 Mid",
+        "rating": 4,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "A solid budget-friendly traditional mid boot with Vibram traction that has retained strong recommendations across Switch"
+      },
+      {
+        "name": "Altra Lone Peak Hiker",
+        "rating": 4,
+        "pros": 3,
+        "cons": 2,
+        "verdict": "Hands-on tested by Switchback as a strong lightweight option for summer hiking with zero-drop and wide toe box. Ideal fo"
+      }
+    ],
+    "summary": "The Salomon Quest 4 Gore-Tex stands out as the top men's hiking boot due to rigorous hands-on testing by Wirecutter, delivering excellent traction, cushioning, support, and comfort even on a demanding 46-mile multi-day hike with a heavy pack. Established options from Merrell (Moab 3 Mid) and Altra (Lone Peak Hiker) offer strong alternatives for lighter use or specific foot preferences. Budget no-name marketplace brands like Nortiv 8 receive heavy promotion in affiliate listicles but lack independent expert-domain testing and were ranked lower or omitted where evidence is thin. Fit remains the most critical factor across all options; try boots with a fitter using incline/rock boards."
+  },
+  {
+    "query": "best hiking boots for me",
+    "model": "flash-lite",
+    "ok": "✓",
+    "ms": 119494,
+    "ttft": 107388,
+    "cost_c": "$0.204¢",
+    "products": 4,
+    "name_ung": 0,
+    "name_ung_strict": 0,
+    "num_ung": 0,
+    "avg_pros": 4,
+    "avg_cons": 2.3,
+    "has_verdict": 4,
+    "has_rating": 4,
+    "products_full": [
+      {
+        "name": "Quest 4 Gore-Tex Hiking Boots",
+        "brand": "Salomon",
+        "price": 229,
+        "rating": 4.5,
+        "pros": [
+          "Exceptional comfort, even on long and demanding hikes with heavy packs.",
+          "Trustworthy and versatile traction suitable for various terrains.",
+          "Provides excellent support and cushioning for extended wear.",
+          "Widest toe box among tested models, allowing for natural foot splay and reducing fatigue."
+        ],
+        "cons": [
+          "Can be expensive compared to other options.",
+          "Heavier than minimalist trail shoes, potentially feeling cumbersome for shorter, less technical hikes."
+        ],
+        "specs": {
+          "Waterproofing": "Gore-Tex"
+        },
+        "verdict": "The Salomon Quest 4 Gore-Tex boots are Wirecutter's top pick, lauded for their outstanding comfort and support on long, challenging treks, making them ideal for serious hikers carrying heavy loads.",
+        "best_for": ""
+      },
+      {
+        "name": "Lone Peak Hiker",
+        "brand": "Altra",
+        "price": 160,
+        "rating": 4,
+        "pros": [
+          "Lightweight and breathable construction, ideal for warm weather.",
+          "Zero heel-to-toe drop promotes a natural gait.",
+          "Sufficient cushioning for moderate comfort on trails.",
+          "Generous toe box for enhanced comfort and natural foot splay."
+        ],
+        "cons": [
+          "Non-waterproof versions may not be suitable for wet conditions.",
+          "Less ankle support compared to traditional mid-height boots."
+        ],
+        "specs": {
+          "Cushioning": "Moderate",
+          "Heel-to-toe Drop": "0 mm"
+        },
+        "verdict": "The Altra Lone Peak Hiker offers a trail-running shoe-inspired experience in a mid-height boot, providing excellent breathability and a natural feel, making it a great choice for summer hiking.",
+        "best_for": ""
+      },
+      {
+        "name": "Moab 3 Mid",
+        "brand": "Merrell",
+        "price": 150,
+        "rating": 4,
+        "pros": [
+          "A classic, reliable mid-height hiking boot with a traditional design.",
+          "Good balance of leather and mesh for durability and breathability.",
+          "Features Vibram soles for dependable traction.",
+          "Often available at a more accessible price point, offering good value."
+        ],
+        "cons": [
+          "Has a higher heel-to-toe drop (11.5mm) which might not be ideal for everyone.",
+          "The leather overlay, while durable, may not be the most breathable option for very hot conditions."
+        ],
+        "specs": {
+          "Sole": "Vibram",
+          "Heel-to-toe Drop": "11.5 mm"
+        },
+        "verdict": "The Merrell Moab 3 Mid is a solid, traditional hiking boot that offers good value and performance for casual hikers and moderate trails, making it a budget-friendly alternative.",
+        "best_for": ""
+      },
+      {
+        "name": "Paladin Waterproof Hiking Boots",
+        "brand": "Nortiv 8",
+        "price": 57,
+        "rating": 3.5,
+        "pros": [
+          "Extremely budget-friendly, offering significant savings.",
+          "Waterproof construction for protection in wet conditions.",
+          "Features slip-resistant lugs, cushioned midsoles, and memory foam insoles.",
+          "Available in a wide range of colors and sizes, including wide options."
+        ],
+        "cons": [
+          "As a budget option, long-term durability and performance on extreme terrains may be less reliable than premium brands.",
+          "Quality of materials and construction may not match higher-priced competitors.",
+          "Evidence for performance is primarily from listicles and affiliate-linked reviews, lacking robust independent hands-on testing."
+        ],
+        "specs": {
+          "Weight": "15.2 ounces",
+          "Waterproofing": "Yes"
+        },
+        "verdict": "The Nortiv 8 Paladin is a compelling option for those on a tight budget, offering waterproof features and a comfortable design at a fraction of the cost of premium boots, though its long-term durability is less proven.",
+        "best_for": ""
+      }
+    ],
+    "products_list": [
+      {
+        "name": "Quest 4 Gore-Tex Hiking Boots",
+        "rating": 4.5,
+        "pros": 4,
+        "cons": 2,
+        "verdict": "The Salomon Quest 4 Gore-Tex boots are Wirecutter's top pick, lauded for their outstanding comfort and support on long, "
+      },
+      {
+        "name": "Lone Peak Hiker",
+        "rating": 4,
+        "pros": 4,
+        "cons": 2,
+        "verdict": "The Altra Lone Peak Hiker offers a trail-running shoe-inspired experience in a mid-height boot, providing excellent brea"
+      },
+      {
+        "name": "Moab 3 Mid",
+        "rating": 4,
+        "pros": 4,
+        "cons": 2,
+        "verdict": "The Merrell Moab 3 Mid is a solid, traditional hiking boot that offers good value and performance for casual hikers and "
+      },
+      {
+        "name": "Paladin Waterproof Hiking Boots",
+        "rating": 3.5,
+        "pros": 4,
+        "cons": 3,
+        "verdict": "The Nortiv 8 Paladin is a compelling option for those on a tight budget, offering waterproof features and a comfortable "
+      }
+    ],
+    "summary": "The Salomon Quest 4 Gore-Tex Hiking Boots are the top recommendation for men's hiking boots due to their exceptional comfort, traction, and support on long treks, even with heavy packs. Other strong contenders include the Altra Lone Peak Hiker for its lightweight, breathable design ideal for summer, and the Merrell Moab 3 Mid for a more traditional, budget-friendly option."
+  }
+]
