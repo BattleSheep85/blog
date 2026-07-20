@@ -8,6 +8,7 @@ import {
   applyStanceBackstops,
   buildClaimEvidence,
   topEvidenceForClaim,
+  selectSourcesToHydrate,
 } from '../../worker/engine/verify.js';
 
 export function runVerifyTests() {
@@ -138,6 +139,47 @@ export function runVerifyTests() {
     const original = [...evidence];
     topEvidenceForClaim(evidence, 3);
     eq('topEvidenceForClaim: does not mutate the input array', evidence.map((e) => e.url), original.map((e) => e.url));
+  }
+
+  // ── selectSourcesToHydrate ────────────────────────────────────────────────
+  {
+    const thinA = { url: 'https://a.com', content: 'short snippet' }; // < 800 chars
+    const thinB = { url: 'https://b.com', content: 'x'.repeat(100) };
+    const thinC = { url: 'https://c.com', content: 'y'.repeat(200) };
+    const rich = { url: 'https://d.com', content: 'z'.repeat(2000) }; // >= 800 chars
+    const noContent = { url: 'https://e.com' }; // no `content` at all — treated as thin
+
+    eq(
+      'selectSourcesToHydrate: picks only the thin sources, in order',
+      selectSourcesToHydrate([rich, thinA, thinB]).map((s) => s.url),
+      ['https://a.com', 'https://b.com'],
+    );
+
+    eq(
+      'selectSourcesToHydrate: respects the max cap',
+      selectSourcesToHydrate([thinA, thinB, thinC], { max: 2 }).map((s) => s.url),
+      ['https://a.com', 'https://b.com'],
+    );
+
+    eq('selectSourcesToHydrate: empty input → empty output', selectSourcesToHydrate([]), []);
+
+    eq('selectSourcesToHydrate: all-rich input → empty output', selectSourcesToHydrate([rich]), []);
+
+    eq(
+      'selectSourcesToHydrate: a source with no content is treated as thin',
+      selectSourcesToHydrate([noContent]).map((s) => s.url),
+      ['https://e.com'],
+    );
+
+    const input = [thinA, rich, thinB];
+    const result = selectSourcesToHydrate(input);
+    ok('selectSourcesToHydrate: returns a new array, not the input reference', result !== input);
+
+    eq(
+      'selectSourcesToHydrate: a custom thinChars threshold is honored',
+      selectSourcesToHydrate([thinC], { thinChars: 100 }).map((s) => s.url),
+      [], // thinC is 200 chars, above a 100-char threshold — not thin under that threshold
+    );
   }
 
   return report;

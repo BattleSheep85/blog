@@ -171,6 +171,15 @@ export function buildClaimEvidence(claim, scoredEvidence, stanceRows) {
   return evidenceArr;
 }
 
+// Picks which claim sources need a full-page read: those whose `content` is
+// still snippet-thin, capped at `max` (a read budget), preserving order.
+// Immutable — returns a new array, never mutates `claimSources`.
+export function selectSourcesToHydrate(claimSources, { thinChars = THIN_CONTENT_CHARS, max = MAX_CLAIM_READS } = {}) {
+  const sources = Array.isArray(claimSources) ? claimSources : [];
+  const thin = sources.filter((s) => (s?.content?.length ?? 0) < thinChars);
+  return thin.slice(0, max);
+}
+
 // ── I/O functions (callLLM/apiKey injected — no direct env access) ──────────
 
 /**
@@ -237,6 +246,15 @@ export async function classifyStance({ claim, evidence, apiKey, model, callLLM }
 // ── Orchestrator ──────────────────────────────────────────────────────────────
 
 const CLAIM_TEXT_CHAR_CAP = 20_000;
+
+// A claim source below this many chars is snippet-only (search-result text,
+// not the actual page) and needs a full-page read before extraction can find
+// more than a couple of claims.
+const THIN_CONTENT_CHARS = 800;
+// Fewer than this many extracted claims triggers one hydrate+retry pass.
+const MIN_CLAIMS = 4;
+// Budget cap on full-page reads per verification run (initial hydrate + retry combined).
+const MAX_CLAIM_READS = 3;
 
 function buildClaimTextBlock(claimSources) {
   return claimSources
@@ -312,9 +330,29 @@ export async function runVerification({ product, productUrl, config, apiKey, env
     };
   }
 
-  // 3. EXTRACT CLAIMS
+  // 3. HYDRATE thin claim sources (snippet-only → full page text) so
+  //    extraction has real content to work with, then EXTRACT CLAIMS.
+  const readUrls = new Set();
+  let readsRemaining = MAX_CLAIM_READS;
+
+  const hydrate = async (sources) => {
+    const toRead = selectSourcesToHydrate(sources, { max: readsRemaining });
+    for (const src of toRead) {
+      if (readsRemaining <= 0) break;
+      readUrls.add(src.url);
+      readsRemaining -= 1;
+      try {
+        await readPageInto(src, env);
+      } catch {
+        // one failed read never aborts the run — the snippet content stays as-is
+      }
+    }
+  };
+
+  await hydrate(claimSources);
+
   const claimText = buildClaimTextBlock(claimSources);
-  const { claims, costUsd: extractCost } = await extractClaims({
+  let { claims, costUsd: extractCost } = await extractClaims({
     product,
     claimText,
     apiKey,
@@ -322,6 +360,29 @@ export async function runVerification({ product, productUrl, config, apiKey, env
     callLLM,
   });
   costUsd += extractCost;
+
+  // Retry-when-thin: one extra hydrate+extract pass if extraction still came
+  // back thin, using whatever read budget is left and never re-reading a URL
+  // already hydrated above.
+  if (claims.length < MIN_CLAIMS && readsRemaining > 0) {
+    const unhydrated = claimSources.filter((s) => !readUrls.has(s.url));
+    await hydrate(unhydrated);
+
+    const retryClaimText = buildClaimTextBlock(claimSources);
+    const { claims: retryClaims, costUsd: retryCost } = await extractClaims({
+      product,
+      claimText: retryClaimText,
+      apiKey,
+      model: config.synthModel,
+      callLLM,
+    });
+    costUsd += retryCost;
+
+    // Keep whichever pass yielded more claims — never regress.
+    if (retryClaims.length > claims.length) {
+      claims = retryClaims;
+    }
+  }
 
   // 4. SCORE EVIDENCE
   const scoredEvidence = scoreEvidence(evidenceSources);
