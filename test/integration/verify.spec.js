@@ -96,6 +96,40 @@ describe('runVerificationPipeline — success path', () => {
   });
 });
 
+describe('runVerificationPipeline — cross-run claim id uniqueness', () => {
+  it('persists two verify runs whose claims reuse the same claim.id (c1, c2) without a UNIQUE constraint error', async () => {
+    const twoClaims = async () => ({
+      status: 'ok',
+      product: 'Test Widget',
+      productUrl: 'https://maker.example/widget',
+      subjectClaimSources: ['https://maker.example/widget'],
+      overall: { score: 70, label: 'Mostly holds up' },
+      claims: [
+        { id: 'c1', text: 'claim one', type: 'spec', status: 'verified', confidence: 0.8, support: 0.8, contradict: 0, supporting: [], contradicting: [], claimType: 'spec' },
+        { id: 'c2', text: 'claim two', type: 'spec', status: 'verified', confidence: 0.7, support: 0.7, contradict: 0, supporting: [], contradicting: [], claimType: 'spec' },
+      ],
+      evidenceCount: 2,
+      costUsd: 0.02,
+    });
+
+    const idA = await seedPendingRow('Widget A');
+    const idB = await seedPendingRow('Widget B');
+
+    const resA = await runVerificationPipeline(env, idA, { product: 'Widget A' }, { verify: twoClaims });
+    expect(resA.status).toBe('complete');
+
+    const resB = await runVerificationPipeline(env, idB, { product: 'Widget B' }, { verify: twoClaims });
+    expect(resB.status).toBe('complete');
+
+    const claimsA = (await env.DB.prepare('SELECT * FROM claims WHERE research_id = ?').bind(idA).all()).results;
+    const claimsB = (await env.DB.prepare('SELECT * FROM claims WHERE research_id = ?').bind(idB).all()).results;
+    expect(claimsA.length).toBe(2);
+    expect(claimsB.length).toBe(2);
+    expect(claimsA.map((c) => c.claim_text).sort()).toEqual(['claim one', 'claim two']);
+    expect(claimsB.map((c) => c.claim_text).sort()).toEqual(['claim one', 'claim two']);
+  });
+});
+
 describe('runVerificationPipeline — needs_url path', () => {
   it('marks the row needs_input without completing or writing claims', async () => {
     const id = await seedPendingRow();

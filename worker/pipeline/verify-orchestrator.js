@@ -145,7 +145,7 @@ function buildClaimInsert(env, reportId, claim) {
             confidence, support_weight, contradict_weight, evidence, created_at)
          VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11)`
     ).bind(
-        claim.id || generateId(), reportId, claim.text, claim.claimType || claim.type || null,
+        `${reportId}:${claim.id || generateId()}`, reportId, claim.text, claim.claimType || claim.type || null,
         firstSource, claim.status ?? null, claim.confidence ?? null, claim.support ?? null,
         claim.contradict ?? null, JSON.stringify([...supporting, ...contradicting]), nowEpoch(),
     );
