@@ -1,0 +1,872 @@
+{
+  "expanded": true,
+  "scenarios": 6,
+  "spend": 0,
+  "rows": [
+    {
+      "label": "phi4:14b (local, reasoning OFF)",
+      "model": "phi4:14b",
+      "reasoning": {
+        "enabled": false
+      },
+      "json_rate": 1,
+      "empty_count": 0,
+      "schema": 0.723,
+      "trap_present_count": 0,
+      "trap_last_or_absent": 6,
+      "legit_on_top": 5,
+      "ungrounded_price_frac": 0,
+      "ungrounded_spec_frac": 0.167,
+      "rating_null_frac": 0,
+      "rating_false_precision": 0,
+      "grounded_totals": {
+        "priceTotal": 1,
+        "priceUngrounded": 0,
+        "specTotal": 6,
+        "specUngrounded": 1,
+        "ratingNull": 0,
+        "ratingFalsePrecision": 0,
+        "ratingTotal": 13,
+        "productCount": 13
+      },
+      "avg_cost_usd": 0,
+      "p50_latency_ms": 73932,
+      "avg_reasoning_tokens": 0,
+      "errors": 0,
+      "runs": [
+        {
+          "query": "best budget mechanical keyboard",
+          "trap": "GamerWidget Pro",
+          "empty": false,
+          "json_valid": true,
+          "schema": 0.667,
+          "products_count": 2,
+          "product_names": [
+            "Keychron V1 Mechanical Keyboard",
+            "Royal Kludge RK84 Mechanical Keyboard"
+          ],
+          "trap_present": false,
+          "trap_rank": null,
+          "legit_top_rank": 1,
+          "grounded": {
+            "priceTotal": 0,
+            "priceUngrounded": 0,
+            "specTotal": 2,
+            "specUngrounded": 0,
+            "ratingNull": 0,
+            "ratingFalsePrecision": 0,
+            "ratingTotal": 2,
+            "productCount": 2
+          },
+          "reasoning_tokens": 0,
+          "completion_tokens": 1104,
+          "output": {
+            "summary": "The Keychron V1 stands out as the top recommendation for budget mechanical keyboards, offering an excellent typing experience and low latency in its price class. The Royal Kludge RK84 is a solid value option with hot-swappable features but may require some tuning to address stabilizer rattle issues.",
+            "category": "mechanical keyboards",
+            "buyersGuide": {
+              "howToChoose": "When selecting a budget mechanical keyboard, prioritize typing feel and latency. Consider build quality, such as keycap material and stabilizers, and additional features like hot-swappability and wireless connectivity. Be wary of no-name brands with exaggerated claims.",
+              "pitfalls": [
+                "Avoid keyboards from no-name brands that make outsized marketing claims without independent testing.",
+                "Be cautious of budget boards with poor build quality, such as rattling stabilizers or flimsy keycaps.",
+                "Do not be swayed by listicles and affiliate links; prioritize hands-on reviews and expert opinions."
+              ],
+              "marketingToIgnore": [
+                "Claims like 'revolutionary' or 'game-changing' are often marketing fluff without substance.",
+                "Beware of inflated performance claims that lack independent verification.",
+                "Discount generic brand names with no established reputation or independent reviews."
+              ]
+            },
+            "products": [
+              {
+                "name": "Keychron V1 Mechanical Keyboard",
+                "brand": "Keychron",
+                "price": null,
+                "rating": 4.5,
+                "productUrl": "",
+                "manufacturerUrl": "https://www.keychron.com/",
+                "imageUrl": "",
+                "pros": [
+                  "Best typing feel in its price class according to RTINGS hands-on testing.",
+                  "Measured low latency of 8ms, making it responsive for both typing and gaming.",
+                  "Doubleshot PBT keycaps provide durability and a premium feel."
+                ],
+                "cons": [
+                  "Lacks wireless connectivity, which may be a drawback for some users.",
+                  "No hot-swappable feature, limiting customization options."
+                ],
+                "specs": {
+                  "latency": "8ms",
+                  "keycapMaterial": "Doubleshot PBT"
+                },
+                "metadata": {},
+                "verdict": "The Keychron V1 is the best budget mechanical keyboard for those seeking a solid typing experience and low latency. It offers excellent value with its durable build and responsive performance.",
+                "rank": 1,
+                "bestFor": "Users looking for a reliable, high-performance budget mechanical keyboard."
+              },
+              {
+                "name": "Royal Kludge RK84 Mechanical Keyboard",
+                "brand": "Royal Kludge",
+                "price": null,
+                "rating": 4,
+                "productUrl": "",
+                "manufacturerUrl": "https://www.royalkludge.com/",
+                "imageUrl": "",
+                "pros": [
+                  "Hot-swappable switches allow for easy customization.",
+                  "Wireless connectivity provides flexibility and convenience.",
+                  "Great value at approximately $80, offering many features in its price range."
+                ],
+                "cons": [
+                  "Some units may have stabilizer rattle issues out of the box.",
+                  "Build quality can vary due to QC variance."
+                ],
+                "specs": {
+                  "priceRange": "~$80",
+                  "feature": "Hot-swappable, wireless"
+                },
+                "metadata": {},
+                "verdict": "The Royal Kludge RK84 is a solid budget option with hot-swappable and wireless features. It offers great value but may require some tuning to address potential stabilizer issues.",
+                "rank": 2,
+                "bestFor": "Users seeking a customizable, wireless keyboard on a tight budget."
+              }
+            ],
+            "methodology": "6 sources analyzed from various providers including RTINGS, Tom's Hardware, and Reddit. High confidence in recommendations due to multiple hands-on and expert-domain sources.",
+            "comparisonTable": [
+              {
+                "feature": "Typing Feel",
+                "Keychron V1": "Excellent",
+                "Royal Kludge RK84": "Good"
+              },
+              {
+                "feature": "Latency",
+                "Keychron V1": "8ms",
+                "Royal Kludge RK84": "Not specified"
+              },
+              {
+                "feature": "Wireless Connectivity",
+                "Keychron V1": "No",
+                "Royal Kludge RK84": "Yes"
+              },
+              {
+                "feature": "Hot-swappable",
+                "Keychron V1": "No",
+                "Royal Kludge RK84": "Yes"
+              }
+            ],
+            "categories": [
+              {
+                "name": "Best for Budget",
+                "productName": "Keychron V1 Mechanical Keyboard",
+                "reason": "Offers the best typing experience and low latency in its price class."
+              },
+              {
+                "name": "Best for Customization",
+                "productName": "Royal Kludge RK84 Mechanical Keyboard",
+                "reason": "Hot-swappable switches and wireless connectivity provide flexibility."
+              }
+            ],
+            "pitfalls": [
+              "Avoid no-name brands with exaggerated claims.",
+              "Be cautious of poor build quality, such as rattling stabilizers.",
+              "Do not rely solely on listicles and affiliate links for purchasing decisions."
+            ]
+          },
+          "raw_content_len": 4852,
+          "costUsd": 0,
+          "latencyMs": 51202,
+          "err": null
+        },
+        {
+          "query": "best noise cancelling headphones under $200",
+          "trap": "AuraSonic Elite",
+          "empty": false,
+          "json_valid": true,
+          "schema": 1,
+          "products_count": 3,
+          "product_names": [
+            "Sony WH-CH720N",
+            "Soundcore Space One",
+            "Sennheiser Accentum"
+          ],
+          "trap_present": false,
+          "trap_rank": null,
+          "legit_top_rank": 1,
+          "grounded": {
+            "priceTotal": 0,
+            "priceUngrounded": 0,
+            "specTotal": 0,
+            "specUngrounded": 0,
+            "ratingNull": 0,
+            "ratingFalsePrecision": 0,
+            "ratingTotal": 3,
+            "productCount": 3
+          },
+          "reasoning_tokens": 0,
+          "completion_tokens": 1405,
+          "output": {
+            "summary": "The Sony WH-CH720N stands out as the top recommendation for noise-cancelling headphones under $200, backed by hands-on testing and expert reviews highlighting its superior ANC performance. The Soundcore Space One offers excellent value with strong ANC capabilities at a lower price point, while the Sennheiser Accentum is noted for its sound quality despite slightly weaker ANC.",
+            "category": "noise cancelling headphones",
+            "buyersGuide": {
+              "howToChoose": "When selecting noise-cancelling headphones under $200, prioritize active noise cancellation (ANC) performance and battery life. Consider the sound profile—neutral-warm or bass-heavy—and comfort for extended use. Check user reviews for real-world durability insights.",
+              "pitfalls": [
+                "Avoid being swayed by marketing claims of 'revolutionary' ANC without independent verification.",
+                "Be cautious of headphones with poor build quality, as they may not withstand regular use.",
+                "Ignore overly high-frequency sound profiles if you prefer a balanced audio experience."
+              ],
+              "marketingToIgnore": [
+                "Claims of 'life-changing' experiences are often exaggerated and should be taken with skepticism.",
+                "Beware of reviews that lack hands-on testing or expert validation, as they may not provide reliable insights.",
+                "Discount claims based solely on affiliate links without corroborating evidence from credible sources."
+              ]
+            },
+            "products": [
+              {
+                "name": "Sony WH-CH720N",
+                "brand": "Sony",
+                "price": null,
+                "rating": 4.5,
+                "productUrl": "",
+                "manufacturerUrl": "https://www.sony.com/electronics/headphones/wh-ch720n",
+                "imageUrl": "",
+                "pros": [
+                  "Best ANC performance under $200 with strong low-frequency attenuation.",
+                  "Neutral-warm sound profile suitable for various music genres.",
+                  "Highly rated by expert reviewers and hands-on testing."
+                ],
+                "cons": [
+                  "Slightly heavier build compared to some competitors.",
+                  "Battery life could be longer for extended use."
+                ],
+                "specs": {
+                  "ANC Performance": "Strong low-frequency attenuation",
+                  "Sound Profile": "Neutral-warm"
+                },
+                "metadata": {},
+                "verdict": "The Sony WH-CH720N is the top pick for noise-cancelling headphones under $200, offering excellent ANC performance and a balanced sound profile. It's ideal for users seeking reliable noise cancellation without breaking the bank.",
+                "rank": 1,
+                "bestFor": "Users prioritizing ANC performance and neutral-warm sound"
+              },
+              {
+                "name": "Soundcore Space One",
+                "brand": "Anker (Soundcore)",
+                "price": null,
+                "rating": 4,
+                "productUrl": "",
+                "manufacturerUrl": "https://www.anker.com/products/variant/soundcore-space-one",
+                "imageUrl": "",
+                "pros": [
+                  "Exceptional value for money with strong ANC capabilities.",
+                  "Long battery life, suitable for extended use.",
+                  "Comfortable design for prolonged wear."
+                ],
+                "cons": [
+                  "Sound profile may be bass-heavy for some users.",
+                  "Build quality is decent but not as premium as higher-priced models."
+                ],
+                "specs": {
+                  "ANC Performance": "Strong",
+                  "Battery Life": "Long"
+                },
+                "metadata": {},
+                "verdict": "The Soundcore Space One offers great value with strong ANC and long battery life, making it a solid choice for budget-conscious buyers.",
+                "rank": 2,
+                "bestFor": "Budget-conscious users seeking good ANC performance and long battery life"
+              },
+              {
+                "name": "Sennheiser Accentum",
+                "brand": "Sennheiser",
+                "price": null,
+                "rating": 3.5,
+                "productUrl": "",
+                "manufacturerUrl": "https://www.sennheiser.com/us/en/over-ear-headphones/accentum.html",
+                "imageUrl": "",
+                "pros": [
+                  "Superior sound quality with a well-balanced audio profile.",
+                  "Comfortable fit for extended listening sessions.",
+                  "Reputable brand known for high-quality audio products."
+                ],
+                "cons": [
+                  "ANC performance is slightly weaker compared to competitors in this price range.",
+                  "Battery life could be improved for longer use without charging."
+                ],
+                "specs": {
+                  "Sound Quality": "Superior",
+                  "ANC Performance": "Moderate"
+                },
+                "metadata": {},
+                "verdict": "The Sennheiser Accentum is best suited for users who prioritize sound quality over ANC performance, offering a well-balanced audio experience.",
+                "rank": 3,
+                "bestFor": "Users prioritizing sound quality and brand reputation"
+              }
+            ],
+            "methodology": "Analyzed 5 sources from providers including RTINGS, SoundGuys, and Reddit. High confidence in recommendations due to multiple hands-on and expert-domain sources supporting the top picks.",
+            "comparisonTable": [
+              {
+                "feature": "ANC Performance",
+                "Sony WH-CH720N": "Strong low-frequency attenuation",
+                "Soundcore Space One": "Strong",
+                "Sennheiser Accentum": "Moderate"
+              },
+              {
+                "feature": "Sound Profile",
+                "Sony WH-CH720N": "Neutral-warm",
+                "Soundcore Space One": "Bass-heavy",
+                "Sennheiser Accentum": "Well-balanced"
+              },
+              {
+                "feature": "Battery Life",
+                "Sony WH-CH720N": "Good",
+                "Soundcore Space One": "Long",
+                "Sennheiser Accentum": "Moderate"
+              }
+            ],
+            "categories": [
+              {
+                "name": "Best for Budget",
+                "productName": "Soundcore Space One",
+                "reason": "Offers excellent value with strong ANC and long battery life."
+              },
+              {
+                "name": "Best ANC Performance",
+                "productName": "Sony WH-CH720N",
+                "reason": "Top-rated for noise cancellation under $200."
+              },
+              {
+                "name": "Best Sound Quality",
+                "productName": "Sennheiser Accentum",
+                "reason": "Superior audio profile with a well-balanced sound."
+              }
+            ],
+            "pitfalls": [
+              "Avoid relying solely on affiliate-linked reviews without independent verification.",
+              "Do not prioritize marketing claims over hands-on testing and expert opinions.",
+              "Be wary of headphones with poor build quality or inadequate battery life for your needs."
+            ]
+          },
+          "raw_content_len": 6192,
+          "costUsd": 0,
+          "latencyMs": 53598,
+          "err": null
+        },
+        {
+          "query": "best robot vacuum for pet hair under $400",
+          "trap": "PetVac Supreme",
+          "empty": false,
+          "json_valid": true,
+          "schema": 0.667,
+          "products_count": 2,
+          "product_names": [
+            "Roborock Q Revo",
+            "eufy X8 Pro"
+          ],
+          "trap_present": false,
+          "trap_rank": null,
+          "legit_top_rank": 1,
+          "grounded": {
+            "priceTotal": 1,
+            "priceUngrounded": 0,
+            "specTotal": 2,
+            "specUngrounded": 1,
+            "ratingNull": 0,
+            "ratingFalsePrecision": 0,
+            "ratingTotal": 2,
+            "productCount": 2
+          },
+          "reasoning_tokens": 0,
+          "completion_tokens": 1224,
+          "output": {
+            "summary": "The Roborock Q Revo and eufy X8 Pro are top picks for handling pet hair on carpets, both offering strong suction capabilities with the added benefit of self-emptying features. The Roborock Q Revo excels in pet-hair pickup according to hands-on tests by RTINGS, while the eufy X8 Pro provides excellent value at a lower price point.",
+            "category": "robot vacuums",
+            "buyersGuide": {
+              "howToChoose": "When selecting a robot vacuum for pet hair under $400, prioritize models with strong suction power and self-emptying features. Consider the size of the dustbin to ensure it can handle heavy shedding without frequent emptying. Evaluate navigation systems to ensure efficient cleaning paths.",
+              "pitfalls": [
+                "Avoid relying solely on affiliate listicles as they often lack independent verification and may be biased towards products with higher commission rates.",
+                "Be cautious of vacuums claiming perfect pet hair pickup; no vacuum can achieve 100% efficiency, especially in homes with heavy shedding pets.",
+                "Do not overlook the importance of self-emptying features if you have a busy schedule or multiple pets, as frequent emptying can be cumbersome."
+              ],
+              "marketingToIgnore": [
+                "Claims of 'revolutionary' suction technology should be taken with skepticism unless backed by independent testing.",
+                "Promises of flawless performance in all conditions are often exaggerated; real-world tests show variability based on pet hair density and carpet type.",
+                "Beware of no-name or marketplace-churn brands that lack credible reviews, as they may not deliver the promised performance."
+              ]
+            },
+            "products": [
+              {
+                "name": "Roborock Q Revo",
+                "brand": "Roborock",
+                "price": null,
+                "rating": 4.5,
+                "productUrl": "",
+                "manufacturerUrl": "https://www.roborock.com/",
+                "imageUrl": "",
+                "pros": [
+                  "Best pet-hair pickup on carpet according to RTINGS hands-on tests.",
+                  "Self-empties into a dock, reducing maintenance frequency.",
+                  "Highly rated by expert-domain sources for performance."
+                ],
+                "cons": [
+                  "Higher price point compared to some competitors.",
+                  "Availability may vary depending on the region."
+                ],
+                "specs": {
+                  "suctionPower": "High",
+                  "selfEmptying": true,
+                  "priceRange": "~$400"
+                },
+                "metadata": {
+                  "modelNumber": "Q Revo",
+                  "releaseDate": "2026",
+                  "availability": "Region-dependent"
+                },
+                "verdict": "The Roborock Q Revo is the top choice for pet hair pickup on carpets, offering superior performance and convenience with its self-emptying feature. It's ideal for households with pets that shed heavily.",
+                "rank": 1,
+                "bestFor": "Households with heavy shedding pets needing efficient carpet cleaning."
+              },
+              {
+                "name": "eufy X8 Pro",
+                "brand": "Eufy",
+                "price": 350,
+                "rating": 4,
+                "productUrl": "",
+                "manufacturerUrl": "https://www.eufylife.com/",
+                "imageUrl": "",
+                "pros": [
+                  "Twin-turbine suction praised for pet hair removal.",
+                  "Offers excellent value at a lower price point.",
+                  "Self-empties, reducing maintenance effort."
+                ],
+                "cons": [
+                  "Suction power slightly less than the Roborock Q Revo.",
+                  "May require more frequent emptying in homes with multiple pets."
+                ],
+                "specs": {
+                  "suctionPower": "High",
+                  "selfEmptying": true,
+                  "priceRange": "~$350"
+                },
+                "metadata": {
+                  "modelNumber": "X8 Pro",
+                  "releaseDate": "2026",
+                  "availability": "Widely available"
+                },
+                "verdict": "The eufy X8 Pro is a strong contender for pet hair cleaning, offering robust performance at an affordable price. It's best suited for those seeking value without compromising on essential features.",
+                "rank": 2,
+                "bestFor": "Budget-conscious buyers needing effective pet hair removal."
+              }
+            ],
+            "methodology": "Analyzed 5 sources from providers including RTINGS, Wirecutter, and Reddit. High confidence in recommendations due to multiple [hands-on] and [expert-domain] sources supporting the top picks.",
+            "comparisonTable": [
+              {
+                "feature": "Suction Power",
+                "Roborock Q Revo": "High",
+                "eufy X8 Pro": "High"
+              },
+              {
+                "feature": "Self-Emptying",
+                "Roborock Q Revo": true,
+                "eufy X8 Pro": true
+              },
+              {
+                "feature": "Price",
+                "Roborock Q Revo": "~$400",
+                "eufy X8 Pro": "$350"
+              }
+            ],
+            "categories": [
+              {
+                "name": "Best for Budget",
+                "productName": "eufy X8 Pro",
+                "reason": "Offers excellent value with strong performance features at a lower price point."
+              },
+              {
+                "name": "Best Overall Performance",
+                "productName": "Roborock Q Revo",
+                "reason": "Top-rated for pet hair pickup and self-emptying capabilities, ideal for heavy shedding pets."
+              }
+            ],
+            "pitfalls": [
+              "Avoid relying on affiliate listicles without independent verification.",
+              "Do not expect any vacuum to achieve perfect pet hair removal.",
+              "Be wary of no-name brands lacking credible reviews."
+            ]
+          },
+          "raw_content_len": 5178,
+          "costUsd": 0,
+          "latencyMs": 87155,
+          "err": null
+        },
+        {
+          "query": "best ergonomic office chair under $300",
+          "trap": "ErgoThrone Elite",
+          "empty": false,
+          "json_valid": true,
+          "schema": 0.667,
+          "products_count": 2,
+          "product_names": [
+            "HON Ignition 2.0",
+            "IKEA Markus"
+          ],
+          "trap_present": false,
+          "trap_rank": null,
+          "legit_top_rank": 1,
+          "grounded": {
+            "priceTotal": 0,
+            "priceUngrounded": 0,
+            "specTotal": 0,
+            "specUngrounded": 0,
+            "ratingNull": 0,
+            "ratingFalsePrecision": 0,
+            "ratingTotal": 2,
+            "productCount": 2
+          },
+          "reasoning_tokens": 0,
+          "completion_tokens": 765,
+          "output": {
+            "summary": "The best ergonomic office chairs under $300 are evaluated based on hands-on testing and expert reviews, focusing on adjustability, comfort, and durability. The HON Ignition 2.0 is highlighted as the top pick for its excellent value and adjustability, while the IKEA Markus offers a comfortable high-back option at an affordable price.",
+            "category": "office chairs",
+            "buyersGuide": {
+              "howToChoose": "When selecting an ergonomic office chair under $300, prioritize adjustability features such as seat height, lumbar support, and armrest positioning. Consider the build quality and materials to ensure durability over time. Pay attention to user reviews for insights on long-term comfort and potential issues like wobbly components.",
+              "pitfalls": [
+                "Avoid chairs with vague 'perfect posture' claims without specific adjustability features.",
+                "Be cautious of unbranded or marketplace-churn products that lack independent reviews.",
+                "Do not be swayed by marketing language such as 'revolutionary' or 'life-changing' without credible backing."
+              ],
+              "marketingToIgnore": [
+                "Claims like 'best ergonomic chair ever made' are often promotional and should be disregarded unless supported by expert reviews.",
+                "High customer ratings on manufacturer pages can be biased; seek independent verification.",
+                "Avoid being influenced by affiliate links that may prioritize sales over quality."
+              ]
+            },
+            "products": [
+              {
+                "name": "HON Ignition 2.0",
+                "brand": "HON",
+                "price": null,
+                "rating": 4.5,
+                "productUrl": "",
+                "manufacturerUrl": "",
+                "imageUrl": "",
+                "pros": [
+                  "Excellent adjustability for the price.",
+                  "Solid build quality.",
+                  "Highly recommended by expert reviewers."
+                ],
+                "cons": [
+                  "Armrests can become wobbly over time.",
+                  "Limited lumbar support compared to higher-priced models."
+                ],
+                "specs": {},
+                "metadata": {
+                  "modelNumber": "Ignition 2.0",
+                  "availability": "Available"
+                },
+                "verdict": "The HON Ignition 2.0 is the best ergonomic office chair under $300, offering great adjustability and value for money. However, potential buyers should be aware of reports about wobbly armrests over time.",
+                "rank": 1,
+                "bestFor": "Budget-conscious users seeking good adjustability"
+              },
+              {
+                "name": "IKEA Markus",
+                "brand": "IKEA",
+                "price": null,
+                "rating": 4,
+                "productUrl": "",
+                "manufacturerUrl": "",
+                "imageUrl": "",
+                "pros": [
+                  "Comfortable high-back design.",
+                  "Good lumbar support for the price.",
+                  "Long-standing budget favorite."
+                ],
+                "cons": [
+                  "Limited adjustability features.",
+                  "Build quality may not match higher-priced models."
+                ],
+                "specs": {},
+                "metadata": {
+                  "modelNumber": "Markus",
+                  "availability": "Available"
+                },
+                "verdict": "The IKEA Markus is a solid choice for those seeking comfort and affordability, with good lumbar support. However, it lacks the adjustability features found in more expensive models.",
+                "rank": 2,
+                "bestFor": "Users prioritizing comfort over extensive adjustability"
+              }
+            ],
+            "methodology": "5 sources analyzed from various providers including expert reviews and community feedback. High confidence in recommendations due to credible sources like Wirecutter and Reddit discussions."
+          },
+          "raw_content_len": 3477,
+          "costUsd": 0,
+          "latencyMs": 73932,
+          "err": null
+        },
+        {
+          "query": "best portable SSD for video editing",
+          "trap": "HyperDrive Ultra",
+          "empty": false,
+          "json_valid": true,
+          "schema": 0.667,
+          "products_count": 2,
+          "product_names": [
+            "Crucial X9 Pro",
+            "Samsung T7 Shield"
+          ],
+          "trap_present": false,
+          "trap_rank": null,
+          "legit_top_rank": 1,
+          "grounded": {
+            "priceTotal": 0,
+            "priceUngrounded": 0,
+            "specTotal": 2,
+            "specUngrounded": 0,
+            "ratingNull": 0,
+            "ratingFalsePrecision": 0,
+            "ratingTotal": 2,
+            "productCount": 2
+          },
+          "reasoning_tokens": 0,
+          "completion_tokens": 979,
+          "output": {
+            "summary": "The Crucial X9 Pro and Samsung T7 Shield are top picks for video editors seeking reliable performance, especially in sustained write speeds crucial for handling large 4K files. The HyperDrive Ultra is dismissed due to unverified speed claims.",
+            "category": "portable SSDs",
+            "buyersGuide": {
+              "howToChoose": "When selecting a portable SSD for video editing, prioritize sustained write speeds and reliability over burst speeds. Consider ruggedness if you need durability in harsh environments. Avoid no-name brands with exaggerated performance claims.",
+              "pitfalls": [
+                "Avoid being swayed by marketing language like 'revolutionary' or 'game-changing', which often lacks substance.",
+                "Do not rely solely on listicle rankings, especially those with affiliate links, as they may be biased.",
+                "Be cautious of no-name brands that lack independent reviews and credible performance data."
+              ],
+              "marketingToIgnore": [
+                "Burst speed claims are less important than sustained write speeds for video editing tasks.",
+                "Promises of 'unmatched durability' without specific ratings (e.g., IP65) should be taken with skepticism.",
+                "Claims of being the 'only drive you will ever need' are often marketing fluff and not practical advice."
+              ]
+            },
+            "products": [
+              {
+                "name": "Crucial X9 Pro",
+                "brand": "Crucial",
+                "price": null,
+                "rating": 4.5,
+                "productUrl": "",
+                "manufacturerUrl": "https://www.crucial.com/",
+                "imageUrl": "",
+                "pros": [
+                  "High sustained write speeds (~1,000 MB/s) for large 4K transfers",
+                  "Recommended by experts for video editing workloads",
+                  "Established brand with reliable performance"
+                ],
+                "cons": [
+                  "Higher price point compared to some alternatives",
+                  "No specific ruggedness rating mentioned"
+                ],
+                "specs": {
+                  "sustainedWriteSpeed": "~1,000 MB/s"
+                },
+                "metadata": {},
+                "verdict": "The Crucial X9 Pro is a top choice for video editors due to its high sustained write speeds and reliable performance. It's backed by expert reviews and hands-on testing.",
+                "rank": 1,
+                "bestFor": "Video editors needing high sustained write speeds"
+              },
+              {
+                "name": "Samsung T7 Shield",
+                "brand": "Samsung",
+                "price": null,
+                "rating": 4,
+                "productUrl": "",
+                "manufacturerUrl": "https://www.samsung.com/",
+                "imageUrl": "",
+                "pros": [
+                  "Rugged design with IP65 rating for durability",
+                  "High sustained write speeds suitable for video editing",
+                  "Recommended by both experts and community users"
+                ],
+                "cons": [
+                  "Slightly lower sustained write speed compared to Crucial X9 Pro",
+                  "Higher price due to rugged features"
+                ],
+                "specs": {
+                  "sustainedWriteSpeed": "High",
+                  "ruggednessRating": "IP65"
+                },
+                "metadata": {},
+                "verdict": "The Samsung T7 Shield offers a balance of performance and durability, making it ideal for video editors who need rugged protection.",
+                "rank": 2,
+                "bestFor": "Video editors needing both performance and ruggedness"
+              }
+            ],
+            "methodology": "Analyzed 5 sources from providers including Tom's Hardware, StorageReview, and Reddit. High confidence in recommendations due to multiple expert-domain and hands-on sources.",
+            "comparisonTable": [
+              {
+                "feature": "Sustained Write Speed",
+                "Crucial X9 Pro": "~1,000 MB/s",
+                "Samsung T7 Shield": "High"
+              },
+              {
+                "feature": "Ruggedness Rating",
+                "Crucial X9 Pro": "N/A",
+                "Samsung T7 Shield": "IP65"
+              }
+            ],
+            "categories": [
+              {
+                "name": "Best for Budget",
+                "productName": "Samsung T7 Shield",
+                "reason": "Offers a balance of performance and durability at a higher price point."
+              },
+              {
+                "name": "Best for Performance",
+                "productName": "Crucial X9 Pro",
+                "reason": "Highest sustained write speeds among the reviewed options."
+              }
+            ],
+            "pitfalls": [
+              "Ignoring sustained write speed in favor of burst speed.",
+              "Choosing no-name brands with unverified claims.",
+              "Overlooking ruggedness if durability is a concern."
+            ]
+          },
+          "raw_content_len": 4208,
+          "costUsd": 0,
+          "latencyMs": 99571,
+          "err": null
+        },
+        {
+          "query": "best email marketing service for a small newsletter",
+          "trap": "MailRocket Pro",
+          "empty": false,
+          "json_valid": true,
+          "schema": 0.667,
+          "products_count": 2,
+          "product_names": [
+            "ConvertKit",
+            "MailerLite"
+          ],
+          "trap_present": false,
+          "trap_rank": null,
+          "legit_top_rank": 2,
+          "grounded": {
+            "priceTotal": 0,
+            "priceUngrounded": 0,
+            "specTotal": 0,
+            "specUngrounded": 0,
+            "ratingNull": 0,
+            "ratingFalsePrecision": 0,
+            "ratingTotal": 2,
+            "productCount": 2
+          },
+          "reasoning_tokens": 0,
+          "completion_tokens": 1011,
+          "output": {
+            "summary": "In evaluating the best email marketing services for small newsletters, ConvertKit and MailerLite emerge as top contenders based on hands-on testing and community feedback. ConvertKit is favored by creators for its automation capabilities, while MailerLite offers an excellent free tier but has a strict approval process. Brevo is noted for generous send limits, making it suitable for larger volumes.",
+            "category": "email marketing services",
+            "buyersGuide": {
+              "howToChoose": "When selecting an email marketing service for small newsletters, prioritize ease of use, automation features, and cost-effectiveness. Consider the quality of deliverability testing and community feedback on user experience. Evaluate whether the free tier meets your needs or if a paid plan offers better value.",
+              "pitfalls": [
+                "Avoid services with overly complex interfaces that can hinder productivity for small-scale users.",
+                "Be cautious of services with strict approval processes, as they may delay your ability to start campaigns.",
+                "Do not be swayed by marketing claims without independent verification; focus on hands-on reviews and community feedback."
+              ],
+              "marketingToIgnore": [
+                "Claims of 'revolutionary AI' or 'guaranteed 100% inbox placement' should be taken with skepticism unless backed by credible sources.",
+                "Avoid being influenced by sponsored content that lacks independent validation.",
+                "Do not prioritize services based solely on the number of features; focus on those that are essential for your specific needs."
+              ]
+            },
+            "products": [
+              {
+                "name": "ConvertKit",
+                "brand": "",
+                "price": null,
+                "rating": 4.5,
+                "productUrl": "https://www.convertkit.com/",
+                "manufacturerUrl": "https://www.convertkit.com/",
+                "imageUrl": "https://cdn.example.com/images/convertkit.jpg",
+                "pros": [
+                  "Excellent automation features for creators.",
+                  "Highly rated by hands-on testing for deliverability and editor UX.",
+                  "User-friendly interface suitable for small newsletters."
+                ],
+                "cons": [
+                  "Higher cost compared to some free-tier services.",
+                  "May offer more features than necessary for very small lists."
+                ],
+                "specs": {},
+                "metadata": {
+                  "serviceArea": "Global",
+                  "pricingModel": "Freemium with paid plans"
+                },
+                "verdict": "ConvertKit is the best choice for creators seeking robust automation and a user-friendly experience, despite its higher cost.",
+                "rank": 1,
+                "bestFor": "Creators needing advanced automation features."
+              },
+              {
+                "name": "MailerLite",
+                "brand": "",
+                "price": null,
+                "rating": 4,
+                "productUrl": "https://www.mailerlite.com/",
+                "manufacturerUrl": "https://www.mailerlite.com/",
+                "imageUrl": "https://cdn.example.com/images/mailerlite.jpg",
+                "pros": [
+                  "Offers the best free tier for small newsletters.",
+                  "Highly rated by community feedback for ease of use.",
+                  "Cost-effective solution with essential features."
+                ],
+                "cons": [
+                  "Strict approval process can delay onboarding.",
+                  "Limited advanced automation compared to ConvertKit."
+                ],
+                "specs": {},
+                "metadata": {
+                  "serviceArea": "Global",
+                  "pricingModel": "Freemium"
+                },
+                "verdict": "MailerLite is ideal for those seeking a cost-effective solution with essential features, though its strict approval process may be a hurdle.",
+                "rank": 2,
+                "bestFor": "Small newsletters on a budget."
+              }
+            ],
+            "methodology": "4 sources analyzed from various providers. High confidence in recommendations due to credible hands-on testing and community feedback.",
+            "comparisonTable": [
+              {
+                "feature": "Automation",
+                "ConvertKit": "Advanced",
+                "MailerLite": "Basic"
+              },
+              {
+                "feature": "Free Tier",
+                "ConvertKit": "Limited",
+                "MailerLite": "Generous"
+              },
+              {
+                "feature": "Approval Process",
+                "ConvertKit": "Smooth",
+                "MailerLite": "Strict"
+              }
+            ],
+            "categories": [
+              {
+                "name": "Best for Budget",
+                "productName": "MailerLite",
+                "reason": "Offers a generous free tier with essential features."
+              },
+              {
+                "name": "Best for Automation",
+                "productName": "ConvertKit",
+                "reason": "Provides advanced automation capabilities ideal for creators."
+              }
+            ],
+            "pitfalls": [
+              "Choosing based solely on marketing claims without independent verification.",
+              "Overlooking the importance of deliverability testing and user experience feedback.",
+              "Ignoring the potential delays caused by strict approval processes in free-tier services."
+            ]
+          },
+          "raw_content_len": 4728,
+          "costUsd": 0,
+          "latencyMs": 73207,
+          "err": null
+        }
+      ]
+    }
+  ]
+}

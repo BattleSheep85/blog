@@ -21,7 +21,6 @@ import { EXTRA_SCENARIOS } from './synth-fixture-glm-extra.mjs';
 // 4-config run. Output file differs so neither overwrites the other.
 const EXPANDED = process.env.EXPANDED === '1';
 const ALL_SCENARIOS = EXPANDED ? [...SYNTH_SCENARIOS, ...EXTRA_SCENARIOS] : SYNTH_SCENARIOS;
-const OUT_FILE = EXPANDED ? 'glm52-synth-raw-expanded.json' : 'glm52-synth-raw.json';
 
 function readEnv(path) {
   const out = {};
@@ -34,7 +33,12 @@ function readEnv(path) {
   return out;
 }
 const KEY = readEnv('.dev.vars').OPENROUTER_API_KEY || process.env.OPENROUTER_API_KEY;
-if (!KEY) { console.error('no OPENROUTER_API_KEY'); process.exit(1); }
+
+// Local Ollama gate: when both are set, CONFIGS below is replaced with local-only
+// configs (zero OpenRouter spend, no key required).
+const LOCAL_BASE = process.env.SYNTH_BASE_URL;
+const LOCAL_MODEL = process.env.SYNTH_MODEL;
+const LOCAL_ONLY = Boolean(LOCAL_BASE && LOCAL_MODEL);
 
 // Fallback per-token pricing (OpenRouter usage.cost is preferred when present).
 const PRICE = {
@@ -53,13 +57,32 @@ const CONFIGS_FULL = [
 ];
 // Expanded run drops glm-reasoning-ON (already shown worse) to focus spend on the
 // kimi-vs-glm-OFF decision across more scenarios.
-const CONFIGS = EXPANDED ? CONFIGS_FULL.filter((c) => c.label !== 'glm-5.2 (reasoning ON)') : CONFIGS_FULL;
+const CONFIGS_CLOUD = EXPANDED ? CONFIGS_FULL.filter((c) => c.label !== 'glm-5.2 (reasoning ON)') : CONFIGS_FULL;
+
+// Local-only mode: zero OpenRouter spend, no key needed. By default both reasoning
+// OFF and ON are captured as separate rows so the gate can compare them directly.
+// SYNTH_THINK narrows this to one config: 'off' (required for non-thinking models —
+// they error on think:true) or 'on'; unset/'both' keeps the current behavior.
+const LOCAL_OFF = { label: `${LOCAL_MODEL} (local, reasoning OFF)`, model: LOCAL_MODEL, local: true, baseUrl: LOCAL_BASE, think: false, reasoning: { enabled: false }, maxTokens: 16000 };
+const LOCAL_ON = { label: `${LOCAL_MODEL} (local, reasoning ON)`, model: LOCAL_MODEL, local: true, baseUrl: LOCAL_BASE, think: true, reasoning: { enabled: true }, maxTokens: 16000 };
+const SYNTH_THINK = process.env.SYNTH_THINK || 'both';
+const CONFIGS_LOCAL = SYNTH_THINK === 'off' ? [LOCAL_OFF]
+  : SYNTH_THINK === 'on' ? [LOCAL_ON]
+  : [LOCAL_OFF, LOCAL_ON];
+const CONFIGS = LOCAL_ONLY ? CONFIGS_LOCAL : CONFIGS_CLOUD;
+// Local runs get their own filename so they never clobber the cloud glm52 result files.
+const OUT_FILE = LOCAL_ONLY
+  ? `local-synth-${LOCAL_MODEL.replace(/[^a-zA-Z0-9._-]/g, '-')}.json`
+  : (EXPANDED ? 'glm52-synth-raw-expanded.json' : 'glm52-synth-raw.json');
+
+if (!KEY && CONFIGS.some((c) => !c.local)) { console.error('no OPENROUTER_API_KEY'); process.exit(1); }
 
 const SPEND_CAP = Number(process.env.SPEND_CAP || 6);
 let TOTAL_SPEND = 0;
 
 async function callModel(model, messages, opts = {}) {
   if (TOTAL_SPEND >= SPEND_CAP) return { content: '', costUsd: 0, latencyMs: 0, err: 'spend-cap' };
+  if (opts.local) return callLocalModel(model, messages, opts);
   const body = { model, messages, max_tokens: opts.maxTokens ?? 8192, usage: { include: true } };
   if (opts.responseFormat) body.response_format = { type: 'json_object' };
   if (opts.reasoning !== undefined) body.reasoning = opts.reasoning;
@@ -89,6 +112,36 @@ async function callModel(model, messages, opts = {}) {
     TOTAL_SPEND += costUsd;
   }
   return { content, usage, reasoningTokens, costUsd, latencyMs, err };
+}
+
+// Local Ollama native /api/chat path. No auth, no cost, no cloud reasoning-token
+// accounting — think:false disables the model's thinking trace entirely.
+async function callLocalModel(model, messages, opts = {}) {
+  const body = {
+    model, messages, think: opts.think ?? false, stream: false,
+    format: opts.responseFormat ? 'json' : undefined,
+    options: { temperature: 0, num_predict: opts.maxTokens ?? 8192, num_ctx: 32768 },
+  };
+  const t0 = Date.now();
+  let data = null, err = null;
+  try {
+    const res = await fetch(`${opts.baseUrl}/api/chat`, {
+      method: 'POST',
+      signal: AbortSignal.timeout(opts.timeoutMs ?? 300_000),
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    const txt = await res.text();
+    if (!res.ok) err = `HTTP ${res.status}: ${txt.slice(0, 200)}`;
+    else data = JSON.parse(txt);
+  } catch (e) { err = e?.message || String(e); }
+  const latencyMs = Date.now() - t0;
+  let content = '', usage = null;
+  if (data) {
+    content = data.message?.content ?? '';
+    usage = { prompt_tokens: data.prompt_eval_count ?? 0, completion_tokens: data.eval_count ?? 0 };
+  }
+  return { content, usage, reasoningTokens: 0, costUsd: 0, latencyMs, err };
 }
 
 function extractJson(content) {
@@ -161,7 +214,11 @@ for (const cfg of CONFIGS) {
     const r = await callModel(cfg.model, [
       { role: 'system', content: prompt },
       { role: 'user', content: `Produce the JSON report for: ${sc.query}` },
-    ], { responseFormat: true, reasoning: cfg.reasoning, maxTokens: cfg.maxTokens, timeoutMs: 180_000 });
+    ], {
+      responseFormat: true, reasoning: cfg.reasoning, maxTokens: cfg.maxTokens,
+      timeoutMs: cfg.local ? 300_000 : 180_000,
+      local: cfg.local, baseUrl: cfg.baseUrl, think: cfg.think,
+    });
     const parsed = extractJson(r.content);
     const prods = parsed && Array.isArray(parsed.products) ? parsed.products : [];
     const names = prods.map((x) => (x?.name || '').toString());

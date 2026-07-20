@@ -31,3 +31,6 @@ benchmarks/results/google-top50-corpus.json
 benchmarks/results/judge-bundles/
 benchmarks/results/judge-results-partial.json
 benchmarks/results/*.log
+
+# Local benchmark run logs
+logs/

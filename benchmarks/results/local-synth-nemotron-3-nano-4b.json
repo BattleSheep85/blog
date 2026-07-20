@@ -1,0 +1,920 @@
+{
+  "expanded": true,
+  "scenarios": 6,
+  "spend": 0,
+  "rows": [
+    {
+      "label": "nemotron-3-nano:4b (local, reasoning OFF)",
+      "model": "nemotron-3-nano:4b",
+      "reasoning": {
+        "enabled": false
+      },
+      "json_rate": 1,
+      "empty_count": 0,
+      "schema": 0.667,
+      "trap_present_count": 0,
+      "trap_last_or_absent": 6,
+      "legit_on_top": 6,
+      "ungrounded_price_frac": 0.727,
+      "ungrounded_spec_frac": 0.927,
+      "rating_null_frac": 0,
+      "rating_false_precision": 4,
+      "grounded_totals": {
+        "priceTotal": 11,
+        "priceUngrounded": 8,
+        "specTotal": 41,
+        "specUngrounded": 38,
+        "ratingNull": 0,
+        "ratingFalsePrecision": 4,
+        "ratingTotal": 12,
+        "productCount": 12
+      },
+      "avg_cost_usd": 0,
+      "p50_latency_ms": 11617,
+      "avg_reasoning_tokens": 0,
+      "errors": 0,
+      "runs": [
+        {
+          "query": "best budget mechanical keyboard",
+          "trap": "GamerWidget Pro",
+          "empty": false,
+          "json_valid": true,
+          "schema": 0.667,
+          "products_count": 2,
+          "product_names": [
+            "Keychron V1 (Model: KBDFAN V1), Brand: Keychron, Price: 299.99",
+            "Royal Kludge RK84 (Model: RK84), Brand: Royal Kludge"
+          ],
+          "trap_present": false,
+          "trap_rank": null,
+          "legit_top_rank": 1,
+          "grounded": {
+            "priceTotal": 2,
+            "priceUngrounded": 1,
+            "specTotal": 4,
+            "specUngrounded": 4,
+            "ratingNull": 0,
+            "ratingFalsePrecision": 1,
+            "ratingTotal": 2,
+            "productCount": 2
+          },
+          "reasoning_tokens": 0,
+          "completion_tokens": 1516,
+          "output": {
+            "summary": "The Keychron V1 is the top recommendation for a budget mechanical keyboard, offering excellent typing feel and low latency at under $80. The Royal Kludge RK84 is a solid alternative but may have stabilizer rattle issues reported by users.",
+            "category": "best budget mechanical keyboard",
+            "buyersGuide": {
+              "howToChoose": "When selecting a budget mechanical keyboard, prioritize hot-swap compatibility for long-term value and avoid wireless models that sacrifice durability. Focus on key travel depth and switch type (mechanical vs membrane) as these directly impact typing comfort. Always check community reports for QC issues like stabilizer rattle before purchasing.",
+              "pitfalls": [
+                "Buyers often prioritize wireless convenience over mechanical reliability, leading to premature failure from poor build quality in cheap wireless boards.",
+                "They assume all budget keyboards are equally durable, ignoring that some use flimsy plastic housings prone to breakage.",
+                "They ignore hot-swap limitations, buying non-hot-swappable models that become unusable if the switch is damaged."
+              ],
+              "marketingToIgnore": [
+                "The claim 'revolutionary gaming experience' in listicles — latency and build quality matter more than marketing hype for budget keyboards.",
+                "Affiliate links promising 'best value ever' without hands-on testing — RTINGS and Tom's Hardware provide verified benchmarks, not promotional copy.",
+                "Prices under $50 are 'too good to be true' — the RK84 is ~$80; any lower price likely indicates a marketplace-ghost brand with no independent reviews."
+              ]
+            },
+            "products": [
+              {
+                "name": "Keychron V1 (Model: KBDFAN V1), Brand: Keychron, Price: 299.99",
+                "brand": "Keychron",
+                "price": 299.99,
+                "rating": 4.5,
+                "productUrl": "",
+                "manufacturerUrl": "https://www.keychron.com/",
+                "imageUrl": "",
+                "pros": [
+                  "Hot-swap mechanical switches allow easy replacement without tools.",
+                  "Measured 8ms latency and excellent stabilizers per RTINGS hands-on testing.",
+                  "Dual-shot PBT keycaps provide premium feel at budget price."
+                ],
+                "cons": [
+                  "No RGB lighting — marketing claims about 'premium experience' are absent in specs.",
+                  "Keyboard is slightly larger than average, which may not suit compact desk setups."
+                ],
+                "specs": {
+                  "keyTravel": "4.5mm",
+                  "switchType": "Mechanical (Cherry MX compatible)",
+                  "connectivity": "Bluetooth 5.0 + USB-C"
+                },
+                "metadata": {
+                  "modelNumber": "KBDFAN V1",
+                  "releaseDate": "2023-09-15",
+                  "availability": "In stock at Amazon, Best Buy, Keychron.com"
+                },
+                "verdict": "The Keychron V1 is the best budget mechanical keyboard for its price, offering hot-swap reliability and low latency. It's ideal for users who want a durable, upgradeable board without RGB fluff.",
+                "rank": 1,
+                "bestFor": "Users wanting a reliable, upgradeable keyboard under $300 with no marketing distractions."
+              },
+              {
+                "name": "Royal Kludge RK84 (Model: RK84), Brand: Royal Kludge",
+                "brand": "Royal Kludge",
+                "price": 79.99,
+                "rating": 3.2,
+                "productUrl": "https://www.amazon.com/dp/B0FAKEGW01?tag=topbestlists-20",
+                "manufacturerUrl": "https://www.royalkludge.com/",
+                "imageUrl": "",
+                "pros": [
+                  "Hot-swap design with gasket mount for easy switch replacement.",
+                  "Wireless connectivity via Bluetooth 5.0 and USB-C receiver.",
+                  "PBT keycaps enhance typing feel compared to ABS."
+                ],
+                "cons": [
+                  "Stabilizer rattle reported by multiple users in Reddit community reports.",
+                  "No RGB lighting — marketing claims about 'premium experience' are absent.",
+                  "Keyboard is slightly larger than average, which may not suit compact desk setups."
+                ],
+                "specs": {
+                  "keyTravel": "4.5mm",
+                  "switchType": "Mechanical (Cherry MX compatible)",
+                  "connectivity": "Bluetooth 5.0 + USB-C receiver"
+                },
+                "metadata": {
+                  "modelNumber": "RK84",
+                  "releaseDate": "2023-11-02",
+                  "availability": "In stock at Amazon, Walmart, Royal Kludge.com"
+                },
+                "verdict": "The Royal Kludge RK84 is a budget option but has QC variance issues like stabilizer rattle. It's included only because no established alternative fits the query; buy with caution.",
+                "rank": 2,
+                "bestFor": "Users who prioritize wireless convenience and are willing to accept minor build quality compromises."
+              }
+            ],
+            "comparisonTable": [
+              {
+                "feature": "Price",
+                "Keychron V1": "299.99",
+                "Royal Kludge RK84": "79.99"
+              },
+              {
+                "feature": "Switch Type",
+                "Keychron V1": "Mechanical (Cherry MX compatible)",
+                "Royal Kludge RK84": "Mechanical (Cherry MX compatible)"
+              },
+              {
+                "feature": "Connectivity",
+                "Keychron V1": "Bluetooth 5.0 + USB-C",
+                "Royal Kludge RK84": "Bluetooth 5.0 + USB-C"
+              },
+              {
+                "feature": "Hot-Swap",
+                "Keychron V1": "Yes (dual-shot PBT)",
+                "Royal Kludge RK84": "Yes (gasket mount)"
+              }
+            ],
+            "categories": [
+              {
+                "name": "Best for Budget",
+                "productName": "Keychron V1",
+                "reason": "Offers best typing feel and low latency at $299.99 with verified hands-on testing from RTINGS."
+              },
+              {
+                "name": "Budget Alternative",
+                "productName": "Royal Kludge RK84",
+                "reason": "Only included because no established alternative fits the query; has stabilizer rattle issues per community reports."
+              }
+            ],
+            "methodology": "6 sources analyzed from RTINGS (hands-on, expert-domain), Tom's Hardware (expert-domain), Reddit (community), and affiliate listicle. Confidence level: high for Keychron V1 due to multiple [hands-on] and [expert-domain] sources; moderate for RK84 due to community reports of QC issues. Data freshness: all sources within 2026, no stale data."
+          },
+          "raw_content_len": 5953,
+          "costUsd": 0,
+          "latencyMs": 13697,
+          "err": null
+        },
+        {
+          "query": "best noise cancelling headphones under $200",
+          "trap": "AuraSonic Elite",
+          "empty": false,
+          "json_valid": true,
+          "schema": 0.667,
+          "products_count": 2,
+          "product_names": [
+            "Soundcore Space One (SCS-ANC001)",
+            "Sony WH-CH720N"
+          ],
+          "trap_present": false,
+          "trap_rank": null,
+          "legit_top_rank": 1,
+          "grounded": {
+            "priceTotal": 2,
+            "priceUngrounded": 1,
+            "specTotal": 10,
+            "specUngrounded": 8,
+            "ratingNull": 0,
+            "ratingFalsePrecision": 0,
+            "ratingTotal": 2,
+            "productCount": 2
+          },
+          "reasoning_tokens": 0,
+          "completion_tokens": 1439,
+          "output": {
+            "summary": "Under $200, the Soundcore Space One and Sony WH-CH720N emerge as top performers with strong ANC isolation. RTINGS' hands-on testing confirms their value, while Sennheiser Accentum offers better sound at the cost of slightly weaker noise cancellation.",
+            "category": "noise cancelling headphones",
+            "buyersGuide": {
+              "howToChoose": "Prioritize measured ANC isolation over subjective sound quality when budget is tight. Look for models with verified low-frequency attenuation and long battery life. Avoid relying solely on marketing claims of 'premium' or 'revolutionary' performance.",
+              "pitfalls": [
+                "Buying based on Amazon's star rating alone, which can be inflated by affiliate links and wishlist inflation.",
+                "Ignoring real-world ANC performance in noisy environments like offices or public transport where low-frequency noise is most disruptive.",
+                "Choosing headphones with 'adaptive' ANC that requires constant adjustment, leading to inconsistent cancellation."
+              ],
+              "marketingToIgnore": [
+                "‘Game-changing’ adaptive ANC that claims to eliminate all background noise — real-world tests show it only reduces mid/high frequencies.",
+                "‘Premium audio’ specs without independent measurement; sound quality varies by ear cup fit and driver tuning.",
+                "‘Battery life up to 30 hours’ without noting the 15% drop in ANC performance after 20 hours of use."
+              ]
+            },
+            "products": [
+              {
+                "name": "Soundcore Space One (SCS-ANC001)",
+                "brand": "Soundcore",
+                "price": 99.99,
+                "rating": 4.5,
+                "productUrl": "https://www.amazon.com/dp/B0FAKEAS02?tag=dealsblog-20",
+                "manufacturerUrl": "https://aurasonic.example.com",
+                "imageUrl": "",
+                "pros": [
+                  "Measured ANC isolation of 35 dB at 100Hz (RTINGS test rig)",
+                  "Up to 40 hours battery life with ANC on (verified by SoundGuys hands-on)",
+                  "Lightweight design: 28g per ear cup, no fatigue during long use"
+                ],
+                "cons": [
+                  "No wireless charging or fast charge support",
+                  "Ear cups lack memory foam; may cause pressure points after 3+ hours",
+                  "Driver size limited to 10mm, reducing bass response compared to competitors"
+                ],
+                "specs": {
+                  "ANCIsolation": "35 dB at 100Hz",
+                  "BatteryLife": "40 hours (ANC on)",
+                  "WeightPerEarcup": "28g",
+                  "DriverSize": "10mm"
+                },
+                "metadata": {
+                  "modelNumber": "SCS-ANC001",
+                  "releaseDate": "2023-09-15",
+                  "availability": "In stock (Amazon, Soundcore site)"
+                },
+                "verdict": "The Space One delivers the best measurable ANC under $200 with verified low-frequency attenuation. Its value is proven by hands-on testing, though it lacks premium comfort features.",
+                "rank": 1,
+                "bestFor": "Users prioritizing noise cancellation over sound quality or comfort"
+              },
+              {
+                "name": "Sony WH-CH720N",
+                "brand": "Sony",
+                "price": 149.99,
+                "rating": 4.5,
+                "productUrl": "https://www.amazon.com/dp/B0FAKEAS03?tag=rtings-20",
+                "manufacturerUrl": "https://sony.co.jp",
+                "imageUrl": "",
+                "pros": [
+                  "ANC isolation of 38 dB at 100Hz (RTINGS benchmark)",
+                  "Sony's proprietary ANC algorithm maintains consistency across temperature changes",
+                  "USB-C charging with 2.5W fast charge; reaches 50% in 6 minutes"
+                ],
+                "cons": [
+                  "No wireless charging or magnetic ear cup attachment",
+                  "Battery life drops to 38 hours after 15 hours of use (per RTINGS)",
+                  "Driver size 14mm but with Sony's noise-cancelling filter, bass is muted"
+                ],
+                "specs": {
+                  "ANCIsolation": "38 dB at 100Hz",
+                  "BatteryLife": "38 hours (ANC on)",
+                  "WeightPerEarcup": "29g",
+                  "DriverSize": "14mm"
+                },
+                "metadata": {
+                  "modelNumber": "WH-CH720N",
+                  "releaseDate": "2022-06-01",
+                  "availability": "In stock (Amazon, Sony site)"
+                },
+                "verdict": "Sony's flagship under $200 leads in ANC isolation with consistent performance. Ideal for users who need reliable noise blocking without sacrificing brand reliability.",
+                "rank": 2,
+                "bestFor": "Users needing maximum noise cancellation consistency"
+              }
+            ],
+            "comparisonTable": [
+              {
+                "feature": "ANC Isolation (100Hz)",
+                "Soundcore Space One": "35 dB",
+                "Sony WH-CH720N": "38 dB"
+              },
+              {
+                "feature": "Battery Life (ANC on)",
+                "Soundcore Space One": "40 hours",
+                "Sony WH-CH720N": "38 hours"
+              },
+              {
+                "feature": "Driver Size",
+                "Soundcore Space One": "10mm",
+                "Sony WH-CH720N": "14mm"
+              }
+            ],
+            "categories": [
+              {
+                "name": "Best for Budget",
+                "productName": "Soundcore Space One (SCS-ANC001)",
+                "reason": "Highest ANC value at $99.99 with verified low-frequency isolation"
+              },
+              {
+                "name": "Best Overall Value",
+                "productName": "Sony WH-CH720N",
+                "reason": "Superior ANC consistency and Sony's proven reliability under 200 budget"
+              }
+            ],
+            "methodology": "5 sources analyzed from RTINGS, SoundGuys, Reddit, manufacturer site. Confidence high: all [hands-on] or [expert-domain] tagged. No affiliate-only sources used for top picks."
+          },
+          "raw_content_len": 5221,
+          "costUsd": 0,
+          "latencyMs": 10839,
+          "err": null
+        },
+        {
+          "query": "best robot vacuum for pet hair under $400",
+          "trap": "PetVac Supreme",
+          "empty": false,
+          "json_valid": true,
+          "schema": 0.667,
+          "products_count": 2,
+          "product_names": [
+            "Roborock Q Revo",
+            "eufy X8 Pro"
+          ],
+          "trap_present": false,
+          "trap_rank": null,
+          "legit_top_rank": 1,
+          "grounded": {
+            "priceTotal": 2,
+            "priceUngrounded": 1,
+            "specTotal": 8,
+            "specUngrounded": 8,
+            "ratingNull": 0,
+            "ratingFalsePrecision": 0,
+            "ratingTotal": 2,
+            "productCount": 2
+          },
+          "reasoning_tokens": 0,
+          "completion_tokens": 1551,
+          "output": {
+            "summary": "Based on hands-on testing and expert reviews, two models stand out as top performers for pet hair under $400: the Roborock Q Revo (priced at ~$350) excels in suction power and auto-empty docking, while the eufy X8 Pro offers strong value with twin-turbine performance. The Shark AI Ultra is noted for navigation but has a small bin that fills quickly with heavy shedding.",
+            "category": "robot vacuums",
+            "buyersGuide": {
+              "howToChoose": "When selecting a robot vacuum under $400, prioritize suction power and pet-hair pickup efficiency over brand name or marketing hype. Look for dual-turbine systems that handle thick fur without clogging, and consider auto-empty docks to avoid frequent emptying. Avoid models with small dustbins if you have high-shedding pets.",
+              "pitfalls": [
+                "Buying a vacuum based solely on Amazon's star rating ignores real-world performance; many low-priced models underperform in pet hair pickup despite high scores.",
+                "Ignoring bin capacity can lead to constant emptying, negating the convenience of robot vacuums for busy households with pets.",
+                "Choosing a model without auto-empty docking assumes you'll manually empty it daily, which defeats the purpose of automation."
+              ],
+              "marketingToIgnore": [
+                "Claims of 'revolutionary' or 'next-generation' suction that aren't verified by independent testing; marketing language often masks mediocre performance.",
+                "Highlighting a 360-degree navigation system when your home has no obstacles; advanced mapping is irrelevant for simple floor cleaning.",
+                "Promoting 'AI-powered' navigation as essential when basic obstacle avoidance suffices for most homes."
+              ]
+            },
+            "products": [
+              {
+                "name": "Roborock Q Revo",
+                "brand": "Roborock",
+                "price": 350,
+                "rating": 4.5,
+                "productUrl": "",
+                "manufacturerUrl": "https://www.roborock.com",
+                "imageUrl": "https://cdn.roborock.com/images/roborock-q-revo.jpg?v=123",
+                "pros": [
+                  "Twin-turbine suction system lifts 90% of pet hair from thick carpets and rugs.",
+                  "Auto-empty dock stores up to 45 minutes of cleaning time without manual intervention.",
+                  "Self-emptying bin reduces maintenance by 70% compared to manual vacuums."
+                ],
+                "cons": [
+                  "Requires a charging dock that needs space on the floor.",
+                  "Battery life drops to 38 minutes in low light, reducing runtime for large homes."
+                ],
+                "specs": {
+                  "suctionPower": "2.0A",
+                  "petHairPickup": "90%",
+                  "batteryLife": "38 min (low light)",
+                  "binCapacity": "150g"
+                },
+                "metadata": {
+                  "modelNumber": "Q Revo",
+                  "releaseDate": "2024-03-15",
+                  "availability": "In stock at Amazon, Best Buy, Roborock.com"
+                },
+                "verdict": "The Q Revo is the best pet hair vacuum under $400 due to its proven suction and auto-empty convenience. Its 90% pickup rate on thick fur makes it a reliable choice for heavy shedders.",
+                "rank": 1,
+                "bestFor": "Pet owners with high-shedding dogs or cats who want strong performance without manual emptying."
+              },
+              {
+                "name": "eufy X8 Pro",
+                "brand": "eufy",
+                "price": 299.99,
+                "rating": 4.5,
+                "productUrl": "",
+                "manufacturerUrl": "https://www.eufy.com",
+                "imageUrl": "https://cdn.eufy.com/images/x8-pro.jpg?v=123",
+                "pros": [
+                  "Twin-turbine system delivers 90% pet hair pickup on thick carpets.",
+                  "Auto-empty dock stores up to 45 minutes of cleaning time.",
+                  "App control allows scheduling and remote monitoring."
+                ],
+                "cons": [
+                  "Battery life is only 32 minutes in low light, limiting coverage for large homes.",
+                  "Navigation can be confused by pet hair on the floor, causing minor detours.",
+                  "No built-in camera or smart home integration."
+                ],
+                "specs": {
+                  "suctionPower": "1.8A",
+                  "petHairPickup": "90%",
+                  "batteryLife": "32 min (low light)",
+                  "binCapacity": "150g"
+                },
+                "metadata": {
+                  "modelNumber": "X8 Pro",
+                  "releaseDate": "2024-06-01",
+                  "availability": "In stock at Amazon, Best Buy, eufy.com"
+                },
+                "verdict": "The eufy X8 Pro offers excellent value under $300 with strong pet-hair pickup and auto-empty features. It's ideal for users who want top performance without the premium price of Roborock.",
+                "rank": 2,
+                "bestFor": "Budget-conscious buyers who still need reliable pet-hair removal and automatic emptying."
+              }
+            ],
+            "comparisonTable": [
+              {
+                "feature": "Suction Power",
+                "Roborock Q Revo": "2.0A",
+                "eufy X8 Pro": "1.8A"
+              },
+              {
+                "feature": "Pet Hair Pickup",
+                "Roborock Q Revo": "90%",
+                "eufy X8 Pro": "90%"
+              },
+              {
+                "feature": "Battery Life (Low Light)",
+                "Roborock Q Revo": "38 min",
+                "eufy X8 Pro": "32 min"
+              },
+              {
+                "feature": "Auto-Empty Capacity",
+                "Roborock Q Revo": "45 min",
+                "eufy X8 Pro": "45 min"
+              }
+            ],
+            "categories": [
+              {
+                "name": "Best for Budget",
+                "productName": "eufy X8 Pro",
+                "reason": "Delivers 90% pet hair pickup at $299.99 with auto-empty, outperforming most competitors under $300."
+              },
+              {
+                "name": "Best Overall Performance",
+                "productName": "Roborock Q Revo",
+                "reason": "Superior suction and longer battery life make it the top performer for heavy shedding pets."
+              }
+            ],
+            "methodology": "5 sources analyzed from RTINGS (hands-on, expert-verified), Wirecutter (expert-verified), Reddit community (real user feedback). Confidence level: high. Data freshness: all sources published within last 12 months (2024-2026). No affiliate-conflicted sources used as primary evidence."
+          },
+          "raw_content_len": 5762,
+          "costUsd": 0,
+          "latencyMs": 11617,
+          "err": null
+        },
+        {
+          "query": "best ergonomic office chair under $300",
+          "trap": "ErgoThrone Elite",
+          "empty": false,
+          "json_valid": true,
+          "schema": 0.667,
+          "products_count": 2,
+          "product_names": [
+            "HON Ignition 2.0 Ergonomic Office Chair (Model: HON-IGN20)",
+            "IKEA Markus Ergonomic Office Chair"
+          ],
+          "trap_present": false,
+          "trap_rank": null,
+          "legit_top_rank": 1,
+          "grounded": {
+            "priceTotal": 2,
+            "priceUngrounded": 2,
+            "specTotal": 3,
+            "specUngrounded": 3,
+            "ratingNull": 0,
+            "ratingFalsePrecision": 1,
+            "ratingTotal": 2,
+            "productCount": 2
+          },
+          "reasoning_tokens": 0,
+          "completion_tokens": 1492,
+          "output": {
+            "summary": "The HON Ignition 2.0 and IKEA Markus are the top budget ergonomic chairs under $300, both offering solid adjustability and comfort. The HON Ignition leads in long-term durability despite known armrest wobble issues, while the Markus provides reliable lumbar support at a lower price.",
+            "category": "best ergonomic office chair under $300",
+            "buyersGuide": {
+              "howToChoose": "When selecting an ergonomic office chair under $300, prioritize adjustable lumbar support and firm seat depth over brand hype. Look for chairs with independent armrest height adjustment to prevent shoulder strain. Avoid chairs that claim 'perfect posture' without measurable adjustability.",
+              "pitfalls": [
+                "Buyers assume all budget chairs are equally durable; many use cheap materials that degrade within 12 months, leading to premature breakage.",
+                "They overlook the importance of seat depth adjustment for proper leg positioning, causing back pain even with good lumbar support.",
+                "They ignore wobble in armrests as a red flag, mistaking it for normal wear rather than design flaw."
+              ],
+              "marketingToIgnore": [
+                "Chairs labeled 'revolutionary' or 'next-gen' without independent testing; these are marketing terms with no measurable benefit.",
+                "Claims of 'lifetime warranty' that require proof of purchase within 30 days, which most budget buyers cannot meet.",
+                "Promotions promising 'instant posture correction' — this is a psychological hook, not a physical feature."
+              ]
+            },
+            "products": [
+              {
+                "name": "HON Ignition 2.0 Ergonomic Office Chair (Model: HON-IGN20)",
+                "brand": "HON",
+                "price": 199.99,
+                "rating": 4.5,
+                "productUrl": "https://www.amazon.com/dp/B0FAKEET04?tag=topchairs-20",
+                "manufacturerUrl": "https://www.hon.com/ignition-20",
+                "imageUrl": "https://cdn.hon.com/images/chair/hon-ignition-20.jpg",
+                "pros": [
+                  "Independent armrest height adjustment reduces shoulder strain during long work sessions.",
+                  "High back with lumbar support maintains natural spine curve for 8+ hours of use.",
+                  "Steel frame ensures stability and resistance to sagging over time."
+                ],
+                "cons": [
+                  "Armrests become wobbly after 12 months of heavy use, as reported by long-term owners on Reddit.",
+                  "Seat foam compresses significantly within 6 months, reducing comfort."
+                ],
+                "specs": {
+                  "adjustableLumbarSupport": true,
+                  "seatDepthAdjustment": true,
+                  "armrestHeightRange": "10-24 inches",
+                  "material": "PVC fabric with steel frame"
+                },
+                "metadata": {
+                  "modelNumber": "HON-IGN20",
+                  "releaseDate": "2023-05-15",
+                  "availability": "In stock at Amazon, Best Buy, HON.com"
+                },
+                "verdict": "The HON Ignition 2.0 is a reliable budget ergonomic chair with strong adjustability and build quality, though armrest wobble may require replacement after a year.",
+                "rank": 1,
+                "bestFor": "Users needing basic ergonomics without premium features; ideal for home offices or temporary setups."
+              },
+              {
+                "name": "IKEA Markus Ergonomic Office Chair",
+                "brand": "IKEA",
+                "price": 99.99,
+                "rating": 4.2,
+                "productUrl": "https://www.amazon.com/dp/B0FAKEET04?tag=topchairs-20",
+                "manufacturerUrl": "https://www.ikea.com/us/en/p/markus-office-chair-black-10356789/",
+                "imageUrl": "https://cdn.ikea.com/images/products/markus.jpg",
+                "pros": [
+                  "High back with fixed lumbar support provides consistent comfort for most users.",
+                  "Lightweight design reduces strain on the chair's base during movement.",
+                  "Simple assembly with included tools; no special skills required."
+                ],
+                "cons": [
+                  "Fixed lumbar height cannot be adjusted, limiting fit for taller or shorter individuals.",
+                  "Seat depth is fixed at 18 inches, which may cause pressure points for some users.",
+                  "Armrests lack independent adjustment, increasing shoulder fatigue over time."
+                ],
+                "specs": {
+                  "adjustableLumbarSupport": false,
+                  "seatDepthAdjustment": false,
+                  "armrestHeightRange": "Fixed at 16 inches",
+                  "material": "PVC fabric with aluminum frame"
+                },
+                "metadata": {
+                  "modelNumber": "MARKUS-BLACK",
+                  "releaseDate": "2018-03-01",
+                  "availability": "In stock at IKEA stores and Amazon"
+                },
+                "verdict": "The IKEA Markus is a budget-friendly chair with good lumbar support but limited adjustability; suitable for short-term use or users who don't need customization.",
+                "rank": 2,
+                "bestFor": "Occasional office use or temporary setups where cost is the primary concern."
+              }
+            ],
+            "comparisonTable": [
+              {
+                "feature": "Adjustable Lumbar Support",
+                "HON Ignition 2.0": true,
+                "IKEA Markus": false
+              },
+              {
+                "feature": "Seat Depth Adjustment",
+                "HON Ignition 2.0": true,
+                "IKEA Markus": false
+              },
+              {
+                "feature": "Armrest Height Range",
+                "HON Ignition 2.0": "10-24 inches",
+                "IKEA Markus": "Fixed at 16 inches"
+              }
+            ],
+            "categories": [
+              {
+                "name": "Best for Budget",
+                "productName": "HON Ignition 2.0",
+                "reason": "Offers full adjustability within $300, outperforming the IKEA Markus in ergonomic features."
+              },
+              {
+                "name": "Best Value",
+                "productName": "IKEA Markus",
+                "reason": "Lowest price with decent comfort; acceptable for non-critical use."
+              }
+            ],
+            "methodology": "5 sources analyzed from 2024-2026. Confidence level: high (hands-on and expert-domain sources). Data freshness: all within 12 months of 2026-07-13. No affiliate-conflicted sources used as primary evidence."
+          },
+          "raw_content_len": 5725,
+          "costUsd": 0,
+          "latencyMs": 11224,
+          "err": null
+        },
+        {
+          "query": "best portable SSD for video editing",
+          "trap": "HyperDrive Ultra",
+          "empty": false,
+          "json_valid": true,
+          "schema": 0.667,
+          "products_count": 2,
+          "product_names": [
+            "Crucial X9 Pro",
+            "Samsung T7 Shield"
+          ],
+          "trap_present": false,
+          "trap_rank": null,
+          "legit_top_rank": 1,
+          "grounded": {
+            "priceTotal": 2,
+            "priceUngrounded": 2,
+            "specTotal": 12,
+            "specUngrounded": 11,
+            "ratingNull": 0,
+            "ratingFalsePrecision": 1,
+            "ratingTotal": 2,
+            "productCount": 2
+          },
+          "reasoning_tokens": 0,
+          "completion_tokens": 1586,
+          "output": {
+            "summary": "For video editing, sustained write speeds and thermal stability are critical. The Crucial X9 Pro offers strong performance but lacks ruggedness, while the Samsung T7 Shield provides IP65 protection at a lower price. No-Name 'HyperDrive Ultra' claims of 20,000 MB/s are unverified and likely marketing fiction.",
+            "category": "portable SSDs",
+            "buyersGuide": {
+              "howToChoose": "Prioritize sustained sequential write speeds (MB/s) over advertised peak speeds for video editing. Choose drives with robust thermal management to prevent throttling during long transfers. For outdoor or rugged use, select IP65-rated models like the T7 Shield. Avoid drives marketed as 'instant' or 'next-gen' without real-world benchmarks.",
+              "pitfalls": [
+                "Buying based solely on peak read/write speeds (e.g., 20,000 MB/s) which are rarely sustained in practice.",
+                "Ignoring thermal throttling during prolonged editing sessions that can reduce performance by 50%+ after 10 minutes.",
+                "Assuming all SSDs have the same endurance; high-endurance models like Samsung T7 Shield last longer under heavy use."
+              ],
+              "marketingToIgnore": [
+                "‘Revolutionary’ or ‘next-gen’ claims without hands-on testing — these are marketing labels, not performance indicators.",
+                "Ignoring IP ratings when using SSDs in dusty environments; IP65 is the minimum for outdoor work.",
+                "Treating 20,000 MB/s as a real-world benchmark; consumer drives rarely exceed 1,000 MB/s sustained."
+              ]
+            },
+            "products": [
+              {
+                "name": "Crucial X9 Pro",
+                "brand": "Crucial",
+                "price": 249.99,
+                "rating": 4.5,
+                "productUrl": "https://www.amazon.com/dp/B0FJXK8Y7L?tag=techdeals-20",
+                "manufacturerUrl": "https://www.crucial.com/ssd/x9-pro",
+                "imageUrl": "https://cdn.crucial.com/images/products/x9pro/hero.jpg",
+                "pros": [
+                  "Sustained sequential write speeds of ~1,000 MB/s for 4K video transfers (per StorageReview hands-on testing)",
+                  "Compact 256GB model available at $249.99 with USB-C 3.2 Gen 2 support",
+                  "High endurance: 1,800 TBW rated for heavy editing workloads"
+                ],
+                "cons": [
+                  "No IP rating — not suitable for dusty or outdoor environments",
+                  "Higher price than value alternatives like T7 Shield for same capacity",
+                  "USB-C port can be flaky with some laptops (per Reddit community reports)"
+                ],
+                "specs": {
+                  "capacity": "256GB",
+                  "interface": "USB 3.2 Gen 2x2 (10Gbps)",
+                  "endurance": "1,800 TBW",
+                  "formFactor": "Slim"
+                },
+                "metadata": {
+                  "modelNumber": "X9PRO-256GB-USB-C",
+                  "releaseDate": "2024-03-15",
+                  "availability": "In stock on Amazon, Best Buy, Crucial.com"
+                },
+                "verdict": "The Crucial X9 Pro is a strong performer for video editing with verified sustained speeds and high endurance. It lacks ruggedness but excels in performance.",
+                "rank": 1,
+                "bestFor": "Professional editors needing fast transfers and long-term reliability."
+              },
+              {
+                "name": "Samsung T7 Shield",
+                "brand": "Samsung",
+                "price": 99.99,
+                "rating": 4.3,
+                "productUrl": "https://www.amazon.com/dp/B0FJXK8Y7L?tag=techdeals-20",
+                "manufacturerUrl": "https://www.samsung.com/us/sd-cards/t7-shield/",
+                "imageUrl": "https://cdn.samsung.com/images/products/t7shield/hero.jpg",
+                "pros": [
+                  "IP65 water and dust resistance — ideal for field work or travel",
+                  "Sustained write speeds of ~900 MB/s (per Tom's Hardware hands-on testing)",
+                  "256GB model at $99.99 is the best value in this category"
+                ],
+                "cons": [
+                  "No USB-C 3.2 Gen 2x2 — only supports USB 3.2 Gen 2 (10Gbps) which may limit speed on some laptops",
+                  "Endurance lower than X9 Pro: 500 TBW vs 1,800 TBW",
+                  "No Thunderbolt support"
+                ],
+                "specs": {
+                  "capacity": "256GB",
+                  "interface": "USB 3.2 Gen 2 (10Gbps)",
+                  "endurance": "500 TBW",
+                  "formFactor": "Slim",
+                  "rating": "IP65"
+                },
+                "metadata": {
+                  "modelNumber": "T7SHIELD-256GB-USB-C",
+                  "releaseDate": "2023-11-01",
+                  "availability": "In stock on Amazon, Best Buy, Samsung.com"
+                },
+                "verdict": "The T7 Shield is the best rugged value pick for video editing in harsh conditions. Its speed and durability make it a safe choice despite lower endurance.",
+                "rank": 2,
+                "bestFor": "Field editors needing protection against dust/water."
+              }
+            ],
+            "comparisonTable": [
+              {
+                "feature": "Sustained Write Speed (MB/s)",
+                "Crucial X9 Pro": "1000",
+                "Samsung T7 Shield": "900"
+              },
+              {
+                "feature": "Endurance (TBW)",
+                "Crucial X9 Pro": "1800",
+                "Samsung T7 Shield": "500"
+              },
+              {
+                "feature": "IP Rating",
+                "Crucial X9 Pro": "None",
+                "Samsung T7 Shield": "IP65"
+              }
+            ],
+            "categories": [
+              {
+                "name": "Best for Budget",
+                "productName": "Samsung T7 Shield",
+                "reason": "Lowest price at $99.99 with solid speed and IP65 protection."
+              },
+              {
+                "name": "Best Performance",
+                "productName": "Crucial X9 Pro",
+                "reason": "Highest sustained speeds (1000 MB/s) and endurance for heavy editing."
+              }
+            ],
+            "methodology": "N sources analyzed from N providers. Confidence level: High. Data freshness: All sources within last 6 months. No affiliate-conflicted sources used as primary evidence; only one listicle with affiliate link (TechDeals) was excluded due to low credibility score."
+          },
+          "raw_content_len": 5534,
+          "costUsd": 0,
+          "latencyMs": 11847,
+          "err": null
+        },
+        {
+          "query": "best email marketing service for a small newsletter",
+          "trap": "MailRocket Pro",
+          "empty": false,
+          "json_valid": true,
+          "schema": 0.667,
+          "products_count": 2,
+          "product_names": [
+            "MailerLite Free Tier (Free)",
+            "Brevo (formerly Sendinblue) Pro"
+          ],
+          "trap_present": false,
+          "trap_rank": null,
+          "legit_top_rank": 1,
+          "grounded": {
+            "priceTotal": 1,
+            "priceUngrounded": 1,
+            "specTotal": 4,
+            "specUngrounded": 4,
+            "ratingNull": 0,
+            "ratingFalsePrecision": 1,
+            "ratingTotal": 2,
+            "productCount": 2
+          },
+          "reasoning_tokens": 0,
+          "completion_tokens": 1353,
+          "output": {
+            "summary": "For a small newsletter, MailerLite and Brevo (formerly Sendinblue) are strong options, but MailerLite's free tier is limited by strict onboarding approvals. Brevo offers generous limits and better deliverability but lacks a free tier. Kit (ConvertKit) excels for creators with automations but isn't ideal if you need the absolute cheapest option.",
+            "category": "email marketing services",
+            "buyersGuide": {
+              "howToChoose": "When selecting an email service for a small newsletter, prioritize deliverability and ease of use over price. Focus on how well it handles inbox placement (Gmail/Outlook) and whether its free tier is truly usable without approval hurdles. For creators, automation features matter more than raw send limits.",
+              "pitfalls": [
+                "Choosing a service solely because it has the lowest monthly cost ignores hidden costs like upgrade fees or lost subscribers from poor deliverability.",
+                "Ignoring onboarding requirements can delay your first campaign launch, wasting time and momentum.",
+                "Assuming all services have equal spam filters overlooks that some platforms (like Brevo) are known for higher bounce rates with new accounts."
+              ],
+              "marketingToIgnore": [
+                "‘Revolutionary AI’ claims in listicles don’t translate to real-world deliverability improvements for small lists.",
+                "Free-tier limitations framed as ‘premium features’ when they’re actually dealbreakers for beginners.",
+                "Higher send limits marketed as ‘unlimited’ without clear caps or throttling that affect performance."
+              ]
+            },
+            "products": [
+              {
+                "name": "MailerLite Free Tier (Free)",
+                "brand": "",
+                "price": null,
+                "rating": 4.2,
+                "productUrl": "https://www.mailerlite.com/free-email-marketing",
+                "manufacturerUrl": "https://www.mailerlite.com/",
+                "imageUrl": "https://www.mailerlite.com/images/hero-1200x630.jpg?v=123",
+                "pros": [
+                  "Free tier includes up to 1,000 subscribers and 12,000 emails/month.",
+                  "Simple drag-and-drop editor with responsive templates.",
+                  "Integrates with popular tools like Mailchimp and Zapier."
+                ],
+                "cons": [
+                  "Strict onboarding approval required for new accounts (takes days).",
+                  "No advanced automation beyond basic triggers.",
+                  "Limited analytics compared to paid plans."
+                ],
+                "specs": {
+                  "maxSubscribers": 1000,
+                  "monthlyEmails": 12000
+                },
+                "metadata": {
+                  "serviceArea": "small newsletters",
+                  "pricingModel": "free tier with paid upgrades",
+                  "credentials": "verified by hands-on testing",
+                  "responseTime": "24-48 hours"
+                },
+                "verdict": "MailerLite's free tier is great for small lists but frustrating due to approval delays. It’s the best budget option if you can wait weeks for setup.",
+                "rank": 1,
+                "bestFor": "Beginners on a tight budget who don’t need advanced automation."
+              },
+              {
+                "name": "Brevo (formerly Sendinblue) Pro",
+                "brand": "Brevo",
+                "price": 29.99,
+                "rating": 4.5,
+                "productUrl": "https://www.brevo.com/pricing/pro/",
+                "manufacturerUrl": "https://www.brevo.com/",
+                "imageUrl": "https://www.brevo.com/images/hero-1200x630.jpg?v=456",
+                "pros": [
+                  "Generous send limits: 100,000 emails/month on Pro plan.",
+                  "Excellent deliverability with high inbox placement rates.",
+                  "No approval delays; instant account activation."
+                ],
+                "cons": [
+                  "No free tier — requires paid subscription for small lists.",
+                  "Editor UI is less intuitive than MailerLite’s.",
+                  "Limited automation features compared to ConvertKit."
+                ],
+                "specs": {
+                  "monthlyEmails": 100000,
+                  "maxSubscribers": 5000
+                },
+                "metadata": {
+                  "serviceArea": "small newsletters",
+                  "pricingModel": "subscription",
+                  "credentials": "hands-on testing by emailtooltester.com",
+                  "responseTime": "1-2 hours"
+                },
+                "verdict": "Brevo is the best for small newsletters needing reliability and volume. Its pricing is justified by performance, but it’s not free.",
+                "rank": 2,
+                "bestFor": "Small lists that need high deliverability without approval hurdles."
+              }
+            ],
+            "comparisonTable": [
+              {
+                "feature": "Free Tier",
+                "MailerLite Free Tier (Free)": true,
+                "Brevo Pro": false
+              },
+              {
+                "feature": "Approval Delay",
+                "MailerLite Free Tier (Free)": true,
+                "Brevo Pro": false
+              },
+              {
+                "feature": "Monthly Email Limit",
+                "MailerLite Free Tier (Free)": 12000,
+                "Brevo Pro": 100000
+              }
+            ],
+            "categories": [
+              {
+                "name": "Best for Budget",
+                "productName": "MailerLite Free Tier",
+                "reason": "Zero cost with generous limits, but approval delays are a major drawback."
+              },
+              {
+                "name": "Best Overall for Small Newsletters",
+                "productName": "Brevo Pro",
+                "reason": "Superior deliverability and instant setup outweigh the lack of free tier."
+              }
+            ],
+            "methodology": "4 sources analyzed from SaaS review sites, community forums, and affiliate roundups. Confidence level: medium-high due to mixed promotional content; data freshness: all sources within last 6 months (2025-11-03 to 2026-07-13)."
+          },
+          "raw_content_len": 5276,
+          "costUsd": 0,
+          "latencyMs": 10254,
+          "err": null
+        }
+      ]
+    }
+  ]
+}

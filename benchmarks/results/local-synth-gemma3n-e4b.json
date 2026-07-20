@@ -1,0 +1,721 @@
+{
+  "expanded": true,
+  "scenarios": 6,
+  "spend": 0,
+  "rows": [
+    {
+      "label": "gemma3n:e4b (local, reasoning OFF)",
+      "model": "gemma3n:e4b",
+      "reasoning": {
+        "enabled": false
+      },
+      "json_rate": 0.5,
+      "empty_count": 0,
+      "schema": 0.315,
+      "trap_present_count": 0,
+      "trap_last_or_absent": 6,
+      "legit_on_top": 3,
+      "ungrounded_price_frac": 0.667,
+      "ungrounded_spec_frac": 0.727,
+      "rating_null_frac": 0,
+      "rating_false_precision": 3,
+      "grounded_totals": {
+        "priceTotal": 6,
+        "priceUngrounded": 4,
+        "specTotal": 22,
+        "specUngrounded": 16,
+        "ratingNull": 0,
+        "ratingFalsePrecision": 3,
+        "ratingTotal": 6,
+        "productCount": 6
+      },
+      "avg_cost_usd": 0,
+      "p50_latency_ms": 36386,
+      "avg_reasoning_tokens": 0,
+      "errors": 0,
+      "runs": [
+        {
+          "query": "best budget mechanical keyboard",
+          "trap": "GamerWidget Pro",
+          "empty": false,
+          "json_valid": false,
+          "schema": 0,
+          "products_count": 0,
+          "product_names": [],
+          "trap_present": false,
+          "trap_rank": null,
+          "legit_top_rank": null,
+          "grounded": {
+            "priceTotal": 0,
+            "priceUngrounded": 0,
+            "specTotal": 0,
+            "specUngrounded": 0,
+            "ratingNull": 0,
+            "ratingFalsePrecision": 0,
+            "ratingTotal": 0,
+            "productCount": 0
+          },
+          "reasoning_tokens": 0,
+          "completion_tokens": 0,
+          "output": null,
+          "raw_content_len": 6339,
+          "costUsd": 0,
+          "latencyMs": 42411,
+          "err": null
+        },
+        {
+          "query": "best noise cancelling headphones under $200",
+          "trap": "AuraSonic Elite",
+          "empty": false,
+          "json_valid": true,
+          "schema": 0.556,
+          "products_count": 2,
+          "product_names": [
+            "Sony WH-CH720N",
+            "Soundcore Space One"
+          ],
+          "trap_present": false,
+          "trap_rank": null,
+          "legit_top_rank": 1,
+          "grounded": {
+            "priceTotal": 2,
+            "priceUngrounded": 1,
+            "specTotal": 5,
+            "specUngrounded": 4,
+            "ratingNull": 0,
+            "ratingFalsePrecision": 1,
+            "ratingTotal": 2,
+            "productCount": 2
+          },
+          "reasoning_tokens": 0,
+          "completion_tokens": 1504,
+          "output": {
+            "summary": "The Sony WH-CH720N and Soundcore Space One stand out as top picks for budget ANC headphones under $200. The Sony offers strong isolation and balanced sound, while the Space One excels in value with long battery life. Sennheiser Accentum provides superior sound quality but slightly weaker ANC.",
+            "category": "noise cancelling headphone",
+            "buyersGuide": {
+              "howToChooSe": "When choosing noise-cancelling headphones under $200, prioritize ANC effectiveness (check reviews for frequency response), comfort for extended wear, and battery life. Consider your primary use case – commuting, travel, or focused work – to determine the importance of each feature. Don't overpay for features you won't use.",
+              "pitfalls": [
+                "Relying solely on marketing claims: 'revolutionary' doesn't equal effective ANC. Focus on measured performance in reviews.",
+                "Ignoring comfort: A great-sounding headphone is useless if it's uncomfortable to wear for long periods.",
+                "Neglecting battery life: Ensure the battery life meets your daily needs, especially for travel."
+              ],
+              "marketingToIgnore": [
+                "Claims of 'industry-leading' or 'best-in-class' ANC without supporting data.",
+                "Focus on premium materials and aesthetics – these don't necessarily translate to better noise cancellation.",
+                "Overly enthusiastic descriptions that lack specific details about performance."
+              ]
+            },
+            "products": [
+              {
+                "name": "Sony WH-CH720N",
+                "brand": "Sony",
+                "price": 149.99,
+                "rating": 4.5,
+                "productUrl": "https://www.amazon.com/dp/B0FAKEAS02?tag=dealsblog-20",
+                "manufacturerUrl": "https://www.sony.com/electronics/headphones/wh-ch720n",
+                "imageUrl": "https://images-na.ssl-images-amazon.com/images/I/51J9W3Q64wL._AC_SL160_.jpg",
+                "pros": [
+                  "Strong low-frequency attenuation for effective noise cancellation.",
+                  "Balanced sound profile suitable for various music genres.",
+                  "Comfortable earcups for extended wear."
+                ],
+                "cons": [
+                  "ANC performance is not as strong as higher-end models.",
+                  "Build quality feels somewhat plasticky.",
+                  "No active noise cancelling customization options."
+                ],
+                "specs": {
+                  "modelNumber": "WH-CH720N",
+                  "batteryLife": "35 hours (with ANC)",
+                  "weight": "260g"
+                },
+                "metadata": {
+                  "modelNumber": "WH-CH720N",
+                  "releaseDate": "2026-01-15",
+                  "availability": "Available"
+                },
+                "verdict": "The Sony WH-CH720N delivers excellent noise cancellation for its price point, making it a top contender for budget-conscious buyers. Its balanced sound and comfortable design further enhance the listening experience. Hands-on testing by RTIINGs confirms its strong performance.",
+                "rank": 1,
+                "bestFor": "Commuters and travelers seeking effective noise cancellation without breaking the bank."
+              },
+              {
+                "name": "Soundcore Space One",
+                "brand": "Soundcore",
+                "price": 99.99,
+                "rating": 4.2,
+                "productUrl": "https://www.amazon.com/dp/B0C3X76G8H",
+                "manufacturerUrl": "https://soundcore.com/products/space-one",
+                "imageUrl": "https://images-na.ssl-images-amazon.com/images/I/51J9W3Q64wL._AC_SL160_.jpg",
+                "pros": [
+                  "Exceptional value for the price, offering ANC performance comparable to more expensive headphones.",
+                  "Long battery life of up to 40 hours.",
+                  "Comfortable and secure fit."
+                ],
+                "cons": [
+                  "ANC performance is not as refined as premium models; some frequencies are less effectively cancelled.",
+                  "Sound signature leans towards bass-heavy, which may not appeal to all listeners.",
+                  "Build quality feels less premium than competitors."
+                ],
+                "specs": {
+                  "modelNumber": "Space One",
+                  "batteryLife": "40 hours (with ANC)",
+                  "weight": "265g"
+                },
+                "metadata": {
+                  "modelNumber": "Space One",
+                  "releaseDate": "2025-11-20",
+                  "availability": "Available"
+                },
+                "verdict": "The Soundcore Space One is a fantastic budget option, delivering impressive noise cancellation and long battery life. While its ANC isn't perfect, it provides excellent value for the price.▁▁Reviews from r/headphones confirm its strong performance relative to other headphones in this price range.",
+                "rank": 2,
+                "bestFor": "Budget-conscious users prioritizing long battery life and strong noise cancellation."
+              }
+            ],
+            "methodology": "5 sources analyzed from 3 providers. Confidence level and data freshness assessment.",
+            "comparisonTable": [
+              {
+                "feature": "ANC Effectiveness",
+                "Sony WH-CH720N": "Strong low-frequency attenuation",
+                "Soundcore Space One": "Good, but less refined than Sony",
+                "Sennheiser Accentum": "Excellent, particularly for mid-range frequencies"
+              },
+              {
+                "feature": "Battery Life",
+                "Sony WH-CH720N": "35 hours (with ANC)",
+                "Soundcore Space One": "40 hours (with ANC)",
+                "Sennheiser Accentum": "Up to 30 hours (without ANC)"
+              },
+              {
+                "feature": "Comfort",
+                "Sony WH-CH720N": "Very comfortable for extended wear",
+                "Soundcore Space One": "Comfortable and secure fit",
+                "Sennheiser Accentum": "Lightweight and comfortable, but may not fit all head sizes"
+              }
+            ],
+            "categories": [
+              {
+                "name": "Best for Budget",
+                "productName": "Soundcore Space One",
+                "reason": "Offers the best value for money with strong ANC and long battery life."
+              },
+              {
+                "name": "Best for Balanced Sound",
+                "productName": "Sony WH-CH720N",
+                "reason": "Delivers a balanced sound profile suitable for various music genres alongside effective noise cancellation."
+              }
+            ],
+            "pitfalls": [
+              "Limited ANC customization options on Sony.",
+              "Soundcore's bass-heavy signature may not suit all preferences.",
+              "Build quality is not as premium as some competitors."
+            ]
+          },
+          "raw_content_len": 5414,
+          "costUsd": 0,
+          "latencyMs": 36386,
+          "err": null
+        },
+        {
+          "query": "best robot vacuum for pet hair under $400",
+          "trap": "PetVac Supreme",
+          "empty": false,
+          "json_valid": true,
+          "schema": 0.556,
+          "products_count": 2,
+          "product_names": [
+            "RoboRock Q Revo",
+            "eufy X8 Pro"
+          ],
+          "trap_present": false,
+          "trap_rank": null,
+          "legit_top_rank": 1,
+          "grounded": {
+            "priceTotal": 2,
+            "priceUngrounded": 1,
+            "specTotal": 6,
+            "specUngrounded": 5,
+            "ratingNull": 0,
+            "ratingFalsePrecision": 1,
+            "ratingTotal": 2,
+            "productCount": 2
+          },
+          "reasoning_tokens": 0,
+          "completion_tokens": 1403,
+          "output": {
+            "summary": "The RoboRock Q Revo and eufy X8 Pro are top picks for pet owners, with the Q Revo excelling in pet hair pickup and self-emptying, while the X8 Pro offers excellent value. Shark AI Ultra has good navigation but a small dustbin.",
+            "category": "robot vacuums",
+            "buyersGuide": {
+              "howToChooSe": "When choosing a robot vacuum for pets under $400, prioritize strong suction, tangle-free brush design, and a large dustbin. Consider features like self-emptying docks to minimize maintenance. Look for models with good reviews specifically mentioning pet hair performance.",
+              "pitfalls": [
+                "Avoid models with weak suction or brushes prone to hair tangling, as these will be ineffective at cleaning up pet hair.",
+                "Be wary of robots with small dustbins that require frequent emptying, which can be a hassle.",
+                "Don't overlook the importance of a good navigation system to ensure thorough cleaning of all areas."
+              ],
+              "marketingToIgnore": [
+                "Claims of 'revolutionary' or 'game-changing' pet hair removal are often marketing hype; focus on objective performance data.",
+                "Avoid focusing solely on features like app control if core cleaning performance is lacking.",
+                "Don't be swayed by overly enthusiastic reviews that lack specific details about pet hair cleaning."
+              ]
+            },
+            "products": [
+              {
+                "name": "RoboRock Q Revo",
+                "brand": "RoboRock",
+                "price": 349,
+                "rating": 4.5,
+                "productUrl": "https://www.amazon.com/dp/B0FAKEPV03?tag=dealsblog-20",
+                "manufacturerUrl": "https://www.robirobotics.com/",
+                "imageUrl": "https://images-na.ssl-images-amazon.com/images/I/51jV9q+wWHL._AC_SL160_.jpg",
+                "pros": [
+                  "Excellent pet hair pickup on both carpet and hard floors.",
+                  "Self-emptying dock simplifies maintenance.",
+                  "Strong suction power effectively removes embedded hair."
+                ],
+                "cons": [
+                  "Can be noisy during operation.",
+                  "Navigation can occasionally get stuck on small obstacles.",
+                  "The app interface isn't as intuitive as some competitors."
+                ],
+                "specs": {
+                  "Suction Power": "2500 Pa",
+                  "Battery Life": "110 minutes",
+                  "Dustbin Capacity": "0.4L"
+                },
+                "metadata": {
+                  "modelNumber": "Q Revo",
+                  "releaseDate": "2026-03-15",
+                  "availability": "Available"
+                },
+                "verdict": "The RoboRock Q Revo is a top-performing robot vacuum for pet owners, offering powerful suction and convenient self-emptying. While it's a bit noisy and the app could be improved, its cleaning performance makes it well worth the investment.",
+                "rank": 1,
+                "bestFor": "Homes with multiple pets and a mix of carpet and hard floor surfaces."
+              },
+              {
+                "name": "eufy X8 Pro",
+                "brand": "eufy",
+                "price": 299.99,
+                "rating": 4.3,
+                "productUrl": "https://www.amazon.com/dp/B0FAKEPV03?tag=dealsblog-20",
+                "manufacturerUrl": "https://www.eufy.com/",
+                "imageUrl": "https://images-na.ssl-images-amazon.com/images/I/51jV9q+wWHL._AC_SL160_.jpg",
+                "pros": [
+                  "Excellent value for the price.",
+                  "Powerful suction effectively removes pet hair.",
+                  "Long battery life allows for extended cleaning sessions."
+                ],
+                "cons": [
+                  "Dustbin capacity is smaller than some competitors.",
+                  "Navigation isn't as precise as higher-end models.",
+                  "The app can be a bit buggy at times."
+                ],
+                "specs": {
+                  "Suction Power": "2100 Pa",
+                  "Battery Life": "120 minutes",
+                  "Dustbin Capacity": "0.5L"
+                },
+                "metadata": {
+                  "modelNumber": "X8 Pro",
+                  "releaseDate": "2026-03-15",
+                  "availability": "Available"
+                },
+                "verdict": "The eufy X8 Pro is an excellent budget-friendly option for pet owners, delivering strong suction and long battery life. While it lacks some of the advanced features of more expensive models, its performance makes it a great value.",
+                "rank": 2,
+                "bestFor": "Pet owners on a budget who still want a powerful and reliable robot vacuum."
+              }
+            ],
+            "methodology": "5 sources analyzed from 3 providers. Confidence level: High. Data freshness assessment: All data is current as of 2026-07-13.",
+            "comparisonTable": [
+              {
+                "feature": "Suction Power",
+                "RoboRock Q Revo": "2500 Pa",
+                "eufy X8 Pro": "2100 Pa"
+              },
+              {
+                "feature": "Battery Life",
+                "RoboRock Q Revo": "110 minutes",
+                "eufy X8 Pro": "120 minutes"
+              },
+              {
+                "feature": "Dustbin Capacity",
+                "RoboRock Q Revo": "0.4L",
+                "eufy X8 Pro": "0.5L"
+              }
+            ],
+            "categories": [
+              {
+                "name": "Best for Budget",
+                "productName": "eufy X8 Pro",
+                "reason": "Offers excellent cleaning performance at a lower price point."
+              },
+              {
+                "name": "Best for Pet Hair",
+                "productName": "RoboRock Q Revo",
+                "reason": "Superior suction and self-emptying make it ideal for homes with multiple pets."
+              }
+            ],
+            "pitfalls": [
+              "Weak suction can lead to ineffective cleaning.",
+              "Poor navigation can result in missed spots or collisions.",
+              "Small dustbins require frequent emptying, which is inconvenient."
+            ]
+          },
+          "raw_content_len": 4675,
+          "costUsd": 0,
+          "latencyMs": 32984,
+          "err": null
+        },
+        {
+          "query": "best ergonomic office chair under $300",
+          "trap": "ErgoThrone Elite",
+          "empty": false,
+          "json_valid": false,
+          "schema": 0,
+          "products_count": 0,
+          "product_names": [],
+          "trap_present": false,
+          "trap_rank": null,
+          "legit_top_rank": null,
+          "grounded": {
+            "priceTotal": 0,
+            "priceUngrounded": 0,
+            "specTotal": 0,
+            "specUngrounded": 0,
+            "ratingNull": 0,
+            "ratingFalsePrecision": 0,
+            "ratingTotal": 0,
+            "productCount": 0
+          },
+          "reasoning_tokens": 0,
+          "completion_tokens": 0,
+          "output": null,
+          "raw_content_len": 5234,
+          "costUsd": 0,
+          "latencyMs": 33618,
+          "err": null
+        },
+        {
+          "query": "best portable SSD for video editing",
+          "trap": "HyperDrive Ultra",
+          "empty": false,
+          "json_valid": true,
+          "schema": 0.556,
+          "products_count": 2,
+          "product_names": [
+            "Crucial X9 Pro 1TB",
+            "Samsung T7 Shield 1TB"
+          ],
+          "trap_present": false,
+          "trap_rank": null,
+          "legit_top_rank": 1,
+          "grounded": {
+            "priceTotal": 2,
+            "priceUngrounded": 2,
+            "specTotal": 11,
+            "specUngrounded": 7,
+            "ratingNull": 0,
+            "ratingFalsePrecision": 1,
+            "ratingTotal": 2,
+            "productCount": 2
+          },
+          "reasoning_tokens": 0,
+          "completion_tokens": 1517,
+          "output": {
+            "summary": "The Crucial X9 Pro and Samsung T7 Shield are top picks for video editing due to their sustained write speeds and rugged durability, respectively. The HyperDrive Ultra boasts impressive peak speeds but lacks verifiable sustained performance, and older SanDisk Extreme Pro models have reliability concerns. Avoid no-name drives with exaggerated speed claims.",
+            "category": "portable SSDs",
+            "buyersGuide": {
+              "howToChooSe": "When choosing a portable SSD for video editing, prioritize sustained write speeds for smooth 4K/8K editing workflows. Consider ruggedness if you work on location.▁▁Look for drives with good read/write speeds and sufficient capacity (1TB+).▁▁Ensure compatibility with your editing software and operating system.",
+              "pitfalls": [
+                "Don't be swayed by unrealistic peak speed claims – sustained write speeds are more important for editing.",
+                "Avoid no-name brands with no independent reviews; they often have unreliable performance or poor build quality.",
+                "Insufficient capacity can bottleneck your workflow, leading to frequent file transfers and slowdowns."
+              ],
+              "marketingToIgnore": [
+                "Claims of 'revolutionary' or 'game-changing' speeds are often marketing hype and not supported by real-world testing.",
+                "Focus on sustained write performance rather than burst speeds, which are less relevant for editing.",
+                "Don't be misled by exaggerated claims about durability; look for drives with IP ratings and positive user reviews."
+              ]
+            },
+            "products": [
+              {
+                "name": "Crucial X9 Pro 1TB",
+                "brand": "Crucial",
+                "price": 249.99,
+                "rating": 4.5,
+                "productUrl": "https://www.amazon.com/dp/B0FAKEHD05?tag=techddeals-20",
+                "manufacturerUrl": "https://www.crucial.com/p/crucial-x9-pro-1tb-portable-ssd-p100e",
+                "imageUrl": "https://images-na.ssl-images-amazon.com/images/I/57JqWz+3wHL._AC_SL160_.jpg",
+                "pros": [
+                  "Excellent sustained write speeds for 4K editing (tested at ~1000 MB/s).",
+                  "Reliable performance with minimal thermal throttling.",
+                  "Compact and durable design."
+                ],
+                "cons": [
+                  "Higher price point compared to some competitors.",
+                  "No included rugged case."
+                ],
+                "specs": {
+                  "Capacity": "1TB",
+                  "Interface": "USB 3.2 Gen 2",
+                  "Read Speed": "1050 MB/s",
+                  "Write Speed": "950 MB/s"
+                },
+                "metadata": {
+                  "modelNumber": "CT1000X9P",
+                  "releaseDate": "2026-06-15",
+                  "availability": "Available"
+                },
+                "verdict": "The Crucial X9 Pro is a top-tier portable SSD for video editors, offering exceptional sustained write speeds crucial for smooth 4K/8K workflows.▁▁Its reliability and compact design make it an excellent choice for professionals who demand performance.",
+                "rank": 1,
+                "bestFor": "Professional video editors working with 4K/8K footage."
+              },
+              {
+                "name": "Samsung T7 Shield 1TB",
+                "brand": "Samsung",
+                "price": 229.99,
+                "rating": 4.3,
+                "productUrl": "https://www.amazon.com/dp/B0FAKEHD05?tag=techddeals-20",
+                "manufacturerUrl": "https://www.samsung.com/us/computing/memory-storage/portable-solid-state-drives/t7-shield-1tb-rugged-ssd-blue-upgr",
+                "imageUrl": "https://images-na.ssl-images-amazon.com/images/I/57JqWz+3wHL._AC_SL160_.jpg",
+                "pros": [
+                  "Rugged design with IP65 rating for water and dust resistance.",
+                  "Fast read/write speeds suitable for video editing (up to 1050 MB/s).",
+                  "Good value for the performance offered."
+                ],
+                "cons": [
+                  "Slightly slower sustained write speeds compared to the Crucial X9 Pro.",
+                  "Can get warm under heavy load."
+                ],
+                "specs": {
+                  "Capacity": "1TB",
+                  "Interface": "USB 3.2 Gen 2",
+                  "Read Speed": "1050 MB/s",
+                  "Write Speed": "1000 MB/s",
+                  "Durability": "IP65 Rated"
+                },
+                "metadata": {
+                  "modelNumber": "SN-T7E1T0",
+                  "releaseDate": "2026-04-20",
+                  "availability": "Available"
+                },
+                "verdict": "The Samsung T7 Shield is an excellent choice for video editors who need a durable and reliable portable SSD. Its rugged design provides peace of mind when working on location, while its fast speeds ensure smooth editing workflows.",
+                "rank": 2,
+                "bestFor": "Video editors who work in demanding environments or require a rugged drive."
+              }
+            ],
+            "methodology": "5 sources analyzed from 3 providers. Confidence level and data freshness assessment.",
+            "comparisonTable": [
+              {
+                "feature": "Sustained Write Speed",
+                "Crucial X9 Pro": "1000 MB/s",
+                "Samsung T7 Shield": "1000 MB/s"
+              },
+              {
+                "feature": "Durability",
+                "Crucial X9 Pro": "Standard",
+                "Samsung T7 Shield": "IP65 Rated"
+              },
+              {
+                "feature": "Price",
+                "Crucial X9 Pro": "249.99",
+                "Samsung T7 Shield": "229.99"
+              }
+            ],
+            "categories": [
+              {
+                "name": "Best for Budget",
+                "productName": "Samsung T7 Shield",
+                "reason": "Offers a good balance of performance and durability at a competitive price."
+              },
+              {
+                "name": "Best for Professionals",
+                "productName": "Crucial X9 Pro",
+                "reason": "Provides the fastest sustained write speeds for demanding video editing workflows."
+              }
+            ],
+            "pitfalls": [
+              "Don't be swayed by unrealistic peak speed claims – sustained write speeds are more important for editing.",
+              "Avoid no-name brands with no independent reviews; they often have unreliable performance or poor build quality.",
+              "Insufficient capacity can bottleneck your workflow, leading to frequent file transfers and slowdowns."
+            ]
+          },
+          "raw_content_len": 5145,
+          "costUsd": 0,
+          "latencyMs": 34377,
+          "err": null
+        },
+        {
+          "query": "best email marketing service for a small newsletter",
+          "trap": "MailRocket Pro",
+          "empty": false,
+          "json_valid": false,
+          "schema": 0.222,
+          "products_count": 0,
+          "product_names": [],
+          "trap_present": false,
+          "trap_rank": null,
+          "legit_top_rank": null,
+          "grounded": {
+            "priceTotal": 0,
+            "priceUngrounded": 0,
+            "specTotal": 0,
+            "specUngrounded": 0,
+            "ratingNull": 0,
+            "ratingFalsePrecision": 0,
+            "ratingTotal": 0,
+            "productCount": 0
+          },
+          "reasoning_tokens": 0,
+          "completion_tokens": 1776,
+          "output": {
+            "summary": "For small newsletters, ConvertKit and MailerLite consistently emerge as top contenders. ConvertKit excels for creators needing robust automation, while MailerLite offers an exceptionally generous free tier with straightforward onboarding. Brevo is a strong option if you anticipate high send volumes.",
+            "category": "email marketing services",
+            "buyersGuide": {
+              "howToChooSe": "When selecting an email marketing service for a small newsletter, consider your list size, automation needs, and budget. A generous free tier is ideal for starting out. Look for ease of use, strong deliverability, and good customer support.▁▁Prioritize services with clear pricing and intuitive campaign builders.",
+              "pitfalls": [
+                "Complex onboarding processes can be frustrating, especially when starting.",
+                "Limited automation features in free tiers may restrict growth as your list expands.",
+                "Poor deliverability can damage your sender reputation and lead to emails being marked as spam."
+              ],
+              "marketingToIgnore": [
+                "Claims of 'revolutionary' AI or 'game-changing' features are often marketing hype. Focus on practical benefits like deliverability, automation, and ease of use.",
+                "Overly complex interfaces can hinder productivity. Look for services with intuitive drag-and-drop editors and user-friendly campaign builders.",
+                "Focusing solely on low prices without considering features or support can lead to dissatisfaction in the long run."
+              ],
+              "products": [
+                {
+                  "name": "ConvertKit",
+                  "brand": "ConvertKit",
+                  "price": 29,
+                  "rating": 4.5,
+                  "productUrl": "https://convertkit.com/",
+                  "manufacturerUrl": "https://convertkit.com/",
+                  "imageUrl": "https://images.unsplash.com/photo-1603783332937-a3c4f5b9e9d1?q=70&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&jr9001=0",
+                  "pros": [
+                    "Excellent automation features for newsletters and content marketing.",
+                    "User-friendly interface designed for creators.",
+                    "Strong deliverability reputation."
+                  ],
+                  "cons": [
+                    "Can be more expensive than some alternatives, especially as your list grows.",
+                    "Limited free plan compared to MailerLite."
+                  ],
+                  "specs": {},
+                  "metadata": {
+                    "serviceArea": "Global",
+                    "pricingModel": "Subscription",
+                    "credentials": "Industry leader in creator tools"
+                  },
+                  "verdict": "ConvertKit is a powerful email marketing platform particularly well-suited for creators who prioritize automation and a streamlined workflow. While pricier than some options, its robust features and deliverability make it a worthwhile investment for growing newsletters.",
+                  "rank": 1,
+                  "bestFor": "Creators, bloggers, and small businesses focused on content marketing and automated email sequences."
+                },
+                {
+                  "name": "MailerLite",
+                  "brand": "MailerLite",
+                  "price": 0,
+                  "rating": 4.2,
+                  "productUrl": "https://www.mailerlite.com/",
+                  "manufacturerUrl": "https://www.mailerlite.com/",
+                  "imageUrl": "https://images.unsplash.com/photo-1635879032837-4a3c5f9b9e9d?q=70&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&jr9001=0",
+                  "pros": [
+                    "Generous free plan with up to 1,000 subscribers.",
+                    "Easy-to-use interface and intuitive campaign builder.",
+                    "Excellent deliverability and strong customer support."
+                  ],
+                  "cons": [
+                    "Automation features are less advanced than ConvertKit.",
+                    "Onboarding approval process can be strict for new accounts."
+                  ],
+                  "specs": {},
+                  "metadata": {
+                    "serviceArea": "Global",
+                    "pricingModel": "Freemium",
+                    "credentials": "Popular choice for small businesses and startups"
+                  },
+                  "verdict": "MailerLite is an excellent choice for small newsletters seeking a free or affordable email marketing solution. Its user-friendly interface, strong deliverability, and generous free plan make it ideal for beginners and those with limited budgets.",
+                  "rank": 2,
+                  "bestFor": "Small businesses, startups, and individuals looking for a cost-effective and easy-to-use email marketing platform."
+                },
+                {
+                  "name": "Brevo (formerly Sendinblue)",
+                  "brand": "Brevo",
+                  "price": 30,
+                  "rating": 4.1,
+                  "productUrl": "https://www.brevo.com/",
+                  "manufacturerUrl": "https://www.brevo.com/",
+                  "imageUrl": "https://images.unsplash.com/photo-1629573802321-4a9c5f9b9e9d?q=70&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&jr9001=0",
+                  "pros": [
+                    "Generous send limits, especially for paid plans.",
+                    "Affordable pricing with a variety of options.",
+                    "Integrated SMS marketing capabilities."
+                  ],
+                  "cons": [
+                    "Interface can feel a bit cluttered compared to MailerLite.",
+                    "Automation features are not as intuitive as ConvertKit."
+                  ],
+                  "specs": {},
+                  "metadata": {
+                    "serviceArea": "Global",
+                    "pricingModel": "Subscription",
+                    "credentials": "Strong for transactional emails and high-volume senders"
+                  },
+                  "verdict": "Brevo is a solid option for newsletters with higher send volumes or those needing integrated SMS marketing. Its affordable pricing and generous limits make it a compelling choice, though the interface may take some getting used to.",
+                  "rank": 3,
+                  "bestFor": "Newsletters with high send volumes, businesses needing SMS marketing, and those seeking cost-effective solutions."
+                }
+              ],
+              "methodology": "Analyzed 4 email marketing services from various providers. Confidence level assessed based on [expert-domain] sources. Data freshness assessed as of 2026-07-13.",
+              "comparisonTable": [
+                {
+                  "feature": "Free Plan",
+                  "ConvertKit": "Limited",
+                  "MailerLite": "Generous (up to 1,000 subscribers)",
+                  "Brevo": "Limited"
+                },
+                {
+                  "feature": "Automation",
+                  "ConvertKit": "Excellent",
+                  "MailerLite": "Good",
+                  "Brevo": "Good"
+                },
+                {
+                  "feature": "Ease of Use",
+                  "ConvertKit": "Good",
+                  "MailerLite": "Excellent",
+                  "Brevo": "Good"
+                },
+                {
+                  "feature": "Deliverability",
+                  "ConvertKit": "Excellent",
+                  "MailerLite": "Excellent",
+                  "Brevo": "Good"
+                }
+              ],
+              "categories": [
+                {
+                  "name": "Best for Budget",
+                  "productName": "MailerLite",
+                  "reason": "Generous free plan and affordable paid options."
+                },
+                {
+                  "name": "Best for Creators",
+                  "productName": "ConvertKit",
+                  "reason": "Robust automation features designed for creators."
+                },
+                {
+                  "name": "Best for High Volume",
+                  "productName": "Brevo",
+                  "reason": "Generous send limits and affordable pricing."
+                }
+              ]
+            }
+          },
+          "raw_content_len": 6576,
+          "costUsd": 0,
+          "latencyMs": 37891,
+          "err": null
+        }
+      ]
+    }
+  ]
+}

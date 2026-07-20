@@ -1,0 +1,1153 @@
+{
+  "reference": "/home/chris/projects/truerank/benchmarks/results/verify-anker-soundcore-space-a40-replay.json",
+  "product": "Anker Soundcore Space A40",
+  "models": [
+    "nemotron-3-nano:4b",
+    "granite3.3:8b",
+    "glm-4.7-flash:latest",
+    "cogito:32b"
+  ],
+  "scores": [
+    {
+      "model": "nemotron-3-nano:4b",
+      "stanceAgreePct": null,
+      "stanceCompared": 0,
+      "verdictAgreePct": 66.7,
+      "verdictCompared": 6,
+      "parseFails": 3,
+      "avgSPerClaim": 39.2,
+      "cutOff": false,
+      "claimsRun": 6
+    },
+    {
+      "model": "granite3.3:8b",
+      "stanceAgreePct": 66.7,
+      "stanceCompared": 3,
+      "verdictAgreePct": 0,
+      "verdictCompared": 6,
+      "parseFails": 0,
+      "avgSPerClaim": 27.2,
+      "cutOff": false,
+      "claimsRun": 6
+    },
+    {
+      "model": "glm-4.7-flash:latest",
+      "stanceAgreePct": null,
+      "stanceCompared": 0,
+      "verdictAgreePct": 66.7,
+      "verdictCompared": 6,
+      "parseFails": 6,
+      "avgSPerClaim": 57.4,
+      "cutOff": false,
+      "claimsRun": 6
+    },
+    {
+      "model": "cogito:32b",
+      "stanceAgreePct": 66.7,
+      "stanceCompared": 3,
+      "verdictAgreePct": 50,
+      "verdictCompared": 6,
+      "parseFails": 0,
+      "avgSPerClaim": 90.2,
+      "cutOff": false,
+      "claimsRun": 6
+    }
+  ],
+  "modelRuns": [
+    {
+      "model": "nemotron-3-nano:4b",
+      "parseFails": 3,
+      "cutOff": false,
+      "totalMs": 235027,
+      "perClaim": [
+        {
+          "claimId": "c1",
+          "claimText": "Soundcore Space A40 has adaptive active noise cancelling.",
+          "status": "unsubstantiated",
+          "confidence": 0,
+          "parseFail": true,
+          "elapsedMs": 14841,
+          "stanceRows": []
+        },
+        {
+          "claimId": "c2",
+          "claimText": "Soundcore Space A40 can reduce noise by up to 98%.",
+          "status": "unsubstantiated",
+          "confidence": 0,
+          "parseFail": true,
+          "elapsedMs": 36083,
+          "stanceRows": []
+        },
+        {
+          "claimId": "c3",
+          "claimText": "Soundcore Space A40 has 50-hour playtime.",
+          "status": "unsubstantiated",
+          "confidence": 0,
+          "parseFail": false,
+          "elapsedMs": 34150,
+          "stanceRows": [
+            {
+              "url": "https://www.rtings.com/headphones/reviews/anker",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.nytimes.com/wirecutter/reviews/best-wireless-earbuds/?eafs_enabled=false",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.youtube.com/watch?v=2tyhZZ5GL2g",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.nytimes.com/wirecutter/reviews/best-wireless-earbuds/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.soundguys.com/anker-soundcore-space-one-pro-review-124002/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://arstechnica.com/gadgets/2026/07/firmware-update-bricks-hue-bridge-pro-devices-philips-gives-free-replacements/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.engadget.com/deals/our-favorite-budget-wireless-earbuds-are-back-on-sale-for-45-152704145.html",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.tomshardware.com/pc-components/intels-midrange-core-ultra-5-245k-is-down-to-its-lowest-price-ever-at-just-usd179-on-amazon-save-up-to-42-percent-on-a-solid-gaming-cpu-with-14-cores-and-pcie-5-0-support",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.youtube.com/watch?v=W7_GlkI5k8k",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.youtube.com/watch?v=OG9Laaohm18",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.rtings.com/headphones/reviews/anker/soundcore-space-one-pro-over-ear",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.reddit.com/r/Earbuds/comments/1ptxnpx/is_the_soundcore_space_a40_good_pricequality_if_i/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.reddit.com/r/Earbuds/comments/1nvhck4/soundcore_space_a40_review/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.reddit.com/r/soundcore/comments/1pu6zq9/i_ordered_the_q45s_should_i_return_them_for_the/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.reddit.com/r/headphones/comments/1smxu18/soundcore_by_anker_space_a40_autoadjustable/",
+              "stance": "neutral"
+            }
+          ]
+        },
+        {
+          "claimId": "c4",
+          "claimText": "Soundcore Space A40 supports Hi-Res sound.",
+          "status": "unsubstantiated",
+          "confidence": 0,
+          "parseFail": false,
+          "elapsedMs": 61131,
+          "stanceRows": [
+            {
+              "url": "https://www.rtings.com/headphones/reviews/anker",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.nytimes.com/wirecutter/reviews/best-wireless-earbuds/?eafs_enabled=false",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.youtube.com/watch?v=2tyhZZ5GL2g",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.nytimes.com/wirecutter/reviews/best-wireless-earbuds/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.soundguys.com/anker-soundcore-space-one-pro-review-124002/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://arstechnica.com/gadgets/2026/07/firmware-update-bricks-hue-bridge-pro-devices-philips-gives-free-replacements/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.engadget.com/deals/our-favorite-budget-wireless-earbuds-are-back-on-sale-for-45-152704145.html",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.tomshardware.com/pc-components/intels-midrange-core-ultra-5-245k-is-down-to-its-lowest-price-ever-at-just-usd179-on-amazon-save-up-to-42-percent-on-a-solid-gaming-cpu-with-14-cores-and-pcie-5-0-support",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.youtube.com/watch?v=W7_GlkI5k8k",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.reddit.com/r/soundcore/comments/1pu6zq9/i_ordered_the_q45s_should_i_return_them_for_the/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.reddit.com/r/headphones/comments/1smxu18/soundcore_by_anker_space_a40_autoadjustable/",
+              "stance": "neutral"
+            }
+          ]
+        },
+        {
+          "claimId": "c5",
+          "claimText": "Soundcore Space A40 is wireless.",
+          "status": "unsubstantiated",
+          "confidence": 0,
+          "parseFail": true,
+          "elapsedMs": 47071,
+          "stanceRows": []
+        },
+        {
+          "claimId": "c6",
+          "claimText": "Soundcore Space A40 is designed for a comfortable fit.",
+          "status": "unsubstantiated",
+          "confidence": 0,
+          "parseFail": false,
+          "elapsedMs": 41739,
+          "stanceRows": [
+            {
+              "url": "https://www.rtings.com/headphones/reviews/anker",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.youtube.com/watch?v=2tyhZZ5GL2g",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.soundguys.com/anker-soundcore-space-one-pro-review-124002/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.youtube.com/watch?v=OG9Laaohm18",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.youtube.com/watch?v=W7_GlkI5k8k",
+              "stance": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "model": "granite3.3:8b",
+      "parseFails": 0,
+      "cutOff": false,
+      "totalMs": 162911,
+      "perClaim": [
+        {
+          "claimId": "c1",
+          "claimText": "Soundcore Space A40 has adaptive active noise cancelling.",
+          "status": "verified",
+          "confidence": 1,
+          "parseFail": false,
+          "elapsedMs": 37043,
+          "stanceRows": [
+            {
+              "url": "https://www.rtings.com/headphones/reviews/anker",
+              "stance": "support"
+            },
+            {
+              "url": "https://www.nytimes.com/wirecutter/reviews/best-wireless-earbuds/?eafs_enabled=false",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.youtube.com/watch?v=2tyhZZ5GL2g",
+              "stance": "support"
+            },
+            {
+              "url": "https://www.nytimes.com/wirecutter/reviews/best-wireless-earbuds/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.soundguys.com/anker-soundcore-space-one-pro-review-124002/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://arstechnica.com/gadgets/2026/07/firmware-update-bricks-hue-bridge-pro-devices-philips-gives-free-replacements/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.engadget.com/deals/our-favorite-budget-wireless-earbuds-are-back-on-sale-for-45-152704145.html",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.tomshardware.com/pc-components/intels-midrange-core-ultra-5-245k-is-down-to-its-lowest-price-ever-at-just-usd179-on-amazon-save-up-to-42-percent-on-a-solid-gaming-cpu-with-14-cores-and-pcie-5-0-support",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.youtube.com/watch?v=OG9Laaohm18",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.youtube.com/watch?v=W7_GlkI5k8k",
+              "stance": "support"
+            },
+            {
+              "url": "https://www.rtings.com/headphones/reviews/anker/soundcore-space-one-pro-over-ear",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.reddit.com/r/Earbuds/comments/1ptxnpx/is_the_soundcore_space_a40_good_pricequality_if_i/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.reddit.com/r/Earbuds/comments/1nvhck4/soundcore_space_a40_review/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.reddit.com/r/soundcore/comments/1pu6zq9/i_ordered_the_q45s_should_i_return_them_for_the/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.reddit.com/r/headphones/comments/1smxu18/soundcore_by_anker_space_a40_autoadjustable/",
+              "stance": "support"
+            }
+          ]
+        },
+        {
+          "claimId": "c2",
+          "claimText": "Soundcore Space A40 can reduce noise by up to 98%.",
+          "status": "partially-verified",
+          "confidence": 0.45,
+          "parseFail": false,
+          "elapsedMs": 26046,
+          "stanceRows": [
+            {
+              "url": "https://www.rtings.com/headphones/reviews/anker",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.nytimes.com/wirecutter/reviews/best-wireless-earbuds/?eafs_enabled=false",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.youtube.com/watch?v=2tyhZZ5GL2g",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.nytimes.com/wirecutter/reviews/best-wireless-earbuds/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.soundguys.com/anker-soundcore-space-one-pro-review-124002/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://arstechnica.com/gadgets/2026/07/firmware-update-bricks-hue-bridge-pro-devices-philips-gives-free-replacements/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.engadget.com/deals/our-favorite-budget-wireless-earbuds-are-back-on-sale-for-45-152704145.html",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.tomshardware.com/pc-components/intels-midrange-core-ultra-5-245k-is-down-to-its-lowest-price-ever-at-just-usd179-on-amazon-save-up-to-42-percent-on-a-solid-gaming-cpu-with-14-cores-and-pcie-5-0-support",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.youtube.com/watch?v=OG9Laaohm18",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.youtube.com/watch?v=W7_GlkI5k8k",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.rtings.com/headphones/reviews/anker/soundcore-space-one-pro-over-ear",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.reddit.com/r/Earbuds/comments/1ptxnpx/is_the_soundcore_space_a40_good_pricequality_if_i/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.reddit.com/r/Earbuds/comments/1nvhck4/soundcore_space_a40_review/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.reddit.com/r/soundcore/comments/1pu6zq9/i_ordered_the_q45s_should_i_return_them_for_the/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.reddit.com/r/headphones/comments/1smxu18/soundcore_by_anker_space_a40_autoadjustable/",
+              "stance": "support"
+            }
+          ]
+        },
+        {
+          "claimId": "c3",
+          "claimText": "Soundcore Space A40 has 50-hour playtime.",
+          "status": "verified",
+          "confidence": 1,
+          "parseFail": false,
+          "elapsedMs": 33063,
+          "stanceRows": [
+            {
+              "url": "https://www.rtings.com/headphones/reviews/anker",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.nytimes.com/wirecutter/reviews/best-wireless-earbuds/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.youtube.com/watch?v=2tyhZZ5GL2g",
+              "stance": "support"
+            },
+            {
+              "url": "https://www.soundguys.com/anker-soundcore-space-one-pro-review-124002/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://arstechnica.com/gadgets/2026/07/firmware-update-bricks-hue-bridge-pro-devices-philips-gives-free-replacements/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.engadget.com/deals/our-favorite-budget-wireless-earbuds-are-back-on-sale-for-45-152704145.html",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.tomshardware.com/pc-components/intels-midrange-core-ultra-5-245k-is-down-to-its-lowest-price-ever-at-just-usd179-on-amazon-save-up-to-42-percent-on-a-solid-gaming-cpu-with-14-cores-and-pcie-5-0-support",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.youtube.com/watch?v=OG9Laaohm18",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.youtube.com/watch?v=W7_GlkI5k8k",
+              "stance": "support"
+            },
+            {
+              "url": "https://www.rtings.com/headphones/reviews/anker/soundcore-space-one-pro-over-ear",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.reddit.com/r/Earbuds/comments/1ptxnpx/is_the_soundcore_space_a40_good_pricequality_if_i/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.reddit.com/r/Earbuds/comments/1nvhck4/soundcore_space_a40_review/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.reddit.com/r/soundcore/comments/1pu6zq9/i_ordered_the_q45s_should_i_return_them_for_the/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.reddit.com/r/headphones/comments/1smxu18/soundcore_by_anker_space_a40_autoadjustable/",
+              "stance": "support"
+            }
+          ]
+        },
+        {
+          "claimId": "c4",
+          "claimText": "Soundcore Space A40 supports Hi-Res sound.",
+          "status": "partially-verified",
+          "confidence": 0.45,
+          "parseFail": false,
+          "elapsedMs": 29333,
+          "stanceRows": [
+            {
+              "url": "https://www.rtings.com/headphones/reviews/anker",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.nytimes.com/wirecutter/reviews/best-wireless-earbuds/?eafs_enabled=false",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.youtube.com/watch?v=2tyhZZ5GL2g",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.nytimes.com/wirecutter/reviews/best-wireless-earbuds/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.soundguys.com/anker-soundcore-space-one-pro-review-124002/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://arstechnica.com/gadgets/2026/07/firmware-update-bricks-hue-bridge-pro-devices-philips-gives-free-replacements/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.engadget.com/deals/our-favorite-budget-wireless-earbuds-are-back-on-sale-for-45-152704145.html",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.tomshardware.com/pc-components/intels-midrange-core-ultra-5-245k-is-down-to-its-lowest-price-ever-at-just-usd179-on-amazon-save-up-to-42-percent-on-a-solid-gaming-cpu-with-14-cores-and-pcie-5-0-support",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.youtube.com/watch?v=OG9Laaohm18",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.youtube.com/watch?v=W7_GlkI5k8k",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.rtings.com/headphones/reviews/anker/soundcore-space-one-pro-over-ear",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.reddit.com/r/Earbuds/comments/1ptxnpx/is_the_soundcore_space_a40_good_pricequality_if_i/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.reddit.com/r/Earbuds/comments/1nvhck4/soundcore_space_a40_review/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.reddit.com/r/soundcore/comments/1pu6zq9/i_ordered_the_q45s_should_i_return_them_for_the/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.reddit.com/r/headphones/comments/1smxu18/soundcore_by_anker_space_a40_autoadjustable/",
+              "stance": "support"
+            }
+          ]
+        },
+        {
+          "claimId": "c5",
+          "claimText": "Soundcore Space A40 is wireless.",
+          "status": "verified",
+          "confidence": 1,
+          "parseFail": false,
+          "elapsedMs": 19136,
+          "stanceRows": [
+            {
+              "url": "https://www.rtings.com/headphones/reviews/anker",
+              "stance": "support"
+            },
+            {
+              "url": "https://www.nytimes.com/wirecutter/reviews/best-wireless-earbuds/",
+              "stance": "support"
+            },
+            {
+              "url": "https://www.youtube.com/watch?v=2tyhZZ5GL2g",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.soundguys.com/anker-soundcore-space-one-pro-review-124002/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://arstechnica.com/gadgets/2026/07/firmware-update-bricks-hue-bridge-pro-devices-philips-gives-free-replacements/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.engadget.com/deals/our-favorite-budget-wireless-earbuds-are-back-on-sale-for-45-152704145.html",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.tomshardware.com/pc-components/intels-midrange-core-ultra-5-245k-is-down-to-its-lowest-price-ever-at-just-usd179-on-amazon-save-up-to-42-percent-on-a-solid-gaming-cpu-with-14-cores-and-pcie-5-0-support",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.youtube.com/watch?v=OG9Laaohm18",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.youtube.com/watch?v=W7_GlkI5k8k",
+              "stance": "support"
+            },
+            {
+              "url": "https://www.rtings.com/headphones/reviews/anker/soundcore-space-one-pro-over-ear",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.reddit.com/r/Earbuds/comments/1ptxnpx/is_the_soundcore_space_a40_good_pricequality_if_i/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.reddit.com/r/Earbuds/comments/1nvhck4/soundcore_space_a40_review/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.reddit.com/r/soundcore/comments/1pu6zq9/i_ordered_the_q45s_should_i_return_them_for_the/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.reddit.com/r/headphones/comments/1smxu18/soundcore_by_anker_space_a40_autoadjustable/",
+              "stance": "support"
+            }
+          ]
+        },
+        {
+          "claimId": "c6",
+          "claimText": "Soundcore Space A40 is designed for a comfortable fit.",
+          "status": "partially-verified",
+          "confidence": 0.45,
+          "parseFail": false,
+          "elapsedMs": 18278,
+          "stanceRows": [
+            {
+              "url": "https://www.rtings.com/headphones/reviews/anker",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.nytimes.com/wirecutter/reviews/best-wireless-earbuds/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.youtube.com/watch?v=2tyhZZ5GL2g",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.soundguys.com/anker-soundcore-space-one-pro-review-124002/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://arstechnica.com/gadgets/2026/07/firmware-update-bricks-hue-bridge-pro-devices-philips-gives-free-replacements/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.engadget.com/deals/our-favorite-budget-wireless-earbuds-are-back-on-sale-for-45-152704145.html",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.tomshardware.com/pc-components/intels-midrange-core-ultra-5-245k-is-down-to-its-lowest-price-ever-at-just-usd179-on-amazon-save-up-to-42-percent-on-a-solid-gaming-cpu-with-14-cores-and-pcie-5-0-support",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.youtube.com/watch?v=OG9Laaohm18",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.youtube.com/watch?v=W7_GlkI5k8k",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.rtings.com/headphones/reviews/anker/soundcore-space-one-pro-over-ear",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.reddit.com/r/Earbuds/comments/1ptxnpx/is_the_soundcore_space_a40_good_pricequality_if_i/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.reddit.com/r/Earbuds/comments/1nvhck4/soundcore_space_a40_review/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.reddit.com/r/soundcore/comments/1pu6zq9/i_ordered_the_q45s_should_i_return_them_for_the/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.reddit.com/r/headphones/comments/1smxu18/soundcore_by_anker_space_a40_autoadjustable/",
+              "stance": "support"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "model": "glm-4.7-flash:latest",
+      "parseFails": 6,
+      "cutOff": false,
+      "totalMs": 344281,
+      "perClaim": [
+        {
+          "claimId": "c1",
+          "claimText": "Soundcore Space A40 has adaptive active noise cancelling.",
+          "status": "unsubstantiated",
+          "confidence": 0,
+          "parseFail": true,
+          "elapsedMs": 49036,
+          "stanceRows": []
+        },
+        {
+          "claimId": "c2",
+          "claimText": "Soundcore Space A40 can reduce noise by up to 98%.",
+          "status": "unsubstantiated",
+          "confidence": 0,
+          "parseFail": true,
+          "elapsedMs": 61767,
+          "stanceRows": []
+        },
+        {
+          "claimId": "c3",
+          "claimText": "Soundcore Space A40 has 50-hour playtime.",
+          "status": "unsubstantiated",
+          "confidence": 0,
+          "parseFail": true,
+          "elapsedMs": 65533,
+          "stanceRows": []
+        },
+        {
+          "claimId": "c4",
+          "claimText": "Soundcore Space A40 supports Hi-Res sound.",
+          "status": "unsubstantiated",
+          "confidence": 0,
+          "parseFail": true,
+          "elapsedMs": 58061,
+          "stanceRows": []
+        },
+        {
+          "claimId": "c5",
+          "claimText": "Soundcore Space A40 is wireless.",
+          "status": "unsubstantiated",
+          "confidence": 0,
+          "parseFail": true,
+          "elapsedMs": 56215,
+          "stanceRows": []
+        },
+        {
+          "claimId": "c6",
+          "claimText": "Soundcore Space A40 is designed for a comfortable fit.",
+          "status": "unsubstantiated",
+          "confidence": 0,
+          "parseFail": true,
+          "elapsedMs": 53658,
+          "stanceRows": []
+        }
+      ]
+    },
+    {
+      "model": "cogito:32b",
+      "parseFails": 0,
+      "cutOff": false,
+      "totalMs": 541395,
+      "perClaim": [
+        {
+          "claimId": "c1",
+          "claimText": "Soundcore Space A40 has adaptive active noise cancelling.",
+          "status": "partially-verified",
+          "confidence": 0.9,
+          "parseFail": false,
+          "elapsedMs": 110502,
+          "stanceRows": [
+            {
+              "url": "https://www.rtings.com/headphones/reviews/anker",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.nytimes.com/wirecutter/reviews/best-wireless-earbuds/?eafs_enabled=false",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.youtube.com/watch?v=2tyhZZ5GL2g",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.nytimes.com/wirecutter/reviews/best-wireless-earbuds/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.soundguys.com/anker-soundcore-space-one-pro-review-124002/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://arstechnica.com/gadgets/2026/07/firmware-update-bricks-hue-bridge-pro-devices-philips-gives-free-replacements/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.engadget.com/deals/our-favorite-budget-wireless-earbuds-are-back-on-sale-for-45-152704145.html",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.tomshardware.com/pc-components/intels-midrange-core-ultra-5-245k-is-down-to-its-lowest-price-ever-at-just-usd179-on-amazon-save-up-to-42-percent-on-a-solid-gaming-cpu-with-14-cores-and-pcie-5-0-support",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.youtube.com/watch?v=OG9Laaohm18",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.youtube.com/watch?v=W7_GlkI5k8k",
+              "stance": "support"
+            },
+            {
+              "url": "https://www.rtings.com/headphones/reviews/anker/soundcore-space-one-pro-over-ear",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.reddit.com/r/Earbuds/comments/1ptxnpx/is_the_soundcore_space_a40_good_pricequality_if_i/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.reddit.com/r/Earbuds/comments/1nvhck4/soundcore_space_a40_review/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.reddit.com/r/soundcore/comments/1pu6zq9/i_ordered_the_q45s_should_i_return_them_for_the/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.reddit.com/r/headphones/comments/1smxu18/soundcore_by_anker_space_a40_autoadjustable/",
+              "stance": "support"
+            }
+          ]
+        },
+        {
+          "claimId": "c2",
+          "claimText": "Soundcore Space A40 can reduce noise by up to 98%.",
+          "status": "partially-verified",
+          "confidence": 0.9,
+          "parseFail": false,
+          "elapsedMs": 95869,
+          "stanceRows": [
+            {
+              "url": "https://www.rtings.com/headphones/reviews/anker",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.nytimes.com/wirecutter/reviews/best-wireless-earbuds/?eafs_enabled=false",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.youtube.com/watch?v=2tyhZZ5GL2g",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.nytimes.com/wirecutter/reviews/best-wireless-earbuds/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.soundguys.com/anker-soundcore-space-one-pro-review-124002/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://arstechnica.com/gadgets/2026/07/firmware-update-bricks-hue-bridge-pro-devices-philips-gives-free-replacements/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.engadget.com/deals/our-favorite-budget-wireless-earbuds-are-back-on-sale-for-45-152704145.html",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.tomshardware.com/pc-components/intels-midrange-core-ultra-5-245k-is-down-to-its-lowest-price-ever-at-just-usd179-on-amazon-save-up-to-42-percent-on-a-solid-gaming-cpu-with-14-cores-and-pcie-5-0-support",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.youtube.com/watch?v=OG9Laaohm18",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.youtube.com/watch?v=W7_GlkI5k8k",
+              "stance": "support"
+            },
+            {
+              "url": "https://www.rtings.com/headphones/reviews/anker/soundcore-space-one-pro-over-ear",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.reddit.com/r/Earbuds/comments/1ptxnpx/is_the_soundcore_space_a40_good_pricequality_if_i/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.reddit.com/r/Earbuds/comments/1nvhck4/soundcore_space_a40_review/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.reddit.com/r/soundcore/comments/1pu6zq9/i_ordered_the_q45s_should_i_return_them_for_the/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.reddit.com/r/headphones/comments/1smxu18/soundcore_by_anker_space_a40_autoadjustable/",
+              "stance": "support"
+            }
+          ]
+        },
+        {
+          "claimId": "c3",
+          "claimText": "Soundcore Space A40 has 50-hour playtime.",
+          "status": "unsubstantiated",
+          "confidence": 0,
+          "parseFail": false,
+          "elapsedMs": 71946,
+          "stanceRows": [
+            {
+              "url": "https://www.rtings.com/headphones/reviews/anker",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.nytimes.com/wirecutter/reviews/best-wireless-earbuds/?eafs_enabled=false",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.youtube.com/watch?v=2tyhZZ5GL2g",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.nytimes.com/wirecutter/reviews/best-wireless-earbuds/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.soundguys.com/anker-soundcore-space-one-pro-review-124002/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://arstechnica.com/gadgets/2026/07/firmware-update-bricks-hue-bridge-pro-devices-philips-gives-free-replacements/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.engadget.com/deals/our-favorite-budget-wireless-earbuds-are-back-on-sale-for-45-152704145.html",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.tomshardware.com/pc-components/intels-midrange-core-ultra-5-245k-is-down-to-its-lowest-price-ever-at-just-usd179-on-amazon-save-up-to-42-percent-on-a-solid-gaming-cpu-with-14-cores-and-pcie-5-0-support",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.youtube.com/watch?v=OG9Laaohm18",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.youtube.com/watch?v=W7_GlkI5k8k",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.rtings.com/headphones/reviews/anker/soundcore-space-one-pro-over-ear",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.reddit.com/r/Earbuds/comments/1ptxnpx/is_the_soundcore_space_a40_good_pricequality_if_i/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.reddit.com/r/Earbuds/comments/1nvhck4/soundcore_space_a40_review/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.reddit.com/r/soundcore/comments/1pu6zq9/i_ordered_the_q45s_should_i_return_them_for_the/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.reddit.com/r/headphones/comments/1smxu18/soundcore_by_anker_space_a40_autoadjustable/",
+              "stance": "neutral"
+            }
+          ]
+        },
+        {
+          "claimId": "c4",
+          "claimText": "Soundcore Space A40 supports Hi-Res sound.",
+          "status": "unsubstantiated",
+          "confidence": 0,
+          "parseFail": false,
+          "elapsedMs": 72218,
+          "stanceRows": [
+            {
+              "url": "https://www.rtings.com/headphones/reviews/anker",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.nytimes.com/wirecutter/reviews/best-wireless-earbuds/?eafs_enabled=false",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.youtube.com/watch?v=2tyhZZ5GL2g",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.nytimes.com/wirecutter/reviews/best-wireless-earbuds/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.soundguys.com/anker-soundcore-space-one-pro-review-124002/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://arstechnica.com/gadgets/2026/07/firmware-update-bricks-hue-bridge-pro-devices-philips-gives-free-replacements/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.engadget.com/deals/our-favorite-budget-wireless-earbuds-are-back-on-sale-for-45-152704145.html",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.tomshardware.com/pc-components/intels-midrange-core-ultra-5-245k-is-down-to-its-lowest-price-ever-at-just-usd179-on-amazon-save-up-to-42-percent-on-a-solid-gaming-cpu-with-14-cores-and-pcie-5-0-support",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.youtube.com/watch?v=OG9Laaohm18",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.youtube.com/watch?v=W7_GlkI5k8k",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.rtings.com/headphones/reviews/anker/soundcore-space-one-pro-over-ear",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.reddit.com/r/Earbuds/comments/1ptxnpx/is_the_soundcore_space_a40_good_pricequality_if_i/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.reddit.com/r/Earbuds/comments/1nvhck4/soundcore_space_a40_review/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.reddit.com/r/soundcore/comments/1pu6zq9/i_ordered_the_q45s_should_i_return_them_for_the/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.reddit.com/r/headphones/comments/1smxu18/soundcore_by_anker_space_a40_autoadjustable/",
+              "stance": "neutral"
+            }
+          ]
+        },
+        {
+          "claimId": "c5",
+          "claimText": "Soundcore Space A40 is wireless.",
+          "status": "verified",
+          "confidence": 1,
+          "parseFail": false,
+          "elapsedMs": 97200,
+          "stanceRows": [
+            {
+              "url": "https://www.rtings.com/headphones/reviews/anker",
+              "stance": "support"
+            },
+            {
+              "url": "https://www.nytimes.com/wirecutter/reviews/best-wireless-earbuds/?eafs_enabled=false",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.youtube.com/watch?v=2tyhZZ5GL2g",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.nytimes.com/wirecutter/reviews/best-wireless-earbuds/",
+              "stance": "support"
+            },
+            {
+              "url": "https://www.soundguys.com/anker-soundcore-space-one-pro-review-124002/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://arstechnica.com/gadgets/2026/07/firmware-update-bricks-hue-bridge-pro-devices-philips-gives-free-replacements/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.engadget.com/deals/our-favorite-budget-wireless-earbuds-are-back-on-sale-for-45-152704145.html",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.tomshardware.com/pc-components/intels-midrange-core-ultra-5-245k-is-down-to-its-lowest-price-ever-at-just-usd179-on-amazon-save-up-to-42-percent-on-a-solid-gaming-cpu-with-14-cores-and-pcie-5-0-support",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.youtube.com/watch?v=OG9Laaohm18",
+              "stance": "support"
+            },
+            {
+              "url": "https://www.youtube.com/watch?v=W7_GlkI5k8k",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.rtings.com/headphones/reviews/anker/soundcore-space-one-pro-over-ear",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.reddit.com/r/Earbuds/comments/1ptxnpx/is_the_soundcore_space_a40_good_pricequality_if_i/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.reddit.com/r/Earbuds/comments/1nvhck4/soundcore_space_a40_review/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.reddit.com/r/soundcore/comments/1pu6zq9/i_ordered_the_q45s_should_i_return_them_for_the/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.reddit.com/r/headphones/comments/1smxu18/soundcore_by_anker_space_a40_autoadjustable/",
+              "stance": "support"
+            }
+          ]
+        },
+        {
+          "claimId": "c6",
+          "claimText": "Soundcore Space A40 is designed for a comfortable fit.",
+          "status": "partially-verified",
+          "confidence": 0.9,
+          "parseFail": false,
+          "elapsedMs": 93653,
+          "stanceRows": [
+            {
+              "url": "https://www.rtings.com/headphones/reviews/anker",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.nytimes.com/wirecutter/reviews/best-wireless-earbuds/?eafs_enabled=false",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.youtube.com/watch?v=2tyhZZ5GL2g",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.nytimes.com/wirecutter/reviews/best-wireless-earbuds/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.soundguys.com/anker-soundcore-space-one-pro-review-124002/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://arstechnica.com/gadgets/2026/07/firmware-update-bricks-hue-bridge-pro-devices-philips-gives-free-replacements/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.engadget.com/deals/our-favorite-budget-wireless-earbuds-are-back-on-sale-for-45-152704145.html",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.tomshardware.com/pc-components/intels-midrange-core-ultra-5-245k-is-down-to-its-lowest-price-ever-at-just-usd179-on-amazon-save-up-to-42-percent-on-a-solid-gaming-cpu-with-14-cores-and-pcie-5-0-support",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.youtube.com/watch?v=OG9Laaohm18",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.youtube.com/watch?v=W7_GlkI5k8k",
+              "stance": "support"
+            },
+            {
+              "url": "https://www.rtings.com/headphones/reviews/anker/soundcore-space-one-pro-over-ear",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.reddit.com/r/Earbuds/comments/1ptxnpx/is_the_soundcore_space_a40_good_pricequality_if_i/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.reddit.com/r/Earbuds/comments/1nvhck4/soundcore_space_a40_review/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.reddit.com/r/soundcore/comments/1pu6zq9/i_ordered_the_q45s_should_i_return_them_for_the/",
+              "stance": "neutral"
+            },
+            {
+              "url": "https://www.reddit.com/r/headphones/comments/1smxu18/soundcore_by_anker_space_a40_autoadjustable/",
+              "stance": "support"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
