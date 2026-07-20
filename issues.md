@@ -1,6 +1,25 @@
 # Issues
 
-Last updated: 2026-07-16
+Last updated: 2026-07-20
+
+## 2026-07-20 — Verify claims-PK collision fix + grok-4.5 reliability no-go
+
+- [x] HIGH (Data Integrity) — claims.id global PRIMARY KEY collided across verify runs
+      (extractClaims assigns repeating ids c1,c2,… per run) — every verification after the
+      very first failed with `UNIQUE constraint failed: claims.id` and was marked failed.
+      Fixed in worker/pipeline/verify-orchestrator.js by prefixing the inserted id with the
+      research id (`${reportId}:${claim.id}`). Deployed (CF `1de6e4b`) + regression test in
+      test/integration/verify.spec.js. Verified live: fresh name-only verify completed, 9
+      claims, no collision.
+- [ ] MEDIUM (Performance/Reliability) — grok-4.5 as synth: PASSES BaitBench Stage-1 gate
+      (ARS 95.46 best-in-field, FCER 0, MDR 91.94, fabs/report 0.90 vs gpt 0.93) AND the
+      corrected honesty gate, BUT hard-times-out on 56% of runs against production's 120s
+      synth timeout on the heavy google-top50 corpus (7/16 completed vs gpt-5.4-mini 14/16),
+      avg latency 99.5s vs 17s, cost ~2.7×. DECISION: synth stays openai/gpt-5.4-mini.
+      Adoption is blocked on reliability, not honesty — would need a raised timeout budget
+      (worker/engine/llm.js) + a production-realistic corpus retest before reconsidering.
+      Blinded juror panel (grounding/usefulness) not run: no committed judge-runner
+      reproduces judge-results.json.
 
 ## 2026-07-16 — Truth Audit (/verify) shipped to production
 
@@ -10,9 +29,14 @@ Last updated: 2026-07-16
       live). Merge f126068 pushed → CI deploy green; blackbox worker rsynced +
       restarted. Smoke: /verify + /api/verify live, first prod run completed
       end-to-end (Anker A40 → "Mixed — 50/100", 2 claims persisted, $0.034).
-- [ ] MEDIUM (Verify quality) — prod A40 run extracted only 2 claims (bench runs got
+- [x] MEDIUM (Verify quality) — prod A40 run extracted only 2 claims (bench runs got
       6–9): claim-source gather variance. Consider retry/expansion when claim sources
-      come back thin.
+      come back thin. RESOLVED 2026-07-20: prod verify runs extracted thin claims because
+      name-only runs used gather SNIPPETS never read to full text. Fixed in
+      worker/engine/verify.js: hydrate snippet-thin claim sources via readPageInto before
+      extraction (budget MAX_CLAIM_READS=3) + retry-when-thin (< MIN_CLAIMS=4). Deployed CF
+      `2d5d018` + blackbox rsync. Verified live: name-only "Anker Soundcore Liberty 4 NC" →
+      9 claims, verdict "Falls short of its claims" (24/100).
 - [ ] LOW (Model eval) — local Ollama models fail both the stance bench (best:
       cogito:32b 50% agreement) and the local-gate honesty sweep (0/21 pass;
       nemotron 93% ungrounded specs). Keep gpt-5.4-mini; watchlist gemma4:26b
@@ -46,6 +70,11 @@ User: "Grok 4.5 is out, use only this model" + "improve our searches via BaitBen
       deterministic fabrication gate: grok-4.5 invented 9 ungrounded product names vs gpt-5.4-mini's 0 —
       the exact sin the brand forbids (mirrors grok-4.20's prior DQ). Also slowest (41s) + ~2.4x cost.
       DECISION: synth stays openai/gpt-5.4-mini. Classifier stays gemini-flash-lite. (verify spend ~$0.65)
+      CAVEAT (2026-07-20): that no-go's headline "9 ungrounded names" came from the buggy
+      `name_ung_strict` exact-substring metric, fixed 2026-07-11 (benchmarks/lib/synth-score.mjs,
+      token-presence matching). Re-ran the synth honesty gate 2026-07-20 under the corrected
+      metric: grok-4.5 scored 0 ungrounded names AND 0 ungrounded numbers vs gpt-5.4-mini's 0
+      names / 7 numbers — honesty is NO LONGER disqualifying.
 - [x] SHIPPED (CF + blackbox): BaitBench-derived deterministic ad-content detectors in worker/lib/credibility.js —
       hasSponsoredContent (#ad/paid partnership → -30, NONCREDIBLE_GENRES), hasClickbaitFraming (curiosity-gap → -20),
       extended AI_INJECTION_PATTERNS with Category-D/GEO reviewer-override. Precision-first: legal puffery, ethical
