@@ -232,7 +232,29 @@
         return fallback + (m ? ' (' + m + ')' : '');
     }
 
+    // -- Live research completion state ------------------------------------
+    // Shared across SSE + polling for a single in-flight run so whichever
+    // detects the terminal state first wins and the other becomes a no-op.
+    var researchDone = false;
+    var pollActive = false;
+    var visibilityWatchdog = null;
+
+    function finishResearch(dest, query) {
+        if (researchDone) return;
+        researchDone = true;
+        recordHistory(dest, query || '');
+        addProgress('Done. Opening your report…');
+        window.location.href = '/research/' + dest;
+    }
+
     function startResearch(query, clarifications) {
+        researchDone = false;
+        pollActive = false;
+        if (visibilityWatchdog) {
+            document.removeEventListener('visibilitychange', visibilityWatchdog);
+            visibilityWatchdog = null;
+        }
+
         setFormsBusy(true);
         showSection('progress');
         clearProgress();
@@ -251,6 +273,7 @@
             .then(function (data) {
                 if (data.error) { showError(data.error, { signupRequired: data.code === 'signup_required' }); return; }
                 if (data.cached && data.slug) {
+                    researchDone = true;
                     recordHistory(data.slug, pendingQuery);
                     addProgress('Found existing research. Redirecting…');
                     window.location.href = '/research/' + data.slug;
@@ -258,14 +281,29 @@
                 }
                 addProgress('Queued. Connecting to the live read…');
                 connectSSE(data.id, data.slug, pendingQuery);
+                // Independent watchdog: poll from the start regardless of SSE
+                // health, so a stalled/backgrounded EventSource can never hang
+                // the page on "processing…" forever.
+                startPollWatchdog(data.id, data.slug, pendingQuery);
             })
             .catch(function (err) {
                 showError(friendlyError(err, 'Could not start the research.'));
             });
     }
 
+    function startPollWatchdog(reportId, slug, query) {
+        if (pollActive) return;
+        pollActive = true;
+        pollForResults(reportId, 0, slug, query);
+
+        visibilityWatchdog = function () {
+            if (researchDone || document.visibilityState !== 'visible') return;
+            pollForResults(reportId, 0, slug, query);
+        };
+        document.addEventListener('visibilitychange', visibilityWatchdog);
+    }
+
     function connectSSE(reportId, slug, query) {
-        var done = false;
         var errorCount = 0;
         var source = new EventSource('/api/research/' + reportId + '/stream');
 
@@ -277,44 +315,41 @@
             if (data.type === 'progress') {
                 addProgress(data.message);
             } else if (data.type === 'complete') {
-                done = true;
                 source.close();
                 var dest = data.slug || slug;
                 if (dest) {
-                    recordHistory(dest, query || '');
-                    addProgress('Done. Opening your report…');
-                    window.location.href = '/research/' + dest;
-                } else {
+                    finishResearch(dest, query);
+                } else if (!researchDone) {
                     showError('Something went wrong — try again');
                 }
             } else if (data.type === 'error') {
-                done = true;
                 source.close();
-                showError(data.error);
+                if (!researchDone) showError(data.error);
             }
         };
 
         source.onerror = function () {
-            if (done) return;
+            if (researchDone) return;
             errorCount++;
             if (errorCount > 5) {
                 source.close();
                 addProgress('Connection unstable. Switching to polling…');
-                pollForResults(reportId, 0, slug, query);
+                startPollWatchdog(reportId, slug, query);
             }
         };
     }
 
     function pollForResults(reportId, attempts, slug, query) {
+        if (researchDone) return;
         if (attempts > 120) { showError('Research timed out. Please try again.'); return; }
         fetch('/api/research/' + reportId)
             .then(readJson)
             .then(function (data) {
+                if (researchDone) return;
                 if (data.status === 'completed') {
                     var dest = data.slug || slug;
                     if (dest) {
-                        recordHistory(dest, query || '');
-                        window.location.href = '/research/' + dest;
+                        finishResearch(dest, query);
                         return;
                     }
                     showError('Something went wrong — try again');
@@ -326,6 +361,7 @@
                 }
             })
             .catch(function () {
+                if (researchDone) return;
                 setTimeout(function () { pollForResults(reportId, attempts + 1, slug, query); }, 3000);
             });
     }

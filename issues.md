@@ -1,6 +1,18 @@
 # Issues
 
-Last updated: 2026-07-20
+Last updated: 2026-07-21
+
+## 2026-07-21 — Live research flow could hang on "processing…" forever (UX/Crashes)
+
+- [x] HIGH (UX/Crashes) — Research live flow could hang on "processing…" forever
+      after the backend completed — completion detection relied on EventSource
+      reconnecting to catch the terminal SSE event, and the polling fallback only
+      fired after 5 consecutive SSE errors (reset by every keepalive), so a
+      stalled/backgrounded SSE never redirected despite /api/research/:id
+      returning completed. Fixed public/js/app.js: always-on parallel poll +
+      shared researchDone guard + visibilitychange re-check. Repro:
+      /research/3d-printer-under-600-255z3168 (job done at 80s, page never
+      flipped).
 
 ## 2026-07-20 — Verify claims-PK collision fix + grok-4.5 reliability no-go
 
