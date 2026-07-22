@@ -1,6 +1,21 @@
 # Issues
 
-Last updated: 2026-07-21
+Last updated: 2026-07-22
+
+## 2026-07-22 — Serverless migration complete (blackbox retired)
+
+### Infra
+- [x] resolved 2026-07-22 — Serverless migration COMPLETE — retired the blackbox external worker.
+      EXTERNAL_WORKER_ENABLED flipped to 'false' (wrangler.toml); the CF queue consumer is now the
+      primary ranking processor (processResearchMessage → runResearchPipeline), verify already ran
+      on CF. Validated across 6 heavy runs (vacuums/laptops/drivers/air-purifiers/keyboards/desks):
+      all completed clean, real products persisted, no OOM — 128MB Worker memory holds. Concurrency
+      experiment (maxConcurrency 6→12→6) showed no latency gain — the ~2-4min wall time is the
+      sequential agent loop + synth LLM, not gather parallelism; reverted to memory-safe 6. Blackbox
+      container STOPPED (kept as rollback, not yet deleted). Follow-ups: (a) full decommission of
+      research-worker.mjs + the internal job-claim API after a stability window; (b) engine-level
+      latency optimization (parallelize agent turns / faster synth) is separate deliberate work.
+      Commits b88b18d (flag), 608ea11 (bump), 4930b59 (revert).
 
 ## 2026-07-21 — Local fine-tuning infra: A380 BIOS blocker, CF Workers AI/Fireworks eval, FT pipeline progress
 
