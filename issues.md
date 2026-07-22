@@ -2,6 +2,47 @@
 
 Last updated: 2026-07-21
 
+## 2026-07-21 — Local fine-tuning infra: A380 BIOS blocker, CF Workers AI/Fireworks eval, FT pipeline progress
+
+### Infra
+- [ ] MEDIUM (Infra) — A380 GPU serving blocked on host BIOS: the blackbox motherboard lacks
+      Resizable BAR / Above-4G Decoding, so the Arc A380's CPU-visible memory window is capped at
+      256MB — any model >256MB SIGBUS-crashes (i915 "Can't resize LMEM BAR - platform support is
+      missing"). IPEX-LLM container detects the GPU fine over Level-Zero/SYCL; it's purely the
+      BIOS. Fix: enable Above-4G + Re-Size BAR in blackbox BIOS + reboot (brief prod downtime), or
+      the A380 can't do GPU compute on that board. Until then, serve on the 7900 XTX.
+
+### Decision log
+- [x] resolved 2026-07-21 — Evaluated Cloudflare Workers AI as a serving/fine-tune platform — NOT
+      adopted as primary. Its BYO-LoRA bases are old (Llama-2-7b/Mistral-v0.2/Gemma-1); LoRA+JSON
+      combined is undocumented and JSON mode is explicitly best-effort (not schema-guaranteed);
+      the LoRA-eligible and JSON-capable model lists don't intersect; only third-party throughput
+      data (~80 tok/s for 8B) suggests it's slower than the local 7900 XTX (154 tok/s on 4B); LoRA
+      is Open Beta with an explicit deprecation warning. Keep only as a possible cheap serverless
+      burst/overflow fallback. Also: Fireworks ruled out earlier — serverless LoRA withdrawn (Feb
+      2026), fine-tuned models require a $7/hr dedicated GPU (absurd at our volume). Serving
+      decision: self-host on the 7900 XTX.
+
+### Progress
+- [ ] Progress — In-house local-model fine-tuning pipeline proven on the 7900 XTX (RDNA3/ROCm
+      7.2.4): isolated py3.12 venv + torch 2.9.1+rocm6.4 + peft/trl (pinned in
+      ~/truerank-ft/requirements-lock.txt), no ROCm hacks needed. Detector LoRA (Qwen2.5-3B on
+      BaitBench-v2 147) beat base (verdict-acc 86%→100%, F1 90→100) — directional (N=29,
+      templated data, overfitting-prone). Nemotron RULED OUT as a base: nemotron-3-nano is
+      Nemotron-H (Mamba hybrid) — HF inference OOMs on ROCm (no Mamba kernels) + peft adapter-load
+      version bug; fights our train/serve stack. Stance teacher-harvest done: 1,564 claim records
+      / 265 products (~$22), but labels are ~97% neutral / 2.8% support / 0.1% contradict —
+      reframed the local model as a SUPPORT-detector (contradict stays deterministic in
+      verdict.js). 3-way base A/B (Qwen3.5-9b / Granite-3.3-8b / Phi-4-mini) running on the
+      harvested stance data.
+
+### Security/ops
+- [x] resolved 2026-07-21 — Minted a scoped Cloudflare API token 'truerank-godmode-ops'
+      (operational full-control: Workers AI R/W, Scripts, KV, D1, Queues, R2, Pages, AI Gateway,
+      Tail/Observability, Account Settings Read) from the global key; stored in Bitwarden Secrets
+      Manager (project 'All') as TRUERANK_CF_API_TOKEN + TRUERANK_CF_ACCOUNT_ID. Global API key to
+      be rotated by owner. No token value in repo/.cf-token.
+
 ## 2026-07-21 — Live research flow could hang on "processing…" forever (UX/Crashes)
 
 - [x] HIGH (UX/Crashes) — Research live flow could hang on "processing…" forever
