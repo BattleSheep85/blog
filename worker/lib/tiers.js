@@ -57,7 +57,7 @@ const ENGINE_CONFIG = {
   // Cap a hung planner routing turn well below the synth budget (the loop retries
   // once on error, so a rare false abort self-heals). gemini tool turns finish in s.
   plannerHardMs: 45_000,
-  maxConcurrency: 6, // parallel sub-researchers (raised on the off-CF worker)
+  maxConcurrency: 12, // parallel sub-researchers (CF queue consumer is primary; tuned up from 6 post-blackbox-retirement)
   reportSections: ['summary', 'products', 'comparison', 'categories', 'pitfalls', 'buyerGuide', 'methodology'],
   requireTurnstile: false,
   requireSubscription: false,
