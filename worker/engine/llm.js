@@ -52,7 +52,7 @@ export function sanitizeLLMMessages(messages) {
 }
 
 export async function callLLMStreaming(apiKey, model, messages, onToken, opts = {}) {
-  const { reasoning, maxTokens, provider, responseFormat, models } = opts;
+  const { reasoning, maxTokens, provider, responseFormat, models, temperature, seed } = opts;
   const { hardMs, chunkMs } = llmBudgetMs(reasoningEffortOf(reasoning));
   const controller = new AbortController();
   const hardTimer = setTimeout(() => controller.abort('hard'), hardMs);
@@ -79,6 +79,11 @@ export async function callLLMStreaming(apiKey, model, messages, onToken, opts = 
         messages: sanitizeLLMMessages(messages),
         stream: true,
         max_tokens: maxTokens ?? 8192,
+        // Deterministic by default — every call previously ran at the
+        // provider's default (~1.0) sampling temperature, which is why
+        // identical inputs produced different results. Overridable per-call.
+        temperature: temperature ?? 0,
+        ...(seed !== undefined ? { seed } : {}),
         // OpenRouter emits a final SSE chunk carrying the full usage object
         // (prompt/completion tokens + cost in USD) when this is set. Needed
         // for research.cost_usd accounting.
@@ -137,7 +142,7 @@ export async function callLLMStreaming(apiKey, model, messages, onToken, opts = 
 }
 
 export async function callLLM(apiKey, model, messages, opts = {}) {
-  const { tools, reasoning, maxTokens, provider, responseFormat, models, hardMsOverride } = opts;
+  const { tools, reasoning, maxTokens, provider, responseFormat, models, hardMsOverride, temperature, seed } = opts;
   const body = { messages: sanitizeLLMMessages(messages) };
   // model vs models[] fallback chain are mutually exclusive (OpenRouter 400s on both).
   if (Array.isArray(models) && models.length) body.models = models; else body.model = model;
@@ -150,6 +155,9 @@ export async function callLLM(apiKey, model, messages, opts = {}) {
   if (maxTokens) body.max_tokens = maxTokens;
   if (provider) body.provider = provider;
   if (responseFormat) body.response_format = responseFormat;
+  // Deterministic by default — see callLLMStreaming for rationale.
+  body.temperature = temperature ?? 0;
+  if (seed !== undefined) body.seed = seed;
 
   // Scale timeout to reasoning effort — medium/high thinking phases alone can run
   // 60-180s. A caller can pass hardMsOverride to cap a fast routing turn tighter.
