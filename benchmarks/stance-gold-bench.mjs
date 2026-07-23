@@ -41,7 +41,7 @@ const LIVE_SPEND_HARD_CAP_USD = 1.0;
 // enforced against ACTUAL accumulated cost as calls complete.
 const ESTIMATED_COST_PER_CALL_USD = 0.001;
 
-const BANNED_MODEL_SUBSTRINGS = ['deepseek'];
+const BANNED_MODEL_SUBSTRINGS = ['deepseek-r1'];
 
 // ── CLI args ─────────────────────────────────────────────────────────────
 function parseArgs(argv) {

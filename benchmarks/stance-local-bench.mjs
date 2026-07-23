@@ -38,7 +38,7 @@ const MODELS = process.env.MODELS
   ? process.env.MODELS.split(',').map((m) => m.trim()).filter(Boolean)
   : DEFAULT_MODELS;
 
-const BANNED_SUBSTRINGS = ['deepseek'];
+const BANNED_SUBSTRINGS = ['deepseek-r1'];
 for (const m of MODELS) {
   if (BANNED_SUBSTRINGS.some((b) => m.toLowerCase().includes(b))) {
     throw new Error(`refusing to benchmark vetoed model: ${m}`);
