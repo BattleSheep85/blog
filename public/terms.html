@@ -32,23 +32,27 @@
 <style>.skip-link{position:absolute;left:-9999px;top:0;z-index:100;background:var(--accent,#111);color:#fff;padding:.5rem 1rem;border-radius:.5rem}.skip-link:focus{left:1rem;top:1rem}</style>
 <a href="#main" class="skip-link">Skip to content</a>
 
-    <header class="sticky top-0 z-40 border-b border-line bg-bg/80 backdrop-blur-md">
+    <header class="sticky top-0 z-40 border-b border-line bg-bg/80 backdrop-blur-md print:hidden">
         <div class="mx-auto flex h-16 max-w-5xl items-center justify-between px-6">
             <a href="/" class="text-lg font-semibold tracking-tight text-ink">True<span class="font-serif italic text-accent">Rank</span></a>
             <nav class="flex items-center gap-6" aria-label="Main navigation">
-                <a href="/" class="hidden text-body-sm text-ink-2 transition-colors hover:text-ink sm:inline">Home</a>
+                <a href="/verify" class="hidden text-body-sm text-ink-2 transition-colors hover:text-ink sm:inline">Verify</a>
                 <a href="/research" class="hidden text-body-sm text-ink-2 transition-colors hover:text-ink sm:inline">Browse</a>
+                <a href="/reviews" class="hidden text-body-sm text-ink-2 transition-colors hover:text-ink sm:inline">Reviews</a>
                 <a href="/best/" class="hidden text-body-sm text-ink-2 transition-colors hover:text-ink sm:inline">Guides</a>
                 <a href="/about" class="hidden text-body-sm text-ink-2 transition-colors hover:text-ink sm:inline">About</a>
+                <a href="/account" class="hidden text-body-sm text-ink-2 transition-colors hover:text-ink sm:inline" title="Your account">Account</a>
                 <details class="nav-menu relative sm:hidden">
                     <summary class="nav-toggle flex items-center rounded-lg p-2 text-ink-2 hover:text-ink" aria-label="Open menu" role="button">
                         <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
                     </summary>
                     <div class="nav-menu-panel absolute right-0 mt-2 z-50 flex flex-col gap-1 rounded-lg border border-line bg-surface-1 p-2 shadow-card min-w-[11rem]">
-                        <a href="/" class="rounded px-3 py-2 text-body-sm text-ink-2 hover:text-ink">Home</a>
+                        <a href="/verify" class="rounded px-3 py-2 text-body-sm text-ink-2 hover:text-ink">Verify</a>
                         <a href="/research" class="rounded px-3 py-2 text-body-sm text-ink-2 hover:text-ink">Browse</a>
+                        <a href="/reviews" class="rounded px-3 py-2 text-body-sm text-ink-2 hover:text-ink">Reviews</a>
                         <a href="/best/" class="rounded px-3 py-2 text-body-sm text-ink-2 hover:text-ink">Guides</a>
                         <a href="/about" class="rounded px-3 py-2 text-body-sm text-ink-2 hover:text-ink">About</a>
+                        <a href="/account" class="rounded px-3 py-2 text-body-sm text-ink-2 hover:text-ink">Account</a>
                     </div>
                 </details>
                 <button id="theme-toggle" type="button" class="rounded-lg p-2 text-ink-3 transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60" aria-label="Toggle light and dark theme">
@@ -101,7 +105,7 @@
         </div>
     </main>
 
-    <footer class="border-t border-line">
+    <footer class="border-t border-line print:hidden">
         <div class="mx-auto max-w-5xl px-6 py-12">
             <div class="flex flex-col gap-8 md:flex-row md:justify-between">
                 <div class="max-w-xs">
@@ -113,18 +117,19 @@
                         <span class="text-overline uppercase text-ink-3">Explore</span>
                         <a href="/best/" class="text-body-sm text-ink-2 hover:text-ink">Guides</a>
                         <a href="/research" class="text-body-sm text-ink-2 hover:text-ink">Browse</a>
+                        <a href="/reviews" class="text-body-sm text-ink-2 hover:text-ink">Reviews</a>
                         <a href="/about" class="text-body-sm text-ink-2 hover:text-ink">About</a>
                     </div>
                     <div class="flex flex-col gap-2">
-                        <span class="text-overline uppercase text-ink-3">Site</span>
-                        <a href="/privacy" class="text-body-sm text-ink-2 hover:text-ink">Privacy</a>
-                        <a href="/terms" class="text-body-sm text-ink-2 hover:text-ink">Terms</a>
-                        <a href="/contact" class="text-body-sm text-ink-2 hover:text-ink">Contact</a>
+                        <span class="text-overline uppercase text-ink-3">More</span>
+                        <a href="/feed.xml" rel="alternate" type="application/atom+xml" class="text-body-sm text-ink-2 hover:text-ink">Atom feed</a>
+                        <a href="/sitemap.xml" class="text-body-sm text-ink-2 hover:text-ink">Sitemap</a>
                     </div>
                 </div>
             </div>
             <div class="mt-10 border-t border-line pt-6">
-                <p class="max-w-[80ch] text-caption text-ink-3">TrueRank contains affiliate links. If you buy through our links we may earn a commission at no extra cost to you. Our rankings are never influenced by affiliate relationships.</p>
+                <p class="mb-3 flex flex-wrap gap-x-5 gap-y-1 text-caption"><a href="/privacy" class="text-ink-3 hover:text-ink">Privacy Policy</a><a href="/terms" class="text-ink-3 hover:text-ink">Terms of Use</a><a href="/contact" class="text-ink-3 hover:text-ink">Contact</a><a href="https://ko-fi.com/chrisputer" target="_blank" rel="noopener nofollow" class="text-ink-3 hover:text-ink">Support&nbsp;♥</a></p>
+                <p class="max-w-[80ch] text-caption text-ink-3">As an Amazon Associate, Chrisputer Labs earns from qualifying purchases. Product data is compiled from public sources, and our rankings are never influenced by affiliate relationships.</p>
             </div>
         </div>
     </footer>

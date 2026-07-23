@@ -119,25 +119,21 @@ ${extra_head}
 <div class="mx-auto flex h-16 max-w-5xl items-center justify-between px-6">
 <a href="/" class="text-lg font-semibold tracking-tight text-ink">True<span class="font-serif italic text-accent">Rank</span></a>
 <nav class="flex items-center gap-6" aria-label="Main navigation">
-<a href="/" class="hidden text-body-sm text-ink-2 transition-colors hover:text-ink sm:inline">Home</a>
+<a href="/verify" class="hidden text-body-sm text-ink-2 transition-colors hover:text-ink sm:inline">Verify</a>
 <a href="/research" class="hidden text-body-sm text-ink-2 transition-colors hover:text-ink sm:inline">Browse</a>
-<a href="/history" class="hidden text-body-sm text-ink-2 transition-colors hover:text-ink sm:inline" title="Your past searches">Your searches</a>
 <a href="/reviews" class="hidden text-body-sm text-ink-2 transition-colors hover:text-ink sm:inline">Reviews</a>
 <a href="/best/" class="hidden text-body-sm text-ink-2 transition-colors hover:text-ink sm:inline">Guides</a>
-<a href="/verify" class="hidden text-body-sm text-ink-2 transition-colors hover:text-ink sm:inline">Verify</a>
 <a href="/about" class="hidden text-body-sm text-ink-2 transition-colors hover:text-ink sm:inline">About</a>
-<a href="/account" class="text-body-sm text-ink-2 transition-colors hover:text-ink" title="Your past searches">Account</a>
+<a href="/account" class="hidden text-body-sm text-ink-2 transition-colors hover:text-ink sm:inline" title="Your account">Account</a>
 <details class="nav-menu relative sm:hidden">
 <summary class="nav-toggle flex items-center rounded-lg p-2 text-ink-2 hover:text-ink" aria-label="Open menu" role="button">
 <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
 </summary>
 <div class="nav-menu-panel absolute right-0 mt-2 z-50 flex flex-col gap-1 rounded-lg border border-line bg-surface-1 p-2 shadow-card min-w-[11rem]">
-<a href="/" class="rounded px-3 py-2 text-body-sm text-ink-2 hover:text-ink">Home</a>
+<a href="/verify" class="rounded px-3 py-2 text-body-sm text-ink-2 hover:text-ink">Verify</a>
 <a href="/research" class="rounded px-3 py-2 text-body-sm text-ink-2 hover:text-ink">Browse</a>
-<a href="/history" class="rounded px-3 py-2 text-body-sm text-ink-2 hover:text-ink">Your searches</a>
 <a href="/reviews" class="rounded px-3 py-2 text-body-sm text-ink-2 hover:text-ink">Reviews</a>
 <a href="/best/" class="rounded px-3 py-2 text-body-sm text-ink-2 hover:text-ink">Guides</a>
-<a href="/verify" class="rounded px-3 py-2 text-body-sm text-ink-2 hover:text-ink">Verify</a>
 <a href="/about" class="rounded px-3 py-2 text-body-sm text-ink-2 hover:text-ink">About</a>
 <a href="/account" class="rounded px-3 py-2 text-body-sm text-ink-2 hover:text-ink">Account</a>
 </div>
