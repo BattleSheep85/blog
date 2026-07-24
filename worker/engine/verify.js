@@ -356,7 +356,7 @@ export async function runVerification({ product, productUrl, config, apiKey, env
     product,
     claimText,
     apiKey,
-    model: config.synthModel,
+    model: config.extractModel || config.synthModel,
     callLLM,
   });
   costUsd += extractCost;
@@ -373,7 +373,7 @@ export async function runVerification({ product, productUrl, config, apiKey, env
       product,
       claimText: retryClaimText,
       apiKey,
-      model: config.synthModel,
+      model: config.extractModel || config.synthModel,
       callLLM,
     });
     costUsd += retryCost;

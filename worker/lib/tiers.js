@@ -5,8 +5,10 @@
 //   - classifier: google/gemini-2.5-flash-lite  (set in worker/lib/classifier.js)
 //   - planner:    google/gemini-2.5-flash        (perfect skepticism + tool-calls,
 //                 cheapest + fastest; the feared "15% BS" failure did not reproduce)
-//   - synthesis:  openai/gpt-5.4-mini            (locked 2026-06-29; won the 50-query
-//                 blind juror panel — see synthModel comment below)
+//   - synthesis:  minimax/minimax-m3             (owner no-OpenAI directive, 2026-07-24;
+//                 was the synth-gold co-leader — see synthModel comment below)
+//   - extract:    anthropic/claude-haiku-4.5     (owner no-OpenAI directive, 2026-07-24;
+//                 only non-OpenAI extractor matching the incumbent on the extract-gold bench)
 //
 // Depth is tuned to "deep & sustainable" within Cloudflare's per-run limits
 // (~950 subrequests, ~20-min reaper). The off-Cloudflare research worker
@@ -17,17 +19,17 @@ const ENGINE_CONFIG = {
   maxSearches: 50,
   maxFetches: 20,
   agentLoopBudgetMs: 210_000, // ~3.5 min, safely under the 20-min reaper
-  // Synth model = openai/gpt-5.4-mini (locked in 2026-06-26). Won the 50-query ×
-  // 150-juror blind judge panel on real Google searches: best grounding (7.18) +
-  // usefulness (7.31), ranked #1 in 53% of head-to-heads, near-cleanest fabrication
-  // rate. Beat kimi-k2.6, grok-4.20 (DQ'd on honesty, 3.15 fabs/report), gemini-flash
-  // (honest but thin), flash-lite. Bench: benchmarks/bench-synth-v2.mjs + judge panel.
-  synthModel: 'openai/gpt-5.4-mini',
+  // synth — owner no-OpenAI directive (2026-07-24); minimax-m3 was the statistical
+  // co-leader of the synthesis-gold bench (composite 7.69 vs gpt-5.4-mini 7.61,
+  // 8/8 reliable, 1 num_ung across 8 reports; benchmarks/ft-data/README.md).
+  // Cheaper + richer reports than the incumbent.
+  synthModel: 'minimax/minimax-m3',
   plannerModel: 'google/gemini-2.5-flash',
-  // gpt-5.4-mini does not take a reasoning param in the bench config (undefined).
   synthReasoning: undefined,
-  stanceModel: 'minimax/minimax-m3', // verify stance judge — won the independent-gold stance bench (87.5% acc / 71% action-precision vs gpt-5.4-mini 58%/30%; benchmarks/stance-gold-bench.mjs). extractClaims/synth stay on synthModel pending their own evals.
+  stanceModel: 'minimax/minimax-m3', // verify stance judge — won the independent-gold stance bench (87.5% acc / 71% action-precision vs the former gpt-5.4-mini incumbent 58%/30%; benchmarks/stance-gold-bench.mjs). extractClaims now has its own model below (extractModel); synth uses synthModel.
   stanceReasoning: undefined,
+  extractModel: 'anthropic/claude-haiku-4.5', // extractClaims — no-OpenAI pick; only non-OpenAI model matching the incumbent on the extract-gold bench (7.60 quality, 10/10, 0 hard-fails). minimax ruled out here (2/10 empty outputs).
+  extractReasoning: undefined,
   synthMaxTokens: 16000,
   // ── speed knobs (OpenRouter platform levers) ──────────────────────────────
   // The agent loop is tool-ROUTING, not deep reasoning — cap thinking tokens per
@@ -52,9 +54,9 @@ const ENGINE_CONFIG = {
   // (filter to zero) with no routing benefit. The planner's real speed lever is
   // reasoning:{effort:'low'} above. Verified empirically 2026-06-22.
   plannerProvider: null,
-  // gpt-5.4-mini is a single-provider (OpenAI) model on OpenRouter with no
-  // quantization tag, so the kimi-era throughput/quantization routing object would
-  // 404 ("no endpoints") or filter to zero. No provider routing for the synth now.
+  // No provider routing pin for the synth model — left null after the openai/
+  // gpt-5.4-mini era single-provider constraint; minimax-m3 has no quantization
+  // tag either, so a routing object would still 404/filter to zero.
   synthProvider: null,
   // Cap a hung planner routing turn well below the synth budget (the loop retries
   // once on error, so a rare false abort self-heals). gemini tool turns finish in s.

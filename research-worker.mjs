@@ -17,10 +17,11 @@
 
 import { runParallelEngine } from './worker/engine/parallel-engine.js';
 
-// Synth model is locked to openai/gpt-5.4-mini in worker/lib/tiers.js (ENGINE_CONFIG),
-// the winner of the 50-query × 150-juror blind judge panel (2026-06-26). The earlier
-// 4-way A/B rotation here was retired once that bench settled it; the worker now just
-// runs the job's config synthModel.
+// Synth model is set in worker/lib/tiers.js (ENGINE_CONFIG) — minimax/minimax-m3 as
+// of 2026-07-24 (owner no-OpenAI directive; synth-gold co-leader vs the former
+// openai/gpt-5.4-mini incumbent, which itself won the 50-query × 150-juror blind
+// judge panel on 2026-06-26). The earlier 4-way A/B rotation here was retired once
+// that bench settled it; the worker now just runs the job's config synthModel.
 
 const CF_BASE = process.env.CF_BASE_URL || 'https://chrisputer.tech';
 const SECRET = process.env.WORKER_SECRET;
