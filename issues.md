@@ -20,6 +20,16 @@ Last updated: 2026-07-24
       MiMo with AA-intel 42). General benchmarks are a pre-filter only; role fitness must be
       measured on our own gold benches.
 
+### Production
+- [x] OpenAI removed from production (owner directive): synthModel→minimax/minimax-m3,
+      extractModel(new)→anthropic/claude-haiku-4.5, both gold-bench-backed. Live-smoked both
+      pipelines post-deploy (verify: 6 claims, synth_model=minimax-m3, $0.035; research: 18
+      products, $0.048). Note: ranking synthesis runs the deterministic extraction engine
+      (SYNTH_ENGINE=extract, deliberate per commit 2022598), so synthModel is the
+      rollback/generative path + verify label + fallback — extract/stance are the live LLM
+      calls, both OpenAI-free. OpenAI models remain only as stored benchmark baselines. No
+      runtime openai/ reference remains in worker/ or research-worker.mjs.
+
 ### Open
 - [ ] MEDIUM: Synthesis + extract + classifier + planner roles still on unvalidated model
       choices; synthesis gold bench in progress (blinded 6-model × 8-query run). Grader
