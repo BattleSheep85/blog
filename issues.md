@@ -25,6 +25,11 @@ Last updated: 2026-07-24
       choices; synthesis gold bench in progress (blinded 6-model × 8-query run). Grader
       false-negative: short SKU-style names (<3 chars, e.g. 'V3') silently skip the
       name-grounding check in synth-score.mjs — needs a scoped fix.
+- [x] Synthesis gold bench complete: gpt-5.4-mini DEFENDS the synth seat (most honest
+      8.6/10, 0 fabricated numbers; minimax-m3 statistically tied on composite but looser).
+      deepseek-v4-flash DQ'd for synth — 22 fabricated spec numbers across 8 reports (won
+      stance, fails synth: role-fitness cuts both ways). gemma-4-26b:free (3/8) + gpt-5-nano
+      (6/8) DQ'd on completion reliability. Remaining unvalidated roles: extract, planner.
 
 ## 2026-07-22 — Serverless migration complete (blackbox retired)
 
