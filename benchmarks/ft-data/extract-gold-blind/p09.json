@@ -1,0 +1,44 @@
+{
+ "product": "CamelBak Chute Mag Water Bottle",
+ "source_excerpt": "Product: \"CamelBak Chute Mag Water Bottle\"\n\n### SOURCE 1 Watch 3 YEARS using the CamelBak Chute Mag Bottle - My ...\nhttps://www.amazon.com/live/video/038259d2ac07459a99a2b3ece7cd9d4f?ref_=dp_vse_rvc_0\nWatch 3 YEARS using the CamelBak Chute Mag Bottle - My experience on Amazon Live Discover why 🌲🏕 Manou Maudgal swears by this CamelBak bottle after 3 years of adventures. See its impressive insulation in action and learn about its clever design features. This page requires JavaScript to be enabled for the full experience. Please enable JavaScript in your browser settings. View this content Back to top Get to Know Us Careers Amazon Newsletter About Amazon Accessibility Sustainability Press Center Investor Relations Amazon Devices Amazon Science Make Money with Us Sell on Amazon Sell apps on Amazon Supply to Amazon Protect & Build Your Brand Become an Affiliate Become a Delivery Driver Start a Package Delivery Business Advertise Your Products Self-Publish with Us Become an Amazon Hub Partner › See More Ways to Make Money Amazon Payment Products Amazon Visa Amazon Store Card Amazon Secured Card Amazon Business Card Shop with Points Credit Card Marketplace Reload Your Balance Gift Cards Amazon Currency Converter Let Us Help You Your Account Your Orders Shipping Rates & Policies Amazon Prime Returns & Replacements Manage Your Content and Devices Recalls and Product Safety Alerts Registry & Gift List Help English United States Amazon Music Stream millions of songs Amazon Ads Reach customers wherever they spend their time 6pm Score deals on fashion brands AbeBooks Books, art & collectibles ACX Audiobook Publishing Made Easy Sell on Amazon Start a Selling Account Veeqo Shipping Software Inventory Management Amazon Business Everything For Your Business Amazon Fresh Groceries & More Right To Your Door AmazonGlobal Ship Orders Internationally Home Services Experienced Pros Happiness Guarantee Amazon Web Services Scalable Cloud Computing Services Audible Listen to Books & Original Audio Performances Box Office Mojo Find Movie Box Office Data Goodreads Book reviews & recommendations IMDb Movies, TV & Celebrities IMDbPro Get Info Entertainment Professionals Need Kindle Direct Publishing Indie Digital & Print Publishing Made Easy Amazon Photos Unlimited Photo Storage Free With Prime Prime Video Direct Video Distribution Made Easy Shopbop Designer Fashion Brands Amazon Resale Great Deals on Quality Used Products Whole Foods Market America’s Healthiest Grocery Store Woot! Deals and Shenanigans Zappos Shoes & Clothing Ring Smart Home Security Systems eero WiFi Stream 4K Video in Every Room Blink Smart Security for Every Home Neighbors App Real-Time Crime & Safety Alerts PillPack Pharmacy Simplified Amazon Renewed Refurbished tech you can trust Conditions of Use Privacy Notice Consumer Health Data Privacy Disclosure Your Ads Privacy Choices © 1996-2026, Amazon.com, Inc. or its affiliates\n\n### SOURCE 2 Pure Bottle Metal Water Bottle - 2.2L Stainless Steel ...\nhttps://www.amazon.co.uk/Pure-Bottle-Metal-Water-Shatterproof/dp/B0DC1GN56S\n[Jan 4, 2026]\nMain cap doesn't screw down enough allowing water to leak out when the bottle is tilted. Apart from that it looks decent. The seller messaged me offering to ...\n\n### SOURCE 3 Prurex Straw Lid for Camelbak Chute Mag 20/25/32/40 OZ ...\nhttps://www.amazon.com/Prurex-Camelbak-Contigo-Stainless-Replacement/dp/B0FFMB3Y3Z\n[Jan 23, 2026]\nWe focus on fixing water bottle accessory problems and offer 18 replacement - lid - like products. If you've got questions about the product you received ...",
+ "candidates": {
+  "A": [],
+  "B": [],
+  "C": [
+   {
+    "id": "c1",
+    "text": "CamelBak Chute Mag is available in 20, 25, 32, and 40 oz sizes",
+    "type": "spec"
+   }
+  ],
+  "D": [
+   {
+    "id": "c1",
+    "text": "The CamelBak Chute Mag Water Bottle has been used for 3 years without issues.",
+    "type": "marketing"
+   },
+   {
+    "id": "c2",
+    "text": "The bottle features impressive insulation.",
+    "type": "marketing"
+   },
+   {
+    "id": "c3",
+    "text": "The main cap of the Pure Bottle Metal Water Bottle (which may be similar to the CamelBak Chute Mag) does not screw down enough, allowing water to leak when tilted.",
+    "type": "marketing"
+   }
+  ],
+  "E": [
+   {
+    "id": "c1",
+    "text": "CamelBak Chute Mag is a bottle product that uses a magnetic closure/mag cap design.",
+    "type": "marketing"
+   },
+   {
+    "id": "c2",
+    "text": "CamelBak Chute Mag has been used for 3 years in the linked Amazon Live experience page.",
+    "type": "marketing"
+   }
+  ]
+ }
+}

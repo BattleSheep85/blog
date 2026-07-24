@@ -1,0 +1,241 @@
+{
+ "product": "Fitbit Charge 6",
+ "source_excerpt": "Product: \"Fitbit Charge 6\"\n\n### SOURCE 1 Watch Fitbit Charge 6 In-Depth Review - 12 New Things to ...\nhttps://www.amazon.com/live/video/048fa80235b645cab063c30e099e2b18\nShop with expert advice from DC Rainmaker in their latest video Fitbit Charge 6 In-Depth Review - 12 New Things to Know!\n\n### SOURCE 2 My Fitbit charge 6 is not working - Google Health Community\nhttps://support.google.com/googlehealth/thread/440789703/my-fitbit-charge-6-is-not-working?hl=en\n[Jun 12, 2026]\nTest the charging cable with a different UL-certified USB wall power adapter or a different USB port on a computer to rule out a faulty power source. Perform a ...\n\n### SOURCE 3 Fitbit Charge 6 Fitness Tracker Obsidian Black with Heart ...\nhttps://www.walmart.com/ip/Fitbit-Charge-6-Fitness-Tracker-with-Heart-Rate-GPS-Premium-Membership-Health-Tools-Obsidian-Black/5087333627\n[Jan 6, 2026]\nTrack your health with Fitbit Charge 6, featuring heart rate, GPS, Google apps, 6-month Premium membership, health tools, and water resistance up to 50m.\n\n### SOURCE 4 Safety & Regulatory Guide for Google Fitbit Air\nhttps://support.google.com/product-documentation/answer/17050752?hl=en\n[May 7, 2026]\nThis guide includes the basic safety guidelines … altitude of up to 6562 ft (2,000 m). rated: 5 Volts DC, maximum 3 Amp; 9 Volts DC, maximum 2 Amp; or both. ...\n\n### SOURCE 5 Tech Specs & Battery Life of Google Fitbit Air\nhttps://store.google.com/product/google_fitbit_air_specs?hl=en-US&srsltid=AfmBOopBQ7_3wWH7DxYeA_bo7k6p6ZOXfMm1lY_1iqqE8Qwn-f-wFXRn\n[May 7, 2026]\nGoogle Fitbit Air is designed for Google Health with advanced sensors for 24/7 health tracking and up to a week's worth of battery.\n\n### SOURCE 6 New charge 6 does not take EKG like previous model?\nhttps://support.google.com/googlehealth/thread/435284844/new-charge-6-does-not-take-ekg-like-previous-model?hl=en\n[May 21, 2026]\nYes, the ECG function is absolutely still active and working on the device. The ECG app won't work until you activate it in the Google Health app. The ECG ...\n\n### SOURCE 7 Google ECG App - Apps on Google Play\nhttps://play.google.com/store/apps/details?id=com.fitbit.ecg&hl=en_US\n[May 26, 2026]\nUse the ECG app to check your heart for signs of atrial fibrillation, an irregular heart rhythm. You can create a PDF of your results to share with a ...\n\n### SOURCE 8 Can't do an ECG reading on Charge 6.\nhttps://support.google.com/googlehealth/thread/435889216?hl=en&msgid=435893169\n[May 21, 2026]\nThe ECG feature was the reason I bought the fitbit charge 6. And now since this unasked for change to the app I cannot see an option to download ECG tests ...\n\n### SOURCE 9 Introducing Fitbit Charge 6: Our most advanced tracker yet\nhttps://support.google.com/googlehealth/thread/433366707/introducing-fitbit-charge-6-our-most-advanced-tracker-yet?hl=en\n[May 13, 2026]\nThe new Charge 6 has our most accurate heart rate on a tracker yet with up to 60% more accurate readings for vigorous activities such as HIIT, spinning and ...\n\n### SOURCE 10 Ever since health app replaced fitbit sleep not being tracked\nhttps://support.google.com/googlehealth/thread/437308724/ever-since-health-app-replaced-fitbit-sleep-not-being-tracked?hl=en\n[May 28, 2026]\nI have a Charge 6. It is tracking battery charge and steps but is no longer tracking sleep or transfering texts or phone call notice. Fitbit was accurate and ...\n\n### SOURCE 11 Battery life DESTROYED after Google Health app update\nhttps://support.google.com/googlehealth/thread/437127292/battery-life-destroyed-after-google-health-app-update?hl=en\n[May 27, 2026]\nI usually go about 4-5 days in between charging my Charge 6, but since the latest transition to the new Google Health app a few days ago, my device now ...\n\n### SOURCE 12 Recent update bricked my Fitbit Charge 6\nhttps://support.google.com/googlehealth/thread/435542366/recent-update-bricked-my-fitbit-charge-6?hl=en\n[May 20, 2026]\nClean the contacts on the charging cable. Try another restart. Connect your Charge 6 to the charging cable to see if it reacts when charging starts.\n\n### SOURCE 13 Fitbit app to Google Health app is a nightmare\nhttps://support.google.com/googlehealth/thread/436981827/fitbit-app-to-google-health-app-is-a-nightmare\n[May 26, 2026]\nI have a fitbit charge which worked JUST FINE with the fitbit app. When signed into my google account because I was FORCED to, I can only access my child's ...\n\n### SOURCE 14 App upgrade from fitbit to google and charge6 firmware ...\nhttps://support.google.com/googlehealth/thread/437612802/app-upgrade-from-fitbit-to-google-and-charge6-firmware-update-made-it-inaccurate-in-distance-track?hl=en\n[May 29, 2026]\nMy charge 6 Fitbit was very accurate in distance tracking using automatic GPS setting … it reports inaccurate distance. Also battery doesn't even last a day ...\n\n### SOURCE 15 My charge 6 will not sync in google health Fitbit\nhttps://support.google.com/googlehealth/thread/440411927/my-charge-6-will-not-sync-in-google-health-fitbit?hl=en\n[Jun 10, 2026]\nGo to your",
+ "candidates": {
+  "A": [
+   {
+    "id": "c1",
+    "text": "Water resistance up to 50 meters.",
+    "type": "spec"
+   },
+   {
+    "id": "c2",
+    "text": "Built-in GPS.",
+    "type": "spec"
+   },
+   {
+    "id": "c3",
+    "text": "Includes 6-month Premium membership.",
+    "type": "marketing"
+   },
+   {
+    "id": "c4",
+    "text": "Up to 60% more accurate heart rate readings for vigorous activities such as HIIT and spinning.",
+    "type": "marketing"
+   },
+   {
+    "id": "c5",
+    "text": "ECG function is active and working on the device.",
+    "type": "spec"
+   }
+  ],
+  "B": [
+   {
+    "id": "c1",
+    "text": "Water resistance up to 50 meters",
+    "type": "spec"
+   },
+   {
+    "id": "c2",
+    "text": "Heart rate tracking",
+    "type": "spec"
+   },
+   {
+    "id": "c3",
+    "text": "GPS capability",
+    "type": "spec"
+   },
+   {
+    "id": "c4",
+    "text": "ECG (electrocardiogram) function available",
+    "type": "spec"
+   },
+   {
+    "id": "c5",
+    "text": "Up to 60% more accurate heart rate readings for vigorous activities",
+    "type": "spec"
+   },
+   {
+    "id": "c6",
+    "text": "Battery life of up to a week",
+    "type": "spec"
+   },
+   {
+    "id": "c7",
+    "text": "6-month Premium membership included",
+    "type": "marketing"
+   },
+   {
+    "id": "c8",
+    "text": "Charging time not specified (assumed standard Fitbit charging)",
+    "type": "marketing"
+   },
+   {
+    "id": "c9",
+    "text": "Compatible with Google Health app",
+    "type": "support"
+   },
+   {
+    "id": "c10",
+    "text": "Requires Bluetooth permission for syncing in Google Health",
+    "type": "support"
+   },
+   {
+    "id": "c11",
+    "text": "Altitude rating up to 2,000 meters (6,562 feet)",
+    "type": "spec"
+   },
+   {
+    "id": "c12",
+    "text": "Power adapter rating: 5V DC, max 3A; 9V DC, max 2A",
+    "type": "spec"
+   }
+  ],
+  "C": [
+   {
+    "id": "c1",
+    "text": "Fitbit Charge 6 includes heart rate tracking.",
+    "type": "spec"
+   },
+   {
+    "id": "c2",
+    "text": "Fitbit Charge 6 includes built-in GPS.",
+    "type": "spec"
+   },
+   {
+    "id": "c3",
+    "text": "Fitbit Charge 6 supports Google apps.",
+    "type": "spec"
+   },
+   {
+    "id": "c4",
+    "text": "Fitbit Charge 6 comes with a 6-month Premium membership.",
+    "type": "spec"
+   },
+   {
+    "id": "c5",
+    "text": "Fitbit Charge 6 has health tools.",
+    "type": "spec"
+   },
+   {
+    "id": "c6",
+    "text": "Fitbit Charge 6 is water resistant up to 50 m.",
+    "type": "spec"
+   },
+   {
+    "id": "c7",
+    "text": "Fitbit Charge 6 has ECG functionality.",
+    "type": "spec"
+   },
+   {
+    "id": "c8",
+    "text": "Fitbit Charge 6 offers up to 60% more accurate heart rate readings for vigorous activities such as HIIT and spinning.",
+    "type": "marketing"
+   },
+   {
+    "id": "c9",
+    "text": "Fitbit Charge 6 is described as the most advanced tracker yet.",
+    "type": "marketing"
+   }
+  ],
+  "D": [
+   {
+    "id": "c1",
+    "text": "Water resistance up to 50m",
+    "type": "spec"
+   },
+   {
+    "id": "c2",
+    "text": "Includes a 6-month Premium membership",
+    "type": "marketing"
+   },
+   {
+    "id": "c3",
+    "text": "Features heart rate tracking",
+    "type": "spec"
+   },
+   {
+    "id": "c4",
+    "text": "Features built-in GPS",
+    "type": "spec"
+   },
+   {
+    "id": "c5",
+    "text": "Features Google apps",
+    "type": "spec"
+   },
+   {
+    "id": "c6",
+    "text": "Up to 60% more accurate heart rate readings for vigorous activities such as HIIT, spinning",
+    "type": "marketing"
+   },
+   {
+    "id": "c7",
+    "text": "Has the most accurate heart rate on a Fitbit tracker yet",
+    "type": "marketing"
+   },
+   {
+    "id": "c8",
+    "text": "ECG app checks your heart for signs of atrial fibrillation (an irregular heart rhythm)",
+    "type": "spec"
+   },
+   {
+    "id": "c9",
+    "text": "ECG app allows you to create a PDF of your results to share with your doctor",
+    "type": "spec"
+   },
+   {
+    "id": "c10",
+    "text": "The ECG function is active and working on the device",
+    "type": "support"
+   },
+   {
+    "id": "c11",
+    "text": "The ECG app requires activation through the Google Health app",
+    "type": "support"
+   }
+  ],
+  "E": [
+   {
+    "id": "c1",
+    "text": "Water resistance up to 50m",
+    "type": "spec"
+   },
+   {
+    "id": "c2",
+    "text": "Features heart rate tracking",
+    "type": "spec"
+   },
+   {
+    "id": "c3",
+    "text": "Features GPS",
+    "type": "spec"
+   },
+   {
+    "id": "c4",
+    "text": "Includes 6-month Premium membership",
+    "type": "marketing"
+   },
+   {
+    "id": "c5",
+    "text": "ECG function is active on the device",
+    "type": "spec"
+   },
+   {
+    "id": "c6",
+    "text": "Up to 60% more accurate heart rate readings for vigorous activities such as HIIT and spinning",
+    "type": "marketing"
+   },
+   {
+    "id": "c7",
+    "text": "Tracks sleep",
+    "type": "spec"
+   },
+   {
+    "id": "c8",
+    "text": "Tracks steps",
+    "type": "spec"
+   }
+  ]
+ }
+}

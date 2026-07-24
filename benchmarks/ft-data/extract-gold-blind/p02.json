@@ -1,0 +1,240 @@
+{
+ "product": "Lenovo ThinkPad X1 Carbon",
+ "source_excerpt": "Product: \"Lenovo ThinkPad X1 Carbon\"\n\n### SOURCE 1 X1-Carbon-Gen-13-Review-benchmarks\nhttps://forums.lenovo.com/t5/ThinkPad-X-Series-Laptops/X1-Carbon-Gen-13-Review-benchmarks/m-p/5391787\n[Jul 27, 2025]\nThis system has the Ultra 7 265U, 8MP+IR MIPI camera … it is noticeably quicker than the G12, I think a combination of the faster processor and faster SSD. ...\n\n### SOURCE 2 ThinkPad X1 Carbon Gen 13 Aura Edition (14ʺ Intel)\nhttps://www.lenovo.com/us/en/p/laptops/thinkpad/thinkpadx1/thinkpad-x1-carbon-gen-13-aura-edition-14-inch-intel/21nxcto1wwus2?srsltid=AfmBOor1UgH_PgGgEEBiK9b8s8XiY_P7mVF3vvswCsBrpj6zfTvffkY1\n[Jul 22, 2025]\nUsers say the device offers excellent performance, portability, and a premium keyboard that meets the needs of modern professionals.\n\n### SOURCE 3 Lenovo Upgraded ThinkPad X1 Gen 12 Carbon Laptop 14 ...\nhttps://www.bestbuy.com/product/lenovo-thinkpad-x1-gen-12-carbon-laptop-14-touch-dispaly-with-intel-ultra-7-155u-32gb-lpddr5x-1tb-ssd-win-11-pro-black/JJGHT4CW4J/sku/10906691\n[Feb 6, 2026]\nBuild Quality, Battery Life, Performance, Portability, There were no pros for this product—. Specs. Key Specs. General. Display. Processor. Storage. Memory.\n\n### SOURCE 4 Lenovo Gen 13 ThinkPad X1 Carbon Touchscreen Laptop ...\nhttps://www.amazon.com/Lenovo-ThinkPad-Touchscreen-Processor-Performance/dp/B0FS9WHNQJ\n[Oct 5, 2025]\nGen 12 X1 Carbon updates include Intel's 15th-gen Core Ultra processors bringing improved graphics performance, stronger multi-core performance, AI capabilities ...\n\n### SOURCE 5 Lenovo ThinkPad X1 Carbon Gen 12 Touchscreen, Intel ...\nhttps://www.amazon.com/Lenovo-ThinkPad-Carbon-Touchscreen-Camera/dp/B0FHSMSPXR\n[Aug 13, 2025]\nThinkPad X1 Carbon Gen 12 Touchscreen, Intel Ultra 7 155H (Beats U7 165), 14\" Touch (1920 x 1200) 32GB DDR5, 1TB SSD Gen 5, 1080p IR Camera, WiFi 6.0, Win 11 ...\n\n### SOURCE 6 Lenovo - ThinkPad X1 Carbon G12 14\" TouchScreen Laptop\nhttps://www.bestbuy.com/product/lenovo-thinkpad-x1-carbon-g12-14-touchscreen-laptop-core-ultra-7-with-32gb-memory-512gb-ssd-black/JJGSQFY4ZV\n[Sep 9, 2025]\nIt packs powerful performance with an Intel Core Ultra 7 255U Processor and Intel Graphics for fast multitasking, and is equipped with 32GB DDR5 8400 MT/s ...\n\n### SOURCE 7 ThinkPad X1 Carbon Gen 12 14\" FHD+ Touchscreen Laptop\nhttps://www.bestbuy.com/product/lenovo-thinkpad-x1-carbon-14-fhd-touchscreen-laptop-gen-12-intel-core-ultra-7-with-32gb-memory-1tb-ssd-windows-11-pro-jet-black/J3GWQRF88Z\n[Sep 30, 2025]\nmax resolution of 4K (3840*2160) 1080P FHD IR+RGB webcam. Resolution 400 nits. OLED 2K Display - 4.7 out of 5 stars with 33 reviews (33)\n\n### SOURCE 8 Lenovo ThinkPad X1 Carbon Gen 12 (14ʺ Intel)\nhttps://www.lenovo.com/au/en/p/laptops/thinkpad/thinkpadx1/thinkpad-x1-carbon-gen-12-14-inch-intel/len101t0083?bc_pid=MjFLQ1MxQTQwMA%3D%3D&rrid=1129753471&CID=au%3Aemail%3A9wg2ol&variant_id=&run_key=ag9zfnRyaWdnZXJlZG1haWxyHgsSEUVtYWlsSFRNTE1ldGFkYXRhGIDAt7bM-LAIDKIBCWxlbm92b19hdQ&obem=IJgs6i5V87xc8a9hkqoTPBowBbmLCmKCJpurLqLWLrM%3D&bc_lcid=t5174665863094272lw5179574608060416&displayrulevalidation=false&bvstate=pg:18/ct:r&srsltid=AfmBOooA2S_ISZKKzD6_FJMTL8tcylLLZm-oa1nYcwQFhwAYtI1rKmGO\n[3 days ago]\nExperience all-day battery life, Actual battery life will vary and depends on many factors such as product configuration, software, wireless functionality, ...\n\n### SOURCE 9 Check your PC Battery Health with Lenovo Vantage\nhttps://support.lenovo.com/us/en/videos/ytv104157-check-your-pc-battery-health-with-lenovo-vantage\n[Sep 19, 2024]\nYou can check your device's battery health with Lenovo Vantage. Related Articles. [Video] First Steps When Troubleshooting Your Computer; [Video] ...\n\n### SOURCE 10 How to use TrackPoint Quick Menu on ThinkPad X1 Fold 16 ...\nhttps://support.lenovo.com/us/en/videos/vid500170-how-to-use-trackpoint-quick-menu-on-thinkpad-x1-fold-16-gen-1\nTrackPoint Quick Menu, a clickable app, offers rapid access to Camera, Microphone and Haptic Touchpad functions. You can launch the app quickly by double ...\n\n### SOURCE 11 ThinkPad X1 Carbon Gen 13 Aura Edition (14\" Intel)\nhttps://www.lenovo.com/gb/en/p/laptops/thinkpad/thinkpadx1/thinkpad-x1-carbon-gen-13-aura-edition-14-inch-intel/21nxcto1wwgb4?srsltid\n[Sep 14, 2025]\nIt adjusts settings to ease eyestrain and uses computer vision AI to assess your posture and how long you've been looking at your display — and then warns you ...",
+ "candidates": {
+  "A": [],
+  "B": [
+   {
+    "id": "c1",
+    "text": "Gen 13 X1 Carbon features Intel's 15th-gen Core Ultra processors",
+    "type": "spec"
+   },
+   {
+    "id": "c2",
+    "text": "14-inch display with 1920 x 1200 resolution",
+    "type": "spec"
+   },
+   {
+    "id": "c3",
+    "text": "1080p IR Camera",
+    "type": "spec"
+   },
+   {
+    "id": "c4",
+    "text": "32GB DDR5 memory",
+    "type": "spec"
+   },
+   {
+    "id": "c5",
+    "text": "1TB SSD storage",
+    "type": "spec"
+   },
+   {
+    "id": "c6",
+    "text": "WiFi 6.0 connectivity",
+    "type": "spec"
+   },
+   {
+    "id": "c7",
+    "text": "OLED 2K Display option available",
+    "type": "spec"
+   },
+   {
+    "id": "c8",
+    "text": "400 nits display brightness",
+    "type": "spec"
+   },
+   {
+    "id": "c9",
+    "text": "Touchscreen display",
+    "type": "spec"
+   },
+   {
+    "id": "c10",
+    "text": "Premium keyboard",
+    "type": "marketing"
+   },
+   {
+    "id": "c11",
+    "text": "All-day battery life",
+    "type": "marketing"
+   },
+   {
+    "id": "c12",
+    "text": "Uses computer vision AI to assess posture and display viewing time",
+    "type": "spec"
+   }
+  ],
+  "C": [
+   {
+    "id": "c1",
+    "text": "The ThinkPad X1 Carbon Gen 13 Aura Edition is a 14-inch Intel laptop.",
+    "type": "spec"
+   },
+   {
+    "id": "c2",
+    "text": "The ThinkPad X1 Carbon Gen 13 Aura Edition uses an Intel Core Ultra 7 265U processor.",
+    "type": "spec"
+   },
+   {
+    "id": "c3",
+    "text": "The ThinkPad X1 Carbon Gen 13 Aura Edition includes an 8MP+IR MIPI camera.",
+    "type": "spec"
+   },
+   {
+    "id": "c4",
+    "text": "The ThinkPad X1 Carbon Gen 12 is a 14-inch Intel laptop.",
+    "type": "spec"
+   },
+   {
+    "id": "c5",
+    "text": "The ThinkPad X1 Carbon Gen 12 supports all-day battery life.",
+    "type": "marketing"
+   },
+   {
+    "id": "c6",
+    "text": "Lenovo Vantage can be used to check a device's battery health.",
+    "type": "support"
+   },
+   {
+    "id": "c7",
+    "text": "TrackPoint Quick Menu provides rapid access to camera, microphone, and haptic touchpad functions.",
+    "type": "support"
+   },
+   {
+    "id": "c8",
+    "text": "The ThinkPad X1 Carbon Gen 13 Aura Edition uses computer vision AI to assess posture and how long the user has been looking at the display.",
+    "type": "marketing"
+   },
+   {
+    "id": "c9",
+    "text": "The ThinkPad X1 Carbon Gen 13 Aura Edition warns the user based on posture and display-time assessment.",
+    "type": "marketing"
+   }
+  ],
+  "D": [
+   {
+    "id": "c1",
+    "text": "X1 Carbon Gen 13 features an Ultra 7 265U processor",
+    "type": "spec"
+   },
+   {
+    "id": "c2",
+    "text": "X1 Carbon Gen 13 features an 8MP+IR MIPI camera",
+    "type": "spec"
+   },
+   {
+    "id": "c3",
+    "text": "X1 Carbon Gen 12 configuration includes Intel Ultra 7 155H processor",
+    "type": "spec"
+   },
+   {
+    "id": "c4",
+    "text": "X1 Carbon Gen 12 features a 14-inch touchscreen display with 1920 x 1200 resolution",
+    "type": "spec"
+   },
+   {
+    "id": "c5",
+    "text": "X1 Carbon Gen 12 supports 32GB DDR5 memory and 1TB Gen 5 SSD storage",
+    "type": "spec"
+   },
+   {
+    "id": "c6",
+    "text": "X1 Carbon Gen 12 includes a 1080p IR camera",
+    "type": "spec"
+   },
+   {
+    "id": "c7",
+    "text": "X1 Carbon Gen 12 supports WiFi 6.0",
+    "type": "spec"
+   },
+   {
+    "id": "c8",
+    "text": "X1 Carbon Gen 12 G12 is equipped with an Intel Core Ultra 7 255U processor",
+    "type": "spec"
+   },
+   {
+    "id": "c9",
+    "text": "X1 Carbon Gen 12 G12 offers 32GB DDR5 memory at 8400 MT/s",
+    "type": "spec"
+   },
+   {
+    "id": "c10",
+    "text": "X1 Carbon Gen 12 display reaches 400 nits brightness",
+    "type": "spec"
+   },
+   {
+    "id": "c11",
+    "text": "X1 Carbon Gen 12 features a 1080P FHD IR+RGB webcam",
+    "type": "spec"
+   },
+   {
+    "id": "c12",
+    "text": "X1 Carbon offers all-day battery life",
+    "type": "marketing"
+   }
+  ],
+  "E": [
+   {
+    "id": "c1",
+    "text": "Equipped with Intel Core Ultra 7 265U processor",
+    "type": "spec"
+   },
+   {
+    "id": "c2",
+    "text": "Features an 8MP+IR MIPI camera",
+    "type": "spec"
+   },
+   {
+    "id": "c3",
+    "text": "Offers all-day battery life",
+    "type": "marketing"
+   },
+   {
+    "id": "c4",
+    "text": "Includes a premium keyboard",
+    "type": "marketing"
+   },
+   {
+    "id": "c5",
+    "text": "Supports Lenovo Vantage for battery health monitoring",
+    "type": "support"
+   },
+   {
+    "id": "c6",
+    "text": "Utilizes computer vision AI to assess posture and display usage",
+    "type": "marketing"
+   },
+   {
+    "id": "c7",
+    "text": "Features TrackPoint Quick Menu for rapid access to camera, microphone, and haptic touchpad functions",
+    "type": "support"
+   },
+   {
+    "id": "c8",
+    "text": "Powered by Intel Ultra 7 155U processor",
+    "type": "spec"
+   },
+   {
+    "id": "c9",
+    "text": "Provides 32GB DDR5 8400 MT/s memory",
+    "type": "spec"
+   },
+   {
+    "id": "c10",
+    "text": "Includes a 1TB SSD with Gen 5 interface",
+    "type": "spec"
+   },
+   {
+    "id": "c11",
+    "text": "Features a 14-inch Touchscreen display with 3840 x 2160 (4K) resolution",
+    "type": "spec"
+   },
+   {
+    "id": "c12",
+    "text": "Equipped with a 1080p IR+RGB webcam",
+    "type": "spec"
+   }
+  ]
+ }
+}

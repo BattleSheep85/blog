@@ -275,3 +275,68 @@ spec tables), cross-validating both methodologies without either seeing the
 other's output.
 
 Total cost: **$0.73** (48 generations + blind judging, all via OpenRouter).
+
+## Extract-gold benchmark (`extract-gold-*`)
+
+Blinded 5-model × 10-product eval of the **claim-extraction** role
+(`extractClaims`, `worker/engine/verify.js`), the counterpart to the
+stance-gold and synth-gold benches above. Inputs are 10 REAL production
+`extractClaims` calls sourced from the harvested corpus
+(`extract-harvested.jsonl`, 265 records already assembled exactly as
+`runVerification`'s `buildClaimTextBlock` would produce them) — no fresh
+gather/harvest, $0 Serper/Jina spend. Each product's source text was run
+through the same production system prompt, input assembly, temperature 0,
+against all 5 candidate models, and the resulting claim lists were blinded to
+a random letter A–E per product (mapping in `extract-gold-blinding.json`) and
+judged blind by Fable on claim quality — grounding, cross-product
+contamination, model/generation disambiguation, junk-claim filtering, and
+honesty on garbage sources — with scores in
+`extract-gold-fable-scores.json` (0–10, or `"FAIL"` for a hard failure/empty
+output on a source that clearly supported claims). One product (`p09`,
+CamelBak Chute Mag) was a deliberate **garbage-source trap**: its source text
+is Amazon nav/footer boilerplate and unrelated accessory listings with no
+real product claims, so extracting **zero claims** was the correct, honest
+answer — not a failure.
+
+### Files
+
+| File | Contents |
+| --- | --- |
+| `extract-gold-gen.mjs` | Generates the 50 extraction runs (5 models × 10 products) against the real production `extractClaims`, plus deterministic groundedness scoring |
+| `extract-gold-runs.jsonl` | Raw generation output, one extraction result per line, all 5 models × 10 products |
+| `extract-gold-deterministic.json` | Deterministic per-run stats (claim count, dup rate, avg groundedness, cost, latency) |
+| `extract-gold-blind/p00.json` … `p09.json` | Per-product blinded judging bundles (A–E claim lists, no model labels) |
+| `extract-gold-blinding.json` | The A–E → model-id mapping (kept separate from the judge-facing files) |
+| `extract-gold-fable-scores.json` | Fable's blind claim-quality scores per product × letter (0–10, or `"FAIL"`) |
+
+### Results
+
+| Model | Avg quality (non-fail) | Completions | Hard fails | Notes |
+| --- | --- | --- | --- | --- |
+| minimax/minimax-m3 | 7.69 | 8/10 | 2 (empty output on rich sources) | Highest quality when it works, but unreliable on this role |
+| **openai/gpt-5.4-mini (incumbent)** | 7.60 | 10/10 | 0 | KEEPS the extract seat — best reliability, tied-best quality |
+| anthropic/claude-haiku-4.5 | 7.60 | 10/10 | 0 | Ties gpt-5.4-mini on quality and reliability, but 10-50x pricier |
+| deepseek/deepseek-v4-flash | 7.21 | 7/10 | 3 | Weakest reliability of the non-DQ'd models |
+| ibm-granite/granite-4.1-8b | 5.06 | 9/10 | 1 | Weakest quality — cross-product contamination |
+
+**Verdict: extraction stays on `openai/gpt-5.4-mini`.** It ties for the best
+quality score (7.60) among models with zero hard failures and completes
+10/10 products cleanly — the reliability profile that matters for a
+pipeline-gating step that runs on every verification. minimax-m3 edges it on
+raw quality (7.69) but produced empty output on 2/10 rich sources that
+clearly contained claims, which is disqualifying for a step other stages
+depend on. claude-haiku-4.5 matches gpt-5.4-mini on both quality and
+reliability but costs 10-50x more per call with no quality upside.
+granite-4.1-8b is the clear weakest, most notably on cross-product
+contamination.
+
+Notable judged failure modes: attributing another product's specs to the
+target (Google Fitbit Air specs onto Fitbit Charge 6; a competitor's "70%
+faster" claim onto the Presto Pressure Cooker), retailer star-ratings
+extracted as if they were product claims, and generation/model conflation on
+pages covering multiple models of the same product line. The garbage-source
+trap (`p09`) worked as intended: models that correctly emitted zero claims on
+the CamelBak boilerplate page were judged favorably for honesty rather than
+penalized for an empty result.
+
+Total cost: **$0.10** (50 generations + blind judging, all via OpenRouter).

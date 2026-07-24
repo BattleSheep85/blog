@@ -1,0 +1,72 @@
+{
+ "Samsung HW-Q990D Soundbar": {
+  "A": "openai/gpt-5.4-mini",
+  "B": "ibm-granite/granite-4.1-8b",
+  "C": "deepseek/deepseek-v4-flash",
+  "D": "minimax/minimax-m3",
+  "E": "anthropic/claude-haiku-4.5"
+ },
+ "Samsung QN90D Neo QLED": {
+  "A": "anthropic/claude-haiku-4.5",
+  "B": "minimax/minimax-m3",
+  "C": "ibm-granite/granite-4.1-8b",
+  "D": "deepseek/deepseek-v4-flash",
+  "E": "openai/gpt-5.4-mini"
+ },
+ "Lenovo ThinkPad X1 Carbon": {
+  "A": "deepseek/deepseek-v4-flash",
+  "B": "anthropic/claude-haiku-4.5",
+  "C": "openai/gpt-5.4-mini",
+  "D": "minimax/minimax-m3",
+  "E": "ibm-granite/granite-4.1-8b"
+ },
+ "Fitbit Charge 6": {
+  "A": "deepseek/deepseek-v4-flash",
+  "B": "ibm-granite/granite-4.1-8b",
+  "C": "openai/gpt-5.4-mini",
+  "D": "minimax/minimax-m3",
+  "E": "anthropic/claude-haiku-4.5"
+ },
+ "Presto Pressure Cooker 6qt": {
+  "A": "minimax/minimax-m3",
+  "B": "ibm-granite/granite-4.1-8b",
+  "C": "openai/gpt-5.4-mini",
+  "D": "deepseek/deepseek-v4-flash",
+  "E": "anthropic/claude-haiku-4.5"
+ },
+ "Samsung Bespoke Jet Vacuum": {
+  "A": "deepseek/deepseek-v4-flash",
+  "B": "anthropic/claude-haiku-4.5",
+  "C": "minimax/minimax-m3",
+  "D": "openai/gpt-5.4-mini",
+  "E": "ibm-granite/granite-4.1-8b"
+ },
+ "Anker 737 Power Bank": {
+  "A": "deepseek/deepseek-v4-flash",
+  "B": "ibm-granite/granite-4.1-8b",
+  "C": "anthropic/claude-haiku-4.5",
+  "D": "openai/gpt-5.4-mini",
+  "E": "minimax/minimax-m3"
+ },
+ "Dr. Brown's Natural Flow Baby Bottles": {
+  "A": "ibm-granite/granite-4.1-8b",
+  "B": "minimax/minimax-m3",
+  "C": "anthropic/claude-haiku-4.5",
+  "D": "openai/gpt-5.4-mini",
+  "E": "deepseek/deepseek-v4-flash"
+ },
+ "Google Nest Hub Max": {
+  "A": "minimax/minimax-m3",
+  "B": "ibm-granite/granite-4.1-8b",
+  "C": "openai/gpt-5.4-mini",
+  "D": "anthropic/claude-haiku-4.5",
+  "E": "deepseek/deepseek-v4-flash"
+ },
+ "CamelBak Chute Mag Water Bottle": {
+  "A": "anthropic/claude-haiku-4.5",
+  "B": "deepseek/deepseek-v4-flash",
+  "C": "minimax/minimax-m3",
+  "D": "ibm-granite/granite-4.1-8b",
+  "E": "openai/gpt-5.4-mini"
+ }
+}
