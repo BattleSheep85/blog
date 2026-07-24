@@ -220,3 +220,58 @@ result to `benchmarks/results/stance-gold-bench-<model>.json`.
   `contradict` precision/recall numbers in particular rest on only 2 gold
   positives and should be read as "extremely noisy," not "false at 4.5%
   forever."
+
+## Synthesis-gold benchmark (`synth-gold-*`)
+
+Blinded 6-model × 8-query eval of the **synthesis** role (report writer), the
+counterpart to the stance-gold bench above. Corpora were the cached
+`google-top50` search results for 8 queries, fed identically to all 6
+candidate models so every report is grounded in the same source material.
+Each of the 48 resulting reports was blinded to a random letter A–F per query
+(mapping in `synth-gold-blinding.json`) and judged blind by Fable on three
+axes — grounding, usefulness, honesty — with scores in
+`synth-gold-fable-scores.json` (`g`/`u`/`h`, 0–10 each). Composite =
+`0.4*grounding + 0.35*honesty + 0.25*usefulness`. A separate deterministic
+grounding gate (`synth-gold-deterministic.json`, `synth-score.mjs`) checks
+every numeric spec claim in each report against the source corpus for
+independent, non-LLM corroboration.
+
+### Files
+
+| File | Contents |
+| --- | --- |
+| `synth-gold-gen.mjs` | Generates the 48 reports (6 models × 8 queries) from cached `google-top50` corpora |
+| `synth-gold-blind.mjs` | Blinds reports to per-query random letters, builds the Fable judging prompts |
+| `synth-gold-runs.jsonl` | Raw generation output, one report per line, all 6 models × 8 queries |
+| `synth-gold-deterministic.json` | Deterministic grounding-gate results (fabricated/ungrounded number counts per report) |
+| `synth-gold-blind/q00.json` … `q07.json` | Per-query blinded judging bundles (A–F reports, no model labels) |
+| `synth-gold-blinding.json` | The A–F → model-id mapping (kept separate from the judge-facing files) |
+| `synth-gold-fable-scores.json` | Fable's blind grounding/usefulness/honesty scores per query × letter |
+
+### Results
+
+| Model | Composite | Completions | Fabricated numbers | Notes |
+| --- | --- | --- | --- | --- |
+| minimax/minimax-m3 | 7.69 | 8/8 | 1 (ungrounded) | Highest composite, statistical tie at n=8 |
+| **openai/gpt-5.4-mini (incumbent)** | 7.61 | 8/8 | 0 | Most honest (8.6/10), least useful of the two leaders (6.4/10) |
+| anthropic/claude-haiku-4.5 | 6.88 | 8/8 | — | Mid-pack |
+| deepseek/deepseek-v4-flash | 6.64 | 8/8 | **22 fabricated** | Highest fabrication count by far — DQ'd for synth despite winning stance |
+| google/gemma-4-26b-a4b-it:free | DQ | 3/8 | — | Failed to complete 5/8 queries |
+| openai/gpt-5-nano | DQ | 6/8 | — | Failed to complete 2/8 queries |
+
+**Verdict: synthesis stays on `openai/gpt-5.4-mini`.** It's a statistical tie
+with minimax-m3 on composite at n=8 (7.61 vs 7.69), but gpt-5.4-mini is the
+most honest of the two (8.6/10 honesty, zero fabricated numbers) — the
+property that matters most for a report a user is meant to trust. deepseek-v4-flash,
+despite topping the independent stance-gold bench above, fabricated 22 spec
+numbers across its 8 synthesis reports and is disqualified for the synthesis
+role: role-fitness cuts both ways, a model that's best at judging claims is
+not automatically safe writing them. gemma-4-26b:free and gpt-5-nano are
+disqualified on reliability grounds (3/8 and 6/8 completions respectively).
+
+Notably, the blind Fable judge and the deterministic grounding gate
+**independently** flagged the same reports as fabricators (deepseek's fake
+spec tables), cross-validating both methodologies without either seeing the
+other's output.
+
+Total cost: **$0.73** (48 generations + blind judging, all via OpenRouter).
