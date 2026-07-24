@@ -1,6 +1,30 @@
 # Issues
 
-Last updated: 2026-07-22
+Last updated: 2026-07-24
+
+## 2026-07-24 — Stance judge swap validated + model-benchmark findings
+
+### Stance
+- [x] resolved 2026-07-24 — Stance judge swapped to minimax/minimax-m3 (commit f36bde2).
+      Independent Fable-labeled gold bench (N=112) showed production gpt-5.4-mini was WORST
+      of 15 models at stance: 58% acc / 30% action-precision, over-firing support (42%
+      precision) and contradict (~5%). MiniMax-M3 led: 87.5% acc / 71% action-precision / 92%
+      support precision. Deployed + validated live (Sony WH-1000XM6 verify: 12 claims, 1
+      verified/2 contradicted/9 unsubstantiated — conservative profile as predicted).
+      extractClaims/synth remain on gpt-5.4-mini pending their own gold benches. Rollback =
+      revert stanceModel in tiers.js.
+
+### Benchmark methodology
+- [x] finding 2026-07-24 — AA leaderboard metrics do NOT predict our stance quality (Pearson r
+      -0.4..+0.2 across IFBench/intelligence/tau2, n=5; gpt-5-nano with AA-intel 8 out-ranked
+      MiMo with AA-intel 42). General benchmarks are a pre-filter only; role fitness must be
+      measured on our own gold benches.
+
+### Open
+- [ ] MEDIUM: Synthesis + extract + classifier + planner roles still on unvalidated model
+      choices; synthesis gold bench in progress (blinded 6-model × 8-query run). Grader
+      false-negative: short SKU-style names (<3 chars, e.g. 'V3') silently skip the
+      name-grounding check in synth-score.mjs — needs a scoped fix.
 
 ## 2026-07-22 — Serverless migration complete (blackbox retired)
 
