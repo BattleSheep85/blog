@@ -30,6 +30,12 @@ Last updated: 2026-07-24
       deepseek-v4-flash DQ'd for synth — 22 fabricated spec numbers across 8 reports (won
       stance, fails synth: role-fitness cuts both ways). gemma-4-26b:free (3/8) + gpt-5-nano
       (6/8) DQ'd on completion reliability. Remaining unvalidated roles: extract, planner.
+- [x] Extract gold bench complete: gpt-5.4-mini KEEPS extractClaims (7.60 quality, 0
+      hard-fails, 10/10). minimax-m3 higher quality-when-working but 2/10 empty outputs;
+      deepseek 3 hard-fails; granite contaminates across products. Role assignments now
+      validated for 4/5 roles: stance=minimax-m3, synth=gpt-5.4-mini, extract=gpt-5.4-mini,
+      classifier=gemini-flash-lite (deterministic-verified). Planner remains unbenchmarked
+      (hardest to gold-label; deferred).
 
 ## 2026-07-22 — Serverless migration complete (blackbox retired)
 
