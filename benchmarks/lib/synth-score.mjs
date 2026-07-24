@@ -63,6 +63,7 @@ export function score(report, corpus) {
     products:              prods.length,
     name_ung:              nameUngrounded,
     name_ung_list:         nameUngList,
+    // NOTE: name_ung_strict over-flags (contiguous-substring match) — NOT used for gating; do not wire into a pass/fail gate. Kept for diagnostics only.
     name_ung_strict:       nameStrictUngrounded,
     name_ung_strict_list:  nameStrictUngList,
     num_ung:               numUngrounded,

@@ -15,6 +15,25 @@
 //   node benchmarks/stance-local-bench.mjs
 //   REFERENCE=<path> node benchmarks/stance-local-bench.mjs
 //   MODELS="nemotron-3-nano:4b,granite3.3:8b" node benchmarks/stance-local-bench.mjs
+//   FORCE_JSON=1 node benchmarks/stance-local-bench.mjs
+//
+// FORCE_JSON=1 switches the Ollama call to constrained decoding: the
+// OpenAI-compat `/v1/chat/completions` endpoint's `response_format:
+// {type:"json_schema", json_schema:{...}}` field, given the STANCE_SYSTEM
+// contract's exact shape ({"verdicts":[{url,stance,span}]}). Everything else
+// (temperature:0, prompts, evidence set, scoring) is held identical so the
+// ONLY variable between a FORCE_JSON=1 and unset run is whether decoding is
+// grammar-constrained. Confirmed against Ollama 0.32 with:
+//   curl -sS http://localhost:11434/v1/chat/completions -H 'Content-Type: application/json' -d '{
+//     "model":"nemotron-3-nano:4b","temperature":0,
+//     "messages":[{"role":"system","content":"You determine stance. Return STRICT JSON: {\"verdicts\":[{\"url\":\"...\",\"stance\":\"support|contradict|neutral\",\"span\":\"...\"}]}."},
+//       {"role":"user","content":"Claim: \"Battery lasts 50 hours.\"\n\nEvidence sources:\n1. https://example.com/review\nWe tested it for 3 weeks and measured about 48 hours of playback in our lab."}],
+//     "response_format":{"type":"json_schema","json_schema":{"name":"stance_verdicts","schema":{"type":"object","properties":{"verdicts":{"type":"array","items":{"type":"object","properties":{"url":{"type":"string"},"stance":{"type":"string","enum":["support","contradict","neutral"]},"span":{"type":"string"}},"required":["url","stance","span"]}}},"required":["verdicts"]}}},
+//     "max_tokens":500,"stream":false}'
+// → returned choices[0].message.content = valid, directly-JSON.parse-able
+//   `{"verdicts":[{"url":"https://example.com/review","stance":"contradict","span":"Battery lasts 50 hours."}]}`
+//   (nemotron additionally returns a separate `message.reasoning` field for
+//   its chain-of-thought — content itself is clean JSON, no fence/prose).
 
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import {
@@ -38,6 +57,33 @@ const MODELS = process.env.MODELS
   ? process.env.MODELS.split(',').map((m) => m.trim()).filter(Boolean)
   : DEFAULT_MODELS;
 
+// FORCE_JSON=1 — grammar-constrained decoding via Ollama's OpenAI-compat
+// `response_format: {type:"json_schema", ...}` (see USAGE note above).
+const FORCE_JSON = process.env.FORCE_JSON === '1';
+
+// JSON Schema for STANCE_SYSTEM's contract: {"verdicts":[{url,stance,span}]}.
+const STANCE_JSON_SCHEMA = Object.freeze({
+  name: 'stance_verdicts',
+  schema: {
+    type: 'object',
+    properties: {
+      verdicts: {
+        type: 'array',
+        items: {
+          type: 'object',
+          properties: {
+            url: { type: 'string' },
+            stance: { type: 'string', enum: ['support', 'contradict', 'neutral'] },
+            span: { type: 'string' },
+          },
+          required: ['url', 'stance', 'span'],
+        },
+      },
+    },
+    required: ['verdicts'],
+  },
+});
+
 const BANNED_SUBSTRINGS = ['deepseek-r1'];
 for (const m of MODELS) {
   if (BANNED_SUBSTRINGS.some((b) => m.toLowerCase().includes(b))) {
@@ -47,7 +93,10 @@ for (const m of MODELS) {
 
 // ── Ollama shim — matches the callLLM(apiKey, model, messages, opts) contract
 // classifyStance() expects: returns { choices:[{message:{content}}], usage }.
-async function callLLMOllama(_apiKey, model, messages, opts) {
+// `forceJson` defaults to the module-level FORCE_JSON flag but the smoke
+// test overrides it to false — the schema is STANCE_JSON_SCHEMA-shaped and a
+// "Say ok" smoke prompt has no business being coerced into it.
+async function callLLMOllama(_apiKey, model, messages, opts, forceJson = FORCE_JSON) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), OLLAMA_CALL_TIMEOUT_MS);
   try {
@@ -61,6 +110,7 @@ async function callLLMOllama(_apiKey, model, messages, opts) {
         temperature: 0,
         max_tokens: opts?.maxTokens ?? 2000,
         stream: false,
+        ...(forceJson ? { response_format: { type: 'json_schema', json_schema: STANCE_JSON_SCHEMA } } : {}),
       }),
     });
     if (!resp.ok) {
@@ -86,6 +136,7 @@ async function smokeTest() {
     'nemotron-3-nano:4b',
     [{ role: 'user', content: 'Say "ok".' }],
     { maxTokens: 5 },
+    false,
   );
   const content = resp.choices[0].message.content;
   process.stderr.write(`[smoke] ok — got: ${JSON.stringify(content).slice(0, 80)}\n`);
@@ -277,7 +328,9 @@ async function main() {
   const scores = modelRuns.map((run) => scoreModel(run, refStanceIdx, refVerdictIdx));
 
   console.log('\n══════════════════════════════════════════════════════════════════');
-  console.log(`STANCE LOCAL BENCH — reference: gpt-5.4-mini on "${reference.product}"`);
+  console.log(
+    `STANCE LOCAL BENCH (${FORCE_JSON ? 'FORCE_JSON=1 constrained' : 'unconstrained'}) — reference: gpt-5.4-mini on "${reference.product}"`,
+  );
   console.log('══════════════════════════════════════════════════════════════════');
   console.table(
     scores.map((s) => ({
@@ -297,13 +350,17 @@ async function main() {
 
   const resultsDir = new URL('./results/', import.meta.url);
   mkdirSync(resultsDir, { recursive: true });
-  const outPath = new URL('stance-local-bench.json', resultsDir);
+  // Constrained runs write to a distinct file so they never clobber the
+  // existing unconstrained baseline (benchmarks/results/stance-local-bench.json).
+  const outFile = FORCE_JSON ? 'stance-local-bench-constrained.json' : 'stance-local-bench.json';
+  const outPath = new URL(outFile, resultsDir);
   writeFileSync(
     outPath,
     JSON.stringify(
       {
         reference: REFERENCE_PATH,
         product: reference.product,
+        forceJson: FORCE_JSON,
         models: MODELS,
         scores,
         modelRuns: modelRuns.map((r) => ({

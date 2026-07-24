@@ -1,0 +1,621 @@
+{
+  "modelLabel": "stepfun/step-3.7-flash",
+  "goldSource": "benchmarks/ft-data/stance-gold-fable.jsonl",
+  "n": 112,
+  "accuracy": 0.8035714285714286,
+  "macroF1": 0.5396825396825398,
+  "actionPrecision": {
+    "precision": 0.4,
+    "n": 5
+  },
+  "perClass": {
+    "support": {
+      "precision": 1,
+      "recall": 0.10526315789473684,
+      "f1": 0.1904761904761905,
+      "support": 19
+    },
+    "contradict": {
+      "precision": 0,
+      "recall": 0,
+      "f1": null,
+      "support": 2
+    },
+    "neutral": {
+      "precision": 0.822429906542056,
+      "recall": 0.967032967032967,
+      "f1": 0.888888888888889,
+      "support": 91
+    }
+  },
+  "confusionMatrix": {
+    "support": {
+      "support": 2,
+      "contradict": 0,
+      "neutral": 17
+    },
+    "contradict": {
+      "support": 0,
+      "contradict": 0,
+      "neutral": 2
+    },
+    "neutral": {
+      "support": 0,
+      "contradict": 3,
+      "neutral": 88
+    }
+  },
+  "ci": {
+    "accuracy": {
+      "lo": 0.7321428571428571,
+      "hi": 0.875
+    },
+    "macroF1": {
+      "lo": 0.4707692307692308,
+      "hi": 0.9073170731707317
+    }
+  },
+  "costUsd": 0.15268901669999993,
+  "items": [
+    {
+      "id": "Keurig K-Elite::c3::src7",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Canon PowerShot G7 X Mark III::c5::src15",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Apple iPad Air M2::c4::src1",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Samsung Bespoke Jet Vacuum::c3::src8",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Tushbaby Hip Seat Carrier::c9::src12",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "ASUS ZenWiFi XT9::c4::src8",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Keychron K8 Pro::c1::src14",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Midea Duo Inverter Portable AC::c7::src13",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Honda EU2200i Generator::c4::src2",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Munchkin Miracle 360 Cup::c4::src13",
+      "gold": "support",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Ninja Woodfire Outdoor Grill::c5::src15",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Samsung QN90D Neo QLED::c9::src13",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Ring Video Doorbell Pro 2::c4::src12",
+      "gold": "neutral",
+      "predicted": "contradict"
+    },
+    {
+      "id": "Milwaukee M12 Fuel Multi-Tool::c4::src12",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Cuisinart CGG-306 Griddle::c7::src1",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Nespresso Vertuo Next::c2::src3",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "ASUS ROG Ally X::c5::src7",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Schwinn IC4 Indoor Cycling Bike::c2::src13",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "FlexiSpot EN1::c12::src15",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Google Pixel 9 Pro::c6::src11",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Chicco KeyFit 35 Infant Car Seat::c1::src6",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Belkin BoostCharge Pro 3-in-1::c7::src1",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Sony PlayStation 5 Pro::c7::src8",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Microsoft Surface Laptop 6::c2::src10",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Samsung HW-Q990D Soundbar::c4::src3",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Vizio M-Series Elevate::c6::src10",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Klein Tools Multimeter MM600::c4::src1",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Amazon Echo Dot 5th Gen::c4::src5",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "reMarkable Paper Pro::c4::src11",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Amazon Echo Dot 5th Gen::c4::src6",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Insta360 X4::c10::src11",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Samsung Odyssey G7 Monitor::c2::src11",
+      "gold": "contradict",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Steam Deck OLED::c2::src15",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Hatch Rest+ Sound Machine::c7::src8",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Fitbit Charge 6::c4::src2",
+      "gold": "support",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Ryobi RY142300 Pressure Washer::c7::src9",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Eero Pro 6E::c6::src15",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Renpho Smart Scale::c10::src13",
+      "gold": "support",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Munchkin Miracle 360 Cup::c5::src14",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Sony WH-1000XM6::c3::src7",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "TP-Link Deco X55 Mesh WiFi::c8::src4",
+      "gold": "support",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Coleman Sundome 4-Person Tent::c3::src6",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Munchkin Miracle 360 Cup::c1::src12",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Roku Ultra 2024::c2::src3",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Google Nest Hub Max::c3::src4",
+      "gold": "support",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Eero Pro 6E::c8::src6",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "TP-Link Kasa Smart Plug::c3::src7",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Withings Body+ Smart Scale::c1::src9",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Bissell CrossWave::c10::src4",
+      "gold": "support",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Notion Plus::c2::src1",
+      "gold": "support",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Greenworks 40V Cordless Lawn Mower::c6::src2",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Owlet Dream Sock::c4::src15",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Amazon Echo Dot 5th Gen::c4::src3",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Cuisinart Griddler 5-in-1::c4::src8",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Logitech MX Keys::c1::src10",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Munchkin Miracle 360 Cup::c2::src13",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Audio-Technica ATH-M50x::c8::src8",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "OXO Good Grips Salad Spinner::c2::src3",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Beats Studio Pro::c2::src12",
+      "gold": "support",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Samsung Galaxy Tab S10::c8::src14",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Eero 7::c8::src4",
+      "gold": "support",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Apple AirPods Max 2::c5::src7",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Toro Recycler 22-inch Mower::c1::src14",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Keychron V5 Max::c3::src11",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Insta360 X4::c5::src1",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Sony PlayStation 5 Pro::c1::src2",
+      "gold": "support",
+      "predicted": "neutral"
+    },
+    {
+      "id": "TP-Link Deco X55 Mesh WiFi::c3::src7",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Beats Studio Pro::c7::src12",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Kobo Clara Colour::c6::src11",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Philips Sonicare DiamondClean::c6::src1",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Garmin Venu 3::c3::src11",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Midea Duo Inverter Portable AC::c7::src14",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Tineco Floor One S5::c2::src6",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Peloton Bike+::c1::src8",
+      "gold": "contradict",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Le Creuset Dutch Oven 5.5qt::c3::src9",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Weber Genesis E-325s::c9::src3",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Sony PlayStation 5 Pro::c4::src2",
+      "gold": "support",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Renpho Smart Scale::c1::src14",
+      "gold": "support",
+      "predicted": "support"
+    },
+    {
+      "id": "TP-Link Deco X55 Mesh WiFi::c6::src4",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Bissell Little Green Portable Cleaner::c1::src6",
+      "gold": "support",
+      "predicted": "neutral"
+    },
+    {
+      "id": "HP Spectre x360::c1::src10",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Weber Genesis E-325s::c6::src14",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Cuisinart Griddler 5-in-1::c2::src9",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Nothing Ear (a)::c2::src15",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Anker Nebula Capsule 3 Projector::c3::src14",
+      "gold": "support",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Tineco Floor One S5::c4::src1",
+      "gold": "neutral",
+      "predicted": "contradict"
+    },
+    {
+      "id": "Ring Video Doorbell Pro 2::c4::src4",
+      "gold": "neutral",
+      "predicted": "contradict"
+    },
+    {
+      "id": "Nvidia Shield TV Pro::c4::src8",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Anker Soundcore Space A40::c5::src7",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Philips Hue White and Color Ambiance Starter Kit::c2::src10",
+      "gold": "support",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Le Creuset Dutch Oven 5.5qt::c4::src9",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Char-Broil Performance 4-Burner::c1::src3",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Microsoft Surface Laptop 6::c5::src2",
+      "gold": "support",
+      "predicted": "neutral"
+    },
+    {
+      "id": "FlexiSpot EN1::c11::src15",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Bowflex SelectTech 552 Dumbbells::c1::src11",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "GoPro Hero 13 Black::c7::src10",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Cosori Air Fryer Pro LE::c3::src11",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Motorola Edge 50 Pro::c4::src3",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Furbo 360 Dog Camera::c7::src14",
+      "gold": "support",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Cuisinart Griddler 5-in-1::c6::src12",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "4moms mamaRoo Bassinet::c4::src13",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Ricoh GR IIIx::c3::src5",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Garmin inReach Mini 2::c3::src2",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Amazon Echo Dot 5th Gen::c1::src8",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Dell XPS 13::c2::src6",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "ASUS ROG Ally X::c3::src4",
+      "gold": "support",
+      "predicted": "support"
+    },
+    {
+      "id": "LG UltraGear 27GP950::c3::src10",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Motorola Edge 50 Pro::c4::src2",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Anker Soundcore Liberty 4 NC::c1::src14",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "Makita XT269M 18V Combo Kit::c1::src4",
+      "gold": "neutral",
+      "predicted": "neutral"
+    },
+    {
+      "id": "SteelSeries Arctis Nova Pro::c1::src4",
+      "gold": "support",
+      "predicted": "neutral"
+    },
+    {
+      "id": "LG UltraGear 27GP950::c8::src14",
+      "gold": "neutral",
+      "predicted": "neutral"
+    }
+  ]
+}

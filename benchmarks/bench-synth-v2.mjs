@@ -135,7 +135,7 @@ async function runSynth(corpus, cand) {
   try {
     const r = await callLLMStreaming(KEY, cand.model, msgs,
       (chunk, acc) => { if (firstTokenMs === null && acc.length > 0) firstTokenMs = Date.now() - t0; },
-      { reasoning: cand.reasoning, maxTokens: 16000 },
+      { reasoning: cand.reasoning, maxTokens: 16000, temperature: 0 },
     );
     content = r.content;
     if (Number.isFinite(r.usage?.cost)) cost = r.usage.cost;
