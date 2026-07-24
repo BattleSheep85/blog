@@ -26,6 +26,8 @@ const ENGINE_CONFIG = {
   plannerModel: 'google/gemini-2.5-flash',
   // gpt-5.4-mini does not take a reasoning param in the bench config (undefined).
   synthReasoning: undefined,
+  stanceModel: 'minimax/minimax-m3', // verify stance judge — won the independent-gold stance bench (87.5% acc / 71% action-precision vs gpt-5.4-mini 58%/30%; benchmarks/stance-gold-bench.mjs). extractClaims/synth stay on synthModel pending their own evals.
+  stanceReasoning: undefined,
   synthMaxTokens: 16000,
   // ── speed knobs (OpenRouter platform levers) ──────────────────────────────
   // The agent loop is tool-ROUTING, not deep reasoning — cap thinking tokens per

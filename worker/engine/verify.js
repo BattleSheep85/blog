@@ -395,7 +395,7 @@ export async function runVerification({ product, productUrl, config, apiKey, env
       claim,
       evidence: picked,
       apiKey,
-      model: config.synthModel,
+      model: config.stanceModel || config.synthModel,
       callLLM,
     });
     costUsd += stanceCost;
