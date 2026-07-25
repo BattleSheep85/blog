@@ -22,6 +22,9 @@ Thumbs.db
 node_modules/
 .cf-token
 
+# Standalone Tailwind CLI binary (single download, not committed — see README)
+/tailwindcss
+
 # Dev-site Basic Auth credentials (never commit)
 .dev-auth
 .gstack/

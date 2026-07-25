@@ -8,37 +8,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,500&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdn.tailwindcss.com"></script>
-<script>
-  tailwind.config = {
-    darkMode: 'class',
-    theme: {
-      extend: {
-        colors: {
-          bg: { DEFAULT: '#FBFBF9', dark: '#0B0C0E' },
-          surface1: { DEFAULT: '#FFFFFF', dark: '#121316' },
-          surface2: { DEFAULT: '#F4F4F1', dark: '#1A1C20' },
-          line: { DEFAULT: '#E4E3DD', dark: '#2A2D33' },
-          ink: { DEFAULT: '#16181D', dark: '#F4F5F7' },
-          ink2: { DEFAULT: '#474B53', dark: '#B9BFC9' },
-          ink3: { DEFAULT: '#5F636B', dark: '#898F9A' },
-          accent: { DEFAULT: '#2563EB', dark: '#3B82F6' },
-          accentHover: { DEFAULT: '#1D4ED8', dark: '#5C9CFF' },
-          verified: { DEFAULT: '#0F8A5F', dark: '#3DDC97' },
-          partial: { DEFAULT: '#B7791F', dark: '#F0B429' },
-          unsub: { DEFAULT: '#6B7280', dark: '#9CA3AF' },
-          contra: { DEFAULT: '#C0362C', dark: '#F87171' },
-        },
-        fontFamily: {
-          serif: ['Newsreader', 'serif'],
-          sans: ['Inter', 'sans-serif'],
-          mono: ['JetBrains Mono', 'monospace'],
-        },
-        borderRadius: { '2xl': '1.25rem', '3xl': '1.75rem' },
-      }
-    }
-  }
-</script>
+<link rel="stylesheet" href="/css/tailwind.css">
+<link rel="stylesheet" href="/css/app.css">
 <style>
   body { font-family: 'Inter', sans-serif; }
   .font-serif-display { font-family: 'Newsreader', serif; }
@@ -51,78 +22,78 @@
   ::selection { background: #2563EB; color: #fff; }
 </style>
 </head>
-<body class="bg-bg dark:bg-bg-dark text-ink dark:text-ink-dark min-h-screen antialiased drawer-closed" id="page-body">
+<body class="bg-bg text-ink min-h-screen antialiased drawer-closed" id="page-body">
 
 <!-- ============ DRAWER NAV (primary nav, desktop + mobile) ============ -->
 <div id="drawer-overlay" class="fixed inset-0 bg-black/40 z-40" onclick="toggleDrawer(false)"></div>
-<aside id="drawer" class="fixed top-0 left-0 h-full w-80 max-w-[85vw] bg-surface1 dark:bg-surface1-dark border-r border-line dark:border-line-dark z-50 flex flex-col">
-  <div class="flex items-center justify-between px-6 py-5 border-b border-line dark:border-line-dark">
+<aside id="drawer" class="fixed top-0 left-0 h-full w-80 max-w-[85vw] bg-surface-1 border-r border-line z-50 flex flex-col">
+  <div class="flex items-center justify-between px-6 py-5 border-b border-line">
     <a href="#" class="flex items-center gap-2">
-      <span class="w-8 h-8 rounded-xl bg-accent dark:bg-accent-dark flex items-center justify-center text-white font-bold text-sm">TR</span>
+      <span class="w-8 h-8 rounded-xl bg-accent flex items-center justify-center text-white font-bold text-sm">TR</span>
       <span class="font-semibold text-lg tracking-tight">TrueRank</span>
     </a>
-    <button onclick="toggleDrawer(false)" aria-label="Close menu" class="w-9 h-9 rounded-full hover:bg-surface2 dark:hover:bg-surface2-dark flex items-center justify-center">
+    <button onclick="toggleDrawer(false)" aria-label="Close menu" class="w-9 h-9 rounded-full hover:bg-surface-2 flex items-center justify-center">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg>
     </button>
   </div>
 
   <nav class="flex-1 overflow-y-auto px-4 py-6 space-y-1">
-    <a href="#verify" class="flex items-center gap-3 px-3 py-3 rounded-xl bg-surface2 dark:bg-surface2-dark font-semibold text-accent dark:text-accent-dark">
+    <a href="#verify" class="flex items-center gap-3 px-3 py-3 rounded-xl bg-surface-2 font-semibold text-accent">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z"/></svg>
       Verify
     </a>
-    <a href="#browse" class="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-surface2 dark:hover:bg-surface2-dark text-ink2 dark:text-ink2-dark font-medium">
+    <a href="#browse" class="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-surface-2 text-ink-2 font-medium">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h7"/></svg>
       Browse
     </a>
-    <a href="#" class="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-surface2 dark:hover:bg-surface2-dark text-ink2 dark:text-ink2-dark font-medium">
+    <a href="#" class="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-surface-2 text-ink-2 font-medium">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/></svg>
       Reviews
     </a>
-    <a href="#" class="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-surface2 dark:hover:bg-surface2-dark text-ink2 dark:text-ink2-dark font-medium">
+    <a href="#" class="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-surface-2 text-ink-2 font-medium">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20M4 19.5A2.5 2.5 0 006.5 22H20V2H6.5A2.5 2.5 0 004 4.5v15z"/></svg>
       Guides
     </a>
-    <a href="#trust" class="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-surface2 dark:hover:bg-surface2-dark text-ink2 dark:text-ink2-dark font-medium">
+    <a href="#trust" class="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-surface-2 text-ink-2 font-medium">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
       About
     </a>
 
-    <div class="pt-4 mt-4 border-t border-line dark:border-line-dark">
-      <p class="px-3 text-xs font-semibold uppercase tracking-wider text-ink3 dark:text-ink3-dark mb-2">Account</p>
-      <a href="#" class="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-surface2 dark:hover:bg-surface2-dark text-ink2 dark:text-ink2-dark font-medium">
+    <div class="pt-4 mt-4 border-t border-line">
+      <p class="px-3 text-xs font-semibold uppercase tracking-wider text-ink-3 mb-2">Account</p>
+      <a href="#" class="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-surface-2 text-ink-2 font-medium">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg>
         Sign in
       </a>
-      <a href="#" class="flex items-center gap-3 px-3 py-3 rounded-xl bg-accent dark:bg-accent-dark text-white font-semibold mt-1 justify-center">
+      <a href="#" class="flex items-center gap-3 px-3 py-3 rounded-xl bg-accent text-white font-semibold mt-1 justify-center">
         Create free account
       </a>
     </div>
   </nav>
 
-  <div class="px-6 py-5 border-t border-line dark:border-line-dark flex items-center justify-between">
-    <span class="text-sm text-ink3 dark:text-ink3-dark">Appearance</span>
-    <button onclick="toggleTheme()" id="theme-toggle" class="w-16 h-9 rounded-full bg-surface2 dark:bg-surface2-dark border border-line dark:border-line-dark relative flex items-center px-1">
-      <span id="theme-knob" class="w-7 h-7 rounded-full bg-white dark:bg-accent-dark shadow flex items-center justify-center transition-transform duration-200 text-xs">☀️</span>
+  <div class="px-6 py-5 border-t border-line flex items-center justify-between">
+    <span class="text-sm text-ink-3">Appearance</span>
+    <button onclick="toggleTheme()" id="theme-toggle" class="w-16 h-9 rounded-full bg-surface-2 border border-line relative flex items-center px-1">
+      <span id="theme-knob" class="w-7 h-7 rounded-full bg-white shadow flex items-center justify-center transition-transform duration-200 text-xs">☀️</span>
     </button>
   </div>
 </aside>
 
 <!-- ============ TOP BAR ============ -->
-<header class="sticky top-0 z-30 bg-bg/90 dark:bg-bg-dark/90 backdrop-blur border-b border-line dark:border-line-dark">
+<header class="sticky top-0 z-30 bg-bg/90 backdrop-blur border-b border-line">
   <div class="max-w-6xl mx-auto px-5 sm:px-8 h-16 flex items-center justify-between">
     <div class="flex items-center gap-3">
-      <button onclick="toggleDrawer(true)" aria-label="Open menu" class="w-10 h-10 rounded-full hover:bg-surface2 dark:hover:bg-surface2-dark flex items-center justify-center">
+      <button onclick="toggleDrawer(true)" aria-label="Open menu" class="w-10 h-10 rounded-full hover:bg-surface-2 flex items-center justify-center">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
       </button>
       <a href="#" class="flex items-center gap-2">
-        <span class="w-8 h-8 rounded-xl bg-accent dark:bg-accent-dark flex items-center justify-center text-white font-bold text-sm">TR</span>
+        <span class="w-8 h-8 rounded-xl bg-accent flex items-center justify-center text-white font-bold text-sm">TR</span>
         <span class="font-semibold text-lg tracking-tight hidden sm:inline">TrueRank</span>
       </a>
     </div>
     <div class="flex items-center gap-3">
-      <a href="#" class="hidden sm:inline text-sm font-semibold text-ink2 dark:text-ink2-dark hover:text-ink dark:hover:text-ink-dark">Sign in</a>
-      <a href="#" class="text-sm font-semibold bg-accent dark:bg-accent-dark text-white px-4 py-2 rounded-full hover:bg-accentHover dark:hover:bg-accentHover-dark">Get started</a>
+      <a href="#" class="hidden sm:inline text-sm font-semibold text-ink-2 hover:text-ink">Sign in</a>
+      <a href="#" class="text-sm font-semibold bg-accent text-white px-4 py-2 rounded-full hover:bg-accent-hover">Get started</a>
     </div>
   </div>
 </header>
@@ -130,135 +101,135 @@
 <!-- ============ HERO ============ -->
 <section class="max-w-6xl mx-auto px-5 sm:px-8 pt-16 pb-20 sm:pt-24 sm:pb-28">
   <div class="max-w-3xl">
-    <span class="inline-flex items-center gap-2 text-xs font-semibold text-accent dark:text-accent-dark bg-accent/10 dark:bg-accent-dark/10 px-3 py-1.5 rounded-full">
+    <span class="inline-flex items-center gap-2 text-xs font-semibold text-accent bg-accent/10 px-3 py-1.5 rounded-full">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 12l2 2 4-4M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z"/></svg>
       No affiliate incentive to say "yes"
     </span>
     <h1 class="font-serif-display text-4xl sm:text-6xl leading-[1.08] mt-6 tracking-tight">
-      Before you buy it,<br class="hidden sm:block"> <span class="text-accent dark:text-accent-dark">check if it's true.</span>
+      Before you buy it,<br class="hidden sm:block"> <span class="text-accent">check if it's true.</span>
     </h1>
-    <p class="text-lg sm:text-xl text-ink2 dark:text-ink2-dark mt-5 max-w-xl leading-relaxed">
+    <p class="text-lg sm:text-xl text-ink-2 mt-5 max-w-xl leading-relaxed">
       TrueRank reads a product's own marketing claims, checks each one against independent
       evidence, and gives you a plain honest verdict — with receipts, not vibes.
     </p>
   </div>
 
   <form id="verify" class="mt-10 max-w-2xl">
-    <label for="verify-input" class="block text-sm font-semibold text-ink2 dark:text-ink2-dark mb-2">Paste a product URL or name</label>
+    <label for="verify-input" class="block text-sm font-semibold text-ink-2 mb-2">Paste a product URL or name</label>
     <div class="flex flex-col sm:flex-row gap-3">
       <input id="verify-input" type="text" placeholder="e.g. Bose QuietComfort Ultra Headphones"
-        class="flex-1 rounded-2xl border border-line dark:border-line-dark bg-surface1 dark:bg-surface1-dark px-5 py-4 text-base placeholder:text-ink3 dark:placeholder:text-ink3-dark focus:outline-none focus:ring-2 focus:ring-accent dark:focus:ring-accent-dark">
-      <button type="button" class="rounded-2xl bg-accent dark:bg-accent-dark text-white font-semibold px-7 py-4 hover:bg-accentHover dark:hover:bg-accentHover-dark whitespace-nowrap">
+        class="flex-1 rounded-2xl border border-line bg-surface-1 px-5 py-4 text-base placeholder:text-ink-3 focus:outline-none focus:ring-2 focus:ring-accent">
+      <button type="button" class="rounded-2xl bg-accent text-white font-semibold px-7 py-4 hover:bg-accent-hover whitespace-nowrap">
         Verify it →
       </button>
     </div>
-    <p class="text-xs text-ink3 dark:text-ink3-dark mt-2">Free · takes about 40 seconds · no account required</p>
+    <p class="text-xs text-ink-3 mt-2">Free · takes about 40 seconds · no account required</p>
   </form>
 
-  <div class="flex flex-wrap items-center gap-x-8 gap-y-3 mt-10 text-sm text-ink3 dark:text-ink3-dark">
-    <span class="font-semibold text-ink2 dark:text-ink2-dark">120,412</span> products verified
+  <div class="flex flex-wrap items-center gap-x-8 gap-y-3 mt-10 text-sm text-ink-3">
+    <span class="font-semibold text-ink-2">120,412</span> products verified
     <span class="hidden sm:inline">·</span>
-    <span class="font-semibold text-ink2 dark:text-ink2-dark">38%</span> of claims checked don't fully hold up
+    <span class="font-semibold text-ink-2">38%</span> of claims checked don't fully hold up
     <span class="hidden sm:inline">·</span>
-    <span class="font-semibold text-ink2 dark:text-ink2-dark">2.1M</span> reviews screened for fakes
+    <span class="font-semibold text-ink-2">2.1M</span> reviews screened for fakes
   </div>
 </section>
 
 <!-- ============ VERDICT SHOWCASE ============ -->
-<section class="bg-surface2 dark:bg-surface2-dark border-y border-line dark:border-line-dark py-16 sm:py-24">
+<section class="bg-surface-2 border-y border-line py-16 sm:py-24">
   <div class="max-w-6xl mx-auto px-5 sm:px-8">
     <div class="max-w-2xl mb-10">
       <h2 class="font-serif-display text-3xl sm:text-4xl tracking-tight">Here's what a verdict looks like</h2>
-      <p class="text-ink2 dark:text-ink2-dark mt-3 text-lg">Every claim, checked individually. No blended star rating hiding the weak spots.</p>
+      <p class="text-ink-2 mt-3 text-lg">Every claim, checked individually. No blended star rating hiding the weak spots.</p>
     </div>
 
-    <div class="bg-surface1 dark:bg-surface1-dark rounded-3xl border border-line dark:border-line-dark shadow-sm overflow-hidden">
-      <div class="p-6 sm:p-8 border-b border-line dark:border-line-dark flex flex-col sm:flex-row sm:items-center gap-6">
-        <div class="w-20 h-20 rounded-2xl bg-surface2 dark:bg-surface2-dark flex items-center justify-center shrink-0 text-3xl">🎧</div>
+    <div class="bg-surface-1 rounded-3xl border border-line shadow-sm overflow-hidden">
+      <div class="p-6 sm:p-8 border-b border-line flex flex-col sm:flex-row sm:items-center gap-6">
+        <div class="w-20 h-20 rounded-2xl bg-surface-2 flex items-center justify-center shrink-0 text-3xl">🎧</div>
         <div class="flex-1">
-          <p class="text-xs font-semibold text-ink3 dark:text-ink3-dark uppercase tracking-wider">Verified Aug 3, 2026</p>
+          <p class="text-xs font-semibold text-ink-3 uppercase tracking-wider">Verified Aug 3, 2026</p>
           <h3 class="text-xl sm:text-2xl font-bold mt-1">Bose QuietComfort Ultra Headphones</h3>
-          <p class="text-ink2 dark:text-ink2-dark text-sm mt-1">Checked 9 marketing claims against 34 independent sources</p>
+          <p class="text-ink-2 text-sm mt-1">Checked 9 marketing claims against 34 independent sources</p>
         </div>
-        <div class="flex items-center gap-4 sm:pl-6 sm:border-l border-line dark:border-line-dark">
+        <div class="flex items-center gap-4 sm:pl-6 sm:border-l border-line">
           <div class="text-center">
-            <div class="w-20 h-20 rounded-full border-[6px] border-partial dark:border-partial-dark flex items-center justify-center">
+            <div class="w-20 h-20 rounded-full border-[6px] border-trust-medium flex items-center justify-center">
               <span class="text-2xl font-bold">72</span>
             </div>
           </div>
           <div>
-            <p class="font-bold text-partial dark:text-partial-dark leading-tight">Mostly holds up</p>
-            <p class="text-sm text-ink3 dark:text-ink3-dark">2 claims overstated</p>
+            <p class="font-bold text-trust-medium leading-tight">Mostly holds up</p>
+            <p class="text-sm text-ink-3">2 claims overstated</p>
           </div>
         </div>
       </div>
 
-      <div class="divide-y divide-line dark:divide-line-dark">
+      <div class="divide-y divide-line">
         <div class="p-6 sm:p-8 flex flex-col sm:flex-row gap-4 sm:items-start">
-          <span class="inline-flex items-center gap-1.5 shrink-0 text-xs font-bold px-2.5 py-1 rounded-full bg-verified/10 text-verified dark:bg-verified-dark/10 dark:text-verified-dark w-fit">
+          <span class="inline-flex items-center gap-1.5 shrink-0 text-xs font-bold px-2.5 py-1 rounded-full bg-trust-high/10 text-trust-high w-fit">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>
             Verified
           </span>
           <div class="flex-1">
             <p class="font-semibold">"Up to 24 hours of battery life with ANC on"</p>
-            <p class="text-sm text-ink2 dark:text-ink2-dark mt-1">Independent lab tests (RTINGS, SoundGuys) measured 22–26 hrs across three units. Consistent with the claim.</p>
+            <p class="text-sm text-ink-2 mt-1">Independent lab tests (RTINGS, SoundGuys) measured 22–26 hrs across three units. Consistent with the claim.</p>
             <div class="flex flex-wrap gap-2 mt-2">
-              <span class="text-xs font-mono px-2 py-1 rounded-lg bg-surface2 dark:bg-surface2-dark text-ink3 dark:text-ink3-dark">rtings.com/headphones</span>
-              <span class="text-xs font-mono px-2 py-1 rounded-lg bg-surface2 dark:bg-surface2-dark text-ink3 dark:text-ink3-dark">soundguys.com</span>
+              <span class="text-xs font-mono px-2 py-1 rounded-lg bg-surface-2 text-ink-3">rtings.com/headphones</span>
+              <span class="text-xs font-mono px-2 py-1 rounded-lg bg-surface-2 text-ink-3">soundguys.com</span>
             </div>
           </div>
         </div>
 
         <div class="p-6 sm:p-8 flex flex-col sm:flex-row gap-4 sm:items-start">
-          <span class="inline-flex items-center gap-1.5 shrink-0 text-xs font-bold px-2.5 py-1 rounded-full bg-partial/10 text-partial dark:bg-partial-dark/10 dark:text-partial-dark w-fit">
+          <span class="inline-flex items-center gap-1.5 shrink-0 text-xs font-bold px-2.5 py-1 rounded-full bg-trust-medium/10 text-trust-medium w-fit">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M12 8v5M12 16h.01M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/></svg>
             Partially verified
           </span>
           <div class="flex-1">
             <p class="font-semibold">"Best-in-class noise cancellation"</p>
-            <p class="text-sm text-ink2 dark:text-ink2-dark mt-1">Top-3 in every lab test we found, but not consistently #1 — Sony XM6 outperformed it on low-frequency rumble in 2 of 3 tests.</p>
+            <p class="text-sm text-ink-2 mt-1">Top-3 in every lab test we found, but not consistently #1 — Sony XM6 outperformed it on low-frequency rumble in 2 of 3 tests.</p>
             <div class="flex flex-wrap gap-2 mt-2">
-              <span class="text-xs font-mono px-2 py-1 rounded-lg bg-surface2 dark:bg-surface2-dark text-ink3 dark:text-ink3-dark">whathifi.com</span>
-              <span class="text-xs font-mono px-2 py-1 rounded-lg bg-surface2 dark:bg-surface2-dark text-ink3 dark:text-ink3-dark">rtings.com</span>
+              <span class="text-xs font-mono px-2 py-1 rounded-lg bg-surface-2 text-ink-3">whathifi.com</span>
+              <span class="text-xs font-mono px-2 py-1 rounded-lg bg-surface-2 text-ink-3">rtings.com</span>
             </div>
           </div>
         </div>
 
         <div class="p-6 sm:p-8 flex flex-col sm:flex-row gap-4 sm:items-start">
-          <span class="inline-flex items-center gap-1.5 shrink-0 text-xs font-bold px-2.5 py-1 rounded-full bg-contra/10 text-contra dark:bg-contra-dark/10 dark:text-contra-dark w-fit">
+          <span class="inline-flex items-center gap-1.5 shrink-0 text-xs font-bold px-2.5 py-1 rounded-full bg-trust-low/10 text-trust-low w-fit">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M6 18L18 6M6 6l12 12"/></svg>
             Contradicted
           </span>
           <div class="flex-1">
             <p class="font-semibold">"Lightest premium ANC headphone on the market"</p>
-            <p class="text-sm text-ink2 dark:text-ink2-dark mt-1">At 254g it's heavier than the Sony WH-1000XM6 (250g) and the Sennheiser Momentum 4 (238g), both currently on sale.</p>
+            <p class="text-sm text-ink-2 mt-1">At 254g it's heavier than the Sony WH-1000XM6 (250g) and the Sennheiser Momentum 4 (238g), both currently on sale.</p>
             <div class="flex flex-wrap gap-2 mt-2">
-              <span class="text-xs font-mono px-2 py-1 rounded-lg bg-surface2 dark:bg-surface2-dark text-ink3 dark:text-ink3-dark">manufacturer spec sheets ×3</span>
+              <span class="text-xs font-mono px-2 py-1 rounded-lg bg-surface-2 text-ink-3">manufacturer spec sheets ×3</span>
             </div>
           </div>
         </div>
 
         <div class="p-6 sm:p-8 flex flex-col sm:flex-row gap-4 sm:items-start">
-          <span class="inline-flex items-center gap-1.5 shrink-0 text-xs font-bold px-2.5 py-1 rounded-full bg-unsub/10 text-unsub dark:bg-unsub-dark/10 dark:text-unsub-dark w-fit">
+          <span class="inline-flex items-center gap-1.5 shrink-0 text-xs font-bold px-2.5 py-1 rounded-full bg-trust-low/10 text-trust-low w-fit">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01" opacity="0"/><path d="M9 9l6 6M15 9l-6 6" opacity="0"/><path d="M12 12h.01"/></svg>
             Unsubstantiated
           </span>
           <div class="flex-1">
             <p class="font-semibold">"Loved by audio professionals worldwide"</p>
-            <p class="text-sm text-ink2 dark:text-ink2-dark mt-1">No survey, cited endorsement, or professional-use data found to support this. Marketing copy only.</p>
+            <p class="text-sm text-ink-2 mt-1">No survey, cited endorsement, or professional-use data found to support this. Marketing copy only.</p>
           </div>
         </div>
       </div>
 
-      <div class="p-6 sm:p-8 bg-surface2 dark:bg-surface2-dark flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div class="p-6 sm:p-8 bg-surface-2 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div class="flex items-center gap-3">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-ink3 dark:text-ink3-dark shrink-0"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-ink-3 shrink-0"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
           <div>
-            <p class="font-semibold text-sm">Reviewer independence: <span class="text-verified dark:text-verified-dark">Passed</span></p>
-            <p class="text-xs text-ink3 dark:text-ink3-dark">6% of reviews flagged as incentivized or fake, below the 12% category average</p>
+            <p class="font-semibold text-sm">Reviewer independence: <span class="text-trust-high">Passed</span></p>
+            <p class="text-xs text-ink-3">6% of reviews flagged as incentivized or fake, below the 12% category average</p>
           </div>
         </div>
-        <a href="#" class="text-sm font-semibold text-accent dark:text-accent-dark hover:underline">See full report →</a>
+        <a href="#" class="text-sm font-semibold text-accent hover:underline">See full report →</a>
       </div>
     </div>
   </div>
@@ -268,66 +239,66 @@
 <section class="max-w-6xl mx-auto px-5 sm:px-8 py-16 sm:py-24">
   <div class="max-w-2xl mb-12">
     <h2 class="font-serif-display text-3xl sm:text-4xl tracking-tight">How a verdict gets made</h2>
-    <p class="text-ink2 dark:text-ink2-dark mt-3 text-lg">Three steps, all automated, all shown to you afterward.</p>
+    <p class="text-ink-2 mt-3 text-lg">Three steps, all automated, all shown to you afterward.</p>
   </div>
   <div class="grid sm:grid-cols-3 gap-6">
-    <div class="card-hover bg-surface1 dark:bg-surface1-dark rounded-2xl border border-line dark:border-line-dark p-6">
-      <div class="w-11 h-11 rounded-xl bg-accent/10 dark:bg-accent-dark/10 flex items-center justify-center text-accent dark:text-accent-dark font-bold mb-4">1</div>
+    <div class="card-hover bg-surface-1 rounded-2xl border border-line p-6">
+      <div class="w-11 h-11 rounded-xl bg-accent/10 flex items-center justify-center text-accent font-bold mb-4">1</div>
       <h3 class="font-semibold text-lg">Extract the claims</h3>
-      <p class="text-ink2 dark:text-ink2-dark text-sm mt-2 leading-relaxed">We pull every testable claim from the product's own listing, packaging copy, and ads — not what other people say about it.</p>
+      <p class="text-ink-2 text-sm mt-2 leading-relaxed">We pull every testable claim from the product's own listing, packaging copy, and ads — not what other people say about it.</p>
     </div>
-    <div class="card-hover bg-surface1 dark:bg-surface1-dark rounded-2xl border border-line dark:border-line-dark p-6">
-      <div class="w-11 h-11 rounded-xl bg-accent/10 dark:bg-accent-dark/10 flex items-center justify-center text-accent dark:text-accent-dark font-bold mb-4">2</div>
+    <div class="card-hover bg-surface-1 rounded-2xl border border-line p-6">
+      <div class="w-11 h-11 rounded-xl bg-accent/10 flex items-center justify-center text-accent font-bold mb-4">2</div>
       <h3 class="font-semibold text-lg">Search independent evidence</h3>
-      <p class="text-ink2 dark:text-ink2-dark text-sm mt-2 leading-relaxed">Lab tests, expert reviews, teardown reports, and verified owner experiences — weighted by source credibility, not popularity.</p>
+      <p class="text-ink-2 text-sm mt-2 leading-relaxed">Lab tests, expert reviews, teardown reports, and verified owner experiences — weighted by source credibility, not popularity.</p>
     </div>
-    <div class="card-hover bg-surface1 dark:bg-surface1-dark rounded-2xl border border-line dark:border-line-dark p-6">
-      <div class="w-11 h-11 rounded-xl bg-accent/10 dark:bg-accent-dark/10 flex items-center justify-center text-accent dark:text-accent-dark font-bold mb-4">3</div>
+    <div class="card-hover bg-surface-1 rounded-2xl border border-line p-6">
+      <div class="w-11 h-11 rounded-xl bg-accent/10 flex items-center justify-center text-accent font-bold mb-4">3</div>
       <h3 class="font-semibold text-lg">Score each claim honestly</h3>
-      <p class="text-ink2 dark:text-ink2-dark text-sm mt-2 leading-relaxed">Verified, partially verified, unsubstantiated, or contradicted — with the sources shown, so you can disagree with us.</p>
+      <p class="text-ink-2 text-sm mt-2 leading-relaxed">Verified, partially verified, unsubstantiated, or contradicted — with the sources shown, so you can disagree with us.</p>
     </div>
   </div>
 </section>
 
 <!-- ============ MASS SEARCH / BROWSE TEASER ============ -->
-<section id="browse" class="bg-surface2 dark:bg-surface2-dark border-y border-line dark:border-line-dark py-16 sm:py-24">
+<section id="browse" class="bg-surface-2 border-y border-line py-16 sm:py-24">
   <div class="max-w-6xl mx-auto px-5 sm:px-8 grid lg:grid-cols-2 gap-12 items-center">
     <div>
-      <span class="text-xs font-semibold text-accent dark:text-accent-dark uppercase tracking-wider">Not sure which product yet?</span>
+      <span class="text-xs font-semibold text-accent uppercase tracking-wider">Not sure which product yet?</span>
       <h2 class="font-serif-display text-3xl sm:text-4xl tracking-tight mt-3">Browse honest comparison reports</h2>
-      <p class="text-ink2 dark:text-ink2-dark mt-4 text-lg leading-relaxed">Tell us what you're shopping for — "quiet robot vacuum under $500" — and we'll rank the real contenders using the same claim-by-claim scoring, side by side.</p>
-      <a href="#" class="inline-flex items-center gap-2 mt-6 font-semibold text-accent dark:text-accent-dark hover:underline">Start a search →</a>
+      <p class="text-ink-2 mt-4 text-lg leading-relaxed">Tell us what you're shopping for — "quiet robot vacuum under $500" — and we'll rank the real contenders using the same claim-by-claim scoring, side by side.</p>
+      <a href="#" class="inline-flex items-center gap-2 mt-6 font-semibold text-accent hover:underline">Start a search →</a>
     </div>
-    <div class="bg-surface1 dark:bg-surface1-dark rounded-2xl border border-line dark:border-line-dark shadow-sm p-6 space-y-3">
-      <div class="flex items-center justify-between p-4 rounded-xl bg-surface2 dark:bg-surface2-dark">
+    <div class="bg-surface-1 rounded-2xl border border-line shadow-sm p-6 space-y-3">
+      <div class="flex items-center justify-between p-4 rounded-xl bg-surface-2">
         <div class="flex items-center gap-3">
-          <span class="w-9 h-9 rounded-lg bg-surface1 dark:bg-surface1-dark flex items-center justify-center text-lg">🤖</span>
+          <span class="w-9 h-9 rounded-lg bg-surface-1 flex items-center justify-center text-lg">🤖</span>
           <div>
             <p class="font-semibold text-sm">Roborock Q Revo Curv</p>
-            <p class="text-xs text-ink3 dark:text-ink3-dark">Robot vacuum · under $500</p>
+            <p class="text-xs text-ink-3">Robot vacuum · under $500</p>
           </div>
         </div>
-        <span class="font-bold text-verified dark:text-verified-dark">88</span>
+        <span class="font-bold text-trust-high">88</span>
       </div>
-      <div class="flex items-center justify-between p-4 rounded-xl bg-surface2 dark:bg-surface2-dark">
+      <div class="flex items-center justify-between p-4 rounded-xl bg-surface-2">
         <div class="flex items-center gap-3">
-          <span class="w-9 h-9 rounded-lg bg-surface1 dark:bg-surface1-dark flex items-center justify-center text-lg">🤖</span>
+          <span class="w-9 h-9 rounded-lg bg-surface-1 flex items-center justify-center text-lg">🤖</span>
           <div>
             <p class="font-semibold text-sm">Eufy X10 Pro Omni</p>
-            <p class="text-xs text-ink3 dark:text-ink3-dark">Robot vacuum · under $500</p>
+            <p class="text-xs text-ink-3">Robot vacuum · under $500</p>
           </div>
         </div>
-        <span class="font-bold text-partial dark:text-partial-dark">74</span>
+        <span class="font-bold text-trust-medium">74</span>
       </div>
-      <div class="flex items-center justify-between p-4 rounded-xl bg-surface2 dark:bg-surface2-dark">
+      <div class="flex items-center justify-between p-4 rounded-xl bg-surface-2">
         <div class="flex items-center gap-3">
-          <span class="w-9 h-9 rounded-lg bg-surface1 dark:bg-surface1-dark flex items-center justify-center text-lg">🤖</span>
+          <span class="w-9 h-9 rounded-lg bg-surface-1 flex items-center justify-center text-lg">🤖</span>
           <div>
             <p class="font-semibold text-sm">Shark PowerDetect Pro</p>
-            <p class="text-xs text-ink3 dark:text-ink3-dark">Robot vacuum · under $500</p>
+            <p class="text-xs text-ink-3">Robot vacuum · under $500</p>
           </div>
         </div>
-        <span class="font-bold text-contra dark:text-contra-dark">51</span>
+        <span class="font-bold text-trust-low">51</span>
       </div>
     </div>
   </div>
@@ -337,88 +308,88 @@
 <section id="trust" class="max-w-6xl mx-auto px-5 sm:px-8 py-16 sm:py-24">
   <div class="max-w-2xl mb-12">
     <h2 class="font-serif-display text-3xl sm:text-4xl tracking-tight">Why trust the verdict</h2>
-    <p class="text-ink2 dark:text-ink2-dark mt-3 text-lg">We make money differently than most review sites, and we think you should know how.</p>
+    <p class="text-ink-2 mt-3 text-lg">We make money differently than most review sites, and we think you should know how.</p>
   </div>
   <div class="grid sm:grid-cols-2 gap-6">
-    <div class="rounded-2xl border border-line dark:border-line-dark p-6">
+    <div class="rounded-2xl border border-line p-6">
       <h3 class="font-semibold text-lg mb-2">We don't get paid to say yes</h3>
-      <p class="text-ink2 dark:text-ink2-dark text-sm leading-relaxed">Some links on TrueRank are affiliate links — if you buy through them, we may earn a small commission. That commission is identical whether the verdict is "verified" or "contradicted." It never affects scoring.</p>
+      <p class="text-ink-2 text-sm leading-relaxed">Some links on TrueRank are affiliate links — if you buy through them, we may earn a small commission. That commission is identical whether the verdict is "verified" or "contradicted." It never affects scoring.</p>
     </div>
-    <div class="rounded-2xl border border-line dark:border-line-dark p-6">
+    <div class="rounded-2xl border border-line p-6">
       <h3 class="font-semibold text-lg mb-2">Every source is shown</h3>
-      <p class="text-ink2 dark:text-ink2-dark text-sm leading-relaxed">No verdict ships without citations you can click through and check yourself. If we're wrong, you can see exactly why we were wrong.</p>
+      <p class="text-ink-2 text-sm leading-relaxed">No verdict ships without citations you can click through and check yourself. If we're wrong, you can see exactly why we were wrong.</p>
     </div>
-    <div class="rounded-2xl border border-line dark:border-line-dark p-6">
+    <div class="rounded-2xl border border-line p-6">
       <h3 class="font-semibold text-lg mb-2">Reviews are screened, not just counted</h3>
-      <p class="text-ink2 dark:text-ink2-dark text-sm leading-relaxed">We flag incentivized, sponsored, and bot-pattern reviews before they factor into anything — a 4.8★ average means little if a third of it is fake.</p>
+      <p class="text-ink-2 text-sm leading-relaxed">We flag incentivized, sponsored, and bot-pattern reviews before they factor into anything — a 4.8★ average means little if a third of it is fake.</p>
     </div>
-    <div class="rounded-2xl border border-line dark:border-line-dark p-6">
+    <div class="rounded-2xl border border-line p-6">
       <h3 class="font-semibold text-lg mb-2">Verdicts get re-checked</h3>
-      <p class="text-ink2 dark:text-ink2-dark text-sm leading-relaxed">Products change, firmware updates ship, prices move. We re-run verification and notify you if a verdict on something you checked changes.</p>
+      <p class="text-ink-2 text-sm leading-relaxed">Products change, firmware updates ship, prices move. We re-run verification and notify you if a verdict on something you checked changes.</p>
     </div>
   </div>
 </section>
 
 <!-- ============ EMAIL CAPTURE ============ -->
 <section class="max-w-6xl mx-auto px-5 sm:px-8 pb-16 sm:pb-24">
-  <div class="rounded-3xl bg-surface2 dark:bg-surface2-dark border border-line dark:border-line-dark p-8 sm:p-12 grid lg:grid-cols-2 gap-8 items-center">
+  <div class="rounded-3xl bg-surface-2 border border-line p-8 sm:p-12 grid lg:grid-cols-2 gap-8 items-center">
     <div>
       <h3 class="font-serif-display text-2xl sm:text-3xl tracking-tight">Get notified when a verdict changes</h3>
-      <p class="text-ink2 dark:text-ink2-dark mt-3">We'll email you if a product you've checked gets re-verified with a different score — good or bad.</p>
+      <p class="text-ink-2 mt-3">We'll email you if a product you've checked gets re-verified with a different score — good or bad.</p>
     </div>
     <form class="space-y-3" onsubmit="return false;">
-      <label for="email-capture" class="block text-sm font-semibold text-ink2 dark:text-ink2-dark">Email address</label>
+      <label for="email-capture" class="block text-sm font-semibold text-ink-2">Email address</label>
       <div class="flex flex-col sm:flex-row gap-3">
         <div class="flex-1">
           <input id="email-capture" type="email" required placeholder="you@example.com"
-            class="w-full rounded-xl border border-line dark:border-line-dark bg-surface1 dark:bg-surface1-dark px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-accent dark:focus:ring-accent-dark"
+            class="w-full rounded-xl border border-line bg-surface-1 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
             oninput="validateEmail(this)">
-          <p id="email-error" class="text-xs text-contra dark:text-contra-dark mt-1 hidden">Enter a valid email address</p>
-          <p id="email-success" class="text-xs text-verified dark:text-verified-dark mt-1 hidden">Looks good — we'll only email you about verdict changes.</p>
+          <p id="email-error" class="text-xs text-trust-low mt-1 hidden">Enter a valid email address</p>
+          <p id="email-success" class="text-xs text-trust-high mt-1 hidden">Looks good — we'll only email you about verdict changes.</p>
         </div>
-        <button type="submit" onclick="submitEmail()" class="rounded-xl bg-accent dark:bg-accent-dark text-white font-semibold px-6 py-3 hover:bg-accentHover dark:hover:bg-accentHover-dark whitespace-nowrap h-fit">Notify me</button>
+        <button type="submit" onclick="submitEmail()" class="rounded-xl bg-accent text-white font-semibold px-6 py-3 hover:bg-accent-hover whitespace-nowrap h-fit">Notify me</button>
       </div>
     </form>
   </div>
 </section>
 
 <!-- ============ FOOTER ============ -->
-<footer class="border-t border-line dark:border-line-dark">
+<footer class="border-t border-line">
   <div class="max-w-6xl mx-auto px-5 sm:px-8 py-12 grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
     <div class="lg:col-span-1">
       <div class="flex items-center gap-2">
-        <span class="w-8 h-8 rounded-xl bg-accent dark:bg-accent-dark flex items-center justify-center text-white font-bold text-sm">TR</span>
+        <span class="w-8 h-8 rounded-xl bg-accent flex items-center justify-center text-white font-bold text-sm">TR</span>
         <span class="font-semibold text-lg">TrueRank</span>
       </div>
-      <p class="text-sm text-ink3 dark:text-ink3-dark mt-3 leading-relaxed">Honest product research, one claim at a time.</p>
+      <p class="text-sm text-ink-3 mt-3 leading-relaxed">Honest product research, one claim at a time.</p>
     </div>
     <div>
       <h4 class="font-semibold text-sm mb-3">Product</h4>
-      <ul class="space-y-2 text-sm text-ink2 dark:text-ink2-dark">
-        <li><a href="#verify" class="hover:text-accent dark:hover:text-accent-dark">Verify</a></li>
-        <li><a href="#browse" class="hover:text-accent dark:hover:text-accent-dark">Browse</a></li>
-        <li><a href="#" class="hover:text-accent dark:hover:text-accent-dark">Reviews</a></li>
-        <li><a href="#" class="hover:text-accent dark:hover:text-accent-dark">Guides</a></li>
+      <ul class="space-y-2 text-sm text-ink-2">
+        <li><a href="#verify" class="hover:text-accent">Verify</a></li>
+        <li><a href="#browse" class="hover:text-accent">Browse</a></li>
+        <li><a href="#" class="hover:text-accent">Reviews</a></li>
+        <li><a href="#" class="hover:text-accent">Guides</a></li>
       </ul>
     </div>
     <div>
       <h4 class="font-semibold text-sm mb-3">Company</h4>
-      <ul class="space-y-2 text-sm text-ink2 dark:text-ink2-dark">
-        <li><a href="#trust" class="hover:text-accent dark:hover:text-accent-dark">Methodology</a></li>
-        <li><a href="#" class="hover:text-accent dark:hover:text-accent-dark">About</a></li>
-        <li><a href="#" class="hover:text-accent dark:hover:text-accent-dark">Contact</a></li>
+      <ul class="space-y-2 text-sm text-ink-2">
+        <li><a href="#trust" class="hover:text-accent">Methodology</a></li>
+        <li><a href="#" class="hover:text-accent">About</a></li>
+        <li><a href="#" class="hover:text-accent">Contact</a></li>
       </ul>
     </div>
     <div>
       <h4 class="font-semibold text-sm mb-3">Legal</h4>
-      <ul class="space-y-2 text-sm text-ink2 dark:text-ink2-dark">
-        <li><a href="#" class="hover:text-accent dark:hover:text-accent-dark">Privacy</a></li>
-        <li><a href="#" class="hover:text-accent dark:hover:text-accent-dark">Terms</a></li>
+      <ul class="space-y-2 text-sm text-ink-2">
+        <li><a href="#" class="hover:text-accent">Privacy</a></li>
+        <li><a href="#" class="hover:text-accent">Terms</a></li>
       </ul>
     </div>
   </div>
-  <div class="border-t border-line dark:border-line-dark">
-    <div class="max-w-6xl mx-auto px-5 sm:px-8 py-6 text-xs text-ink3 dark:text-ink3-dark leading-relaxed">
+  <div class="border-t border-line">
+    <div class="max-w-6xl mx-auto px-5 sm:px-8 py-6 text-xs text-ink-3 leading-relaxed">
       <strong>Affiliate disclosure:</strong> TrueRank may earn a commission from qualifying purchases made through affiliate links (including the Amazon Associates program), at no extra cost to you. Commissions never influence verification scores or verdicts.
       <div class="mt-3">© 2026 TrueRank. All rights reserved.</div>
     </div>
