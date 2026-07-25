@@ -135,6 +135,18 @@ body {
    the design tokens so they theme correctly in both light and dark.
 ---------------------------------------------------------------------------- */
 
+/* Forensic-instrument hairline grid backdrop (verify entry/processing hero)
+   and tabular-numeral readout helper (verify report score/mono data cells).
+   Ported from the approved b-forensic concept — kept token-relative (currentColor-
+   independent, low-alpha) so it themes correctly in both light and dark. */
+.grid-bg {
+    background-image:
+        linear-gradient(to right, rgba(120, 120, 120, .08) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(120, 120, 120, .08) 1px, transparent 1px);
+    background-size: 28px 28px;
+}
+.readout { font-variant-numeric: tabular-nums; }
+
 /* Loading spinner (search submit overlay + processing card) */
 .spinner {
     width: 2.5rem;

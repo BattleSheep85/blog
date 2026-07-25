@@ -1,9 +1,9 @@
 /**
  * Product-verification pages: the /verify entry form and the /verify/:slug
- * status + report page. Mirrors worker/pages/clarify.js's minimal, dependency-
- * free style and reuses the shared `layout()` shell so verification pages are
- * styled consistently with /research/:slug. Additive-only — no ranking-page
- * behavior is touched.
+ * status + report page. Styled in the "Forensic Instrument" language (see
+ * public/concepts/b-forensic.html) via the shared `layout()` shell — mono
+ * data readouts, hairline borders, SVG score gauge, plain-language verdict
+ * first. Additive-only — no ranking-page behavior is touched.
  */
 
 import { layout } from '../lib/html.js';
@@ -20,23 +20,28 @@ import { starMarkup, renderItemImage } from './research-page.js';
  */
 export function renderVerifyEntryPage(prefillProduct = '') {
     const prefill = String(prefillProduct || '').slice(0, 200);
-    const body = `<div class="mx-auto max-w-2xl px-6 py-12 md:py-16">
-<nav aria-label="Breadcrumb" class="mb-6 text-caption text-ink-3">
+    const body = `<div class="grid-bg border-b border-line">
+<div class="mx-auto max-w-3xl px-6 py-12 md:py-16">
+<nav aria-label="Breadcrumb" class="mb-6 font-mono text-[11px] uppercase tracking-widest text-ink-3">
 <a href="/" class="hover:text-ink">Home</a>
 <span aria-hidden="true" class="mx-1.5">/</span>
 <span class="text-ink-2">Verify a product</span>
 </nav>
 
-<h1 class="mb-2 font-serif text-h1 font-semibold text-ink">Verify a product&rsquo;s claims</h1>
-<p class="mb-8 text-body text-ink-2">Tell us a product. We check what it claims about itself against independent sources — specs, reviews, warranty terms — and score how well the claims hold up.</p>
+<p class="font-mono text-[11px] uppercase tracking-widest text-ink-3">Instrument &middot; Claim verification console</p>
+<h1 class="mt-3 font-serif text-h1 font-semibold text-ink">Verify a product&rsquo;s claims</h1>
+<p class="mt-3 max-w-xl text-body text-ink-2">Tell us a product. We check what it claims about itself against independent sources &mdash; specs, reviews, warranty terms &mdash; and score how well the claims hold up.</p>
 
-<form id="verify-form" class="verify-form">
-<label for="verify-product" class="mb-2 block text-body-sm font-semibold text-ink">Product</label>
-<input type="text" id="verify-product" name="product" required minlength="3" maxlength="200" placeholder="e.g. Anker Soundcore Liberty 4 NC" value="${escapeHtml(prefill)}" class="mb-4 w-full rounded-lg border border-line bg-surface-1 px-3 py-2.5 font-sans text-body text-ink placeholder:text-ink-3 focus:border-line-strong focus:outline-none focus:ring-2 focus:ring-accent/25">
-<button type="submit" id="verify-submit" class="inline-flex items-center justify-center gap-2 rounded-lg bg-accent-strong px-4 py-2.5 text-body-sm font-semibold text-white transition-colors hover:bg-accent-hover">Verify it</button>
+<form id="verify-form" class="verify-form mt-8 border border-line bg-surface-1">
+<div class="flex flex-col gap-0 sm:flex-row">
+<label for="verify-product" class="sr-only">Product to verify</label>
+<input type="text" id="verify-product" name="product" required minlength="3" maxlength="200" placeholder="INPUT_PRODUCT :: e.g. Anker Soundcore Liberty 4 NC" value="${escapeHtml(prefill)}" class="w-full border-b border-line bg-transparent px-4 py-4 font-mono text-sm text-ink outline-none placeholder:text-ink-3 focus:bg-surface-2 sm:border-b-0 sm:border-r">
+<button type="submit" id="verify-submit" class="shrink-0 bg-ink px-6 py-4 font-mono text-sm font-semibold uppercase tracking-wide text-bg transition-colors hover:bg-accent">Verify it &#9656;</button>
+</div>
 </form>
 
-<div id="verify-status" class="mt-8" role="status" aria-live="polite"></div>
+<div id="verify-status" class="mt-6" role="status" aria-live="polite"></div>
+</div>
 </div>
 
 <script nonce="__CSP_NONCE__">
@@ -48,19 +53,19 @@ export function renderVerifyEntryPage(prefillProduct = '') {
 
   function setBusy(busy) {
     submitBtn.disabled = busy;
-    submitBtn.textContent = busy ? 'Verifying…' : 'Verify it';
+    submitBtn.textContent = busy ? 'Verifying…' : 'Verify it ▸';
   }
 
   function showMessage(text, isError, signupRequired) {
     statusBox.innerHTML = '';
     var p = document.createElement('p');
-    p.className = isError ? 'text-body-sm text-trust-low' : 'text-body-sm text-ink-2';
+    p.className = isError ? 'font-mono text-xs text-trust-low' : 'font-mono text-xs text-ink-2';
     p.textContent = text;
     statusBox.appendChild(p);
     if (signupRequired) {
       var link = document.createElement('a');
       link.href = '/account';
-      link.className = 'mt-3 inline-flex items-center justify-center gap-2 rounded-lg bg-accent-strong px-4 py-2.5 text-body-sm font-semibold text-white transition-colors hover:bg-accent-hover';
+      link.className = 'mt-3 inline-flex items-center justify-center gap-2 bg-accent-strong px-4 py-2.5 font-mono text-xs font-semibold uppercase tracking-wide text-white transition-colors hover:bg-accent-hover';
       link.textContent = 'Create a free account';
       statusBox.appendChild(link);
     }
@@ -69,9 +74,9 @@ export function renderVerifyEntryPage(prefillProduct = '') {
   function renderUrlPrompt(reportId, product, message) {
     statusBox.innerHTML = '';
     var wrap = document.createElement('div');
-    wrap.className = 'rounded-lg border border-line bg-surface-1 p-4';
+    wrap.className = 'border border-line bg-surface-1 p-4';
     var msg = document.createElement('p');
-    msg.className = 'mb-3 text-body-sm text-ink-2';
+    msg.className = 'mb-3 font-mono text-xs text-ink-2';
     msg.textContent = message || 'We couldn\\'t find that product\\'s page — paste its Amazon / Best Buy / Walmart / manufacturer URL.';
     var urlForm = document.createElement('form');
     urlForm.className = 'flex flex-wrap gap-2';
@@ -79,10 +84,10 @@ export function renderVerifyEntryPage(prefillProduct = '') {
     input.type = 'url';
     input.required = true;
     input.placeholder = 'https://...';
-    input.className = 'min-w-[14rem] flex-1 rounded-lg border border-line bg-bg px-3 py-2 font-sans text-body-sm text-ink placeholder:text-ink-3 focus:border-line-strong focus:outline-none focus:ring-2 focus:ring-accent/25';
+    input.className = 'min-w-[14rem] flex-1 border border-line bg-bg px-3 py-2 font-mono text-xs text-ink placeholder:text-ink-3 focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/25';
     var btn = document.createElement('button');
     btn.type = 'submit';
-    btn.className = 'rounded-lg bg-accent-strong px-4 py-2 text-body-sm font-semibold text-white hover:bg-accent-hover';
+    btn.className = 'bg-accent-strong px-4 py-2 font-mono text-xs font-semibold uppercase tracking-wide text-white hover:bg-accent-hover';
     btn.textContent = 'Continue';
     urlForm.appendChild(input);
     urlForm.appendChild(btn);
@@ -183,8 +188,9 @@ function renderProcessingPage(row) {
     const prettyProduct = displayQuery(row.query);
     const isNeedsInput = row.status === 'needs_input';
 
-    const body = `<div class="mx-auto max-w-2xl px-6 py-12 md:py-16">
-<nav aria-label="Breadcrumb" class="mb-6 text-caption text-ink-3">
+    const body = `<div class="grid-bg border-b border-line">
+<div class="mx-auto max-w-2xl px-6 py-12 md:py-16">
+<nav aria-label="Breadcrumb" class="mb-6 font-mono text-[11px] uppercase tracking-widest text-ink-3">
 <a href="/" class="hover:text-ink">Home</a>
 <span aria-hidden="true" class="mx-1.5">/</span>
 <a href="/verify" class="hover:text-ink">Verify</a>
@@ -192,17 +198,20 @@ function renderProcessingPage(row) {
 <span class="text-ink-2">${escapeHtml(prettyProduct)}</span>
 </nav>
 
-<h1 class="mb-2 font-serif text-h1 font-semibold text-ink">Verifying &ldquo;${escapeHtml(prettyProduct)}&rdquo;</h1>
+<p class="font-mono text-[11px] uppercase tracking-widest text-ink-3">Instrument &middot; Audit in progress</p>
+<h1 class="mt-3 font-serif text-h1 font-semibold text-ink">Verifying &ldquo;${escapeHtml(prettyProduct)}&rdquo;</h1>
 
-<div id="processing" class="mt-6 rounded-lg border border-line bg-surface-1 p-5">
-<div class="mb-1 flex items-center gap-3">
-<div class="spinner" style="width:1.5rem;height:1.5rem;border-width:2px;margin:0;flex-shrink:0"></div>
-<p id="verify-status-text" class="text-body-sm text-ink-2">${isNeedsInput ? 'Waiting for a product URL…' : 'Checking claims against independent sources…'}</p>
+<div id="processing" class="mt-6 border border-line bg-surface-1 p-5">
+<div class="flex items-center gap-3">
+<div class="spinner" style="width:1.25rem;height:1.25rem;border-width:2px;margin:0;flex-shrink:0"></div>
+<p id="verify-status-text" class="font-mono text-xs text-ink-2">${isNeedsInput ? 'Waiting for a product URL…' : 'Checking claims against independent sources…'}</p>
 </div>
 </div>
 
 <div id="verify-url-prompt" class="mt-6"${isNeedsInput ? '' : ' style="display:none"'}>
 ${isNeedsInput ? renderUrlPromptMarkup(row.preview) : ''}
+</div>
+</div>
 </div>
 
 <script nonce="__CSP_NONCE__">
@@ -245,9 +254,9 @@ ${isNeedsInput ? renderUrlPromptMarkup(row.preview) : ''}
     var box = document.getElementById('verify-url-prompt');
     box.innerHTML = '';
     var wrap = document.createElement('div');
-    wrap.className = 'rounded-lg border border-line bg-surface-1 p-4';
+    wrap.className = 'border border-line bg-surface-1 p-4';
     var msg = document.createElement('p');
-    msg.className = 'mb-3 text-body-sm text-ink-2';
+    msg.className = 'mb-3 font-mono text-xs text-ink-2';
     msg.textContent = message || 'We couldn\\'t find that product\\'s page — paste its URL to continue.';
     var urlForm = document.createElement('form');
     urlForm.className = 'flex flex-wrap gap-2';
@@ -255,10 +264,10 @@ ${isNeedsInput ? renderUrlPromptMarkup(row.preview) : ''}
     input.type = 'url';
     input.required = true;
     input.placeholder = 'https://...';
-    input.className = 'min-w-[14rem] flex-1 rounded-lg border border-line bg-bg px-3 py-2 font-sans text-body-sm text-ink placeholder:text-ink-3 focus:border-line-strong focus:outline-none focus:ring-2 focus:ring-accent/25';
+    input.className = 'min-w-[14rem] flex-1 border border-line bg-bg px-3 py-2 font-mono text-xs text-ink placeholder:text-ink-3 focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/25';
     var btn = document.createElement('button');
     btn.type = 'submit';
-    btn.className = 'rounded-lg bg-accent-strong px-4 py-2 text-body-sm font-semibold text-white hover:bg-accent-hover';
+    btn.className = 'bg-accent-strong px-4 py-2 font-mono text-xs font-semibold uppercase tracking-wide text-white hover:bg-accent-hover';
     btn.textContent = 'Continue';
     urlForm.appendChild(input);
     urlForm.appendChild(btn);
@@ -298,8 +307,7 @@ ${isNeedsInput ? renderUrlPromptMarkup(row.preview) : ''}
   if (needsInput) renderPrompt(${JSON.stringify(row.preview || '')});
   setTimeout(poll, needsInput ? 3000 : 1500);
 })();
-</script>
-</div>`;
+</script>`;
 
     return {
         html: layout(
@@ -317,32 +325,34 @@ ${isNeedsInput ? renderUrlPromptMarkup(row.preview) : ''}
 // the inline script above re-renders it via renderPrompt on first paint, but
 // this ensures something usable shows even if JS is briefly slow to run).
 function renderUrlPromptMarkup(message) {
-    return `<div class="rounded-lg border border-line bg-surface-1 p-4">
-<p class="mb-3 text-body-sm text-ink-2">${escapeHtml(message || "We couldn't find that product's page — paste its Amazon / Best Buy / Walmart / manufacturer URL.")}</p>
+    return `<div class="border border-line bg-surface-1 p-4">
+<p class="mb-3 font-mono text-xs text-ink-2">${escapeHtml(message || "We couldn't find that product's page — paste its Amazon / Best Buy / Walmart / manufacturer URL.")}</p>
 </div>`;
 }
 
-// Verdict pill styling per claim status. Uses only compiled Tailwind
-// utilities (custom trust-* palette) — no new classes, no CSS rebuild.
+// Verdict pill styling per claim status. Bordered instrument-readout style —
+// glyph + label together so the state never relies on color alone. Uses only
+// compiled Tailwind utilities (custom trust-* palette) — no new classes.
 const VERDICT_PILL = {
-    verified: { label: 'Verified', bg: 'bg-trust-high-bg', text: 'text-trust-high' },
-    'partially-verified': { label: 'Partially verified', bg: 'bg-trust-medium-bg', text: 'text-trust-medium' },
-    unsubstantiated: { label: 'Unsubstantiated', bg: 'bg-surface-2', text: 'text-ink-3' },
-    contradicted: { label: 'Contradicted', bg: 'bg-trust-low-bg', text: 'text-trust-low' },
+    verified: { label: 'Verified', glyph: '&#10003;', border: 'border-trust-high', text: 'text-trust-high' },
+    'partially-verified': { label: 'Partially verified', glyph: '&#9680;', border: 'border-trust-medium', text: 'text-trust-medium' },
+    unsubstantiated: { label: 'Unsubstantiated', glyph: '&#9650;', border: 'border-line-strong', text: 'text-ink-3' },
+    contradicted: { label: 'Contradicted', glyph: '&#10005;', border: 'border-trust-low', text: 'text-trust-low' },
 };
 
 function verdictPill(status) {
-    return VERDICT_PILL[status] || { label: 'Unknown', bg: 'bg-surface-2', text: 'text-ink-3' };
+    return VERDICT_PILL[status] || { label: 'Unknown', glyph: '?', border: 'border-line-strong', text: 'text-ink-3' };
 }
 
-// Overall score band -> trust color, per the brief's thresholds.
+// Overall score band -> trust color + glyph, per the brief's thresholds.
+// Icon travels with the color so the band is never color-only.
 function scoreBandClasses(score) {
     const n = Number(score) || 0;
-    if (n >= 80) return { bg: 'bg-trust-high-bg', text: 'text-trust-high' };
-    if (n >= 60) return { bg: 'bg-trust-high-bg', text: 'text-trust-high' };
-    if (n >= 40) return { bg: 'bg-trust-medium-bg', text: 'text-trust-medium' };
-    if (n >= 20) return { bg: 'bg-trust-low-bg', text: 'text-trust-low' };
-    return { bg: 'bg-trust-low-bg', text: 'text-trust-low' };
+    if (n >= 80) return { bg: 'bg-trust-high-bg', text: 'text-trust-high', stroke: 'text-trust-high', glyph: '&#10003;' };
+    if (n >= 60) return { bg: 'bg-trust-high-bg', text: 'text-trust-high', stroke: 'text-trust-high', glyph: '&#10003;' };
+    if (n >= 40) return { bg: 'bg-trust-medium-bg', text: 'text-trust-medium', stroke: 'text-trust-medium', glyph: '&#9680;' };
+    if (n >= 20) return { bg: 'bg-trust-low-bg', text: 'text-trust-low', stroke: 'text-trust-low', glyph: '&#9650;' };
+    return { bg: 'bg-trust-low-bg', text: 'text-trust-low', stroke: 'text-trust-low', glyph: '&#10005;' };
 }
 
 // Claim status -> sort rank for the "worst first" ledger ordering: a reader
@@ -375,7 +385,7 @@ function evidenceTagChips(tags) {
     return list
         .map((t) => EVIDENCE_TAG_CHIPS[t])
         .filter(Boolean)
-        .map((label) => `<span class="ml-2 inline-block rounded-full bg-surface-2 px-2 py-1 text-caption text-ink-3">${escapeHtml(label)}</span>`)
+        .map((label) => `<span class="ml-2 inline-block border border-line-strong px-1.5 py-0.5 font-mono text-[10.5px] uppercase tracking-wide text-ink-3">${escapeHtml(label)}</span>`)
         .join('');
 }
 
@@ -393,29 +403,55 @@ function truncateSpan(span, max = 160) {
     return s.length > max ? `${s.slice(0, max).trimEnd()}…` : s;
 }
 
+// Clamp a 0-100 readout for use as a bar-indicator width.
+function clampPct(n) {
+    const v = Number(n);
+    if (!Number.isFinite(v)) return 0;
+    return Math.max(0, Math.min(100, v));
+}
+
+// Small mono bar + number instrument readout for a 0-100 metric (credibility
+// or independence). `tone` picks the fill color band.
+function barReadout(label, value) {
+    if (!Number.isFinite(value)) {
+        return `<span class="inline-flex items-center gap-1.5 font-mono text-[10.5px] text-ink-3"><span class="uppercase tracking-wide">${escapeHtml(label)}</span><span>&mdash;</span></span>`;
+    }
+    const pct = clampPct(value);
+    const tone = pct >= 70 ? 'bg-trust-high' : pct >= 40 ? 'bg-trust-medium' : 'bg-trust-low';
+    return `<span class="inline-flex items-center gap-1.5 font-mono text-[10.5px] text-ink-3">
+<span class="uppercase tracking-wide">${escapeHtml(label)}</span>
+<span class="inline-block h-1.5 w-10 bg-line" aria-hidden="true"><span class="block h-1.5 ${tone}" style="width:${pct}%"></span></span>
+<span class="readout text-ink-2">${escapeHtml(String(Math.round(pct)))}</span>
+</span>`;
+}
+
 // One evidence row (supporting or contradicting). `direction` is 'support' or
-// 'contradict' — controls the arrow glyph + color accent.
+// 'contradict' — controls the arrow glyph + color accent (paired with text,
+// never color alone).
 function renderEvidenceRow(item, direction) {
     if (!item) return '';
     const host = evidenceHost(item.url);
     const hostHtml = isValidHttpsUrl(item.url)
-        ? `<a href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer nofollow" class="font-semibold text-ink hover:text-accent">${escapeHtml(host)}</a>`
-        : `<span class="font-semibold text-ink">${escapeHtml(host)}</span>`;
-    const arrow = direction === 'support'
-        ? '<span aria-hidden="true" class="text-trust-high">&uarr;</span>'
-        : '<span aria-hidden="true" class="text-trust-low">&darr;</span>';
+        ? `<a href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer nofollow" class="font-mono text-xs font-semibold text-ink hover:text-accent">${escapeHtml(host)}</a>`
+        : `<span class="font-mono text-xs font-semibold text-ink">${escapeHtml(host)}</span>`;
+    const isSupport = direction === 'support';
+    const arrow = isSupport
+        ? '<span aria-hidden="true" class="text-trust-high">&uarr;</span><span class="sr-only">Supports</span>'
+        : '<span aria-hidden="true" class="text-trust-low">&darr;</span><span class="sr-only">Contradicts</span>';
     const cred = Number.isFinite(item.credibility) ? Math.round(item.credibility) : null;
     const indep = Number.isFinite(item.independence) ? Math.round(item.independence) : null;
-    const scoreHtml = (cred != null || indep != null)
-        ? `<span class="ml-2 text-caption text-ink-3">cred ${escapeHtml(String(cred ?? '—'))} / indep ${escapeHtml(String(indep ?? '—'))}</span>`
+    const readoutsHtml = (cred != null || indep != null)
+        ? `<span class="ml-2 flex flex-wrap items-center gap-3">${barReadout('cred', cred)}${barReadout('indep', indep)}</span>`
         : '';
     const span = truncateSpan(item.span);
-    return `<li class="flex items-start gap-2 py-1.5">
+    return `<li class="border-t border-line py-3 first:border-t-0">
+<div class="flex flex-wrap items-center gap-y-1.5">
 ${arrow}
-<div class="flex-1">
-<div class="flex flex-wrap items-center">${hostHtml}${scoreHtml}${evidenceTagChips(item.tags)}</div>
-${span ? `<p class="mt-1 text-body-sm text-ink-2">&ldquo;${escapeHtml(span)}&rdquo;</p>` : ''}
+<span class="ml-1.5">${hostHtml}</span>
+${readoutsHtml}
+${evidenceTagChips(item.tags)}
 </div>
+${span ? `<p class="mt-1.5 pl-4 text-body-sm italic text-ink-2">&ldquo;${escapeHtml(span)}&rdquo;</p>` : ''}
 </li>`;
 }
 
@@ -427,24 +463,24 @@ function renderClaimCard(claim) {
     const hasEvidence = supporting.length > 0 || contradicting.length > 0;
 
     const evidenceHtml = hasEvidence
-        ? `<ul class="mt-3 border-t border-line pt-4">
+        ? `<ul class="mt-4 border-t border-line pt-1">
 ${supporting.map((s) => renderEvidenceRow(s, 'support')).join('')}
 ${contradicting.map((c) => renderEvidenceRow(c, 'contradict')).join('')}
 </ul>`
         : '';
 
     const unsubstantiatedNote = claim.status === 'unsubstantiated'
-        ? `<p class="mt-3 text-body-sm text-ink-3">No independent source corroborated this — it appears only in the maker&rsquo;s own materials.</p>`
+        ? `<p class="mt-3 font-mono text-[11px] text-ink-3">No independent source corroborated this — it appears only in the maker&rsquo;s own materials.</p>`
         : '';
 
-    return `<li class="mb-4 rounded-lg border border-line bg-surface-1 p-5">
+    return `<li class="mb-4 border border-line bg-surface-1 p-5">
 <div class="flex flex-wrap items-center gap-2">
-<span class="inline-flex items-center rounded-full ${pill.bg} px-2.5 py-1 text-caption font-semibold ${pill.text}">${escapeHtml(pill.label)}</span>
-<span class="rounded-full bg-surface-2 px-2 py-1 text-caption text-ink-3">${escapeHtml(claimTypeLabel(claim.claimType || claim.type))}</span>
-${confidencePct != null ? `<span class="text-caption text-ink-3">confidence ${escapeHtml(String(confidencePct))}%</span>` : ''}
-<span class="text-caption text-ink-3">${escapeHtml(String(claim.independentCount ?? 0))} independent source${claim.independentCount === 1 ? '' : 's'}</span>
+<span class="inline-flex items-center gap-1 border ${pill.border} px-1.5 py-0.5 font-mono text-[11px] font-semibold uppercase tracking-wide ${pill.text}"><span aria-hidden="true">${pill.glyph}</span> ${escapeHtml(pill.label)}</span>
+<span class="border border-line-strong px-1.5 py-0.5 font-mono text-[11px] uppercase tracking-wide text-ink-3">${escapeHtml(claimTypeLabel(claim.claimType || claim.type))}</span>
+${confidencePct != null ? `<span class="font-mono text-[11px] text-ink-3">confidence <span class="readout text-ink-2">${escapeHtml(String(confidencePct))}%</span></span>` : ''}
+<span class="font-mono text-[11px] text-ink-3">${escapeHtml(String(claim.independentCount ?? 0))} independent source${claim.independentCount === 1 ? '' : 's'}</span>
 </div>
-<p class="mt-2 text-body text-ink">${escapeHtml(claim.text)}</p>
+<p class="mt-3 text-body text-ink">${escapeHtml(claim.text)}</p>
 ${unsubstantiatedNote}
 ${evidenceHtml}
 </li>`;
@@ -458,19 +494,80 @@ function sortedClaims(claims) {
     });
 }
 
+// Inline SVG score gauge — renders with zero JS. Circumference for r=52 is
+// 2*pi*52 ≈ 326.73; dash-offset is computed from the 0-100 score so the arc
+// fills clockwise from the top.
+function renderScoreGauge(score, band) {
+    const n = Math.max(0, Math.min(100, Number(score) || 0));
+    const circumference = 326.73;
+    const offset = (circumference * (100 - n)) / 100;
+    return `<div class="relative mx-auto h-32 w-32 sm:h-36 sm:w-36">
+<svg viewBox="0 0 120 120" class="h-full w-full -rotate-90" role="img" aria-label="Composite score ${escapeHtml(String(Math.round(n)))} out of 100">
+<circle cx="60" cy="60" r="52" fill="none" stroke="currentColor" stroke-width="10" class="text-line"></circle>
+<circle cx="60" cy="60" r="52" fill="none" stroke="currentColor" stroke-width="10" stroke-linecap="round" stroke-dasharray="${circumference}" stroke-dashoffset="${offset}" class="${band.stroke}"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="readout font-mono text-3xl font-bold text-ink sm:text-4xl">${escapeHtml(String(Math.round(n)))}</span>
+<span class="font-mono text-[10px] uppercase tracking-wide text-ink-3">/ 100</span>
+</div>
+</div>`;
+}
+
+// Instrument panel: score gauge + derived readouts, placed BELOW the
+// plain-language verdict headline (verdict-first, instrument-second per the
+// design brief). Stats are all derived from real per-claim/evidence data —
+// nothing fabricated.
+function renderInstrumentPanel(overall, claims, evidenceCount) {
+    const band = scoreBandClasses(overall.score);
+    const independentClaims = claims.reduce((n, c) => n + (Number(c.independentCount) > 0 ? 1 : 0), 0);
+    const conflictTagSet = new Set(Object.keys(EVIDENCE_TAG_CHIPS));
+    let flaggedSources = 0;
+    for (const c of claims) {
+        const items = [...(c.supporting || []), ...(c.contradicting || [])];
+        for (const item of items) {
+            const tags = Array.isArray(item.tags) ? item.tags : [];
+            if (tags.some((t) => conflictTagSet.has(t))) flaggedSources++;
+        }
+    }
+
+    return `<div class="mt-6 grid gap-5 lg:grid-cols-[280px_1fr]">
+<div class="border border-line bg-surface-1 p-6">
+<p class="font-mono text-[11px] uppercase tracking-widest text-ink-3">Composite score</p>
+<div class="mt-5">${renderScoreGauge(overall.score, band)}</div>
+<div class="mt-5 space-y-1.5 border-t border-line pt-4 font-mono text-[11px] text-ink-3">
+<div class="flex justify-between"><span>Claims audited</span><span class="readout text-ink">${escapeHtml(String(claims.length))}</span></div>
+<div class="flex justify-between"><span>Sources checked</span><span class="readout text-ink">${escapeHtml(String(evidenceCount))}</span></div>
+<div class="flex justify-between"><span>Independently corroborated</span><span class="readout text-trust-high">${escapeHtml(String(independentClaims))} / ${escapeHtml(String(claims.length))}</span></div>
+<div class="flex justify-between"><span>Conflicted sources flagged</span><span class="readout text-trust-low">${escapeHtml(String(flaggedSources))}</span></div>
+</div>
+</div>
+<div class="border border-line bg-surface-1 p-6">
+<p class="font-mono text-[11px] uppercase tracking-widest text-ink-3">Verdict key</p>
+<dl class="mt-4 grid gap-3 sm:grid-cols-2">
+${Object.values(VERDICT_PILL).map((v) => `<div class="flex items-center gap-2">
+<span class="inline-flex items-center gap-1 border ${v.border} px-1.5 py-0.5 font-mono text-[11px] font-semibold uppercase tracking-wide ${v.text}"><span aria-hidden="true">${v.glyph}</span> ${escapeHtml(v.label)}</span>
+</div>`).join('')}
+</dl>
+<p class="mt-5 border-t border-line pt-4 font-mono text-[11px] leading-relaxed text-ink-3">Each row below shows the claim, its verdict, and the evidence that produced it — credibility and independence are scored per source, not assumed.</p>
+</div>
+</div>`;
+}
+
 function renderVerdictHeader(prettyProduct, overall, claimCount, evidenceCount) {
     const band = scoreBandClasses(overall.score);
-    return `<div class="rounded-lg border border-line bg-surface-1 p-6">
-<div class="flex flex-wrap items-center gap-4">
-<span class="inline-flex items-center gap-2 rounded-full ${band.bg} px-4 py-2 text-body-sm font-semibold ${band.text}">${escapeHtml(overall.label || 'Unknown')} &middot; ${escapeHtml(String(overall.score ?? 0))}/100</span>
+    return `<div>
+<div class="flex flex-wrap items-center gap-3">
+<span aria-hidden="true" class="text-2xl ${band.text}">${band.glyph}</span>
+<p class="font-sans text-2xl font-bold text-ink sm:text-3xl">${escapeHtml(overall.label || 'Unknown')}</p>
+<span class="inline-flex items-center gap-1 border border-current px-2 py-1 font-mono text-xs font-semibold ${band.text}">${escapeHtml(String(overall.score ?? 0))}/100</span>
 </div>
-<p class="mt-3 text-body-sm text-ink-2">We audited ${escapeHtml(String(claimCount))} of ${escapeHtml(prettyProduct)}&rsquo;s claims against ${escapeHtml(String(evidenceCount))} independent evidence source${evidenceCount === 1 ? '' : 's'}.</p>
+<p class="mt-3 max-w-2xl text-body-sm text-ink-2">We audited ${escapeHtml(String(claimCount))} of ${escapeHtml(prettyProduct)}&rsquo;s claims against ${escapeHtml(String(evidenceCount))} independent evidence source${evidenceCount === 1 ? '' : 's'}.</p>
 </div>`;
 }
 
 function renderMethodology() {
-    return `<details class="mt-8 rounded-lg border border-line bg-surface-1 p-5">
-<summary class="cursor-pointer text-body-sm font-semibold text-ink">How this Truth Audit works</summary>
+    return `<details class="mt-8 border border-line bg-surface-1 p-5">
+<summary class="cursor-pointer font-mono text-xs font-semibold uppercase tracking-wide text-ink">How this Truth Audit works</summary>
 <div class="mt-3 text-body-sm text-ink-2">
 <p>Every verdict is evidence-weighted by source credibility × reviewer independence. A claim only earns &ldquo;Verified&rdquo; when at least two independent sources confirm it through their own testing or measurement — echoing the manufacturer&rsquo;s marketing does not count.</p>
 <p class="mt-2">Sources tagged as affiliate-conflicted, sponsored, incentivized, or manufacturer-owned are down-weighted or excluded from corroboration, even when they repeat the same claim.</p>
@@ -487,9 +584,9 @@ function renderBuyCta(productUrl, env) {
     const affiliateUrl = buildAffiliateUrl(productUrl, ids);
     if (!affiliateUrl || !isValidHttpsUrl(affiliateUrl)) return '';
     const label = `Buy on ${retailerLabel(affiliateUrl)}`;
-    return `<div class="mt-8 rounded-lg border border-line bg-surface-1 p-5">
-<a href="${escapeHtml(affiliateUrl)}" target="_blank" rel="noopener noreferrer nofollow sponsored" class="inline-flex items-center justify-center gap-2 rounded-lg bg-accent-strong px-4 py-2.5 text-body-sm font-semibold text-white transition-colors hover:bg-accent-hover">${escapeHtml(label)} <span aria-hidden="true">&#8599;</span></a>
-<p class="mt-3 text-caption text-ink-3">We may earn a commission on purchases made through links on this page. Verdicts above are produced from independent evidence analysis and are never influenced by affiliate relationships.</p>
+    return `<div class="mt-8 border border-line bg-surface-1 p-5">
+<a href="${escapeHtml(affiliateUrl)}" target="_blank" rel="noopener noreferrer nofollow sponsored" class="inline-flex items-center justify-center gap-2 bg-accent-strong px-4 py-2.5 font-mono text-xs font-semibold uppercase tracking-wide text-white transition-colors hover:bg-accent-hover">${escapeHtml(label)} <span aria-hidden="true">&#8599;</span></a>
+<p class="mt-3 font-mono text-[10.5px] leading-relaxed text-ink-3">We may earn a commission on purchases made through links on this page. Verdicts above are produced from independent evidence analysis and are never influenced by affiliate relationships.</p>
 </div>`;
 }
 
@@ -505,12 +602,12 @@ function renderAlternativeCard(product, env) {
     const buyLabel = hasBuyLink ? `Buy on ${retailerLabel(affiliateUrl)}` : '';
     const oneLiner = product.best_for || product.verdict || '';
 
-    return `<div class="rounded-lg border border-line bg-surface-1 p-4">
+    return `<div class="border border-line bg-surface-1 p-4">
 ${renderItemImage(product.image_url, name, product.id)}
 <h3 class="mt-1 text-body-sm font-semibold text-ink">${escapeHtml(name)}</h3>
-${product.rating != null ? `<p class="mt-1 text-caption text-ink-2"><span aria-hidden="true">${starMarkup(product.rating)}</span> ${escapeHtml(String(product.rating))}/5</p>` : ''}
+${product.rating != null ? `<p class="mt-1 font-mono text-[11px] text-ink-2"><span aria-hidden="true">${starMarkup(product.rating)}</span> <span class="readout">${escapeHtml(String(product.rating))}/5</span></p>` : ''}
 ${oneLiner ? `<p class="mt-2 text-body-sm text-ink-2">${escapeHtml(String(oneLiner).slice(0, 140))}</p>` : ''}
-${hasBuyLink ? `<a href="${escapeHtml(affiliateUrl)}" target="_blank" rel="noopener noreferrer nofollow sponsored" class="mt-3 inline-flex items-center justify-center gap-1 rounded-lg bg-accent-strong px-3 py-2 text-caption font-semibold text-white transition-colors hover:bg-accent-hover">${escapeHtml(buyLabel)} <span aria-hidden="true">&#8599;</span></a>` : ''}
+${hasBuyLink ? `<a href="${escapeHtml(affiliateUrl)}" target="_blank" rel="noopener noreferrer nofollow sponsored" class="mt-3 inline-flex items-center justify-center gap-1 bg-accent-strong px-3 py-2 font-mono text-[11px] font-semibold uppercase tracking-wide text-white transition-colors hover:bg-accent-hover">${escapeHtml(buyLabel)} <span aria-hidden="true">&#8599;</span></a>` : ''}
 </div>`;
 }
 
@@ -546,9 +643,9 @@ export async function renderAlternatives(row, resultJson, env, findRanking = fin
         const cardsHtml = products.map((p) => renderAlternativeCard(p, env)).join('');
         const rankingSlug = match.research.slug;
         const linkHtml = rankingSlug
-            ? `<p class="mt-4 text-caption text-ink-3"><a href="/research/${escapeHtml(rankingSlug)}" class="text-accent underline hover:text-accent-hover">See the full ranking &rarr;</a></p>`
+            ? `<p class="mt-4 font-mono text-[11px] text-ink-3"><a href="/research/${escapeHtml(rankingSlug)}" class="text-accent underline hover:text-accent-hover">See the full ranking &rarr;</a></p>`
             : '';
-        return `<div class="mt-8${isLowScore ? ' rounded-lg border border-trust-low bg-trust-low-bg p-5' : ''}">
+        return `<div class="mt-8${isLowScore ? ' border border-trust-low bg-trust-low-bg p-5' : ''}">
 <h2 class="font-serif text-h3 font-semibold text-ink">${escapeHtml(heading)}</h2>
 <div class="mt-4 grid gap-4 md:grid-cols-3">${cardsHtml}</div>
 ${linkHtml}
@@ -556,9 +653,9 @@ ${linkHtml}
     }
 
     const compareUrl = `/research/new?q=${encodeURIComponent(`best ${category}`)}`;
-    return `<div class="mt-8${isLowScore ? ' rounded-lg border border-trust-low bg-trust-low-bg p-5' : ''}">
+    return `<div class="mt-8${isLowScore ? ' border border-trust-low bg-trust-low-bg p-5' : ''}">
 <h2 class="font-serif text-h3 font-semibold text-ink">${escapeHtml(heading)}</h2>
-<a href="${escapeHtml(compareUrl)}" class="mt-3 inline-flex items-center justify-center gap-2 rounded-lg bg-accent-strong px-4 py-2.5 text-body-sm font-semibold text-white transition-colors hover:bg-accent-hover">Compare the best ${escapeHtml(category)} <span aria-hidden="true">&rarr;</span></a>
+<a href="${escapeHtml(compareUrl)}" class="mt-3 inline-flex items-center justify-center gap-2 bg-accent-strong px-4 py-2.5 font-mono text-xs font-semibold uppercase tracking-wide text-white transition-colors hover:bg-accent-hover">Compare the best ${escapeHtml(category)} <span aria-hidden="true">&rarr;</span></a>
 </div>`;
 }
 
@@ -574,7 +671,7 @@ async function renderCompleteReport(row, env) {
         ? `<ul class="mt-4">
 ${sortedClaims(claims).map(renderClaimCard).join('')}
 </ul>`
-        : `<p class="mt-4 text-body-sm text-ink-3">No individual claims were recorded for this run.</p>`;
+        : `<p class="mt-4 font-mono text-xs text-ink-3">No individual claims were recorded for this run.</p>`;
 
     // Low-score reports surface the alternatives section EARLY (right after the
     // verdict header, before the claim ledger) — a reader whose subject just
@@ -585,8 +682,9 @@ ${sortedClaims(claims).map(renderClaimCard).join('')}
     const isLowScore = Number.isFinite(score) && score < 50;
     const alternativesHtml = await renderAlternatives(row, result, env);
 
-    const body = `<div class="mx-auto max-w-2xl px-6 py-12 md:py-16">
-<nav aria-label="Breadcrumb" class="mb-6 text-caption text-ink-3">
+    const body = `<div class="grid-bg border-b border-line">
+<div class="mx-auto max-w-3xl px-6 py-12 md:py-16">
+<nav aria-label="Breadcrumb" class="mb-6 font-mono text-[11px] uppercase tracking-widest text-ink-3">
 <a href="/" class="hover:text-ink">Home</a>
 <span aria-hidden="true" class="mx-1.5">/</span>
 <a href="/verify" class="hover:text-ink">Verify</a>
@@ -594,9 +692,11 @@ ${sortedClaims(claims).map(renderClaimCard).join('')}
 <span class="text-ink-2">${escapeHtml(prettyProduct)}</span>
 </nav>
 
-<h1 class="mb-4 font-serif text-h1 font-semibold text-ink">${escapeHtml(prettyProduct)}</h1>
+<p class="font-mono text-[11px] uppercase tracking-widest text-ink-3">Readout &middot; Truth Audit</p>
+<h1 class="mt-2 mb-4 font-serif text-h1 font-semibold text-ink">${escapeHtml(prettyProduct)}</h1>
 
 ${renderVerdictHeader(prettyProduct, overall, claims.length, evidenceCount)}
+${renderInstrumentPanel(overall, claims, evidenceCount)}
 
 ${isLowScore ? alternativesHtml : ''}
 
@@ -608,6 +708,7 @@ ${renderMethodology()}
 ${renderBuyCta(productUrl, env)}
 
 ${isLowScore ? '' : alternativesHtml}
+</div>
 </div>`;
 
     return {
