@@ -99,6 +99,20 @@ body {
 }
 
 /* ----------------------------------------------------------------------------
+   Left drawer nav (Forensic chrome). CSS-only via the checkbox/peer pattern
+   in html.js's layout() and the 5 static pages — no JS dependency for core
+   nav. Transition durations kept in one place so drawer + overlay stay in
+   sync; the reduced-motion media query above already neutralizes both.
+---------------------------------------------------------------------------- */
+.drawer-overlay {
+    transition: opacity 0.25s ease;
+}
+
+.drawer-panel {
+    transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+
+/* ----------------------------------------------------------------------------
    Live "reading reviews" progress log
 ---------------------------------------------------------------------------- */
 #progress-log .progress-entry {
