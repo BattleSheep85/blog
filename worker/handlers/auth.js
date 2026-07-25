@@ -146,17 +146,42 @@ const AUTH_PAGE_SCRIPT = `<script nonce="__CSP_NONCE__">
 })();
 </script>`;
 
+// Console-style credential form. Labels are mono/uppercase (matches the
+// verify-page instrument vocabulary); inline validation states show on
+// :invalid once the field has been touched (peer + :not(:placeholder-shown))
+// so an empty untouched field never looks like an error. `data-msg` is the
+// server-response readout AUTH_PAGE_SCRIPT writes into on submit.
 function authForm(id, submitLabel, autocompletePw) {
-    return `<form id="${id}" class="flex flex-col gap-4">
-<label class="flex flex-col gap-1.5 text-body-sm text-ink-2">Email
-<input type="email" name="email" required maxlength="254" autocomplete="email" class="rounded-lg border border-line bg-bg px-3 py-2.5 font-sans text-body text-ink placeholder:text-ink-3 focus:border-line-strong focus:outline-none focus:ring-2 focus:ring-accent/25" placeholder="you@example.com">
+    return `<form id="${id}" class="flex flex-col gap-4" novalidate>
+<label class="flex flex-col gap-1.5">
+<span class="font-mono text-[11px] uppercase tracking-wide text-ink-3">Email</span>
+<input type="email" name="email" required maxlength="254" autocomplete="email" placeholder="you@example.com"
+  class="peer border border-line bg-bg px-3 py-2.5 font-mono text-sm text-ink outline-none placeholder:text-ink-3 focus:border-accent focus:ring-2 focus:ring-accent/25 invalid:[&:not(:placeholder-shown)]:border-trust-low">
+<span class="hidden font-mono text-[10px] text-trust-low peer-[&:not(:placeholder-shown):invalid]:block">INVALID_FORMAT :: expected user@domain.tld</span>
 </label>
-<label class="flex flex-col gap-1.5 text-body-sm text-ink-2">Password
-<input type="password" name="password" required minlength="8" maxlength="200" autocomplete="${autocompletePw}" class="rounded-lg border border-line bg-bg px-3 py-2.5 font-sans text-body text-ink focus:border-line-strong focus:outline-none focus:ring-2 focus:ring-accent/25" placeholder="At least 8 characters">
+<label class="flex flex-col gap-1.5">
+<span class="font-mono text-[11px] uppercase tracking-wide text-ink-3">Passcode</span>
+<input type="password" name="password" required minlength="8" maxlength="200" autocomplete="${autocompletePw}" placeholder="At least 8 characters"
+  class="peer border border-line bg-bg px-3 py-2.5 font-mono text-sm text-ink outline-none focus:border-accent focus:ring-2 focus:ring-accent/25 invalid:[&:not(:placeholder-shown)]:border-trust-low">
+<span class="hidden font-mono text-[10px] text-trust-low peer-[&:not(:placeholder-shown):invalid]:block">MIN 8 CHARS</span>
 </label>
-<button type="submit" class="rounded-lg bg-accent-strong px-4 py-2.5 font-sans text-body-sm font-semibold text-white transition-colors hover:bg-accent-hover">${submitLabel}</button>
-<p data-msg role="status" aria-live="polite" class="min-h-[1.25rem] text-body-sm text-trust-low"></p>
+<button type="submit" class="bg-accent-strong px-4 py-2.5 font-mono text-xs font-semibold uppercase tracking-wide text-white transition-colors hover:bg-accent-hover">${submitLabel} &#9656;</button>
+<p data-msg role="status" aria-live="polite" class="min-h-[1.25rem] font-mono text-xs text-trust-low"></p>
 </form>`;
+}
+
+// What an account unlocks — honest, specific microcopy (no vague "unlock
+// premium features"): it bypasses the anonymous per-IP quota gates enforced
+// in worker/lib/rate-limit.js (5 mass searches / 10 verifies per IP).
+function accountBenefits() {
+    return `<div class="mb-6 border-b border-line pb-6">
+<p class="font-mono text-[11px] uppercase tracking-widest text-ink-3">Why create an account</p>
+<div class="mt-3 space-y-2 font-mono text-xs text-ink-2">
+<div class="flex items-start gap-2"><span aria-hidden="true" class="mt-0.5 text-accent">[✓]</span><p>Bypass the free-quota limits &mdash; 5 mass searches / 10 verifies per IP without an account.</p></div>
+<div class="flex items-start gap-2"><span aria-hidden="true" class="mt-0.5 text-accent">[✓]</span><p>Search history synced across every device you sign in on.</p></div>
+<div class="flex items-start gap-2"><span aria-hidden="true" class="mt-0.5 text-accent">[✓]</span><p>Email used only for sign-in and the research alerts you opt into. No spam, ever.</p></div>
+</div>
+</div>`;
 }
 
 export async function renderLoginPage(request, env) {
@@ -164,18 +189,21 @@ export async function renderLoginPage(request, env) {
     if (user) {
         return Response.redirect(new URL('/account', request.url).toString(), 302);
     }
-    const body = `<div class="container mx-auto max-w-md px-6 py-16">
-<h1 class="font-serif text-h1 font-semibold text-ink">Your account</h1>
+    const body = `<div class="grid-bg border-b border-line">
+<div class="mx-auto max-w-md px-6 py-16">
+<p class="font-mono text-[11px] uppercase tracking-widest text-ink-3">Session &middot; Auth console</p>
+<h1 class="mt-2 font-serif text-h1 font-semibold text-ink">Your account</h1>
 <p class="mt-2 text-body text-ink-2">Sign in to keep a history of everything you've researched.</p>
-<div class="mt-8 rounded-xl border border-line bg-surface-1 p-6 shadow-card">
-<div class="mb-6 flex border-b border-line" role="tablist" aria-label="Account">
-<button type="button" role="tab" aria-selected="true" data-auth-tab="login" class="border-b-2 border-accent px-4 py-2 text-body-sm font-semibold text-ink">Sign in</button>
-<button type="button" role="tab" aria-selected="false" data-auth-tab="signup" class="border-b-2 border-transparent px-4 py-2 text-body-sm font-semibold text-ink-3">Create account</button>
+<div class="mt-8 border border-line bg-surface-1 p-6">
+${accountBenefits()}
+<div class="mb-6 flex border-b border-line font-mono text-xs uppercase tracking-wide" role="tablist" aria-label="Account">
+<button type="button" role="tab" aria-selected="true" data-auth-tab="login" class="border-b-2 border-accent px-4 py-2 font-semibold text-ink">Sign in</button>
+<button type="button" role="tab" aria-selected="false" data-auth-tab="signup" class="border-b-2 border-transparent px-4 py-2 font-semibold text-ink-3">Create account</button>
 </div>
 <div data-auth-panel="login">${authForm('login-form', 'Sign in', 'current-password')}</div>
 <div data-auth-panel="signup" class="hidden">${authForm('signup-form', 'Create account', 'new-password')}</div>
 </div>
-<p class="mt-4 text-caption text-ink-3">We only use your email for sign-in and the research notifications you ask for. No spam, ever.</p>
+</div>
 </div>`;
     const html = layout('Sign in', 'Sign in to TrueRank to see your past research.', body, '<meta name="robots" content="noindex, follow">' + AUTH_PAGE_SCRIPT, { canonical: 'https://chrisputer.tech/login' });
     return html;
@@ -218,16 +246,21 @@ export async function renderAccountPage(request, env) {
             })),
     ).replace(/</g, '\\u003c');
 
-    const body = `<div class="container mx-auto max-w-5xl px-6 py-16">
+    const body = `<div class="grid-bg border-b border-line">
+<div class="container mx-auto max-w-5xl px-6 py-16">
 <div class="flex flex-wrap items-start justify-between gap-4">
 <div>
-<h1 class="font-serif text-h1 font-semibold text-ink">Your research</h1>
-<p class="mt-2 text-body text-ink-2">Signed in as <strong class="text-ink">${escapeHtml(user.email)}</strong></p>
+<p class="font-mono text-[11px] uppercase tracking-widest text-ink-3">Session &middot; Signed in</p>
+<h1 class="mt-2 font-serif text-h1 font-semibold text-ink">Your research</h1>
+<p class="mt-2 font-mono text-xs text-ink-2">${escapeHtml(user.email)}</p>
 </div>
-<button id="logout-btn" type="button" class="rounded-lg border border-line bg-surface-1 px-4 py-2 text-body-sm font-semibold text-ink transition-colors hover:bg-surface-2">Sign out</button>
+<button id="logout-btn" type="button" class="border border-line bg-surface-1 px-4 py-2 font-mono text-xs font-semibold uppercase tracking-wide text-ink transition-colors hover:border-ink-3">Sign out</button>
 </div>
+</div>
+</div>
+<div class="container mx-auto max-w-5xl px-6 py-10">
 <script type="application/json" id="account-history-data">${historyJson}</script>
-<div id="account-history-list" class="mt-8" aria-live="polite"></div>
+<div id="account-history-list" aria-live="polite"></div>
 </div>`;
     return layout('Your research', 'Your past TrueRank searches.', body, '<meta name="robots" content="noindex, follow">' + ACCOUNT_PAGE_SCRIPT, { canonical: 'https://chrisputer.tech/account' });
 }

@@ -17,11 +17,16 @@ document.addEventListener('DOMContentLoaded',function(){
 </script>`;
 
 export function renderHistoryPage() {
-    const body = `<div class="mx-auto max-w-5xl px-6 py-16">
-<h1 class="font-serif text-h1 font-semibold text-ink">Your searches</h1>
+    const body = `<div class="grid-bg border-b border-line">
+<div class="mx-auto max-w-5xl px-6 py-16">
+<p class="font-mono text-[11px] uppercase tracking-widest text-ink-3">Log &middot; Local search history</p>
+<h1 class="mt-2 font-serif text-h1 font-semibold text-ink">Your searches</h1>
 <p class="mt-2 text-body text-ink-2">Research you\u2019ve run on this device. <a href="/account" class="font-medium text-accent hover:text-accent-hover">Sign in</a> to sync across devices.</p>
-<div id="history-list" class="mt-8" aria-live="polite"></div>
-<p class="mt-8 text-caption text-ink-3"><a href="/" class="text-accent hover:text-accent-hover">\u2190 Start a new search</a></p>
+</div>
+</div>
+<div class="mx-auto max-w-5xl px-6 py-10">
+<div id="history-list" aria-live="polite"></div>
+<p class="mt-8 font-mono text-[11px] uppercase tracking-widest text-ink-3"><a href="/" class="text-accent hover:text-accent-hover">\u2190 Start a new search</a></p>
 </div>`;
 
     return layout(

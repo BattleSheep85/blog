@@ -51,10 +51,10 @@ export async function renderBrowse(url, env) {
     const top = categories.slice(0, 12);
     if (top.length > 0) {
       const chips = top.map((c) =>
-        `<a href="/best/${escapeHtml(c.slug)}" class="inline-flex items-center gap-1.5 rounded-full border border-line bg-surface-1 px-3 py-1.5 text-caption font-medium text-ink-2 transition-colors hover:border-line-strong hover:text-ink">${escapeHtml(c.category)} <span class="font-mono text-ink-3 num">${c.count}</span></a>`
+        `<a href="/best/${escapeHtml(c.slug)}" class="inline-flex items-center gap-1.5 border border-line bg-surface-1 px-3 py-1.5 font-mono text-xs text-ink-2 transition-colors hover:border-ink-3 hover:text-ink">${escapeHtml(c.category)} <span class="readout text-ink-3">${c.count}</span></a>`
       ).join('');
       categoryStrip = `<div class="mb-8">
-<h2 class="mb-3 text-overline uppercase text-ink-3">Browse by category</h2>
+<h2 class="mb-3 font-mono text-[11px] uppercase tracking-widest text-ink-3">Index &middot; Browse by category</h2>
 <div class="flex flex-wrap gap-2">${chips}</div>
 </div>`;
     }
@@ -72,45 +72,49 @@ export async function renderBrowse(url, env) {
 
   const qs = searchQuery ? `&q=${encodeURIComponent(searchQuery)}` : '';
 
-  const body = `<div class="mx-auto max-w-5xl px-6 py-12 md:py-16">
-<nav aria-label="Breadcrumb" class="mb-6 text-caption text-ink-3">
+  const body = `<div class="grid-bg border-b border-line">
+<div class="mx-auto max-w-5xl px-6 py-12 md:py-16">
+<nav aria-label="Breadcrumb" class="mb-6 font-mono text-[11px] uppercase tracking-widest text-ink-3">
 <a href="/" class="hover:text-ink">Home</a>
 <span aria-hidden="true" class="mx-1.5">/</span>
 <span class="text-ink-2">Research</span>
 </nav>
-<div class="mb-8">
-<h1 class="font-serif text-h1 font-semibold text-ink">Browse research</h1>
+<p class="font-mono text-[11px] uppercase tracking-widest text-ink-3">Index &middot; Research archive</p>
+<h1 class="mt-2 font-serif text-h1 font-semibold text-ink">Browse research</h1>
 <p class="mb-6 mt-2 text-lead text-ink-2">Explore past product research or start your own.</p>
 ${searchBar('compact')}
 </div>
+</div>
 
+<div class="mx-auto max-w-5xl px-6 py-10">
 ${categoryStrip}
 
-${searchQuery ? `<div class="mb-6 flex items-center gap-2 text-body-sm">
+${searchQuery ? `<div class="mb-6 flex items-center gap-2 font-mono text-xs">
 <span class="text-ink-2">Results for:</span>
-<span class="inline-flex items-center rounded-full bg-accent-quiet px-2.5 py-1 text-caption font-medium text-accent">${escapeHtml(searchQuery)}</span>
-<a href="/research" class="ml-1 text-caption text-ink-3 hover:text-ink">Clear</a>
+<span class="inline-flex items-center border border-line-strong px-2 py-1 uppercase tracking-wide text-accent">${escapeHtml(searchQuery)}</span>
+<a href="/research" class="ml-1 text-ink-3 hover:text-ink">Clear</a>
 </div>` : ''}
 
 ${listItems.length ? `${jsonEmbed('research-list-data', listItems)}<div id="research-list">
-<div class="grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem">${results.map((r) => `<a class="card" href="/research/${escapeHtml(r.slug)}">
-${r.category ? `<div class="card-top"><span class="card-badge">${escapeHtml(r.category)}</span><span class="card-time">${timeAgo(r.created_at * 1000)}</span></div>` : `<div class="card-top"><span class="card-time">${timeAgo(r.created_at * 1000)}</span></div>`}
+<div class="grid">${results.map((r) => `<a class="card" href="/research/${escapeHtml(r.slug)}">
+${r.category ? `<div class="card-top"><span class="card-badge">${escapeHtml(r.category)}</span><span class="card-time readout">${timeAgo(r.created_at * 1000)}</span></div>` : `<div class="card-top"><span class="card-time readout">${timeAgo(r.created_at * 1000)}</span></div>`}
 <h3>${escapeHtml(displayQuery(r.query))}</h3>
 ${r.summary ? `<p>${escapeHtml(r.summary.slice(0, 140))}${r.summary.length > 140 ? '…' : ''}</p>` : ''}
 </a>`).join('')}</div>
-</div>` : `<div class="py-20 text-center">
-<div class="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-surface-2 text-ink-3"><svg width="32" height="32" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg></div>
+</div>` : `<div class="border border-line bg-surface-1 py-16 text-center">
+<div class="mx-auto mb-6 flex h-16 w-16 items-center justify-center border border-line text-ink-3"><svg width="32" height="32" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg></div>
 ${searchQuery ? `<h2 class="mb-2 font-serif text-h2 font-semibold text-ink">No matches for &ldquo;${escapeHtml(searchQuery)}&rdquo;</h2>
 <p class="mb-6 text-body text-ink-2">Try a broader search or start new research:</p>
-<form method="POST" action="/research/new" class="mt-4"><input type="hidden" name="q" value="${escapeHtml(searchQuery)}"><button type="submit" class="inline-flex items-center gap-2 rounded-lg bg-accent-strong px-4 py-2 text-body-sm font-semibold text-white transition-colors hover:bg-accent-hover">Start new research</button></form>` : page > 1 ? `<h2 class="mb-2 font-serif text-h2 font-semibold text-ink">You&rsquo;ve reached the end</h2>
+<form method="POST" action="/research/new" class="mt-4"><input type="hidden" name="q" value="${escapeHtml(searchQuery)}"><button type="submit" class="inline-flex items-center gap-2 bg-accent-strong px-4 py-2.5 font-mono text-xs font-semibold uppercase tracking-wide text-white transition-colors hover:bg-accent-hover">Start new research</button></form>` : page > 1 ? `<h2 class="mb-2 font-serif text-h2 font-semibold text-ink">You&rsquo;ve reached the end</h2>
 <p class="text-body text-ink-2">No more research on this page. <a href="/research" class="text-accent hover:text-accent-hover">Back to the latest</a>.</p>` : `<h2 class="mb-2 font-serif text-h2 font-semibold text-ink">No research yet</h2>
 <p class="text-body text-ink-2">Be the first to research a product!</p>`}
 </div>`}
 
 ${(page > 1 || hasMore) ? `<div class="mt-8 flex justify-center gap-2">
-${page > 1 ? `<a href="/research?page=${page - 1}${qs}" class="inline-flex items-center gap-2 rounded-lg border border-line bg-surface-1 px-4 py-2 text-body-sm font-semibold text-ink transition-colors hover:bg-surface-2">Previous</a>` : ''}
-${hasMore ? `<a href="/research?page=${page + 1}${qs}" class="inline-flex items-center gap-2 rounded-lg border border-line bg-surface-1 px-4 py-2 text-body-sm font-semibold text-ink transition-colors hover:bg-surface-2">Next</a>` : ''}
+${page > 1 ? `<a href="/research?page=${page - 1}${qs}" class="inline-flex items-center gap-2 border border-line bg-surface-1 px-4 py-2 font-mono text-xs font-semibold uppercase tracking-wide text-ink transition-colors hover:border-ink-3">&larr; Previous</a>` : ''}
+${hasMore ? `<a href="/research?page=${page + 1}${qs}" class="inline-flex items-center gap-2 border border-line bg-surface-1 px-4 py-2 font-mono text-xs font-semibold uppercase tracking-wide text-ink transition-colors hover:border-ink-3">Next &rarr;</a>` : ''}
 </div>` : ''}
+</div>
 </div>`;
 
   const canonical = '<link rel="canonical" href="https://chrisputer.tech/research">';

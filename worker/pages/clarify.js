@@ -28,7 +28,7 @@ function renderQuestion(q, idx) {
 <div class="chip-row mb-2 flex flex-wrap gap-2">
 ${chips}
 </div>
-<input type="text" name="${inputName}_custom" placeholder="Or type your own answer" maxlength="80" data-custom aria-label="${escapeHtml(q.question)} — custom answer" class="w-full rounded-lg border border-line bg-surface-1 px-3 py-2 font-sans text-body-sm text-ink placeholder:text-ink-3 focus:border-line-strong focus:outline-none focus:ring-2 focus:ring-accent/25">
+<input type="text" name="${inputName}_custom" placeholder="Or type your own answer" maxlength="80" data-custom aria-label="${escapeHtml(q.question)} — custom answer" class="w-full border border-line bg-surface-1 px-3 py-2 font-mono text-sm text-ink placeholder:text-ink-3 focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/25">
 </fieldset>`;
 }
 
@@ -42,14 +42,16 @@ export function renderClarifyPage(query, tier, questions, env) {
     const tierLabel = 'Deep research';
     const tierTime = `about ${RESEARCH_ETA}`;
 
-    const body = `<div class="mx-auto max-w-2xl px-6 py-12 md:py-16">
-<nav aria-label="Breadcrumb" class="mb-6 text-caption text-ink-3">
+    const body = `<div class="grid-bg border-b border-line">
+<div class="mx-auto max-w-2xl px-6 py-12 md:py-16">
+<nav aria-label="Breadcrumb" class="mb-6 font-mono text-[11px] uppercase tracking-widest text-ink-3">
 <a href="/" class="hover:text-ink">Home</a>
 <span aria-hidden="true" class="mx-1.5">/</span>
 <span class="text-ink-2">Quick questions</span>
 </nav>
 
-<h1 class="mb-2 font-serif text-h1 font-semibold text-ink">A couple of questions first</h1>
+<p class="font-mono text-[11px] uppercase tracking-widest text-ink-3">Instrument &middot; Calibration questions</p>
+<h1 class="mt-2 mb-2 font-serif text-h1 font-semibold text-ink">A couple of questions first</h1>
 <p class="mb-1 text-body text-ink-2">Researching <strong class="font-serif italic text-accent">&ldquo;${escapeHtml(prettyQuery)}&rdquo;</strong> as <strong class="text-ink">${tierLabel}</strong> (${tierTime}).</p>
 <p class="mb-8 text-body-sm text-ink-3">Your answers steer the pick. Skip any question to let the research engine choose defaults.</p>
 
@@ -59,18 +61,12 @@ export function renderClarifyPage(query, tier, questions, env) {
 ${questions.map(renderQuestion).join('')}
 
 <div class="mt-4 flex flex-wrap gap-2">
-<button type="submit" class="inline-flex flex-1 items-center justify-center gap-2 rounded-lg bg-accent-strong px-4 py-2 text-body-sm font-semibold text-white transition-colors hover:bg-accent-hover" style="min-width:10rem">Run ${escapeHtml(tierLabel)} research</button>
-<button type="submit" name="skip_clarify" value="1" class="inline-flex items-center gap-2 rounded-lg border border-line bg-surface-1 px-4 py-2 text-body-sm font-semibold text-ink transition-colors hover:bg-surface-2">Skip — research as-is</button>
+<button type="submit" class="inline-flex min-w-[10rem] flex-1 items-center justify-center gap-2 bg-accent-strong px-4 py-2.5 font-mono text-xs font-semibold uppercase tracking-wide text-white transition-colors hover:bg-accent-hover">Run ${escapeHtml(tierLabel)} research &#9656;</button>
+<button type="submit" name="skip_clarify" value="1" class="inline-flex items-center gap-2 border border-line bg-surface-1 px-4 py-2.5 font-mono text-xs font-semibold uppercase tracking-wide text-ink transition-colors hover:border-ink-3">Skip &mdash; research as-is</button>
 </div>
 </form>
 </div>
-
-<style>
-.clarify-form .chip{display:inline-flex;align-items:center;padding:.45rem .85rem;border:1px solid var(--line);border-radius:999px;background:var(--surface-1);color:var(--ink-2);cursor:pointer;font-size:.85rem;font-weight:500;user-select:none;transition:border-color .15s,background .15s,color .15s}
-.clarify-form .chip:hover{border-color:var(--line-strong);color:var(--ink)}
-.clarify-form .chip input{position:absolute;opacity:0;pointer-events:none}
-.clarify-form .chip:has(input:checked){border-color:var(--accent);background:var(--accent-quiet);color:var(--accent)}
-</style>
+</div>
 
 <script nonce="__CSP_NONCE__">
 (function(){

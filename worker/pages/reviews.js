@@ -30,9 +30,13 @@ const PRICE_BAND_CASE = `CASE ${PRICE_BANDS.map((b) =>
 function starsHtml(rating) {
   if (rating == null) return '';
   const full = Math.max(0, Math.min(5, Math.floor(rating)));
-  return `<span class="review-stars" aria-label="Rated ${rating} out of 5"><span aria-hidden="true" style="color:var(--accent)">${'★'.repeat(full)}${'☆'.repeat(5 - full)}</span> <span style="font-size:.82rem;color:var(--ink-2)">${rating}/5</span></span>`;
+  return `<span class="review-stars inline-flex items-center gap-1 font-mono text-xs" aria-label="Rated ${rating} out of 5"><span aria-hidden="true" class="text-accent">${'★'.repeat(full)}${'☆'.repeat(5 - full)}</span> <span class="readout text-ink-2">${rating}/5</span></span>`;
 }
 
+// review-card is a JS render-smoke test hook (see reviews.test.js) — the
+// class attribute must stay exactly `class="review-card"` (no additional
+// classes appended). Its Forensic-instrument layout (border, padding, flex
+// column) lives in app.css under `.review-card` instead of inline utilities.
 function renderReviewCard(row, affiliateIds) {
   const pros = parseJsonSafe(row.pros, []).slice(0, 3);
   const cons = parseJsonSafe(row.cons, []).slice(0, 2);
@@ -49,31 +53,31 @@ function renderReviewCard(row, affiliateIds) {
   const ctas = resolveProductCtas(p, affiliateIds, isService, row.slug, false, webOnly);
   let ctaHtml = '';
   if (ctas.amazon.url && isValidHttpsUrl(ctas.amazon.url)) {
-    ctaHtml = `<a href="${escapeHtml(ctas.amazon.href)}" target="_blank" rel="noopener noreferrer nofollow sponsored" class="product-cta-amazon" style="margin-top:auto">${escapeHtml(ctas.amazon.label)} <span aria-hidden="true">&#8599;</span></a>`;
+    ctaHtml = `<a href="${escapeHtml(ctas.amazon.href)}" target="_blank" rel="noopener noreferrer nofollow sponsored" class="product-cta-amazon mt-auto">${escapeHtml(ctas.amazon.label)} <span aria-hidden="true">&#8599;</span></a>`;
   } else if (ctas.google.url) {
-    ctaHtml = `<a href="${escapeHtml(ctas.google.url)}" class="product-cta-amazon" style="margin-top:auto">${escapeHtml(ctas.google.label)} <span aria-hidden="true">&#8599;</span></a>`;
+    ctaHtml = `<a href="${escapeHtml(ctas.google.url)}" class="product-cta-amazon mt-auto">${escapeHtml(ctas.google.label)} <span aria-hidden="true">&#8599;</span></a>`;
   }
 
   const reviewDate = row.completed_at
     ? new Date(row.completed_at * 1000).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
     : '';
 
-  return `<article class="review-card" style="display:flex;flex-direction:column;background:var(--surface-1);border:1px solid var(--line);border-radius:0.875rem;padding:1.1rem">
+  return `<article class="review-card">
 ${renderItemImage(row.image_url, row.name, row.id)}
-<div style="display:flex;justify-content:space-between;gap:.6rem;align-items:flex-start">
-<div style="min-width:0">
-<h3 class="wrap-anywhere" style="font-size:1.02rem;font-weight:700;color:var(--ink);line-height:1.35">${escapeHtml(row.name)}</h3>
-${row.brand ? `<p style="color:var(--ink-3);font-size:.8rem">${escapeHtml(row.brand)}</p>` : ''}
+<div class="flex items-start justify-between gap-2.5">
+<div class="min-w-0">
+<h3 class="wrap-anywhere font-sans text-[1.02rem] font-bold leading-snug text-ink">${escapeHtml(row.name)}</h3>
+${row.brand ? `<p class="font-mono text-xs uppercase tracking-wide text-ink-3">${escapeHtml(row.brand)}</p>` : ''}
 </div>
-${row.price != null ? `<p class="product-price" style="flex-shrink:0">$${row.price.toLocaleString()}</p>` : ''}
+${row.price != null ? `<p class="product-price readout shrink-0">$${row.price.toLocaleString()}</p>` : ''}
 </div>
-<div style="margin:.45rem 0 .2rem">${starsHtml(row.rating)}</div>
-${row.verdict ? `<p style="font-size:.88rem;line-height:1.55;color:var(--ink-2);margin:.4rem 0">${escapeHtml(row.verdict)}</p>` : ''}
-${(pros.length > 0 || cons.length > 0) ? `<div style="font-size:.82rem;line-height:1.5;margin:.4rem 0 .6rem">
-${pros.map((pr) => `<div style="display:flex;gap:.4rem;color:var(--ink-2)"><span style="color:var(--trust-high)">+</span><span>${escapeHtml(pr)}</span></div>`).join('')}
-${cons.map((c) => `<div style="display:flex;gap:.4rem;color:var(--ink-2)"><span style="color:var(--trust-low)">&minus;</span><span>${escapeHtml(c)}</span></div>`).join('')}
+<div class="my-2">${starsHtml(row.rating)}</div>
+${row.verdict ? `<p class="my-1.5 text-body-sm leading-relaxed text-ink-2">${escapeHtml(row.verdict)}</p>` : ''}
+${(pros.length > 0 || cons.length > 0) ? `<div class="my-1.5 mb-2.5 font-mono text-[11px] leading-relaxed">
+${pros.map((pr) => `<div class="flex gap-1.5 text-ink-2"><span class="text-trust-high" aria-hidden="true">+</span><span>${escapeHtml(pr)}</span></div>`).join('')}
+${cons.map((c) => `<div class="flex gap-1.5 text-ink-2"><span class="text-trust-low" aria-hidden="true">&minus;</span><span>${escapeHtml(c)}</span></div>`).join('')}
 </div>` : ''}
-<p style="font-size:.78rem;color:var(--ink-3);margin-bottom:.7rem">From <a href="/research/${escapeHtml(row.slug)}" style="color:var(--accent)">${escapeHtml(displayQuery(row.query))}</a>${reviewDate ? ` &middot; ${reviewDate}` : ''}</p>
+<p class="mb-2.5 font-mono text-[11px] text-ink-3">From <a href="/research/${escapeHtml(row.slug)}" class="text-accent hover:text-accent-hover">${escapeHtml(displayQuery(row.query))}</a>${reviewDate ? ` &middot; ${reviewDate}` : ''}</p>
 ${ctaHtml}
 </article>`;
 }
@@ -84,17 +88,19 @@ ${ctaHtml}
 // NB: the option is `keyOf`, NOT `valueOf` — `valueOf` is an Object.prototype
 // method, so a destructuring default `{ valueOf = … } = {}` reads the inherited
 // native method instead of applying the default, then throws when called.
+// Heading text (">Category<" etc.) is a render-smoke test hook — keep the
+// escaped `title` as the h3's only content.
 function facetGroup(title, filters, dim, rows, opts = {}) {
   const { activeKey = filters[dim] || '', keyOf = (r) => r.key, labelOf = (r) => r.label, countOf = (r) => r.n } = opts;
   const items = rows.filter((r) => countOf(r) > 0 || keyOf(r) === activeKey);
   if (items.length === 0 && !activeKey) return '';
   const row = (label, count, href, active) =>
-    `<li><a href="${escapeHtml(href)}" rel="nofollow" aria-pressed="${active ? 'true' : 'false'}" style="display:flex;justify-content:space-between;gap:.5rem;padding:.28rem .1rem;font-size:.85rem;text-decoration:none;color:${active ? 'var(--ink)' : 'var(--ink-2)'};font-weight:${active ? '600' : '400'}">
-<span style="display:flex;gap:.4rem;align-items:center;min-width:0"><span aria-hidden="true" style="flex-shrink:0">${active ? '☑' : '☐'}</span><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(label)}</span></span>
-${count != null ? `<span style="color:var(--ink-3);flex-shrink:0">${count.toLocaleString()}</span>` : ''}</a></li>`;
-  return `<div style="margin-bottom:1.4rem">
-<h3 style="font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);margin-bottom:.5rem">${escapeHtml(title)}</h3>
-<ul style="list-style:none;margin:0;padding:0">
+    `<li><a href="${escapeHtml(href)}" rel="nofollow" aria-pressed="${active ? 'true' : 'false'}" class="flex items-center justify-between gap-2 py-1 font-mono text-[13px] no-underline ${active ? 'font-semibold text-ink' : 'text-ink-2'}">
+<span class="flex min-w-0 items-center gap-1.5"><span aria-hidden="true" class="shrink-0">${active ? '☑' : '☐'}</span><span class="overflow-hidden text-ellipsis whitespace-nowrap">${escapeHtml(label)}</span></span>
+${count != null ? `<span class="readout shrink-0 text-ink-3">${count.toLocaleString()}</span>` : ''}</a></li>`;
+  return `<div class="mb-5">
+<h3 class="mb-2 font-mono text-[11px] font-bold uppercase tracking-widest text-ink-3">${escapeHtml(title)}</h3>
+<ul class="m-0 list-none border-t border-line p-0">
 ${items.map((r) => {
     const key = keyOf(r);
     const active = key === activeKey;
@@ -163,27 +169,27 @@ export async function renderReviewsPage(url, env) {
   const ratingCounts = { '4.5': ratingRes?.r45 ?? 0, '4': ratingRes?.r4 ?? 0, '3.5': ratingRes?.r35 ?? 0 };
 
   const hidden = (name, val) => (val ? `<input type="hidden" name="${name}" value="${escapeHtml(val)}">` : '');
-  const searchForm = `<form method="get" action="/reviews" role="search" style="margin-bottom:1.4rem">
+  const searchForm = `<form method="get" action="/reviews" role="search" class="mb-5">
 ${hidden('category', filters.category)}${hidden('brand', filters.brand)}${hidden('price', filters.price)}${hidden('rating', filters.rating)}${filters.sort !== 'featured' ? hidden('sort', filters.sort) : ''}
-<label for="rev-q" style="font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);display:block;margin-bottom:.4rem">Search products</label>
-<div style="display:flex;gap:.4rem">
-<input id="rev-q" type="search" name="q" value="${escapeHtml(filters.q)}" placeholder="e.g. nas, headphones" maxlength="80" style="flex:1;min-width:0;padding:.5rem .6rem;border:1px solid var(--line);border-radius:.5rem;background:var(--surface-1);color:var(--ink);font-size:.85rem">
-<button type="submit" class="btn" style="font-size:.82rem;padding:.5rem .8rem">Go</button>
+<label for="rev-q" class="mb-1.5 block font-mono text-[11px] font-bold uppercase tracking-widest text-ink-3">Search products</label>
+<div class="flex gap-1.5">
+<input id="rev-q" type="search" name="q" value="${escapeHtml(filters.q)}" placeholder="e.g. nas, headphones" maxlength="80" class="min-w-0 flex-1 border border-line bg-surface-1 px-2.5 py-2 font-mono text-sm text-ink outline-none focus:border-accent focus:ring-2 focus:ring-accent/25">
+<button type="submit" class="shrink-0 border border-line bg-ink px-3 py-2 font-mono text-xs font-semibold uppercase tracking-wide text-bg transition-colors hover:bg-accent">Go</button>
 </div></form>`;
 
   // Custom price-range form. Preserves every other filter as hidden inputs but
   // NOT the preset band — entering a range replaces the band (parseProductFilters
   // gives the band precedence, so we must drop it here to honor the range).
-  const priceRangeForm = `<form method="get" action="/reviews" style="margin:-.4rem 0 1.4rem">
+  const priceRangeForm = `<form method="get" action="/reviews" class="-mt-1.5 mb-5">
 ${hidden('q', filters.q)}${hidden('category', filters.category)}${hidden('brand', filters.brand)}${hidden('rating', filters.rating)}${filters.sort !== 'featured' ? hidden('sort', filters.sort) : ''}
-<div style="display:flex;gap:.35rem;align-items:center">
-<input type="number" name="pmin" min="0" step="1" value="${filters.pmin ?? ''}" aria-label="Minimum price" placeholder="Min" style="width:100%;min-width:0;padding:.4rem .5rem;border:1px solid var(--line);border-radius:.45rem;background:var(--surface-1);color:var(--ink);font-size:.82rem">
-<span style="color:var(--ink-3)">–</span>
-<input type="number" name="pmax" min="0" step="1" value="${filters.pmax ?? ''}" aria-label="Maximum price" placeholder="Max" style="width:100%;min-width:0;padding:.4rem .5rem;border:1px solid var(--line);border-radius:.45rem;background:var(--surface-1);color:var(--ink);font-size:.82rem">
-<button type="submit" class="btn" style="font-size:.8rem;padding:.4rem .7rem">Go</button>
+<div class="flex items-center gap-1.5">
+<input type="number" name="pmin" min="0" step="1" value="${filters.pmin ?? ''}" aria-label="Minimum price" placeholder="Min" class="w-full min-w-0 border border-line bg-surface-1 px-2 py-1.5 font-mono text-xs text-ink outline-none focus:border-accent focus:ring-2 focus:ring-accent/25">
+<span class="text-ink-3" aria-hidden="true">&ndash;</span>
+<input type="number" name="pmax" min="0" step="1" value="${filters.pmax ?? ''}" aria-label="Maximum price" placeholder="Max" class="w-full min-w-0 border border-line bg-surface-1 px-2 py-1.5 font-mono text-xs text-ink outline-none focus:border-accent focus:ring-2 focus:ring-accent/25">
+<button type="submit" class="shrink-0 border border-line px-3 py-1.5 font-mono text-[11px] font-semibold uppercase tracking-wide text-ink-2 transition-colors hover:border-ink-3 hover:text-ink">Go</button>
 </div></form>`;
 
-  const sidebar = `<aside aria-label="Filters" style="position:sticky;top:5rem">
+  const sidebar = `<aside aria-label="Filters" class="sticky top-20">
 ${searchForm}
 ${facetGroup('Category', filters, 'category', catRes.results ?? [], { labelOf: (r) => r.key, keyOf: (r) => r.key })}
 ${facetGroup('Brand', filters, 'brand', brandRes.results ?? [], { labelOf: (r) => r.key, keyOf: (r) => r.key })}
@@ -194,7 +200,7 @@ ${facetGroup('Rating', filters, 'rating', RATING_OPTIONS.map((o) => ({ ...o, n: 
 
   // ── Active-filter chips + sort row ─────────────────────────────────────────
   const activeChips = [];
-  const chipFor = (dim, label) => `<a href="${escapeHtml(reviewsHref(filters, { [dim]: '' }))}" rel="nofollow" class="card-badge" style="text-decoration:none">${escapeHtml(label)} <span aria-hidden="true">&times;</span></a>`;
+  const chipFor = (dim, label) => `<a href="${escapeHtml(reviewsHref(filters, { [dim]: '' }))}" rel="nofollow" class="inline-flex items-center gap-1.5 border border-line-strong px-2 py-1 font-mono text-[11px] uppercase tracking-wide text-ink-2 no-underline hover:border-ink-3 hover:text-ink">${escapeHtml(label)} <span aria-hidden="true">&times;</span></a>`;
   if (filters.q) activeChips.push(chipFor('q', `“${filters.q}”`));
   if (filters.category) activeChips.push(chipFor('category', filters.category));
   if (filters.brand) activeChips.push(chipFor('brand', filters.brand));
@@ -204,23 +210,23 @@ ${facetGroup('Rating', filters, 'rating', RATING_OPTIONS.map((o) => ({ ...o, n: 
     const label = filters.price
       ? (PRICE_BANDS.find((b) => b.key === filters.price)?.label || filters.price)
       : `${filters.pmin != null ? '$' + filters.pmin : '$0'} – ${filters.pmax != null ? '$' + filters.pmax : 'any'}`;
-    activeChips.push(`<a href="${escapeHtml(reviewsHref(filters, { price: '', pmin: '', pmax: '' }))}" rel="nofollow" class="card-badge" style="text-decoration:none">${escapeHtml(label)} <span aria-hidden="true">&times;</span></a>`);
+    activeChips.push(`<a href="${escapeHtml(reviewsHref(filters, { price: '', pmin: '', pmax: '' }))}" rel="nofollow" class="inline-flex items-center gap-1.5 border border-line-strong px-2 py-1 font-mono text-[11px] uppercase tracking-wide text-ink-2 no-underline hover:border-ink-3 hover:text-ink">${escapeHtml(label)} <span aria-hidden="true">&times;</span></a>`);
   }
   if (filters.rating) activeChips.push(chipFor('rating', RATING_OPTIONS.find((o) => o.key === filters.rating)?.label || filters.rating));
   const chipsRow = activeChips.length
-    ? `<div style="display:flex;flex-wrap:wrap;gap:.45rem;align-items:center;margin-bottom:1rem">
+    ? `<div class="mb-4 flex flex-wrap items-center gap-2">
 ${activeChips.join('')}
-<a href="/reviews" rel="nofollow" style="font-size:.8rem;color:var(--accent);text-decoration:none">Clear all</a></div>`
+<a href="/reviews" rel="nofollow" class="font-mono text-[11px] uppercase tracking-wide text-accent no-underline hover:text-accent-hover">Clear all filters</a></div>`
     : '';
 
   const sortLinks = SORT_OPTIONS.map((o) =>
-    `<a href="${escapeHtml(reviewsHref(filters, { sort: o.key }))}" rel="nofollow" style="font-size:.82rem;text-decoration:none;padding:.2rem .1rem;color:${filters.sort === o.key ? 'var(--ink)' : 'var(--ink-3)'};font-weight:${filters.sort === o.key ? '600' : '400'};border-bottom:2px solid ${filters.sort === o.key ? 'var(--accent)' : 'transparent'}">${escapeHtml(o.label)}</a>`).join('');
+    `<a href="${escapeHtml(reviewsHref(filters, { sort: o.key }))}" rel="nofollow" class="border-b-2 px-0.5 py-1 font-mono text-xs no-underline ${filters.sort === o.key ? 'border-accent font-semibold text-ink' : 'border-transparent text-ink-3'}">${escapeHtml(o.label)}</a>`).join('');
 
   const pagerHtml = totalPages > 1
-    ? `<nav aria-label="Pagination" style="display:flex;justify-content:center;gap:.6rem;align-items:center;margin-top:2rem">
-${filters.page > 1 ? `<a href="${escapeHtml(reviewsHref(filters, { page: filters.page - 1 }))}" rel="nofollow" class="btn" style="font-size:.85rem;padding:.5rem .9rem">&larr; Newer</a>` : ''}
-<span style="font-size:.85rem;color:var(--ink-3)">Page ${filters.page} of ${totalPages}</span>
-${filters.page < totalPages ? `<a href="${escapeHtml(reviewsHref(filters, { page: filters.page + 1 }))}" rel="nofollow" class="btn" style="font-size:.85rem;padding:.5rem .9rem">Older &rarr;</a>` : ''}
+    ? `<nav aria-label="Pagination" class="mt-8 flex items-center justify-center gap-3">
+${filters.page > 1 ? `<a href="${escapeHtml(reviewsHref(filters, { page: filters.page - 1 }))}" rel="nofollow" class="border border-line px-3.5 py-2 font-mono text-xs uppercase tracking-wide text-ink-2 hover:border-ink-3 hover:text-ink">&larr; Newer</a>` : ''}
+<span class="readout font-mono text-xs text-ink-3">Page ${filters.page} of ${totalPages}</span>
+${filters.page < totalPages ? `<a href="${escapeHtml(reviewsHref(filters, { page: filters.page + 1 }))}" rel="nofollow" class="border border-line px-3.5 py-2 font-mono text-xs uppercase tracking-wide text-ink-2 hover:border-ink-3 hover:text-ink">Older &rarr;</a>` : ''}
 </nav>` : '';
 
   // Category-specific heading only when category is the SOLE active filter (so
@@ -241,26 +247,29 @@ ${filters.page < totalPages ? `<a href="${escapeHtml(reviewsHref(filters, { page
     ts: (r.completed_at || 0) * 1000,
   }));
   const resultsHtml = rows.length
-    ? `${jsonEmbed('reviews-list-data', reviewListItems)}<div id="reviews-list"><div class="grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem">${rows.map((r) => renderReviewCard(r, affiliateIds)).join('')}</div></div>`
-    : `<p style="color:var(--ink-2);padding:2rem 0">No products match these filters. <a href="/reviews" style="color:var(--accent)">Clear all filters</a> and try again.</p>`;
+    ? `${jsonEmbed('reviews-list-data', reviewListItems)}<div id="reviews-list"><div class="grid">${rows.map((r) => renderReviewCard(r, affiliateIds)).join('')}</div></div>`
+    : `<p class="border border-line bg-surface-1 px-4 py-8 text-center text-body-sm text-ink-2">No products match these filters. <a href="/reviews" class="text-accent hover:text-accent-hover">Clear all filters</a> and try again.</p>`;
 
-  const body = `<div class="container" style="max-width:78rem;padding:2.5rem 1.5rem;margin:0 auto">
-<nav aria-label="Breadcrumb" class="breadcrumb" style="font-size:.85rem;color:var(--ink-2);margin-bottom:1rem">
-<a href="/" style="color:var(--ink-2)">Home</a>
-<span aria-hidden="true" style="margin:0 .4rem;color:var(--ink-3)">/</span>
-<span style="color:var(--ink)">Reviews</span>
+  const body = `<div class="grid-bg border-b border-line">
+<div class="container mx-auto max-w-[78rem] px-6 py-10 sm:px-8">
+<nav aria-label="Breadcrumb" class="breadcrumb mb-4 font-mono text-[11px] uppercase tracking-widest text-ink-3">
+<a href="/" class="hover:text-ink">Home</a>
+<span aria-hidden="true" class="mx-1.5">/</span>
+<span class="text-ink-2">Reviews</span>
 </nav>
-<div class="page-header">
-<h1>${escapeHtml(heading)}</h1>
-<p style="color:var(--ink-2);font-size:.95rem;margin-top:.5rem;max-width:62ch">Filter every product we've reviewed by category, brand, price, and rating. Ratings are synthesized from real user reviews and independent testing — never paid placements.</p>
+<p class="font-mono text-[11px] uppercase tracking-widest text-ink-3">Index &middot; Faceted product ledger</p>
+<h1 class="page-header mt-2 font-serif text-h1 font-semibold text-ink">${escapeHtml(heading)}</h1>
+<p class="mt-2 max-w-[62ch] text-body-sm text-ink-2">Filter every product we've reviewed by category, brand, price, and rating. Ratings are synthesized from real user reviews and independent testing — never paid placements.</p>
 </div>
+</div>
+<div class="container mx-auto max-w-[78rem] px-6 py-8 sm:px-8">
 ${adSlot(env, 'top', 'Advertisement')}
-<div class="reviews-shell" style="display:grid;grid-template-columns:15rem minmax(0,1fr);gap:2rem;align-items:start;margin-top:1.5rem">
+<div class="reviews-shell mt-6 items-start gap-8 sm:grid sm:grid-cols-[15rem_minmax(0,1fr)]">
 ${sidebar}
 <div>
-<div style="display:flex;flex-wrap:wrap;gap:.75rem 1.25rem;justify-content:space-between;align-items:baseline;border-bottom:1px solid var(--line);padding-bottom:.7rem;margin-bottom:1.1rem">
-<p style="font-size:.9rem;color:var(--ink-2)"><strong style="color:var(--ink)">${total.toLocaleString()}</strong> product${total === 1 ? '' : 's'}</p>
-<div style="display:flex;flex-wrap:wrap;gap:.1rem 1rem;align-items:center"><span style="font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-3)">Sort</span>${sortLinks}</div>
+<div class="mb-4 flex flex-wrap items-baseline justify-between gap-x-5 gap-y-3 border-b border-line pb-3">
+<p class="font-mono text-xs text-ink-2"><strong class="readout text-ink">${total.toLocaleString()}</strong> product${total === 1 ? '' : 's'}</p>
+<div class="flex flex-wrap items-center gap-x-4 gap-y-0.5"><span class="font-mono text-[11px] uppercase tracking-widest text-ink-3">Sort</span>${sortLinks}</div>
 </div>
 ${chipsRow}
 ${resultsHtml}
@@ -269,7 +278,7 @@ ${pagerHtml}
 </div>
 ${adSlot(env, 'bottom', 'Advertisement')}
 </div>
-<style>@media (max-width:780px){.reviews-shell{grid-template-columns:1fr !important}.reviews-shell aside{position:static !important}}</style>`;
+<style>@media (max-width:780px){.reviews-shell aside{position:static !important}}</style>`;
 
   // ItemList JSON-LD: products with ratings + review bodies — the structure
   // Google parses for review rich results on directory pages.

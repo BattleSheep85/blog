@@ -60,28 +60,31 @@ export async function renderCategoryHub(category, env) {
     const categoryName = rows[0].category;
     const canonicalUrl = `${SITE}/best/${wantSlug}`;
 
-    const cards = rows.map((r) => `<a href="/research/${escapeHtml(r.slug)}" class="flex flex-col rounded-xl border border-line bg-surface-1 p-5 shadow-card transition-all hover:-translate-y-0.5 hover:border-line-strong hover:shadow-lift">
+    const cards = rows.map((r) => `<a href="/research/${escapeHtml(r.slug)}" class="flex flex-col border border-line bg-surface-1 p-5 transition-colors hover:border-line-strong">
 <div class="mb-2 flex items-center justify-between gap-3">
-<span class="inline-flex items-center rounded-full bg-accent-quiet px-2.5 py-1 text-caption font-medium text-accent">${escapeHtml(r.category)}</span>
-<span class="text-caption text-ink-3">${timeAgo(r.created_at * 1000)}</span>
+<span class="inline-flex items-center border border-line-strong px-2 py-0.5 font-mono text-[11px] uppercase tracking-wide text-accent">${escapeHtml(r.category)}</span>
+<span class="readout font-mono text-[11px] text-ink-3">${timeAgo(r.created_at * 1000)}</span>
 </div>
 <h3 class="font-serif text-h3 font-semibold text-ink">${escapeHtml(displayQuery(r.query))}</h3>
 ${r.summary ? `<p class="mt-2 line-clamp-2 text-body-sm text-ink-2">${escapeHtml(r.summary)}</p>` : ''}
-<div class="mt-4 flex gap-4 font-mono text-caption text-ink-3 num"><span>${r.product_count} products</span><span>${r.view_count} views</span></div>
+<div class="mt-4 flex gap-4 border-t border-line pt-3 font-mono text-[11px] uppercase tracking-wide text-ink-3"><span class="readout">${r.product_count} products</span><span class="readout">${r.view_count} views</span></div>
 </a>`).join('');
 
-    const body = `<div class="mx-auto max-w-5xl px-6 py-12 md:py-16">
-<nav aria-label="Breadcrumb" class="mb-6 text-caption text-ink-3">
+    const body = `<div class="grid-bg border-b border-line">
+<div class="mx-auto max-w-5xl px-6 py-12 md:py-16">
+<nav aria-label="Breadcrumb" class="mb-6 font-mono text-[11px] uppercase tracking-widest text-ink-3">
 <a href="/" class="hover:text-ink">Home</a>
 <span aria-hidden="true" class="mx-1.5">/</span>
 <a href="/research" class="hover:text-ink">Research</a>
 <span aria-hidden="true" class="mx-1.5">/</span>
 <span class="text-ink-2">${escapeHtml(categoryName)}</span>
 </nav>
-<div class="mb-8">
-<h1 class="font-serif text-h1 font-semibold text-ink">Best ${escapeHtml(categoryName)}</h1>
+<p class="font-mono text-[11px] uppercase tracking-widest text-ink-3">Hub &middot; Category ledger</p>
+<h1 class="mt-2 font-serif text-h1 font-semibold text-ink">Best ${escapeHtml(categoryName)}</h1>
 <p class="mt-2 text-lead text-ink-2">Honest, source-backed ${escapeHtml(categoryName.toLowerCase())} research — ${rows.length} guide${rows.length === 1 ? '' : 's'} compiled from real reviews.</p>
 </div>
+</div>
+<div class="mx-auto max-w-5xl px-6 py-10">
 <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">${cards}</div>
 </div>`;
 
