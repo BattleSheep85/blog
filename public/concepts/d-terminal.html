@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
+<title>TrueRank // VERIFY_LOG — Concept D: Receipts</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: {
+      extend: {
+        colors: {
+          bg: { DEFAULT: '#FBFBF9', dark: '#0B0C0E' },
+          surface1: { DEFAULT: '#FFFFFF', dark: '#121316' },
+          surface2: { DEFAULT: '#F4F4F1', dark: '#1A1C20' },
+          line: { DEFAULT: '#E4E3DD', dark: '#2A2D33' },
+          ink: { DEFAULT: '#16181D', dark: '#F4F5F7' },
+          ink2: { DEFAULT: '#474B53', dark: '#B9BFC9' },
+          ink3: { DEFAULT: '#5F636B', dark: '#898F9A' },
+          accent: { DEFAULT: '#2563EB', dark: '#3B82F6' },
+          accentHover: { DEFAULT: '#1D4ED8', dark: '#5C9CFF' },
+          verified: { DEFAULT: '#0F8A5F', dark: '#3DDC97' },
+          partial: { DEFAULT: '#B7791F', dark: '#F0B429' },
+          unsub: { DEFAULT: '#6B7280', dark: '#9CA3AF' },
+          contra: { DEFAULT: '#C0362C', dark: '#F87171' },
+        },
+        fontFamily: {
+          serif: ['Newsreader', 'serif'],
+          sans: ['Inter', 'sans-serif'],
+          mono: ['JetBrains Mono', 'monospace'],
+        },
+      }
+    }
+  }
+</script>
+<style>
+  body { font-family: 'JetBrains Mono', monospace; }
+  .font-sans-ui { font-family: 'Inter', sans-serif; }
+  #drawer-overlay { transition: opacity .2s linear; }
+  #drawer { transition: transform .22s cubic-bezier(.2,0,.1,1); }
+  .drawer-closed #drawer { transform: translateX(-100%); }
+  .drawer-closed #drawer-overlay { opacity: 0; pointer-events: none; }
+  .scanline { background-image: repeating-linear-gradient(0deg, rgba(255,255,255,0.015) 0px, rgba(255,255,255,0.015) 1px, transparent 1px, transparent 3px); }
+  .stamp { box-shadow: 0 0 0 1px currentColor inset; }
+  ::selection { background: #3B82F6; color: #0B0C0E; }
+  .blink { animation: blink 1.1s steps(2, start) infinite; }
+  @keyframes blink { to { visibility: hidden; } }
+</style>
+</head>
+<body class="bg-bg dark:bg-bg-dark text-ink dark:text-ink-dark min-h-screen antialiased drawer-closed scanline" id="page-body">
+
+<!-- ============ DRAWER NAV ============ -->
+<div id="drawer-overlay" class="fixed inset-0 bg-black/60 z-40" onclick="toggleDrawer(false)"></div>
+<aside id="drawer" class="fixed top-0 left-0 h-full w-80 max-w-[85vw] bg-surface1 dark:bg-surface1-dark border-r border-line dark:border-line-dark z-50 flex flex-col">
+  <div class="flex items-center justify-between px-5 py-4 border-b border-line dark:border-line-dark">
+    <a href="#" class="flex items-center gap-2">
+      <span class="w-7 h-7 border border-accent dark:border-accent-dark flex items-center justify-center text-accent dark:text-accent-dark font-bold text-xs">TR</span>
+      <span class="font-bold text-sm tracking-widest uppercase">TrueRank</span>
+    </a>
+    <button onclick="toggleDrawer(false)" aria-label="Close menu" class="w-8 h-8 border border-line dark:border-line-dark hover:border-accent dark:hover:border-accent-dark flex items-center justify-center text-xs">✕</button>
+  </div>
+
+  <nav class="flex-1 overflow-y-auto px-4 py-5 space-y-1 text-sm">
+    <p class="px-2 text-[10px] uppercase tracking-widest text-ink3 dark:text-ink3-dark mb-2">// nav_index</p>
+    <a href="#verify" class="flex items-center justify-between px-3 py-2.5 border border-accent dark:border-accent-dark bg-accent/10 dark:bg-accent-dark/10 text-accent dark:text-accent-dark font-semibold">
+      <span>01_VERIFY</span><span>&gt;</span>
+    </a>
+    <a href="#browse" class="flex items-center justify-between px-3 py-2.5 border border-transparent hover:border-line dark:hover:border-line-dark text-ink2 dark:text-ink2-dark">
+      <span>02_BROWSE</span><span>&gt;</span>
+    </a>
+    <a href="#" class="flex items-center justify-between px-3 py-2.5 border border-transparent hover:border-line dark:hover:border-line-dark text-ink2 dark:text-ink2-dark">
+      <span>03_REVIEWS</span><span>&gt;</span>
+    </a>
+    <a href="#" class="flex items-center justify-between px-3 py-2.5 border border-transparent hover:border-line dark:hover:border-line-dark text-ink2 dark:text-ink2-dark">
+      <span>04_GUIDES</span><span>&gt;</span>
+    </a>
+    <a href="#trust" class="flex items-center justify-between px-3 py-2.5 border border-transparent hover:border-line dark:hover:border-line-dark text-ink2 dark:text-ink2-dark">
+      <span>05_ABOUT</span><span>&gt;</span>
+    </a>
+
+    <div class="pt-4 mt-4 border-t border-line dark:border-line-dark">
+      <p class="px-2 text-[10px] uppercase tracking-widest text-ink3 dark:text-ink3-dark mb-2">// auth</p>
+      <a href="#" class="flex items-center justify-between px-3 py-2.5 border border-line dark:border-line-dark text-ink2 dark:text-ink2-dark">
+        <span>sign_in --user</span><span>&gt;</span>
+      </a>
+      <a href="#" class="flex items-center justify-center gap-2 px-3 py-2.5 mt-1.5 bg-accent dark:bg-accent-dark text-white dark:text-bg-dark font-bold">
+        create_account --new
+      </a>
+    </div>
+  </nav>
+
+  <div class="px-5 py-4 border-t border-line dark:border-line-dark flex items-center justify-between text-xs">
+    <span class="text-ink3 dark:text-ink3-dark uppercase tracking-widest">theme</span>
+    <button onclick="toggleTheme()" id="theme-toggle" class="flex border border-line dark:border-line-dark">
+      <span id="theme-light" class="px-3 py-1.5">LIGHT</span>
+      <span id="theme-dark" class="px-3 py-1.5 bg-accent dark:bg-accent-dark text-white dark:text-bg-dark">DARK</span>
+    </button>
+  </div>
+</aside>
+
+<!-- ============ TOP BAR ============ -->
+<header class="sticky top-0 z-30 bg-bg/95 dark:bg-bg-dark/95 backdrop-blur border-b border-line dark:border-line-dark">
+  <div class="max-w-6xl mx-auto px-4 sm:px-8 h-14 flex items-center justify-between text-sm">
+    <div class="flex items-center gap-3">
+      <button onclick="toggleDrawer(true)" aria-label="Open menu" class="w-9 h-9 border border-line dark:border-line-dark hover:border-accent dark:hover:border-accent-dark flex items-center justify-center">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+      <a href="#" class="flex items-center gap-2">
+        <span class="w-7 h-7 border border-accent dark:border-accent-dark flex items-center justify-center text-accent dark:text-accent-dark font-bold text-xs">TR</span>
+        <span class="font-bold tracking-widest uppercase hidden sm:inline">TrueRank / verify_log</span>
+      </a>
+    </div>
+    <div class="flex items-center gap-4 text-xs">
+      <span class="hidden md:inline text-ink3 dark:text-ink3-dark">STATUS: <span class="text-verified dark:text-verified-dark">● ONLINE</span></span>
+      <a href="#" class="text-ink2 dark:text-ink2-dark hover:text-accent dark:hover:text-accent-dark hidden sm:inline">sign_in</a>
+      <a href="#" class="border border-accent dark:border-accent-dark text-accent dark:text-accent-dark px-3 py-1.5 hover:bg-accent/10 dark:hover:bg-accent-dark/10">get_started</a>
+    </div>
+  </div>
+</header>
+
+<!-- ============ HERO ============ -->
+<section class="max-w-6xl mx-auto px-4 sm:px-8 pt-12 pb-16 border-b border-line dark:border-line-dark">
+  <p class="text-xs text-ink3 dark:text-ink3-dark tracking-widest">/verify &gt; new_check.log</p>
+  <h1 class="font-sans-ui font-extrabold text-3xl sm:text-5xl leading-[1.1] mt-4 tracking-tight">
+    We audit marketing claims<br>against the public record<span class="blink text-accent dark:text-accent-dark">_</span>
+  </h1>
+  <p class="text-ink2 dark:text-ink2-dark mt-4 max-w-xl text-sm sm:text-base leading-relaxed">
+    Every claim gets a timestamp, a source hash, and a pass/fail stamp. No blended star ratings.
+    No hidden methodology. Raw evidence weights, shown as-is.
+  </p>
+
+  <form id="verify" class="mt-8 max-w-2xl border border-line dark:border-line-dark bg-surface1 dark:bg-surface1-dark">
+    <div class="flex items-center gap-2 px-4 py-2 border-b border-line dark:border-line-dark text-xs text-ink3 dark:text-ink3-dark">
+      <span class="w-2 h-2 rounded-full bg-contra dark:bg-contra-dark"></span>
+      <span class="w-2 h-2 rounded-full bg-partial dark:bg-partial-dark"></span>
+      <span class="w-2 h-2 rounded-full bg-verified dark:bg-verified-dark"></span>
+      <span class="ml-2">query_input.sh</span>
+    </div>
+    <div class="p-4 flex flex-col sm:flex-row gap-3">
+      <div class="flex-1 flex items-center gap-2">
+        <span class="text-accent dark:text-accent-dark shrink-0">$</span>
+        <input id="verify-input" type="text" placeholder="verify --product 'Bose QuietComfort Ultra'"
+          class="w-full bg-transparent text-sm py-2 placeholder:text-ink3 dark:placeholder:text-ink3-dark focus:outline-none">
+      </div>
+      <button type="button" class="bg-accent dark:bg-accent-dark text-white dark:text-bg-dark font-bold px-6 py-2.5 text-sm hover:bg-accentHover dark:hover:bg-accentHover-dark whitespace-nowrap">
+        RUN_VERIFY →
+      </button>
+    </div>
+  </form>
+  <p class="text-xs text-ink3 dark:text-ink3-dark mt-3">avg_runtime: 38s · cost: $0.00 · auth_required: false</p>
+
+  <div class="grid grid-cols-3 gap-px bg-line dark:bg-line-dark mt-10 border border-line dark:border-line-dark max-w-2xl text-center">
+    <div class="bg-surface1 dark:bg-surface1-dark p-4">
+      <p class="font-bold text-xl sm:text-2xl">120,412</p>
+      <p class="text-[10px] uppercase tracking-widest text-ink3 dark:text-ink3-dark mt-1">records</p>
+    </div>
+    <div class="bg-surface1 dark:bg-surface1-dark p-4">
+      <p class="font-bold text-xl sm:text-2xl text-partial dark:text-partial-dark">38%</p>
+      <p class="text-[10px] uppercase tracking-widest text-ink3 dark:text-ink3-dark mt-1">claims flagged</p>
+    </div>
+    <div class="bg-surface1 dark:bg-surface1-dark p-4">
+      <p class="font-bold text-xl sm:text-2xl">2.1M</p>
+      <p class="text-[10px] uppercase tracking-widest text-ink3 dark:text-ink3-dark mt-1">reviews screened</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ VERDICT LOG SHOWCASE ============ -->
+<section class="max-w-6xl mx-auto px-4 sm:px-8 py-16 border-b border-line dark:border-line-dark">
+  <p class="text-xs text-ink3 dark:text-ink3-dark tracking-widest mb-6">/verify/results &gt; record_0x4F19.log</p>
+
+  <div class="border border-line dark:border-line-dark bg-surface1 dark:bg-surface1-dark">
+    <div class="p-5 sm:p-6 border-b border-line dark:border-line-dark flex flex-col sm:flex-row sm:items-center gap-5">
+      <div class="flex-1">
+        <p class="text-[10px] text-ink3 dark:text-ink3-dark tracking-widest">SUBJECT</p>
+        <h3 class="font-sans-ui font-bold text-lg sm:text-xl mt-0.5">Bose QuietComfort Ultra Headphones</h3>
+        <p class="text-xs text-ink3 dark:text-ink3-dark mt-1">run_id: 0x4F19A2 · ts: 2026-08-03T14:22:01Z · sources: 34 · claims: 9</p>
+      </div>
+      <div class="flex items-center gap-4 sm:pl-6 sm:border-l border-line dark:border-line-dark">
+        <div class="text-center px-4 py-2 border-2 border-partial dark:border-partial-dark stamp text-partial dark:text-partial-dark -rotate-3">
+          <p class="text-2xl font-black leading-none">72/100</p>
+          <p class="text-[10px] tracking-widest mt-0.5">PARTIAL PASS</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="divide-y divide-line dark:divide-line-dark text-sm">
+      <div class="p-5 sm:p-6 grid sm:grid-cols-[110px_1fr] gap-4">
+        <div>
+          <span class="inline-block text-[10px] font-bold px-2 py-1 border border-verified dark:border-verified-dark text-verified dark:text-verified-dark tracking-widest">[✓ VERIFIED]</span>
+        </div>
+        <div>
+          <p class="font-sans-ui font-semibold">"Up to 24 hours of battery life with ANC on"</p>
+          <p class="text-ink2 dark:text-ink2-dark mt-1.5">measured: 22–26hrs across 3 units // 3 independent labs agree</p>
+          <div class="flex flex-wrap gap-2 mt-2 text-xs">
+            <span class="px-2 py-0.5 bg-surface2 dark:bg-surface2-dark text-ink3 dark:text-ink3-dark">src:rtings.com#h8a1c</span>
+            <span class="px-2 py-0.5 bg-surface2 dark:bg-surface2-dark text-ink3 dark:text-ink3-dark">src:soundguys.com#f3e9</span>
+            <span class="px-2 py-0.5 bg-surface2 dark:bg-surface2-dark text-ink3 dark:text-ink3-dark">weight:0.94</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-5 sm:p-6 grid sm:grid-cols-[110px_1fr] gap-4">
+        <div>
+          <span class="inline-block text-[10px] font-bold px-2 py-1 border border-partial dark:border-partial-dark text-partial dark:text-partial-dark tracking-widest">[~ PARTIAL]</span>
+        </div>
+        <div>
+          <p class="font-sans-ui font-semibold">"Best-in-class noise cancellation"</p>
+          <p class="text-ink2 dark:text-ink2-dark mt-1.5">top-3 of 14 tested models // not #1 on low-freq rumble, 2 of 3 labs</p>
+          <div class="flex flex-wrap gap-2 mt-2 text-xs">
+            <span class="px-2 py-0.5 bg-surface2 dark:bg-surface2-dark text-ink3 dark:text-ink3-dark">src:whathifi.com#b71d</span>
+            <span class="px-2 py-0.5 bg-surface2 dark:bg-surface2-dark text-ink3 dark:text-ink3-dark">src:rtings.com#8a1c</span>
+            <span class="px-2 py-0.5 bg-surface2 dark:bg-surface2-dark text-ink3 dark:text-ink3-dark">weight:0.71</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-5 sm:p-6 grid sm:grid-cols-[110px_1fr] gap-4">
+        <div>
+          <span class="inline-block text-[10px] font-bold px-2 py-1 border border-contra dark:border-contra-dark text-contra dark:text-contra-dark tracking-widest">[✗ CONTRA]</span>
+        </div>
+        <div>
+          <p class="font-sans-ui font-semibold">"Lightest premium ANC headphone on the market"</p>
+          <p class="text-ink2 dark:text-ink2-dark mt-1.5">254g measured // XM6=250g, Momentum4=238g — both currently shipping</p>
+          <div class="flex flex-wrap gap-2 mt-2 text-xs">
+            <span class="px-2 py-0.5 bg-surface2 dark:bg-surface2-dark text-ink3 dark:text-ink3-dark">src:spec_sheets×3</span>
+            <span class="px-2 py-0.5 bg-surface2 dark:bg-surface2-dark text-ink3 dark:text-ink3-dark">weight:0.98</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-5 sm:p-6 grid sm:grid-cols-[110px_1fr] gap-4">
+        <div>
+          <span class="inline-block text-[10px] font-bold px-2 py-1 border border-unsub dark:border-unsub-dark text-unsub dark:text-unsub-dark tracking-widest">[? UNSUB]</span>
+        </div>
+        <div>
+          <p class="font-sans-ui font-semibold">"Loved by audio professionals worldwide"</p>
+          <p class="text-ink2 dark:text-ink2-dark mt-1.5">0 corroborating sources found // marketing copy, unattributed</p>
+          <div class="flex flex-wrap gap-2 mt-2 text-xs">
+            <span class="px-2 py-0.5 bg-surface2 dark:bg-surface2-dark text-ink3 dark:text-ink3-dark">weight:0.00</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="p-5 sm:p-6 bg-surface2 dark:bg-surface2-dark flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+      <div>
+        <p class="font-sans-ui font-semibold">reviewer_independence: <span class="text-verified dark:text-verified-dark">PASS</span></p>
+        <p class="text-ink3 dark:text-ink3-dark mt-0.5">flagged_incentivized: 6% (category_avg: 12%)</p>
+      </div>
+      <a href="#" class="text-accent dark:text-accent-dark hover:underline">cat full_report.log →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ HOW IT WORKS ============ -->
+<section class="max-w-6xl mx-auto px-4 sm:px-8 py-16 border-b border-line dark:border-line-dark">
+  <p class="text-xs text-ink3 dark:text-ink3-dark tracking-widest mb-6">/pipeline &gt; process.log</p>
+  <div class="grid sm:grid-cols-3 gap-px bg-line dark:bg-line-dark border border-line dark:border-line-dark">
+    <div class="bg-surface1 dark:bg-surface1-dark p-6">
+      <p class="text-xs text-accent dark:text-accent-dark tracking-widest">STEP_01</p>
+      <h3 class="font-sans-ui font-bold text-lg mt-2">extract_claims()</h3>
+      <p class="text-ink2 dark:text-ink2-dark text-sm mt-2 leading-relaxed">Parse listing copy, packaging text, and ad creative into discrete, testable assertions. Ambiguous language is flagged, not scored.</p>
+    </div>
+    <div class="bg-surface1 dark:bg-surface1-dark p-6">
+      <p class="text-xs text-accent dark:text-accent-dark tracking-widest">STEP_02</p>
+      <h3 class="font-sans-ui font-bold text-lg mt-2">gather_evidence()</h3>
+      <p class="text-ink2 dark:text-ink2-dark text-sm mt-2 leading-relaxed">Query lab tests, teardown reports, expert reviews, and verified-purchase data. Every source gets a credibility weight, logged.</p>
+    </div>
+    <div class="bg-surface1 dark:bg-surface1-dark p-6">
+      <p class="text-xs text-accent dark:text-accent-dark tracking-widest">STEP_03</p>
+      <h3 class="font-sans-ui font-bold text-lg mt-2">stamp_verdict()</h3>
+      <p class="text-ink2 dark:text-ink2-dark text-sm mt-2 leading-relaxed">Verified / partial / unsubstantiated / contradicted, per claim. No averaging that hides a bad claim behind good ones.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ BROWSE ============ -->
+<section id="browse" class="max-w-6xl mx-auto px-4 sm:px-8 py-16 border-b border-line dark:border-line-dark">
+  <div class="grid lg:grid-cols-2 gap-10 items-start">
+    <div>
+      <p class="text-xs text-ink3 dark:text-ink3-dark tracking-widest">/browse &gt; query.log</p>
+      <h2 class="font-sans-ui font-extrabold text-2xl sm:text-3xl mt-3">mass_search --category "robot_vacuum" --max 500</h2>
+      <p class="text-ink2 dark:text-ink2-dark mt-4 text-sm leading-relaxed">Don't know the product yet? Run a ranked comparison query. Same claim-by-claim scoring engine, applied across an entire category, sorted by verified score — not sponsorship.</p>
+      <a href="#" class="inline-flex items-center gap-2 mt-6 text-sm font-bold text-accent dark:text-accent-dark hover:underline">→ run_search.sh</a>
+    </div>
+    <div class="border border-line dark:border-line-dark font-mono text-xs">
+      <div class="grid grid-cols-[1fr_auto] gap-2 px-4 py-2.5 border-b border-line dark:border-line-dark bg-surface2 dark:bg-surface2-dark text-ink3 dark:text-ink3-dark tracking-widest">
+        <span>PRODUCT</span><span>SCORE</span>
+      </div>
+      <div class="grid grid-cols-[1fr_auto] gap-2 px-4 py-3 border-b border-line dark:border-line-dark items-center">
+        <span>roborock_q_revo_curv.record</span>
+        <span class="font-bold text-verified dark:text-verified-dark">88</span>
+      </div>
+      <div class="grid grid-cols-[1fr_auto] gap-2 px-4 py-3 border-b border-line dark:border-line-dark items-center">
+        <span>eufy_x10_pro_omni.record</span>
+        <span class="font-bold text-partial dark:text-partial-dark">74</span>
+      </div>
+      <div class="grid grid-cols-[1fr_auto] gap-2 px-4 py-3 items-center">
+        <span>shark_powerdetect_pro.record</span>
+        <span class="font-bold text-contra dark:text-contra-dark">51</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TRUST / METHODOLOGY ============ -->
+<section id="trust" class="max-w-6xl mx-auto px-4 sm:px-8 py-16 border-b border-line dark:border-line-dark">
+  <p class="text-xs text-ink3 dark:text-ink3-dark tracking-widest mb-6">/about &gt; methodology.log</p>
+  <div class="grid sm:grid-cols-2 gap-px bg-line dark:bg-line-dark border border-line dark:border-line-dark">
+    <div class="bg-surface1 dark:bg-surface1-dark p-6">
+      <h3 class="font-sans-ui font-bold text-base">incentive_check: PASS</h3>
+      <p class="text-ink2 dark:text-ink2-dark text-sm mt-2 leading-relaxed">Affiliate commission is fixed per click, identical regardless of verdict. Scoring logic has zero code path to commission data.</p>
+    </div>
+    <div class="bg-surface1 dark:bg-surface1-dark p-6">
+      <h3 class="font-sans-ui font-bold text-base">source_disclosure: FULL</h3>
+      <p class="text-ink2 dark:text-ink2-dark text-sm mt-2 leading-relaxed">Every citation is a clickable, verifiable link. No black-box scoring — you can re-derive the verdict yourself.</p>
+    </div>
+    <div class="bg-surface1 dark:bg-surface1-dark p-6">
+      <h3 class="font-sans-ui font-bold text-base">review_screening: ACTIVE</h3>
+      <p class="text-ink2 dark:text-ink2-dark text-sm mt-2 leading-relaxed">Fake, bot-pattern, and incentivized reviews are flagged and excluded before aggregation, not after.</p>
+    </div>
+    <div class="bg-surface1 dark:bg-surface1-dark p-6">
+      <h3 class="font-sans-ui font-bold text-base">revalidation: SCHEDULED</h3>
+      <p class="text-ink2 dark:text-ink2-dark text-sm mt-2 leading-relaxed">Records are re-run on firmware, price, or listing changes. Score drift triggers a notification to watchers.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ EMAIL CAPTURE ============ -->
+<section class="max-w-6xl mx-auto px-4 sm:px-8 py-16">
+  <div class="border border-line dark:border-line-dark bg-surface1 dark:bg-surface1-dark">
+    <div class="px-5 py-2.5 border-b border-line dark:border-line-dark text-xs text-ink3 dark:text-ink3-dark tracking-widest">watch_record.sh --notify-on-change</div>
+    <div class="p-6 sm:p-8 grid lg:grid-cols-2 gap-6 items-center">
+      <div>
+        <h3 class="font-sans-ui font-bold text-xl sm:text-2xl">Get pinged when a verdict changes</h3>
+        <p class="text-ink2 dark:text-ink2-dark text-sm mt-2 leading-relaxed">Watch a record. If a re-run flips its score up or down, you'll get one email — not a newsletter.</p>
+      </div>
+      <form class="space-y-2" onsubmit="return false;">
+        <label for="email-capture" class="block text-xs text-ink3 dark:text-ink3-dark tracking-widest">--email</label>
+        <div class="flex flex-col sm:flex-row gap-2">
+          <div class="flex-1">
+            <div class="flex items-center gap-2 border border-line dark:border-line-dark px-3 py-2.5 focus-within:border-accent dark:focus-within:border-accent-dark">
+              <span class="text-accent dark:text-accent-dark text-sm">$</span>
+              <input id="email-capture" type="email" required placeholder="you@example.com"
+                class="w-full bg-transparent text-sm focus:outline-none placeholder:text-ink3 dark:placeholder:text-ink3-dark"
+                oninput="validateEmail(this)">
+            </div>
+            <p id="email-error" class="text-xs text-contra dark:text-contra-dark mt-1 hidden">ERROR: invalid_email_format</p>
+            <p id="email-success" class="text-xs text-verified dark:text-verified-dark mt-1 hidden">OK: email_accepted</p>
+          </div>
+          <button type="submit" onclick="submitEmail()" class="bg-accent dark:bg-accent-dark text-white dark:text-bg-dark font-bold px-6 py-2.5 text-sm hover:bg-accentHover dark:hover:bg-accentHover-dark whitespace-nowrap h-fit">SUBMIT →</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer class="border-t border-line dark:border-line-dark">
+  <div class="max-w-6xl mx-auto px-4 sm:px-8 py-10 grid sm:grid-cols-2 lg:grid-cols-4 gap-8 text-sm">
+    <div class="lg:col-span-1">
+      <div class="flex items-center gap-2">
+        <span class="w-7 h-7 border border-accent dark:border-accent-dark flex items-center justify-center text-accent dark:text-accent-dark font-bold text-xs">TR</span>
+        <span class="font-bold tracking-widest uppercase">TrueRank</span>
+      </div>
+      <p class="text-xs text-ink3 dark:text-ink3-dark mt-3 leading-relaxed">honest_records // no_gloss</p>
+    </div>
+    <div>
+      <h4 class="text-xs tracking-widest text-ink3 dark:text-ink3-dark mb-3">PRODUCT</h4>
+      <ul class="space-y-2 text-ink2 dark:text-ink2-dark">
+        <li><a href="#verify" class="hover:text-accent dark:hover:text-accent-dark">verify</a></li>
+        <li><a href="#browse" class="hover:text-accent dark:hover:text-accent-dark">browse</a></li>
+        <li><a href="#" class="hover:text-accent dark:hover:text-accent-dark">reviews</a></li>
+        <li><a href="#" class="hover:text-accent dark:hover:text-accent-dark">guides</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4 class="text-xs tracking-widest text-ink3 dark:text-ink3-dark mb-3">COMPANY</h4>
+      <ul class="space-y-2 text-ink2 dark:text-ink2-dark">
+        <li><a href="#trust" class="hover:text-accent dark:hover:text-accent-dark">methodology</a></li>
+        <li><a href="#" class="hover:text-accent dark:hover:text-accent-dark">about</a></li>
+        <li><a href="#" class="hover:text-accent dark:hover:text-accent-dark">contact</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4 class="text-xs tracking-widest text-ink3 dark:text-ink3-dark mb-3">LEGAL</h4>
+      <ul class="space-y-2 text-ink2 dark:text-ink2-dark">
+        <li><a href="#" class="hover:text-accent dark:hover:text-accent-dark">privacy</a></li>
+        <li><a href="#" class="hover:text-accent dark:hover:text-accent-dark">terms</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="border-t border-line dark:border-line-dark">
+    <div class="max-w-6xl mx-auto px-4 sm:px-8 py-5 text-[11px] text-ink3 dark:text-ink3-dark leading-relaxed">
+      <strong class="text-ink2 dark:text-ink2-dark">// affiliate_disclosure:</strong> TrueRank may earn a commission from qualifying purchases through affiliate links (incl. Amazon Associates), at no extra cost to you. commission_amount does not modify verdict_score.
+      <div class="mt-2">© 2026 TrueRank. all_rights_reserved.</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  function toggleDrawer(open) {
+    document.body.classList.toggle('drawer-closed', !open);
+  }
+  function toggleTheme() {
+    document.documentElement.classList.toggle('dark');
+    const isDark = document.documentElement.classList.contains('dark');
+    document.getElementById('theme-dark').classList.toggle('bg-accent', isDark);
+    document.getElementById('theme-dark').classList.toggle('dark:bg-accent-dark', isDark);
+    document.getElementById('theme-light').classList.toggle('bg-accent', !isDark);
+    document.getElementById('theme-light').classList.toggle('dark:bg-accent-dark', !isDark);
+    document.getElementById('theme-dark').classList.toggle('text-white', isDark);
+    document.getElementById('theme-light').classList.toggle('text-white', !isDark);
+  }
+  function validateEmail(input) {
+    const errEl = document.getElementById('email-error');
+    const okEl = document.getElementById('email-success');
+    const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.value);
+    errEl.classList.toggle('hidden', valid || input.value.length === 0);
+    okEl.classList.toggle('hidden', !valid);
+  }
+  function submitEmail() {
+    const input = document.getElementById('email-capture');
+    validateEmail(input);
+  }
+</script>
+</body>
+</html>

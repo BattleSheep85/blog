@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
+<title>TrueRank — Concept B: Forensic Instrument</title>
+<meta name="description" content="Concept artwork. Not a production page.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Newsreader:wght@500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: {
+      extend: {
+        colors: {
+          bg: { DEFAULT: '#FBFBF9', dark: '#0B0C0E' },
+          surface1: { DEFAULT: '#FFFFFF', dark: '#121316' },
+          surface2: { DEFAULT: '#F4F4F1', dark: '#1A1C20' },
+          line: { DEFAULT: '#E4E3DD', dark: '#2A2D33' },
+          ink: { DEFAULT: '#16181D', dark: '#F4F5F7' },
+          ink2: { DEFAULT: '#474B53', dark: '#B9BFC9' },
+          ink3: { DEFAULT: '#5F636B', dark: '#898F9A' },
+          accent: { DEFAULT: '#2563EB', hover: '#1D4ED8', dark: '#3B82F6', darkHover: '#5C9CFF' },
+          verified: { DEFAULT: '#0F7A3D', bg: '#E8F6ED', dark: '#4ADE80', bgDark: '#0E2716' },
+          partial: { DEFAULT: '#A15C00', bg: '#FCF0DC', dark: '#F5B450', bgDark: '#2A1D08' },
+          unsub: { DEFAULT: '#6B5A00', bg: '#F1EEDA', dark: '#D8CE7A', bgDark: '#26240D' },
+          contra: { DEFAULT: '#C4291D', bg: '#FCEAE8', dark: '#F87171', bgDark: '#2B1210' },
+        },
+        fontFamily: {
+          mono: ['JetBrains Mono', 'ui-monospace', 'monospace'],
+          sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+          serif: ['Newsreader', 'ui-serif', 'Georgia', 'serif'],
+        },
+      },
+    },
+  };
+</script>
+<style>
+  html { scroll-behavior: smooth; }
+  .grid-bg {
+    background-image:
+      linear-gradient(to right, rgba(120,120,120,.08) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(120,120,120,.08) 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
+  .drawer-overlay { transition: opacity .25s ease; }
+  .drawer-panel { transition: transform .3s cubic-bezier(.2,.9,.3,1); }
+  .tick { background: repeating-linear-gradient(90deg, currentColor 0 1px, transparent 1px 8px); height: 1px; opacity: .35; }
+  .readout { font-variant-numeric: tabular-nums; }
+</style>
+</head>
+<body class="bg-bg font-sans text-ink antialiased dark:bg-bg-dark dark:text-ink-dark transition-colors">
+
+<!-- ================= DRAWER NAV ================= -->
+<input type="checkbox" id="drawer-toggle" class="peer hidden">
+<label for="drawer-toggle" id="drawer-overlay" class="drawer-overlay fixed inset-0 z-40 bg-ink/50 opacity-0 pointer-events-none peer-checked:opacity-100 peer-checked:pointer-events-auto dark:bg-black/70"></label>
+
+<aside class="drawer-panel fixed inset-y-0 left-0 z-50 w-[86vw] max-w-sm -translate-x-full border-r border-line bg-surface1 dark:border-line-dark dark:bg-surface1-dark sm:w-80" role="dialog" aria-label="Main navigation">
+  <div class="flex items-center justify-between border-b border-line px-5 py-4 dark:border-line-dark">
+    <span class="font-mono text-xs uppercase tracking-[0.2em] text-ink3 dark:text-ink3-dark">Nav / 01</span>
+    <label for="drawer-toggle" class="cursor-pointer rounded border border-line p-1.5 text-ink2 hover:text-ink dark:border-line-dark dark:text-ink2-dark dark:hover:text-ink-dark" aria-label="Close menu">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </label>
+  </div>
+
+  <nav class="flex flex-col font-mono text-sm">
+    <a href="#verify" class="flex items-center justify-between border-b border-line px-5 py-3.5 text-ink hover:bg-surface2 dark:border-line-dark dark:text-ink-dark dark:hover:bg-surface2-dark"><span>01 · Verify</span><span class="text-accent dark:text-accent-dark">→</span></a>
+    <a href="#browse" class="flex items-center justify-between border-b border-line px-5 py-3.5 text-ink2 hover:bg-surface2 dark:border-line-dark dark:text-ink2-dark dark:hover:bg-surface2-dark"><span>02 · Browse</span><span class="text-ink3 dark:text-ink3-dark">→</span></a>
+    <a href="#" class="flex items-center justify-between border-b border-line px-5 py-3.5 text-ink2 hover:bg-surface2 dark:border-line-dark dark:text-ink2-dark dark:hover:bg-surface2-dark"><span>03 · Reviews</span><span class="text-ink3 dark:text-ink3-dark">→</span></a>
+    <a href="#" class="flex items-center justify-between border-b border-line px-5 py-3.5 text-ink2 hover:bg-surface2 dark:border-line-dark dark:text-ink2-dark dark:hover:bg-surface2-dark"><span>04 · Guides</span><span class="text-ink3 dark:text-ink3-dark">→</span></a>
+    <a href="#methodology" class="flex items-center justify-between border-b border-line px-5 py-3.5 text-ink2 hover:bg-surface2 dark:border-line-dark dark:text-ink2-dark dark:hover:bg-surface2-dark"><span>05 · About</span><span class="text-ink3 dark:text-ink3-dark">→</span></a>
+    <a href="#account" class="flex items-center justify-between px-5 py-3.5 text-ink2 hover:bg-surface2 dark:text-ink2-dark dark:hover:bg-surface2-dark"><span>06 · Account</span><span class="text-ink3 dark:text-ink3-dark">→</span></a>
+  </nav>
+
+  <div class="border-t border-line p-5 dark:border-line-dark" id="account">
+    <p class="font-mono text-xs uppercase tracking-[0.2em] text-ink3 dark:text-ink3-dark">Session / Auth</p>
+    <form class="mt-4 space-y-3" novalidate>
+      <div>
+        <label for="d-email-b" class="block font-mono text-[11px] uppercase tracking-wide text-ink3 dark:text-ink3-dark">Operator email</label>
+        <input id="d-email-b" type="email" required placeholder="you@example.com"
+          class="mt-1 w-full rounded-none border border-line bg-surface2 px-3 py-2 font-mono text-sm text-ink outline-none ring-accent/30 focus:border-accent focus:ring-2 dark:border-line-dark dark:bg-surface2-dark dark:text-ink-dark dark:focus:border-accent-dark">
+      </div>
+      <div>
+        <label for="d-pass-b" class="block font-mono text-[11px] uppercase tracking-wide text-ink3 dark:text-ink3-dark">Passcode</label>
+        <input id="d-pass-b" type="password" required minlength="8" placeholder="••••••••"
+          class="mt-1 w-full rounded-none border border-line bg-surface2 px-3 py-2 font-mono text-sm text-ink outline-none ring-accent/30 focus:border-accent focus:ring-2 dark:border-line-dark dark:bg-surface2-dark dark:text-ink-dark dark:focus:border-accent-dark">
+        <p class="mt-1 font-mono text-[10px] text-ink3 dark:text-ink3-dark">MIN 8 CHARS</p>
+      </div>
+      <button type="submit" class="w-full rounded-none bg-accent px-3 py-2 font-mono text-xs font-semibold uppercase tracking-wide text-white transition-colors hover:bg-accent-hover dark:bg-accent-dark dark:hover:bg-accent-darkHover">Sign in</button>
+      <button type="button" class="w-full rounded-none border border-line px-3 py-2 font-mono text-xs font-semibold uppercase tracking-wide text-ink2 transition-colors hover:border-ink3 dark:border-line-dark dark:text-ink2-dark">New account</button>
+    </form>
+  </div>
+
+  <div class="flex items-center justify-between border-t border-line p-5 dark:border-line-dark">
+    <span class="font-mono text-xs uppercase tracking-wide text-ink3 dark:text-ink3-dark">Display mode</span>
+    <button type="button" onclick="document.documentElement.classList.toggle('dark')" class="flex items-center gap-2 rounded-none border border-line px-2.5 py-1.5 font-mono text-xs text-ink2 hover:text-ink dark:border-line-dark dark:text-ink2-dark dark:hover:text-ink-dark">
+      <svg class="dark:hidden" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+      <svg class="hidden dark:block" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z"/></svg>
+      LIGHT / DARK
+    </button>
+  </div>
+</aside>
+
+<!-- ================= TOP BAR ================= -->
+<header class="sticky top-0 z-30 border-b border-line bg-bg/95 backdrop-blur dark:border-line-dark dark:bg-bg-dark/95">
+  <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-8">
+    <div class="flex items-center gap-3">
+      <label for="drawer-toggle" class="flex cursor-pointer flex-col gap-1.5 border border-line p-2 dark:border-line-dark" aria-label="Open menu">
+        <span class="block h-[1.5px] w-5 bg-ink dark:bg-ink-dark"></span>
+        <span class="block h-[1.5px] w-5 bg-ink dark:bg-ink-dark"></span>
+        <span class="block h-[1.5px] w-5 bg-ink dark:bg-ink-dark"></span>
+      </label>
+      <a href="#" class="font-mono text-lg font-bold tracking-tight">TRUE<span class="text-accent dark:text-accent-dark">RANK</span></a>
+    </div>
+    <div class="hidden items-center gap-5 font-mono text-xs uppercase tracking-wide text-ink2 dark:text-ink2-dark sm:flex">
+      <a href="#verify" class="hover:text-ink dark:hover:text-ink-dark">Verify</a>
+      <a href="#browse" class="hover:text-ink dark:hover:text-ink-dark">Browse</a>
+      <a href="#methodology" class="hover:text-ink dark:hover:text-ink-dark">Method</a>
+    </div>
+    <a href="#account" class="border border-line px-3 py-1.5 font-mono text-xs uppercase tracking-wide text-ink2 hover:border-ink3 hover:text-ink dark:border-line-dark dark:text-ink2-dark dark:hover:text-ink-dark">Sign in</a>
+  </div>
+</header>
+
+<!-- ================= HERO ================= -->
+<section class="grid-bg border-b border-line dark:border-line-dark" id="verify">
+  <div class="mx-auto max-w-6xl px-4 py-14 sm:px-8 sm:py-20">
+    <div class="flex flex-wrap items-center gap-x-4 gap-y-1 font-mono text-[11px] uppercase tracking-widest text-ink3 dark:text-ink3-dark">
+      <span>Instrument</span><span>·</span><span>Claim Verification Console</span><span>·</span><span class="text-verified dark:text-verified-dark">● Online</span>
+    </div>
+    <h1 class="mt-5 max-w-3xl font-sans text-4xl font-bold leading-[1.1] tracking-tight sm:text-6xl">
+      Measure the claim.<br>Not the marketing.
+    </h1>
+    <p class="mt-5 max-w-xl text-base leading-relaxed text-ink2 dark:text-ink2-dark sm:text-lg">
+      Enter a product. We extract its claims, weigh the evidence, and output a scored,
+      auditable readout — verdict per claim, source per verdict.
+    </p>
+
+    <form class="mt-9 max-w-2xl border border-line bg-surface1 dark:border-line-dark dark:bg-surface1-dark" novalidate>
+      <div class="flex flex-col gap-0 sm:flex-row">
+        <label for="verify-input-b" class="sr-only">Product to verify</label>
+        <input id="verify-input-b" type="text" required minlength="3" placeholder="INPUT_PRODUCT :: e.g. Anker SOLIX C300 Power Station"
+          class="w-full border-b border-line bg-transparent px-4 py-4 font-mono text-sm text-ink outline-none placeholder:text-ink3 focus:bg-surface2 sm:border-b-0 sm:border-r dark:border-line-dark dark:text-ink-dark dark:placeholder:text-ink3-dark dark:focus:bg-surface2-dark">
+        <button type="submit" class="shrink-0 bg-ink px-6 py-4 font-mono text-sm font-semibold uppercase tracking-wide text-bg transition-colors hover:bg-accent dark:bg-ink-dark dark:text-bg-dark dark:hover:bg-accent-dark">Run audit ▸</button>
+      </div>
+    </form>
+    <p class="mt-3 font-mono text-[11px] text-ink3 dark:text-ink3-dark">AVG RUNTIME 42s · 3 FREE AUDITS PER SESSION</p>
+  </div>
+</section>
+
+<!-- ================= VERDICT READOUT ================= -->
+<section class="mx-auto max-w-6xl px-4 py-14 sm:px-8 sm:py-20">
+  <div class="flex flex-wrap items-baseline justify-between gap-3">
+    <h2 class="font-mono text-xs uppercase tracking-[0.2em] text-ink3 dark:text-ink3-dark">Readout / Sample audit AN-0417</h2>
+    <span class="font-mono text-xs text-ink3 dark:text-ink3-dark">Anker SOLIX C300 · captured 2026-07-22</span>
+  </div>
+
+  <div class="mt-5 grid gap-5 lg:grid-cols-[280px_1fr]">
+    <!-- score gauge -->
+    <div class="border border-line bg-surface1 p-6 dark:border-line-dark dark:bg-surface1-dark">
+      <p class="font-mono text-[11px] uppercase tracking-widest text-ink3 dark:text-ink3-dark">Composite score</p>
+      <div class="relative mx-auto mt-5 h-36 w-36">
+        <svg viewBox="0 0 120 120" class="h-full w-full -rotate-90">
+          <circle cx="60" cy="60" r="52" fill="none" stroke="currentColor" stroke-width="10" class="text-line dark:text-line-dark"/>
+          <circle cx="60" cy="60" r="52" fill="none" stroke="currentColor" stroke-width="10" stroke-linecap="round"
+            stroke-dasharray="326.7" stroke-dashoffset="127.4" class="text-partial dark:text-partial-dark"/>
+        </svg>
+        <div class="absolute inset-0 flex flex-col items-center justify-center">
+          <span class="readout font-mono text-4xl font-bold">61</span>
+          <span class="font-mono text-[10px] uppercase tracking-wide text-ink3 dark:text-ink3-dark">/ 100</span>
+        </div>
+      </div>
+      <p class="mt-4 text-center font-mono text-sm font-semibold text-partial dark:text-partial-dark">FALLS SHORT</p>
+      <div class="mt-5 space-y-1.5 border-t border-line pt-4 font-mono text-[11px] text-ink3 dark:border-line-dark dark:text-ink3-dark">
+        <div class="flex justify-between"><span>Claims audited</span><span class="text-ink dark:text-ink-dark">14</span></div>
+        <div class="flex justify-between"><span>Sources checked</span><span class="text-ink dark:text-ink-dark">38</span></div>
+        <div class="flex justify-between"><span>Independent</span><span class="text-verified dark:text-verified-dark">21 / 38</span></div>
+        <div class="flex justify-between"><span>Sponsored flagged</span><span class="text-contra dark:text-contra-dark">6</span></div>
+      </div>
+    </div>
+
+    <!-- claim table -->
+    <div class="overflow-x-auto border border-line dark:border-line-dark">
+      <table class="w-full min-w-[640px] border-collapse font-mono text-xs">
+        <thead>
+          <tr class="border-b border-line bg-surface2 text-left uppercase tracking-wide text-ink3 dark:border-line-dark dark:bg-surface2-dark dark:text-ink3-dark">
+            <th class="px-4 py-3 font-medium">Claim</th>
+            <th class="px-4 py-3 font-medium">Weight</th>
+            <th class="px-4 py-3 font-medium">Independence</th>
+            <th class="px-4 py-3 font-medium">Verdict</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-line dark:divide-line-dark">
+          <tr class="align-top">
+            <td class="px-4 py-3.5 text-ink dark:text-ink-dark">1024Wh capacity, 58min recharge</td>
+            <td class="px-4 py-3.5 text-ink2 dark:text-ink2-dark">0.30</td>
+            <td class="px-4 py-3.5"><span class="inline-block h-2 w-14 rounded-none bg-verified dark:bg-verified-dark"></span> <span class="text-ink3 dark:text-ink3-dark">92%</span></td>
+            <td class="px-4 py-3.5"><span class="inline-flex items-center gap-1 border border-verified px-1.5 py-0.5 font-semibold uppercase text-verified dark:border-verified-dark dark:text-verified-dark">✓ Verified</span></td>
+          </tr>
+          <tr class="align-top bg-surface2/50 dark:bg-surface2-dark/50">
+            <td class="px-4 py-3.5 text-ink dark:text-ink-dark">Whisper-quiet, &lt;30dB operation</td>
+            <td class="px-4 py-3.5 text-ink2 dark:text-ink2-dark">0.15</td>
+            <td class="px-4 py-3.5"><span class="inline-block h-2 w-14 rounded-none bg-partial dark:bg-partial-dark"></span> <span class="text-ink3 dark:text-ink3-dark">64%</span></td>
+            <td class="px-4 py-3.5"><span class="inline-flex items-center gap-1 border border-partial px-1.5 py-0.5 font-semibold uppercase text-partial dark:border-partial-dark dark:text-partial-dark">◐ Partial</span></td>
+          </tr>
+          <tr class="align-top">
+            <td class="px-4 py-3.5 text-ink dark:text-ink-dark">Commercial-grade, job-site durable</td>
+            <td class="px-4 py-3.5 text-ink2 dark:text-ink2-dark">0.20</td>
+            <td class="px-4 py-3.5"><span class="inline-block h-2 w-14 rounded-none bg-unsub dark:bg-unsub-dark"></span> <span class="text-ink3 dark:text-ink3-dark">n/a</span></td>
+            <td class="px-4 py-3.5"><span class="inline-flex items-center gap-1 border border-unsub px-1.5 py-0.5 font-semibold uppercase text-unsub dark:border-unsub-dark dark:text-unsub-dark">▲ Unsubstantiated</span></td>
+          </tr>
+          <tr class="align-top bg-surface2/50 dark:bg-surface2-dark/50">
+            <td class="px-4 py-3.5 text-ink dark:text-ink-dark">Full 10-year warranty, no exceptions</td>
+            <td class="px-4 py-3.5 text-ink2 dark:text-ink2-dark">0.25</td>
+            <td class="px-4 py-3.5"><span class="inline-block h-2 w-14 rounded-none bg-contra dark:bg-contra-dark"></span> <span class="text-ink3 dark:text-ink3-dark">100%</span></td>
+            <td class="px-4 py-3.5"><span class="inline-flex items-center gap-1 border border-contra px-1.5 py-0.5 font-semibold uppercase text-contra dark:border-contra-dark dark:text-contra-dark">✕ Contradicted</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="border-t border-line bg-surface2 px-4 py-3 font-mono text-[10.5px] leading-relaxed text-ink3 dark:border-line-dark dark:bg-surface2-dark dark:text-ink3-dark">
+        SRC[01] PowerBench Labs teardown 2026-05 · SRC[02] r/solargeneration verified-purchase thread · SRC[03] TrueRank field capture (3 unaffiliated owners) · SRC[04] manufacturer warranty PDF, archived 2026-06-01
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= HOW IT WORKS ================= -->
+<section class="border-y border-line bg-surface2 dark:border-line-dark dark:bg-surface2-dark">
+  <div class="mx-auto max-w-6xl px-4 py-14 sm:px-8 sm:py-20">
+    <h2 class="font-mono text-xs uppercase tracking-[0.2em] text-ink3 dark:text-ink3-dark">Pipeline</h2>
+    <p class="mt-2 max-w-xl font-sans text-2xl font-bold sm:text-3xl">Four stages, every run</p>
+    <div class="mt-9 grid gap-px overflow-hidden border border-line bg-line dark:border-line-dark dark:bg-line-dark sm:grid-cols-4">
+      <div class="bg-surface1 p-5 dark:bg-surface1-dark">
+        <span class="font-mono text-xs text-accent dark:text-accent-dark">STAGE 01</span>
+        <h3 class="mt-2 font-sans text-base font-semibold">Extract</h3>
+        <p class="mt-2 font-mono text-[11px] leading-relaxed text-ink2 dark:text-ink2-dark">Parse listing, manual, and marketing copy into discrete, checkable claims.</p>
+      </div>
+      <div class="bg-surface1 p-5 dark:bg-surface1-dark">
+        <span class="font-mono text-xs text-accent dark:text-accent-dark">STAGE 02</span>
+        <h3 class="mt-2 font-sans text-base font-semibold">Search</h3>
+        <p class="mt-2 font-mono text-[11px] leading-relaxed text-ink2 dark:text-ink2-dark">Query independent labs, forums, and owner reports across dozens of sources.</p>
+      </div>
+      <div class="bg-surface1 p-5 dark:bg-surface1-dark">
+        <span class="font-mono text-xs text-accent dark:text-accent-dark">STAGE 03</span>
+        <h3 class="mt-2 font-sans text-base font-semibold">Weigh</h3>
+        <p class="mt-2 font-mono text-[11px] leading-relaxed text-ink2 dark:text-ink2-dark">Score source independence; down-weight sponsored, affiliate, and marketing-only content.</p>
+      </div>
+      <div class="bg-surface1 p-5 dark:bg-surface1-dark">
+        <span class="font-mono text-xs text-accent dark:text-accent-dark">STAGE 04</span>
+        <h3 class="mt-2 font-sans text-base font-semibold">Score</h3>
+        <p class="mt-2 font-mono text-[11px] leading-relaxed text-ink2 dark:text-ink2-dark">Assign a verdict per claim and compute the weighted composite score.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= BROWSE TEASER ================= -->
+<section class="mx-auto max-w-6xl px-4 py-14 sm:px-8 sm:py-20" id="browse">
+  <div class="flex flex-wrap items-end justify-between gap-4">
+    <div>
+      <h2 class="font-mono text-xs uppercase tracking-[0.2em] text-ink3 dark:text-ink3-dark">Index / Ranked reports</h2>
+      <p class="mt-2 max-w-lg font-sans text-2xl font-bold sm:text-3xl">Skip the input, browse the index</p>
+    </div>
+    <a href="#" class="border border-line px-4 py-2 font-mono text-xs font-semibold uppercase tracking-wide hover:border-ink3 dark:border-line-dark">View full index ▸</a>
+  </div>
+
+  <div class="mt-8 overflow-x-auto border border-line dark:border-line-dark">
+    <table class="w-full min-w-[560px] border-collapse font-mono text-xs">
+      <thead>
+        <tr class="border-b border-line bg-surface2 text-left uppercase tracking-wide text-ink3 dark:border-line-dark dark:bg-surface2-dark dark:text-ink3-dark">
+          <th class="px-4 py-3 font-medium">Category</th>
+          <th class="px-4 py-3 font-medium">Report</th>
+          <th class="px-4 py-3 font-medium">Units</th>
+          <th class="px-4 py-3 font-medium">Sources</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-line dark:divide-line-dark">
+        <tr class="hover:bg-surface2 dark:hover:bg-surface2-dark">
+          <td class="px-4 py-3.5 text-ink3 dark:text-ink3-dark">Home &amp; Outdoor</td>
+          <td class="px-4 py-3.5 text-ink dark:text-ink-dark">Best portable power stations, 2026</td>
+          <td class="px-4 py-3.5">14</td>
+          <td class="px-4 py-3.5">412</td>
+        </tr>
+        <tr class="hover:bg-surface2 dark:hover:bg-surface2-dark">
+          <td class="px-4 py-3.5 text-ink3 dark:text-ink3-dark">Kitchen</td>
+          <td class="px-4 py-3.5 text-ink dark:text-ink-dark">Robot vacuums that actually navigate</td>
+          <td class="px-4 py-3.5">9</td>
+          <td class="px-4 py-3.5">268</td>
+        </tr>
+        <tr class="hover:bg-surface2 dark:hover:bg-surface2-dark">
+          <td class="px-4 py-3.5 text-ink3 dark:text-ink3-dark">Fitness</td>
+          <td class="px-4 py-3.5 text-ink dark:text-ink-dark">Standing desks worth the money</td>
+          <td class="px-4 py-3.5">11</td>
+          <td class="px-4 py-3.5">190</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ================= TRUST / METHODOLOGY ================= -->
+<section class="border-t border-line dark:border-line-dark" id="methodology">
+  <div class="mx-auto max-w-6xl px-4 py-14 sm:px-8 sm:py-20">
+    <div class="grid gap-10 lg:grid-cols-2 lg:gap-16">
+      <div>
+        <h2 class="font-mono text-xs uppercase tracking-[0.2em] text-ink3 dark:text-ink3-dark">Calibration</h2>
+        <p class="mt-2 font-sans text-2xl font-bold sm:text-3xl">Independence, instrumented</p>
+        <p class="mt-4 max-w-md text-sm leading-relaxed text-ink2 dark:text-ink2-dark">We earn commission on some purchases made through this site. It is not wired into the scoring engine — the audit trail below is how we prove it.</p>
+        <div class="mt-6 space-y-3 border-t border-line pt-5 font-mono text-xs dark:border-line-dark">
+          <div class="flex items-start gap-3">
+            <span class="mt-0.5 text-accent dark:text-accent-dark">[✓]</span>
+            <p class="text-ink2 dark:text-ink2-dark">Sponsored / free-unit reviews are tagged and down-weighted before scoring, not after.</p>
+          </div>
+          <div class="flex items-start gap-3">
+            <span class="mt-0.5 text-accent dark:text-accent-dark">[✓]</span>
+            <p class="text-ink2 dark:text-ink2-dark">No vendor payment field exists in the ranking pipeline. It cannot influence a score.</p>
+          </div>
+          <div class="flex items-start gap-3">
+            <span class="mt-0.5 text-accent dark:text-accent-dark">[✓]</span>
+            <p class="text-ink2 dark:text-ink2-dark">Every SRC[nn] citation resolves to the original source, timestamped at capture.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="border border-line bg-surface2 p-6 dark:border-line-dark dark:bg-surface2-dark">
+        <h3 class="font-mono text-sm font-semibold uppercase tracking-wide">Watch for verdict drift</h3>
+        <p class="mt-2 text-sm text-ink2 dark:text-ink2-dark">Products are re-audited as specs, warranty terms, and review evidence change. Get pinged the moment a tracked verdict moves.</p>
+        <form class="mt-5 space-y-4" novalidate>
+          <div>
+            <label for="watch-email-b" class="block font-mono text-[11px] uppercase tracking-wide text-ink3 dark:text-ink3-dark">Email</label>
+            <input id="watch-email-b" type="email" required placeholder="you@example.com"
+              class="peer mt-1 w-full rounded-none border border-line bg-surface1 px-3 py-2.5 font-mono text-sm outline-none ring-accent/30 invalid:[&:not(:placeholder-shown)]:border-contra focus:border-accent focus:ring-2 dark:border-line-dark dark:bg-surface1-dark dark:text-ink-dark dark:focus:border-accent-dark">
+            <p class="mt-1 hidden font-mono text-[10px] text-contra peer-[&:not(:placeholder-shown):invalid]:block dark:text-contra-dark">INVALID_FORMAT :: expected user@domain.tld</p>
+          </div>
+          <div>
+            <label for="watch-product-b" class="block font-mono text-[11px] uppercase tracking-wide text-ink3 dark:text-ink3-dark">Track product (optional)</label>
+            <input id="watch-product-b" type="text" placeholder="e.g. Anker SOLIX C300"
+              class="mt-1 w-full rounded-none border border-line bg-surface1 px-3 py-2.5 font-mono text-sm outline-none ring-accent/30 focus:border-accent focus:ring-2 dark:border-line-dark dark:bg-surface1-dark dark:text-ink-dark dark:focus:border-accent-dark">
+          </div>
+          <button type="submit" class="w-full rounded-none bg-ink px-4 py-2.5 font-mono text-xs font-semibold uppercase tracking-wide text-bg transition-colors hover:bg-accent dark:bg-ink-dark dark:text-bg-dark dark:hover:bg-accent-dark">Arm alert ▸</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FOOTER ================= -->
+<footer class="border-t border-line dark:border-line-dark">
+  <div class="mx-auto max-w-6xl px-4 py-12 sm:px-8">
+    <div class="grid gap-8 font-mono text-xs sm:grid-cols-4">
+      <div class="sm:col-span-2">
+        <p class="text-base font-bold">TRUE<span class="text-accent dark:text-accent-dark">RANK</span></p>
+        <p class="mt-3 max-w-sm leading-relaxed text-ink2 dark:text-ink2-dark">A verification console for product claims. Input the product, output the evidence.</p>
+      </div>
+      <div>
+        <p class="uppercase tracking-widest text-ink3 dark:text-ink3-dark">Sections</p>
+        <ul class="mt-3 space-y-2 text-ink2 dark:text-ink2-dark">
+          <li><a href="#verify" class="hover:text-ink dark:hover:text-ink-dark">Verify</a></li>
+          <li><a href="#browse" class="hover:text-ink dark:hover:text-ink-dark">Browse</a></li>
+          <li><a href="#" class="hover:text-ink dark:hover:text-ink-dark">Reviews</a></li>
+          <li><a href="#" class="hover:text-ink dark:hover:text-ink-dark">Guides</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="uppercase tracking-widest text-ink3 dark:text-ink3-dark">System</p>
+        <ul class="mt-3 space-y-2 text-ink2 dark:text-ink2-dark">
+          <li><a href="#methodology" class="hover:text-ink dark:hover:text-ink-dark">Methodology</a></li>
+          <li><a href="#" class="hover:text-ink dark:hover:text-ink-dark">Privacy</a></li>
+          <li><a href="#" class="hover:text-ink dark:hover:text-ink-dark">Terms</a></li>
+          <li><a href="#account" class="hover:text-ink dark:hover:text-ink-dark">Account</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="mt-8 border-t border-line pt-5 dark:border-line-dark">
+      <p class="max-w-3xl font-mono text-[10.5px] leading-relaxed text-ink3 dark:text-ink3-dark">AFFILIATE_DISCLOSURE :: As an Amazon Associate and partner of other retailers, TrueRank may earn commission on qualifying purchases made through links on this site, at no extra cost to you. Commission relationships are not inputs to the scoring pipeline and never influence a verdict, score, or ranking.</p>
+      <p class="mt-3 font-mono text-[10.5px] text-ink3 dark:text-ink3-dark">© 2026 TRUERANK — CONCEPT ARTWORK, NOT A LIVE PAGE</p>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
