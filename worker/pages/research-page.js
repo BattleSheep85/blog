@@ -7,6 +7,12 @@ import { searchBar } from '../lib/search-bar.js';
 import { RESEARCH_ETA } from '../lib/tiers.js';
 import { jsonEmbed, productLayoutBoot } from '../lib/list-layout-boot.js';
 
+// Forensic-instrument button classes (mono, square, uppercase) — shared
+// across this page's CTAs so re-run/notify/copy-link controls read as the
+// same instrument as verify-page.js instead of the legacy rounded `.btn`.
+const BTN_PRIMARY = 'inline-flex items-center justify-center gap-2 bg-accent-strong px-4 py-2.5 font-mono text-xs font-semibold uppercase tracking-wide text-white transition-colors hover:bg-accent-hover';
+const BTN_GHOST = 'inline-flex items-center justify-center gap-2 border border-line px-4 py-2.5 font-mono text-xs font-semibold uppercase tracking-wide text-ink-2 transition-colors hover:border-ink-3 hover:text-ink';
+
 // Icons for well-known metadata keys. Unknown keys render with a generic dot so
 // new verticals render sensibly without code changes.
 const METADATA_ICONS = {
@@ -66,16 +72,16 @@ function renderMetadataPairs(metadata) {
     .map(([k, v]) => [k, typeof v === 'number' ? String(v) : v])
     .filter(([, v]) => typeof v === 'string' && v.trim().length > 0);
   if (entries.length === 0) return '';
-  return `<dl class="item-metadata" style="display:grid;grid-template-columns:max-content 1fr;gap:.3rem .6rem;font-size:.85rem;margin:.65rem 0;color:var(--ink-2)">
+  return `<dl class="item-metadata mt-2.5 grid grid-cols-[max-content_1fr] gap-x-2.5 gap-y-1.5 font-mono text-[11px] text-ink-2">
 ${entries.map(([k, v]) => {
     const icon = METADATA_ICONS[k] ?? '&#9679;';
     const label = escapeHtml(labelForMetadataKey(k));
     // Render mapsUrl / URL-ish values as links when they look like URLs
     const isUrl = /^https?:\/\//i.test(v) && isValidHttpsUrl(v);
     const value = isUrl
-      ? `<a href="${escapeHtml(v)}" target="_blank" rel="noopener noreferrer nofollow" style="color:var(--accent)">${escapeHtml(new URL(v).hostname.replace(/^www\./, ''))}</a>`
+      ? `<a href="${escapeHtml(v)}" target="_blank" rel="noopener noreferrer nofollow" class="text-accent hover:text-accent-hover">${escapeHtml(new URL(v).hostname.replace(/^www\./, ''))}</a>`
       : escapeHtml(v);
-    return `<dt style="color:var(--ink-3);white-space:nowrap"><span aria-hidden="true" style="margin-right:.3rem">${icon}</span>${label}</dt><dd style="margin:0">${value}</dd>`;
+    return `<dt class="whitespace-nowrap uppercase tracking-wide text-ink-3"><span aria-hidden="true" class="mr-1">${icon}</span>${label}</dt><dd class="m-0">${value}</dd>`;
   }).join('')}
 </dl>`;
 }
@@ -103,7 +109,7 @@ export function renderItemImage(imageUrl, name, productId) {
     'linear-gradient(135deg,#831843,#db2777)',
     'linear-gradient(135deg,#0c4a6e,#0284c7)',
   ];
-  const fallback = `<div class="item-image-fallback" aria-hidden="true" style="width:100%;aspect-ratio:16/9;background:${gradients[colorIndex]};display:flex;align-items:center;justify-content:center;border-radius:8px;margin-bottom:.75rem"><span style="font-size:2.5rem;font-weight:800;color:rgba(255,255,255,.85);letter-spacing:-.02em">${letter}</span></div>`;
+  const fallback = `<div class="item-image-fallback aspect-video w-full items-center justify-center border border-line mb-3" aria-hidden="true" style="display:flex;background:${gradients[colorIndex]}"><span class="font-mono text-4xl font-extrabold tracking-tight text-white/85">${letter}</span></div>`;
   if (!imageUrl || !isValidHttpsUrl(imageUrl)) return fallback;
   // Serve through the same-origin /api/img proxy when we know the product id:
   // the worker-side fetch carries no Referer (defeating hotlink blocks) and
@@ -116,7 +122,7 @@ export function renderItemImage(imageUrl, name, productId) {
   // inline `display:flex` OVERRIDES [hidden]'s UA display:none, so the letter-block was
   // rendering on top of a perfectly good picture. The onerror handler restores display:flex.
   const hiddenFallback = fallback.replace('display:flex', 'display:none');
-  return `<img class="item-image-photo" src="${escapeHtml(src)}" alt="${safeName}" loading="lazy" referrerpolicy="no-referrer" style="width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:8px;margin-bottom:.75rem;background:var(--surface-1)">
+  return `<img class="item-image-photo aspect-video w-full border border-line bg-surface-1 object-cover mb-3" src="${escapeHtml(src)}" alt="${safeName}" loading="lazy" referrerpolicy="no-referrer">
 ${hiddenFallback}`;
 }
 
@@ -311,45 +317,46 @@ export function resolveProductCtas(p, ids, isService, slug, cleanLinks, webOnly 
 function renderComparisonTable(products, ids, isService, slug, cleanLinks, webOnly) {
   if (!Array.isArray(products) || products.length < 2) return '';
   const anyPrice = products.some((p) => p.price != null);
-  const muted = '<span class="compare-muted">—</span>';
+  const muted = '<span class="text-ink-3">&mdash;</span>';
   const rows = products.map((p, i) => {
     const ctas = resolveProductCtas(p, ids, isService, slug, cleanLinks, webOnly);
     const a = ctas.amazon, r = ctas.retailer, g = ctas.google;
+    const buyCls = 'inline-block whitespace-nowrap bg-accent-strong px-2.5 py-1 font-mono text-[11px] font-semibold uppercase tracking-wide text-white hover:bg-accent-hover';
     let buy = muted;
     if (a.url && isValidHttpsUrl(a.url)) {
-      buy = `<a href="${escapeHtml(a.href)}" target="_blank" rel="noopener noreferrer nofollow sponsored" class="compare-buy">${escapeHtml(a.label)}</a>`;
+      buy = `<a href="${escapeHtml(a.href)}" target="_blank" rel="noopener noreferrer nofollow sponsored" class="${buyCls}">${escapeHtml(a.label)}</a>`;
     } else if (r.url && isValidHttpsUrl(r.url)) {
-      buy = `<a href="${escapeHtml(r.url)}" target="_blank" rel="${r.rel}" class="compare-buy">${escapeHtml(r.label)}</a>`;
+      buy = `<a href="${escapeHtml(r.url)}" target="_blank" rel="${r.rel}" class="${buyCls}">${escapeHtml(r.label)}</a>`;
     } else if (g.url) {
-      buy = `<a href="${escapeHtml(g.url)}" class="compare-buy">${escapeHtml(g.label)}</a>`;
+      buy = `<a href="${escapeHtml(g.url)}" class="${buyCls}">${escapeHtml(g.label)}</a>`;
     }
     const rating = p.rating != null
-      ? `<span class="compare-nowrap"><span aria-hidden="true">${starMarkup(p.rating)}</span> ${escapeHtml(String(p.rating))}/5</span>`
+      ? `<span class="whitespace-nowrap"><span aria-hidden="true">${starMarkup(p.rating)}</span> <span class="readout">${escapeHtml(String(p.rating))}/5</span></span>`
       : muted;
-    const price = p.price != null ? `$${p.price.toLocaleString()}` : muted;
+    const price = p.price != null ? `<span class="readout">$${p.price.toLocaleString()}</span>` : muted;
     const bestFor = p.best_for ? escapeHtml(String(p.best_for).slice(0, 90)) : muted;
     const rankCell = p.rank != null ? `#${escapeHtml(String(p.rank))}` : String(i + 1);
-    return `<tr>
-<td class="compare-rank">${rankCell}</td>
-<th scope="row" class="compare-name"><a href="#product-${i + 1}">${escapeHtml(p.name)}</a>${p.brand ? `<span class="compare-brand">${escapeHtml(p.brand)}</span>` : ''}</th>
-<td>${rating}</td>
-${anyPrice ? `<td class="compare-nowrap">${price}</td>` : ''}
-<td>${bestFor}</td>
-<td>${buy}</td>
+    return `<tr class="border-t border-line align-top hover:bg-surface-1">
+<td class="px-4 py-3.5 font-mono font-bold text-ink readout">${rankCell}</td>
+<th scope="row" class="px-4 py-3.5 text-left font-semibold text-ink"><a href="#product-${i + 1}" class="border-b border-dotted border-ink-3 hover:text-accent hover:border-accent">${escapeHtml(p.name)}</a>${p.brand ? `<span class="block font-mono text-[11px] font-normal text-ink-3">${escapeHtml(p.brand)}</span>` : ''}</th>
+<td class="px-4 py-3.5">${rating}</td>
+${anyPrice ? `<td class="whitespace-nowrap px-4 py-3.5">${price}</td>` : ''}
+<td class="px-4 py-3.5">${bestFor}</td>
+<td class="px-4 py-3.5">${buy}</td>
 </tr>`;
   }).join('');
-  return `<section class="compare-section">
-<h2 id="compare" style="font-size:1.25rem;font-weight:700;margin-bottom:1rem">${isService ? 'At a glance' : `Compare all ${products.length}`}</h2>
-<div class="compare-scroll">
-<table class="compare-table">
-<caption style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Side-by-side comparison of all ${products.length} ranked picks with ratings${anyPrice ? ', price,' : ''} and where to buy.</caption>
-<thead><tr>
-<th scope="col">#</th>
-<th scope="col">Product</th>
-<th scope="col">Rating</th>
-${anyPrice ? '<th scope="col">Price</th>' : ''}
-<th scope="col">Best for</th>
-<th scope="col">Where to buy</th>
+  return `<section class="compare-section mt-8">
+<h2 id="compare" class="font-mono text-[11px] uppercase tracking-widest text-ink-3">${isService ? 'At a glance' : `Compare all ${products.length}`}</h2>
+<div class="mt-4 overflow-x-auto border border-line">
+<table class="w-full min-w-[36rem] border-collapse font-mono text-xs">
+<caption class="sr-only">Side-by-side comparison of all ${products.length} ranked picks with ratings${anyPrice ? ', price,' : ''} and where to buy.</caption>
+<thead><tr class="border-b border-line bg-surface-2 text-left uppercase tracking-wide text-ink-3">
+<th scope="col" class="px-4 py-3 font-medium">#</th>
+<th scope="col" class="px-4 py-3 font-medium">Product</th>
+<th scope="col" class="px-4 py-3 font-medium">Rating</th>
+${anyPrice ? '<th scope="col" class="px-4 py-3 font-medium">Price</th>' : ''}
+<th scope="col" class="px-4 py-3 font-medium">Best for</th>
+<th scope="col" class="px-4 py-3 font-medium">Where to buy</th>
 </tr></thead>
 <tbody>${rows}</tbody>
 </table>
@@ -359,9 +366,15 @@ ${anyPrice ? '<th scope="col">Price</th>' : ''}
 
 // `p` arrives with pros/cons/specs/metadata already parsed (see
 // renderResearchResult — the JSON columns are parsed exactly once after fetch).
+const RANK_BADGE_CLASS = {
+  1: 'border-trust-medium text-trust-medium',
+  2: 'border-line-strong text-ink-2',
+  3: 'border-trust-medium/60 text-trust-medium',
+};
+
 function renderProduct(p, index, ids, isService, slug, cleanLinks, webOnly) {
   const { pros, cons, specs, metadata } = p;
-  const rankClass = p.rank === 1 ? 'rank-1' : p.rank === 2 ? 'rank-2' : p.rank === 3 ? 'rank-3' : 'rank-n';
+  const rankBadgeClass = RANK_BADGE_CLASS[p.rank] || 'border-line text-ink-3';
 
   // CTAs per product:
   //   1. amazonCta — BIG full-width button at the card bottom. Exact /dp/ URL
@@ -381,17 +394,20 @@ function renderProduct(p, index, ids, isService, slug, cleanLinks, webOnly) {
   const amazonCtaLabel = ctas.amazon.label;
   const amazonCtaHref = ctas.amazon.href;
 
-  const prosHtml = pros.map((pr) => html`<li>${pr}</li>`).join('');
-  const consHtml = cons.map((c) => html`<li>${c}</li>`).join('');
-  const specsHtml = Object.entries(specs).map(([k, v]) => html`<dt style="color:var(--ink-3)">${k}</dt><dd>${v}</dd>`).join('');
+  const prosHtml = pros.map((pr) => html`<li class="relative pl-4 before:absolute before:left-0 before:font-bold before:text-trust-high before:content-['✓']">${pr}</li>`).join('');
+  const consHtml = cons.map((c) => html`<li class="relative pl-4 before:absolute before:left-0 before:font-bold before:text-trust-low before:content-['✕']">${c}</li>`).join('');
+  const specsHtml = Object.entries(specs).map(([k, v]) => html`<dt class="text-ink-3">${k}</dt><dd class="text-ink-2">${v}</dd>`).join('');
 
   // Secondary links row: manufacturer page + non-Amazon retailers (Walmart, etc.).
   const links = [];
+  const linkClsBase = 'inline-flex items-center gap-1 border px-3 py-1.5 font-mono text-[11px] font-semibold uppercase tracking-wide';
+  const linkClsMfr = `${linkClsBase} border-line-strong text-ink-2 hover:border-ink-3 hover:text-ink`;
+  const linkClsBuy = `${linkClsBase} border-accent-strong bg-accent-strong text-white hover:bg-accent-hover hover:border-accent-hover`;
   if (mfrUrl && !(isService && retailerCtaUrl === mfrUrl)) {
-    links.push(`<a href="${escapeHtml(mfrUrl)}" target="_blank" rel="noopener noreferrer" class="product-link product-link-mfr">Product page <span aria-hidden="true">&#8599;</span></a>`);
+    links.push(`<a href="${escapeHtml(mfrUrl)}" target="_blank" rel="noopener noreferrer" class="${linkClsMfr}">Product page <span aria-hidden="true">&#8599;</span></a>`);
   }
   if (retailerCtaUrl && isValidHttpsUrl(retailerCtaUrl)) {
-    const cls = retailerCtaIsSponsored ? 'product-link product-link-buy' : 'product-link product-link-mfr';
+    const cls = retailerCtaIsSponsored ? linkClsBuy : linkClsMfr;
     links.push(`<a href="${escapeHtml(retailerCtaUrl)}" target="_blank" rel="${retailerCtaRel}" class="${cls}">${escapeHtml(retailerCtaLabel)} <span aria-hidden="true">&#8599;</span></a>`);
   }
 
@@ -399,41 +415,42 @@ function renderProduct(p, index, ids, isService, slug, cleanLinks, webOnly) {
   // the category is Amazon-viable (click-tracked href resolved in
   // resolveProductCtas, shared with Our pick); the /find Google hand-off when
   // it isn't. Never both.
+  const ctaCls = 'product-cta-amazon mt-4 flex w-full items-center justify-center gap-2 bg-accent-strong px-4 py-3 font-mono text-sm font-semibold uppercase tracking-wide text-white transition-colors hover:bg-accent-hover';
   let amazonCtaBlock = '';
   if (amazonCtaUrl && isValidHttpsUrl(amazonCtaUrl)) {
-    amazonCtaBlock = `<a href="${escapeHtml(amazonCtaHref)}" target="_blank" rel="noopener noreferrer nofollow sponsored" class="product-cta-amazon">${escapeHtml(amazonCtaLabel)} <span aria-hidden="true">&#8599;</span></a>`;
+    amazonCtaBlock = `<a href="${escapeHtml(amazonCtaHref)}" target="_blank" rel="noopener noreferrer nofollow sponsored" class="${ctaCls}">${escapeHtml(amazonCtaLabel)} <span aria-hidden="true">&#8599;</span></a>`;
   } else if (ctas.google.url) {
-    amazonCtaBlock = `<a href="${escapeHtml(ctas.google.url)}" class="product-cta-amazon">${escapeHtml(ctas.google.label)} <span aria-hidden="true">&#8599;</span></a>`;
+    amazonCtaBlock = `<a href="${escapeHtml(ctas.google.url)}" class="${ctaCls}">${escapeHtml(ctas.google.label)} <span aria-hidden="true">&#8599;</span></a>`;
   }
 
   const imageBlock = renderItemImage(p.image_url, p.name, p.id);
   const metadataBlock = renderMetadataPairs(metadata);
 
-  return `<article class="product" id="product-${index + 1}">
+  return `<article class="product border border-line bg-surface-1 p-5" id="product-${index + 1}">
 ${imageBlock}
-<div class="product-header">
+<div class="flex items-start justify-between gap-4">
 <div>
-${p.rank != null ? `<span class="product-rank ${rankClass}">#${p.rank}</span>` : ''}
-<h3 class="wrap-anywhere" style="font-size:1.15rem;font-weight:700;color:var(--ink);margin-top:.3rem">${escapeHtml(p.name)}</h3>
-${p.brand ? `<p style="color:var(--ink-2);font-size:.85rem">${escapeHtml(p.brand)}</p>` : ''}
+${p.rank != null ? `<span class="inline-block border ${rankBadgeClass} px-2 py-0.5 font-mono text-xs font-bold readout">#${p.rank}</span>` : ''}
+<h3 class="wrap-anywhere mt-1.5 font-sans text-lg font-bold text-ink">${escapeHtml(p.name)}</h3>
+${p.brand ? `<p class="font-mono text-xs text-ink-2">${escapeHtml(p.brand)}</p>` : ''}
 </div>
-<div style="text-align:right;flex-shrink:0">
-${p.price != null ? `<p class="product-price">$${p.price.toLocaleString()}</p>` : ''}
-${p.rating != null ? `<p class="product-rating"><span aria-hidden="true">${starMarkup(p.rating)}</span> <span>${p.rating}/5</span></p>` : ''}
+<div class="shrink-0 text-right">
+${p.price != null ? `<p class="readout font-mono text-2xl font-bold text-ink">$${p.price.toLocaleString()}</p>` : ''}
+${p.rating != null ? `<p class="mt-1 font-mono text-xs text-trust-medium"><span aria-hidden="true">${starMarkup(p.rating)}</span> <span class="readout">${p.rating}/5</span></p>` : ''}
 </div>
 </div>
-${p.best_for ? `<div class="product-bestfor">Best for: ${escapeHtml(p.best_for)}</div>` : ''}
+${p.best_for ? `<div class="mt-3 border-l-2 border-accent bg-accent-quiet px-3 py-2 font-mono text-[11px] text-ink-2"><span class="uppercase tracking-wide text-ink-3">Best for</span> ${escapeHtml(p.best_for)}</div>` : ''}
 ${ratingNote(p, cons)}
 ${metadataBlock}
-${p.verdict ? `<p class="product-verdict">${escapeHtml(p.verdict)}</p>` : ''}
+${p.verdict ? `<p class="mt-3 text-body-sm leading-relaxed text-ink-2">${escapeHtml(p.verdict)}</p>` : ''}
 ${criticalReviewsBlock(p, cons)}
-${(pros.length > 0 || (cons.length > 0 && !isBelow4(p))) ? `<div class="pros-cons">
-${pros.length > 0 ? `<div><h4 class="pro">Pros</h4><ul class="pro-list">${prosHtml}</ul></div>` : ''}
-${(cons.length > 0 && !isBelow4(p)) ? `<div><h4 class="con">Cons</h4><ul class="con-list">${consHtml}</ul></div>` : ''}
+${(pros.length > 0 || (cons.length > 0 && !isBelow4(p))) ? `<div class="mt-4 grid grid-cols-1 gap-4 border-t border-line pt-4 sm:grid-cols-2">
+${pros.length > 0 ? `<div><h4 class="font-mono text-[11px] font-semibold uppercase tracking-wide text-trust-high">Pros</h4><ul class="mt-2 space-y-1.5 text-body-sm text-ink-2">${prosHtml}</ul></div>` : ''}
+${(cons.length > 0 && !isBelow4(p)) ? `<div><h4 class="font-mono text-[11px] font-semibold uppercase tracking-wide text-trust-low">Cons</h4><ul class="mt-2 space-y-1.5 text-body-sm text-ink-2">${consHtml}</ul></div>` : ''}
 </div>` : ''}
-${specsHtml ? `<details><summary style="cursor:pointer;font-size:.85rem;color:var(--ink-3);font-weight:500">Specifications</summary>
-<dl style="display:grid;grid-template-columns:1fr 1fr;gap:.3rem .75rem;font-size:.85rem;margin-top:.75rem;background:var(--surface-2);padding:.75rem;border-radius:8px">${specsHtml}</dl></details>` : ''}
-${links.length > 0 ? `<div class="product-links">${links.join('')}</div>` : ''}
+${specsHtml ? `<details class="mt-4 border-t border-line pt-3"><summary class="cursor-pointer font-mono text-xs font-medium uppercase tracking-wide text-ink-3">Specifications</summary>
+<dl class="mt-3 grid grid-cols-2 gap-x-3 gap-y-1.5 bg-surface-2 p-3 font-mono text-[11px]">${specsHtml}</dl></details>` : ''}
+${links.length > 0 ? `<div class="mt-4 flex flex-wrap gap-2">${links.join('')}</div>` : ''}
 ${amazonCtaBlock}
 </article>`;
 }
@@ -444,7 +461,7 @@ ${amazonCtaBlock}
 // engine and the live synth output. Honest about thin evidence (null rating).
 function ratingNote(p, cons) {
   if (p.rating == null) {
-    return `<p class="rating-why">Not enough independent reviews to score this confidently — shown for context, not as a strong pick.</p>`;
+    return `<p class="rating-why mt-2 font-mono text-[11px] text-ink-3">Not enough independent reviews to score this confidently — shown for context, not as a strong pick.</p>`;
   }
   const r = Number(p.rating);
   const con = (cons && cons[0]) ? String(cons[0]).replace(/^[\s"'“”]+|[\s"'“”.]+$/g, '') : '';
@@ -457,7 +474,7 @@ function ratingNote(p, cons) {
   const why = con
     ? ` Main caveat reviewers raised: ${escapeHtml(con)}.`
     : (r >= 4.5 ? ' No recurring complaint surfaced in our sources.' : '');
-  return `<p class="rating-why"><strong>Why ${escapeHtml(String(r))}/5:</strong> ${escapeHtml(lead)}.${why}</p>`;
+  return `<p class="rating-why mt-2 font-mono text-[11px] leading-relaxed text-ink-3"><strong class="font-semibold text-ink">Why ${escapeHtml(String(r))}/5:</strong> ${escapeHtml(lead)}.${why}</p>`;
 }
 
 // A buyer often won't purchase a sub-4★ pick WITHOUT reading the actual criticism
@@ -473,18 +490,19 @@ function criticalReviewsBlock(p, cons) {
   // caveat" — list the REMAINING criticism here so the top con doesn't print
   // twice within a few lines.
   const rest = (cons || []).slice(1);
-  const items = rest.map((c) => `<li>${escapeHtml(String(c))}</li>`).join('');
+  const items = rest.map((c) => `<li class="text-body-sm text-ink">${escapeHtml(String(c))}</li>`).join('');
   const intro = r == null
     ? 'We didn’t find enough independent reviews to score this confidently — read the criticism we did find before buying:'
     : 'This scores below 4★. Here’s the criticism reviewers actually raised — read it and decide whether any of it is a dealbreaker for you:';
+  const introCls = 'mb-2 text-body-sm leading-relaxed text-ink-2';
   const body = items
-    ? `<p class="crit-intro">${intro}</p><ul class="crit-list">${items}</ul>`
+    ? `<p class="${introCls}">${intro}</p><ul class="crit-list flex flex-col gap-1.5 pl-4 [&>li]:list-disc">${items}</ul>`
     : ((cons || []).length
-        ? '<p class="crit-intro">The main caveat reviewers raised is noted above. We didn’t surface additional specific criticism — read recent buyer reviews before purchasing.</p>'
-        : '<p class="crit-intro">This scores below 4★ and we couldn’t surface specific, credible criticism — treat the rating cautiously and read recent buyer reviews before purchasing.</p>');
-  return `<section class="critical-reviews" aria-label="Critical reviews">
-<h4 class="crit-head"><span aria-hidden="true">&#9888;</span> Why some reviewers rated it low</h4>
-${body}</section>`;
+        ? `<p class="${introCls}">The main caveat reviewers raised is noted above. We didn’t surface additional specific criticism — read recent buyer reviews before purchasing.</p>`
+        : `<p class="${introCls}">This scores below 4★ and we couldn’t surface specific, credible criticism — treat the rating cautiously and read recent buyer reviews before purchasing.</p>`);
+  return `<section class="critical-reviews mt-4 border border-trust-low bg-trust-low-bg p-4" aria-label="Critical reviews">
+<h4 class="crit-head flex items-center gap-1.5 font-mono text-[11px] font-semibold uppercase tracking-wide text-trust-low"><span aria-hidden="true">&#9888;</span> Why some reviewers rated it low</h4>
+<div class="mt-2">${body}</div></section>`;
 }
 
 // "Our pick" box: a high-visibility card for the rank-1 product, shown above the
@@ -494,27 +512,28 @@ function renderOurPick(p, ids, isService, slug, cleanLinks, webOnly) {
   if (!p) return '';
   const ctas = resolveProductCtas(p, ids, isService, slug, cleanLinks, webOnly);
   const ratingHtml = p.rating != null
-    ? `<span class="ourpick-rating"><span aria-hidden="true">${starMarkup(p.rating)}</span> <span>${p.rating}/5</span></span>`
+    ? `<span class="ourpick-rating inline-flex items-center gap-1.5 font-mono text-sm text-trust-medium"><span aria-hidden="true">${starMarkup(p.rating)}</span> <span class="readout text-ink-2">${p.rating}/5</span></span>`
     : '';
-  const priceHtml = p.price != null ? `<span class="ourpick-price">$${p.price.toLocaleString()}</span>` : '';
+  const priceHtml = p.price != null ? `<span class="ourpick-price readout font-mono text-lg font-bold text-ink">$${p.price.toLocaleString()}</span>` : '';
   const a = ctas.amazon;
   const r = ctas.retailer;
   // Prefer the Amazon button (matches the card's primary CTA); fall back to the
   // retailer/service pill so services and non-Amazon picks still get a CTA.
+  const ctaCls = 'product-cta-amazon ourpick-cta mt-4 inline-flex max-w-sm items-center justify-center gap-2 bg-accent-strong px-4 py-3 font-mono text-sm font-semibold uppercase tracking-wide text-white transition-colors hover:bg-accent-hover';
   let ctaHtml = '';
   if (a.url && isValidHttpsUrl(a.url)) {
-    ctaHtml = `<a href="${escapeHtml(a.href)}" target="_blank" rel="noopener noreferrer nofollow sponsored" class="product-cta-amazon ourpick-cta">${escapeHtml(a.label)} <span aria-hidden="true">&#8599;</span></a>`;
+    ctaHtml = `<a href="${escapeHtml(a.href)}" target="_blank" rel="noopener noreferrer nofollow sponsored" class="${ctaCls}">${escapeHtml(a.label)} <span aria-hidden="true">&#8599;</span></a>`;
   } else if (r.url && isValidHttpsUrl(r.url)) {
-    ctaHtml = `<a href="${escapeHtml(r.url)}" target="_blank" rel="${r.rel}" class="product-cta-amazon ourpick-cta">${escapeHtml(r.label)} <span aria-hidden="true">&#8599;</span></a>`;
+    ctaHtml = `<a href="${escapeHtml(r.url)}" target="_blank" rel="${r.rel}" class="${ctaCls}">${escapeHtml(r.label)} <span aria-hidden="true">&#8599;</span></a>`;
   } else if (ctas.google.url) {
-    ctaHtml = `<a href="${escapeHtml(ctas.google.url)}" class="product-cta-amazon ourpick-cta">${escapeHtml(ctas.google.label)} <span aria-hidden="true">&#8599;</span></a>`;
+    ctaHtml = `<a href="${escapeHtml(ctas.google.url)}" class="${ctaCls}">${escapeHtml(ctas.google.label)} <span aria-hidden="true">&#8599;</span></a>`;
   }
-  return `<div class="ourpick-box" id="our-pick">
-<div class="ourpick-eyebrow">Our pick</div>
-<h2 class="ourpick-name wrap-anywhere">${escapeHtml(p.name)}</h2>
-${(ratingHtml || priceHtml) ? `<div class="ourpick-meta">${ratingHtml}${priceHtml}</div>` : ''}
+  return `<div class="ourpick-box mt-6 border-2 border-trust-medium bg-surface-1 p-6" id="our-pick">
+<div class="ourpick-eyebrow font-mono text-[11px] font-semibold uppercase tracking-widest text-trust-medium">Our pick</div>
+<h2 class="ourpick-name wrap-anywhere mt-2 font-serif text-h3 font-semibold text-ink">${escapeHtml(p.name)}</h2>
+${(ratingHtml || priceHtml) ? `<div class="ourpick-meta mt-2 flex flex-wrap items-center gap-x-4 gap-y-1">${ratingHtml}${priceHtml}</div>` : ''}
 ${ratingNote(p, Array.isArray(p.cons) ? p.cons : [])}
-${p.verdict ? `<p class="ourpick-verdict">${escapeHtml(p.verdict)}</p>` : ''}
+${p.verdict ? `<p class="ourpick-verdict mt-3 text-body leading-relaxed text-ink-2">${escapeHtml(p.verdict)}</p>` : ''}
 ${isBelow4(p) ? criticalReviewsBlock(p, Array.isArray(p.cons) ? p.cons : []) : ''}
 ${ctaHtml}
 </div>`;
@@ -556,19 +575,21 @@ function renderTrustPanel(rawSources, completedAtTs) {
     ? new Date(completedAtTs * 1000).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
     : '';
   const dateIso = completedAtTs ? new Date(completedAtTs * 1000).toISOString().slice(0, 10) : '';
+  const chipCls = 'trust-chip inline-flex items-center gap-1 border border-line-strong px-2 py-1 font-mono text-[11px] uppercase tracking-wide text-ink-2';
+  const chipWarnCls = 'trust-chip trust-chip-warn inline-flex items-center gap-1 border border-trust-medium bg-trust-medium-bg px-2 py-1 font-mono text-[11px] uppercase tracking-wide text-trust-medium';
   const chips = [];
-  chips.push(`<span class="trust-chip"><strong>${s.total}</strong> source${s.total === 1 ? '' : 's'} analyzed</span>`);
+  chips.push(`<span class="${chipCls}"><strong class="readout text-ink">${s.total}</strong> source${s.total === 1 ? '' : 's'} analyzed</span>`);
   if (s.hasCredibility) {
-    if (s.handsOn > 0) chips.push(`<span class="trust-chip"><strong>${s.handsOn}</strong> hands-on</span>`);
-    if (s.expert > 0) chips.push(`<span class="trust-chip"><strong>${s.expert}</strong> expert</span>`);
-    if (s.community > 0) chips.push(`<span class="trust-chip"><strong>${s.community}</strong> community</span>`);
-    if (s.downWeighted > 0) chips.push(`<span class="trust-chip trust-chip-warn"><strong>${s.downWeighted}</strong> down-weighted</span>`);
+    if (s.handsOn > 0) chips.push(`<span class="${chipCls}"><strong class="readout text-ink">${s.handsOn}</strong> hands-on</span>`);
+    if (s.expert > 0) chips.push(`<span class="${chipCls}"><strong class="readout text-ink">${s.expert}</strong> expert</span>`);
+    if (s.community > 0) chips.push(`<span class="${chipCls}"><strong class="readout text-ink">${s.community}</strong> community</span>`);
+    if (s.downWeighted > 0) chips.push(`<span class="${chipWarnCls}"><strong class="readout">${s.downWeighted}</strong> down-weighted</span>`);
   }
-  return `<aside class="trust-panel" aria-label="Why trust this">
-<div class="trust-panel-head">Why trust this</div>
-<div class="trust-chips">${chips.join('')}</div>
-${dateLabel ? `<p class="trust-panel-date">Synthesized <time datetime="${dateIso}">${escapeHtml(dateLabel)}</time>${s.hasCredibility ? '' : ' &middot; legacy report (no per-source credibility data)'}</p>` : ''}
-<p class="trust-panel-disclosure">We may earn a commission on purchases made through links on this page. Rankings are produced from independent source analysis and are never paid placements.</p>
+  return `<aside class="trust-panel mt-6 border border-line bg-surface-1 p-5" aria-label="Why trust this">
+<div class="trust-panel-head font-mono text-[11px] font-semibold uppercase tracking-widest text-ink-3">Why trust this</div>
+<div class="trust-chips mt-3 flex flex-wrap gap-2">${chips.join('')}</div>
+${dateLabel ? `<p class="trust-panel-date mt-3 font-mono text-[11px] text-ink-3">Synthesized <time datetime="${dateIso}">${escapeHtml(dateLabel)}</time>${s.hasCredibility ? '' : ' &middot; legacy report (no per-source credibility data)'}</p>` : ''}
+<p class="trust-panel-disclosure mt-2 font-mono text-[10.5px] leading-relaxed text-ink-3">We may earn a commission on purchases made through links on this page. Rankings are produced from independent source analysis and are never paid placements.</p>
 </aside>`;
 }
 
@@ -670,76 +691,81 @@ export async function renderResearchResult(slug, env, fromQuery = null, cleanLin
     href: `#product-${i + 1}`,
   }));
 
-  const chatSection = `<section id="talk-about-it" class="report-chat-feature" style="margin:1.5rem 0;padding:1.15rem 1.25rem;background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 7%,var(--surface-1)),var(--surface-1));border:1px solid color-mix(in srgb,var(--accent) 30%,var(--line));border-left:3px solid var(--accent);border-radius:0.875rem;box-shadow:var(--card)">
-<div style="display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:.75rem;margin-bottom:.85rem">
+  const chatSection = `<section id="talk-about-it" class="report-chat-feature mt-6 border border-line border-l-2 border-l-accent bg-surface-1 p-5">
+<div class="mb-3.5 flex flex-wrap items-start justify-between gap-3">
 <div>
-<span style="display:inline-block;font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:.25rem">Interactive</span>
-<h2 style="font-size:1.15rem;font-weight:700;margin:0;color:var(--ink)">Talk about this research</h2>
-<p style="font-size:.88rem;color:var(--ink-2);margin:.35rem 0 0;max-width:42rem">Ask follow-up questions about the ranking, or refine the search and rerun it with new constraints.</p>
+<span class="mb-1 inline-block font-mono text-[11px] font-bold uppercase tracking-widest text-accent">Interactive</span>
+<h2 class="font-sans text-lg font-bold text-ink">Talk about this research</h2>
+<p class="mt-1.5 max-w-xl text-body-sm text-ink-2">Ask follow-up questions about the ranking, or refine the search and rerun it with new constraints.</p>
 </div>
 </div>
-<div style="display:flex;gap:.5rem;margin-bottom:.85rem" role="tablist" aria-label="Chat mode">
-<button type="button" id="chat-tab-ask" role="tab" aria-selected="true" aria-controls="chat-panel-ask" data-chat-tab="ask" class="btn" style="font-size:.82rem;padding:.45rem .85rem;background:var(--accent-quiet);border-color:var(--accent);color:var(--accent)">Ask about it</button>
-<button type="button" id="chat-tab-refine" role="tab" aria-selected="false" aria-controls="chat-panel-refine" data-chat-tab="refine" class="btn" style="font-size:.82rem;padding:.45rem .85rem">Refine this search</button>
+<div class="mb-3.5 flex gap-2" role="tablist" aria-label="Chat mode">
+<button type="button" id="chat-tab-ask" role="tab" aria-selected="true" aria-controls="chat-panel-ask" data-chat-tab="ask" class="border border-accent bg-accent-quiet px-3.5 py-2 font-mono text-xs font-semibold uppercase tracking-wide text-accent">Ask about it</button>
+<button type="button" id="chat-tab-refine" role="tab" aria-selected="false" aria-controls="chat-panel-refine" data-chat-tab="refine" class="border border-line px-3.5 py-2 font-mono text-xs font-semibold uppercase tracking-wide text-ink-2 hover:border-ink-3">Refine this search</button>
 </div>
-<div class="chat-panel" style="background:var(--bg);border:1px solid var(--line);border-radius:0.75rem;padding:1rem">
-<div id="chat-messages" style="display:flex;flex-direction:column;gap:.6rem;max-height:16rem;overflow-y:auto;margin-bottom:.75rem" aria-live="polite"></div>
-<form id="chat-form" style="display:flex;gap:.5rem;margin:0">
-<label for="chat-input" class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Your message</label>
-<input id="chat-input" type="text" maxlength="2000" autocomplete="off" placeholder="e.g. Which one is best for a small apartment?" style="flex:1;min-width:0;padding:.6rem .75rem;background:var(--surface-1);border:1px solid var(--line);border-radius:8px;color:var(--ink);font-size:.9rem">
-<button type="submit" class="btn" style="font-size:.85rem;padding:.6rem 1rem;white-space:nowrap">Send</button>
+<div class="chat-panel border border-line bg-bg p-4">
+<div id="chat-messages" class="mb-3 flex max-h-64 flex-col gap-2.5 overflow-y-auto" aria-live="polite"></div>
+<form id="chat-form" class="m-0 flex gap-2">
+<label for="chat-input" class="sr-only">Your message</label>
+<input id="chat-input" type="text" maxlength="2000" autocomplete="off" placeholder="e.g. Which one is best for a small apartment?" class="min-w-0 flex-1 border border-line bg-surface-1 px-3 py-2.5 font-mono text-sm text-ink placeholder:text-ink-3">
+<button type="submit" class="${BTN_PRIMARY} whitespace-nowrap text-sm">Send</button>
 </form>
-<p id="chat-status" role="status" aria-live="polite" style="font-size:.78rem;color:var(--ink-3);margin-top:.5rem;min-height:1em"></p>
+<p id="chat-status" role="status" aria-live="polite" class="mt-2 min-h-[1em] text-xs text-ink-3"></p>
 </div>
 </section>`;
 
-  const body = `<div class="container" style="max-width:64rem;padding:3rem 1.5rem">
-<nav aria-label="Breadcrumb" class="breadcrumb" style="font-size:.85rem;color:var(--ink-2);margin-bottom:1rem">
-<a href="/" style="color:var(--ink-2)">Home</a>
-<span aria-hidden="true" style="margin:0 .4rem;color:var(--ink-3)">/</span>
-<a href="/research" style="color:var(--ink-2)">Research</a>
-<span aria-hidden="true" style="margin:0 .4rem;color:var(--ink-3)">/</span>
-<span style="color:var(--ink)">${escapeHtml(displayTitle)}</span>
+  const body = `<div class="grid-bg border-b border-line">
+<div class="mx-auto max-w-4xl px-6 py-12">
+<nav aria-label="Breadcrumb" class="breadcrumb mb-4 font-mono text-[11px] uppercase tracking-widest text-ink-3">
+<a href="/" class="hover:text-ink">Home</a>
+<span aria-hidden="true" class="mx-1.5">/</span>
+<a href="/research" class="hover:text-ink">Research</a>
+<span aria-hidden="true" class="mx-1.5">/</span>
+<span class="text-ink-2">${escapeHtml(displayTitle)}</span>
 </nav>
 <div class="page-header">
-<h1>${escapeHtml(displayTitle)}</h1>
-${entry.category ? `<span class="card-badge">${escapeHtml(entry.category)}</span>` : ''}
-<div class="page-meta">
+<p class="font-mono text-[11px] uppercase tracking-widest text-ink-3">Ledger &middot; Ranked comparison report</p>
+<h1 class="mt-3 font-serif text-h1 font-semibold text-ink">${escapeHtml(displayTitle)}</h1>
+${entry.category ? `<span class="card-badge mt-3 inline-block">${escapeHtml(entry.category)}</span>` : ''}
+<div class="page-meta mt-4 flex flex-wrap gap-4 font-mono text-[13px] text-ink-3 readout">
 <span>Published <time datetime="${createdIso}">${date}</time></span>
 ${entry.completed_at && entry.completed_at !== entry.created_at ? `<span>Last updated <time datetime="${lastUpdatedIso}">${lastUpdatedLabel}</time></span>` : ''}
 <span>${entry.view_count} views</span>
 <span>${products.length === 0 ? 'No products found' : `${products.length} product${products.length === 1 ? '' : 's'} compared`}</span>
 </div>
-${entry.status === 'complete' ? `<div class="share-bar">
-<span>Share:</span>
+${entry.status === 'complete' ? `<div class="share-bar mt-4 flex flex-wrap items-center gap-2">
+<span class="font-mono text-xs uppercase tracking-wide text-ink-3">Share:</span>
 <a href="https://twitter.com/intent/tweet?text=${shareText}&url=${shareUrl}" target="_blank" rel="noopener noreferrer" class="share-btn"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>Post</a>
 <a href="https://reddit.com/submit?url=${shareUrl}&title=${shareText}" target="_blank" rel="noopener noreferrer" class="share-btn"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0A12 12 0 000 12a12 12 0 0012 12 12 12 0 0012-12A12 12 0 0012 0zm5.01 4.744c.688 0 1.25.561 1.25 1.249a1.25 1.25 0 01-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 01.042.52c0 2.694-3.13 4.87-7.004 4.87-3.874 0-7.004-2.176-7.004-4.87 0-.183.015-.366.043-.534A1.748 1.748 0 014.028 12c0-.968.786-1.754 1.754-1.754.463 0 .898.196 1.207.49 1.207-.883 2.878-1.43 4.744-1.487l.885-4.182a.342.342 0 01.14-.197.35.35 0 01.238-.042l2.906.617a1.214 1.214 0 011.108-.701zM9.25 12C8.561 12 8 12.562 8 13.25c0 .687.561 1.248 1.25 1.248.687 0 1.248-.561 1.248-1.249 0-.688-.561-1.249-1.249-1.249zm5.5 0c-.687 0-1.248.561-1.248 1.25 0 .687.561 1.248 1.249 1.248.688 0 1.249-.561 1.249-1.249 0-.687-.562-1.249-1.25-1.249zm-5.466 3.99a.327.327 0 00-.231.094.33.33 0 000 .463c.842.842 2.484.913 2.961.913.477 0 2.105-.056 2.961-.913a.361.361 0 000-.463.327.327 0 00-.464 0c-.547.533-1.684.73-2.512.73-.828 0-1.979-.196-2.512-.73a.326.326 0 00-.232-.095z"/></svg>Reddit</a>
 <button type="button" class="share-btn js-copy-link" data-url="${pageUrl}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>Copy link</button>
-<button type="button" class="share-btn js-native-share" data-url="${pageUrl}" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>Share</button>
-<form action="/research/new" method="POST" style="margin:0;display:inline-block"><input type="hidden" name="q" value="${escapeHtml(entry.query)}"><input type="hidden" name="fresh" value="1"><button type="submit" class="share-btn" title="Ignore the saved report and research this again from scratch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582M20 20v-5h-.581M5.635 9A8 8 0 0118.418 7M18.418 15A8 8 0 015.635 13"/></svg>Re-run fresh</button></form>
+<button type="button" class="share-btn js-native-share hidden" data-url="${pageUrl}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>Share</button>
+<form action="/research/new" method="POST" class="m-0 inline-block"><input type="hidden" name="q" value="${escapeHtml(entry.query)}"><input type="hidden" name="fresh" value="1"><button type="submit" class="share-btn" title="Ignore the saved report and research this again from scratch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582M20 20v-5h-.581M5.635 9A8 8 0 0118.418 7M18.418 15A8 8 0 015.635 13"/></svg>Re-run fresh</button></form>
 </div>` : ''}
 </div>
-
-${fromQuery && fromQuery !== entry.query ? `<div class="cluster-banner" style="padding:.9rem 1.15rem;background:color-mix(in srgb,var(--accent) 8%,transparent);border:1px solid color-mix(in srgb,var(--accent) 30%,transparent);border-radius:12px;margin:1.25rem 0;display:flex;flex-wrap:wrap;gap:.75rem;align-items:center;justify-content:space-between">
-<div style="font-size:.88rem;color:var(--ink-2);flex:1;min-width:0">
-<strong style="color:var(--ink)">Matched to existing research.</strong> You asked &ldquo;${escapeHtml(fromQuery)}&rdquo; — we already researched a very similar question (${date}).
 </div>
-<form action="/research/new" method="POST" style="margin:0"><input type="hidden" name="q" value="${escapeHtml(fromQuery)}"><input type="hidden" name="fresh" value="1"><button type="submit" class="btn" style="font-size:.82rem;padding:.5rem .85rem;white-space:nowrap">Re-research with fresh data</button></form>
+</div>
+
+<div class="container mx-auto max-w-4xl px-6 py-8">
+${fromQuery && fromQuery !== entry.query ? `<div class="cluster-banner mt-0 mb-5 flex flex-wrap items-center justify-between gap-3 border border-accent/30 bg-accent-quiet p-4">
+<div class="min-w-0 flex-1 text-body-sm text-ink-2">
+<strong class="text-ink">Matched to existing research.</strong> You asked &ldquo;${escapeHtml(fromQuery)}&rdquo; — we already researched a very similar question (${date}).
+</div>
+<form action="/research/new" method="POST" class="m-0"><input type="hidden" name="q" value="${escapeHtml(fromQuery)}"><input type="hidden" name="fresh" value="1"><button type="submit" class="${BTN_PRIMARY} whitespace-nowrap">Re-research with fresh data</button></form>
 </div>` : ''}
 
-${Object.keys(clarifications).length > 0 ? `<div class="clarifications-bar" style="margin:1.25rem 0;padding:.75rem 1rem;background:var(--surface-1);border:1px solid var(--line);border-radius:10px">
-<div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-3);font-weight:600;margin-bottom:.4rem">Researched for</div>
-<div style="display:flex;flex-wrap:wrap;gap:.4rem">
-${Object.entries(clarifications).map(([k, v]) => `<span class="card-badge" style="font-size:.78rem"><strong style="color:var(--ink)">${escapeHtml(k.replace(/_/g, ' '))}:</strong> ${escapeHtml(v)}</span>`).join('')}
+${Object.keys(clarifications).length > 0 ? `<div class="clarifications-bar mt-5 border border-line bg-surface-1 p-4">
+<div class="mb-2 font-mono text-[11px] font-semibold uppercase tracking-widest text-ink-3">Researched for</div>
+<div class="flex flex-wrap gap-2">
+${Object.entries(clarifications).map(([k, v]) => `<span class="card-badge"><strong class="text-ink">${escapeHtml(k.replace(/_/g, ' '))}:</strong> ${escapeHtml(v)}</span>`).join('')}
 </div>
 </div>` : ''}
 
-${isProcessing ? `<div id="processing" style="padding:1.5rem;background:var(--surface-1);border:1px solid color-mix(in srgb,var(--accent) 30%,transparent);border-radius:0.875rem;margin:2rem 0">
-<div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1rem">
+${isProcessing ? `<div id="processing" class="my-8 border border-accent/30 bg-surface-1 p-6">
+<div class="mb-4 flex items-center gap-3">
 <div class="spinner" style="width:1.5rem;height:1.5rem;border-width:2px;margin:0;flex-shrink:0"></div>
 <div>
-<h2 style="font-size:1.1rem;font-weight:600;margin-bottom:.15rem">Researching</h2>
-<p style="color:var(--ink-3);font-size:.8rem" id="source-count">Starting...</p>
+<h2 class="font-sans text-lg font-semibold text-ink">Researching</h2>
+<p class="font-mono text-xs text-ink-3" id="source-count">Starting...</p>
 </div>
 </div>
 <ol id="progress-steps" class="progress-steps" aria-hidden="true">
@@ -748,25 +774,25 @@ ${isProcessing ? `<div id="processing" style="padding:1.5rem;background:var(--su
 <li class="progress-step" data-step="2"><span class="progress-dot"></span><span>Ranking</span></li>
 <li class="progress-step" data-step="3"><span class="progress-dot"></span><span>Writing</span></li>
 </ol>
-<div id="preview-box" style="display:none;padding:1rem 1.15rem;margin-bottom:1rem;background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 8%,transparent),color-mix(in srgb,var(--accent) 8%,transparent));border:1px solid color-mix(in srgb,var(--accent) 25%,transparent);border-radius:10px">
-<div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-3);font-weight:600;margin-bottom:.5rem">Quick answer &middot; from prior knowledge</div>
-<div id="preview-text" style="font-size:.92rem;line-height:1.55;color:var(--ink-2);white-space:pre-wrap"></div>
+<div id="preview-box" class="mb-4 hidden border border-accent/25 bg-accent-quiet p-4">
+<div class="mb-2 font-mono text-[11px] font-semibold uppercase tracking-widest text-ink-3">Quick answer &middot; from prior knowledge</div>
+<div id="preview-text" class="whitespace-pre-wrap text-body-sm leading-relaxed text-ink-2"></div>
 </div>
 <div id="activity-feed" class="activity-feed"></div>
-<div class="notify-box" style="margin-top:1.25rem;padding:.9rem 1.05rem;background:color-mix(in srgb,var(--accent) 6%,transparent);border:1px solid color-mix(in srgb,var(--accent) 25%,transparent);border-radius:10px">
-<label for="notify-email" style="display:block;font-size:.82rem;color:var(--ink-2);margin-bottom:.5rem">This usually takes ${RESEARCH_ETA}. Want an email when it&rsquo;s ready?</label>
-<form id="notify-form" style="display:flex;gap:.5rem;flex-wrap:wrap;margin:0">
-<input id="notify-email" type="email" name="email" required placeholder="you@example.com" autocomplete="email" maxlength="254" style="flex:1;min-width:12rem;padding:.55rem .7rem;background:var(--bg);border:1px solid var(--line);border-radius:8px;color:var(--ink);font-size:.88rem">
-<button type="submit" class="btn" style="font-size:.85rem;padding:.55rem 1rem;white-space:nowrap">Notify me</button>
+<div class="notify-box mt-5 border border-accent/25 bg-accent-quiet p-4">
+<label for="notify-email" class="mb-2 block text-body-sm text-ink-2">This usually takes ${RESEARCH_ETA}. Want an email when it&rsquo;s ready?</label>
+<form id="notify-form" class="m-0 flex flex-wrap gap-2">
+<input id="notify-email" type="email" name="email" required placeholder="you@example.com" autocomplete="email" maxlength="254" class="min-w-[12rem] flex-1 border border-line bg-bg px-3 py-2 font-mono text-sm text-ink placeholder:text-ink-3">
+<button type="submit" class="${BTN_PRIMARY} whitespace-nowrap">Notify me</button>
 </form>
-<p id="notify-msg" role="status" aria-live="polite" style="font-size:.8rem;color:var(--ink-3);margin-top:.5rem;min-height:1em"></p>
+<p id="notify-msg" role="status" aria-live="polite" class="mt-2 min-h-[1em] font-mono text-xs text-ink-3"></p>
 </div>
 </div>` : ''}
 
-${isFailed ? `<div style="padding:1.5rem;background:var(--trust-low-bg);border:1px solid color-mix(in srgb,var(--trust-low) 40%,transparent);border-radius:0.875rem;margin:2rem 0">
-<h2 style="color:var(--trust-low);font-size:1.1rem;font-weight:600;margin-bottom:.5rem">Research failed</h2>
-<p style="color:var(--ink-2)">${failReason ? escapeHtml(failReason) : 'Something went wrong during analysis. This could be due to insufficient source data.'}</p>
-<form method="POST" action="/research/new" style="margin-top:1rem"><input type="hidden" name="q" value="${escapeHtml(entry.query)}"><input type="hidden" name="fresh" value="1"><button type="submit" class="btn">Try again</button></form>
+${isFailed ? `<div class="my-8 border border-trust-low/40 bg-trust-low-bg p-6">
+<h2 class="font-sans text-lg font-semibold text-trust-low">Research failed</h2>
+<p class="mt-2 text-body-sm text-ink-2">${failReason ? escapeHtml(failReason) : 'Something went wrong during analysis. This could be due to insufficient source data.'}</p>
+<form method="POST" action="/research/new" class="mt-4"><input type="hidden" name="q" value="${escapeHtml(entry.query)}"><input type="hidden" name="fresh" value="1"><button type="submit" class="${BTN_PRIMARY}">Try again</button></form>
 </div>` : ''}
 
 ${entry.status === 'complete' ? (() => {
@@ -780,18 +806,18 @@ ${entry.status === 'complete' ? (() => {
   if (sourceList.length > 0) tocItems.push({ id: 'sources', label: `Sources (${sourceList.length})` });
   if (related.length > 0) tocItems.push({ id: 'related', label: 'Related research' });
   if (tocItems.length < 3) return '';
-  return `<nav class="toc" aria-label="Table of contents" style="margin:1.5rem 0;padding:.85rem 1rem;background:var(--surface-1);border:1px solid var(--line);border-radius:10px">
-<div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-3);font-weight:600;margin-bottom:.5rem">On this page</div>
-<ul style="list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:.5rem .9rem;font-size:.88rem">${tocItems.map((t) => `<li><a href="#${t.id}" style="color:var(--ink-2);text-decoration:none;border-bottom:1px dotted var(--ink-3)">${escapeHtml(t.label)}</a></li>`).join('')}</ul>
+  return `<nav class="toc my-6 border border-line bg-surface-1 p-4" aria-label="Table of contents">
+<div class="mb-2 font-mono text-[11px] font-semibold uppercase tracking-widest text-ink-3">On this page</div>
+<ul class="m-0 flex flex-wrap gap-x-3.5 gap-y-2 p-0 font-mono text-xs">${tocItems.map((t) => `<li class="list-none"><a href="#${t.id}" class="border-b border-dotted border-ink-3 text-ink-2 no-underline hover:border-accent hover:text-accent">${escapeHtml(t.label)}</a></li>`).join('')}</ul>
 </nav>`;
 })() : ''}
 
-${entry.summary ? `<div class="summary-box"><h2 id="summary">Summary</h2><p>${escapeHtml(entry.summary)}</p></div>` : ''}
+${entry.summary ? `<div class="summary-box border border-line bg-surface-1 p-5"><h2 id="summary" class="font-serif text-h3 font-semibold text-ink">Summary</h2><p class="mt-2 text-body leading-relaxed text-ink-2">${escapeHtml(entry.summary)}</p></div>` : ''}
 
-${entry.status === 'complete' && products.length === 0 ? `<div style="padding:1.5rem;background:var(--surface-1);border:1px solid var(--line);border-radius:0.875rem;margin:2rem 0">
-<h2 style="font-size:1.25rem;font-weight:700;color:var(--ink);margin-bottom:.5rem">No clear picks this time</h2>
-<p style="color:var(--ink-2)">We couldn't find enough trustworthy sources to confidently rank products for this query.</p>
-<form method="POST" action="/research/new" style="margin-top:1rem"><input type="hidden" name="q" value="${escapeHtml(entry.query)}"><input type="hidden" name="fresh" value="1"><button type="submit" class="btn">Try again</button></form>
+${entry.status === 'complete' && products.length === 0 ? `<div class="my-8 border border-line bg-surface-1 p-6">
+<h2 class="font-sans text-xl font-bold text-ink">No clear picks this time</h2>
+<p class="mt-2 text-body-sm text-ink-2">We couldn't find enough trustworthy sources to confidently rank products for this query.</p>
+<form method="POST" action="/research/new" class="mt-4"><input type="hidden" name="q" value="${escapeHtml(entry.query)}"><input type="hidden" name="fresh" value="1"><button type="submit" class="${BTN_PRIMARY}">Try again</button></form>
 </div>` : ''}
 
 ${entry.status === 'complete' && products.length > 0 ? renderOurPick(products.find((p) => p.rank === 1) || products[0], affiliateIds, isService, slug, cleanLinks, webOnly) : ''}
@@ -804,51 +830,51 @@ ${entry.status === 'complete' ? renderTrustPanel(entry.sources, entry.completed_
 
 ${entry.status === 'complete' ? adSlot(env, 'top', 'Advertisement') : ''}
 
-${hasBuyersGuide && buyersGuide ? `<section class="buyers-guide" style="background:var(--surface-1);border:1px solid var(--line);border-radius:0.875rem;padding:1.5rem;margin-bottom:2rem">
-<h2 id="buyers-guide" style="font-size:1.1rem;font-weight:600;margin-bottom:1rem">Buyer's guide</h2>
-${buyersGuide.howToChoose ? `<h3 style="font-size:.85rem;font-weight:600;color:var(--ink);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.5rem">How to choose</h3>
-<p style="color:var(--ink-2);font-size:.92rem;line-height:1.65;margin-bottom:1.25rem">${escapeHtml(buyersGuide.howToChoose)}</p>` : ''}
-${(buyersGuide.pitfalls?.length ?? 0) > 0 ? `<h3 style="font-size:.85rem;font-weight:600;color:var(--trust-medium);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.5rem">Common pitfalls</h3>
-<ul style="color:var(--ink-2);font-size:.92rem;line-height:1.65;margin-bottom:1.25rem;padding-left:1.1rem">${buyersGuide.pitfalls.map((p) => `<li style="margin-bottom:.35rem">${escapeHtml(p)}</li>`).join('')}</ul>` : ''}
-${(buyersGuide.marketingToIgnore?.length ?? 0) > 0 ? `<h3 style="font-size:.85rem;font-weight:600;color:var(--trust-low);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.5rem">Marketing to ignore</h3>
-<ul style="color:var(--ink-2);font-size:.92rem;line-height:1.65;padding-left:1.1rem">${buyersGuide.marketingToIgnore.map((p) => `<li style="margin-bottom:.35rem">${escapeHtml(p)}</li>`).join('')}</ul>` : ''}
+${hasBuyersGuide && buyersGuide ? `<section class="buyers-guide mb-8 border border-line bg-surface-1 p-6">
+<h2 id="buyers-guide" class="font-mono text-[11px] uppercase tracking-widest text-ink-3">Buyer's guide</h2>
+${buyersGuide.howToChoose ? `<h3 class="mt-4 font-mono text-xs font-semibold uppercase tracking-wide text-ink">How to choose</h3>
+<p class="mt-2 text-body-sm leading-relaxed text-ink-2">${escapeHtml(buyersGuide.howToChoose)}</p>` : ''}
+${(buyersGuide.pitfalls?.length ?? 0) > 0 ? `<h3 class="mt-5 font-mono text-xs font-semibold uppercase tracking-wide text-trust-medium">Common pitfalls</h3>
+<ul class="mt-2 list-disc space-y-1.5 pl-5 text-body-sm leading-relaxed text-ink-2">${buyersGuide.pitfalls.map((p) => `<li>${escapeHtml(p)}</li>`).join('')}</ul>` : ''}
+${(buyersGuide.marketingToIgnore?.length ?? 0) > 0 ? `<h3 class="mt-5 font-mono text-xs font-semibold uppercase tracking-wide text-trust-low">Marketing to ignore</h3>
+<ul class="mt-2 list-disc space-y-1.5 pl-5 text-body-sm leading-relaxed text-ink-2">${buyersGuide.marketingToIgnore.map((p) => `<li>${escapeHtml(p)}</li>`).join('')}</ul>` : ''}
 </section>` : ''}
 
-${products.length > 0 ? `<h2 id="products" style="font-size:1.25rem;font-weight:700;margin-bottom:1.5rem">${isService ? 'Recommendations' : 'Products compared'}</h2>
-${(!isService && products.some((p) => p.price != null)) ? `<p style="font-size:.8rem;color:var(--ink-3);margin:-0.9rem 0 1.25rem">Prices were last checked ${new Date(lastModifiedTs * 1000).toISOString().split('T')[0]} and can change — confirm the current price at the retailer before buying.</p>` : ''}
+${products.length > 0 ? `<h2 id="products" class="font-mono text-[11px] uppercase tracking-widest text-ink-3">${isService ? 'Recommendations' : 'Products compared'}</h2>
+${(!isService && products.some((p) => p.price != null)) ? `<p class="mb-5 mt-2 font-mono text-[11px] text-ink-3">Prices were last checked ${new Date(lastModifiedTs * 1000).toISOString().split('T')[0]} and can change — confirm the current price at the retailer before buying.</p>` : ''}
 ${jsonEmbed('product-list-data', productListItems)}
-<div id="product-list"></div>
-<div id="product-grid-detail" style="display:none" class="product-grid">${products.map((p, i) => {
+<div id="product-list" class="mt-4"></div>
+<div id="product-grid-detail" class="product-grid mt-4" style="display:none">${products.map((p, i) => {
   const card = renderProduct(p, i, affiliateIds, isService, slug, cleanLinks, webOnly);
   const midAd = (i === 2 && products.length >= 5) ? adSlot(env, 'mid', 'Advertisement') : '';
   return card + midAd;
 }).join('')}</div>
 ${adSlot(env, 'bottom', 'Advertisement')}` : ''}
 
-${(resultData.methodology || sourceList.length > 0) ? `<div class="sources" style="margin-top:2rem">
-${resultData.methodology ? `<h2 id="methodology" style="font-size:1.1rem;font-weight:600;margin-bottom:.5rem">Methodology</h2><p style="font-size:.85rem;color:var(--ink-2);margin-bottom:1rem">${escapeHtml(resultData.methodology)}</p>` : ''}
-${sourceList.length > 0 ? `<h2 id="sources" style="font-size:1.1rem;font-weight:600;margin-bottom:.5rem">Sources (${sourceList.length})</h2>${sourceList.map((u) => `<a href="${escapeHtml(u)}" target="_blank" rel="${sourceRel(u)}">${escapeHtml(sourceLabel(u))}</a>`).join('')}` : ''}
+${(resultData.methodology || sourceList.length > 0) ? `<div class="sources mt-8 border-t border-line pt-6">
+${resultData.methodology ? `<h2 id="methodology" class="font-mono text-[11px] uppercase tracking-widest text-ink-3">Methodology</h2><p class="mt-2 mb-4 text-body-sm leading-relaxed text-ink-2">${escapeHtml(resultData.methodology)}</p>` : ''}
+${sourceList.length > 0 ? `<h2 id="sources" class="font-mono text-[11px] uppercase tracking-widest text-ink-3">Sources (${sourceList.length})</h2><div class="mt-3 space-y-1.5">${sourceList.map((u) => `<a href="${escapeHtml(u)}" target="_blank" rel="${sourceRel(u)}" class="block truncate font-mono text-xs text-accent hover:text-accent-hover">${escapeHtml(sourceLabel(u))}</a>`).join('')}</div>` : ''}
 </div>` : ''}
 
-${related.length > 0 ? `<section class="related-research" style="margin-top:3rem;padding-top:2rem;border-top:1px solid var(--line)">
-<h2 id="related" style="font-size:1.1rem;font-weight:600;margin-bottom:1rem">Related research</h2>
-<div class="grid">${related.map((r) => `<a class="card" href="/research/${escapeHtml(r.slug)}">
+${related.length > 0 ? `<section class="related-research mt-10 border-t border-line pt-6">
+<h2 id="related" class="font-mono text-[11px] uppercase tracking-widest text-ink-3">Related research</h2>
+<div class="grid mt-4">${related.map((r) => `<a class="card" href="/research/${escapeHtml(r.slug)}">
 ${r.category ? `<div class="card-top"><span class="card-badge">${escapeHtml(r.category)}</span><span class="card-time">${timeAgo(r.created_at * 1000)}</span></div>` : `<div class="card-top"><span class="card-time">${timeAgo(r.created_at * 1000)}</span></div>`}
 <h3>${escapeHtml(displayQuery(r.query))}</h3>
 </a>`).join('')}</div>
 </section>` : ''}
 
-<div style="margin-top:3rem;padding-top:2rem;border-top:1px solid var(--line)">
-<h2 style="font-size:1.1rem;font-weight:600;margin-bottom:1rem">Research something else</h2>
-${searchBar('compact')}
+<div class="mt-10 border-t border-line pt-6">
+<h2 class="font-mono text-[11px] uppercase tracking-widest text-ink-3">Research something else</h2>
+<div class="mt-4">${searchBar('compact')}</div>
 </div>
-${entry.status === 'complete' ? `<div class="notify-footer" style="margin-top:2rem;padding-top:1.5rem;border-top:1px solid var(--line)">
-<form id="notify-form" style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin:0">
-<label for="notify-email" style="font-size:.88rem;color:var(--ink-2);flex:1;min-width:14rem">Get notified when we re-research this category</label>
-<input id="notify-email" type="email" name="email" required placeholder="you@example.com" autocomplete="email" maxlength="254" style="flex:1;min-width:12rem;padding:.55rem .7rem;background:var(--bg);border:1px solid var(--line);border-radius:8px;color:var(--ink);font-size:.88rem">
-<button type="submit" class="btn" style="font-size:.85rem;padding:.55rem 1rem;white-space:nowrap">Notify me</button>
+${entry.status === 'complete' ? `<div class="notify-footer mt-8 border-t border-line pt-6">
+<form id="notify-form" class="m-0 flex flex-wrap items-center gap-2">
+<label for="notify-email" class="min-w-[14rem] flex-1 text-body-sm text-ink-2">Get notified when we re-research this category</label>
+<input id="notify-email" type="email" name="email" required placeholder="you@example.com" autocomplete="email" maxlength="254" class="min-w-[12rem] flex-1 border border-line bg-bg px-3 py-2 font-mono text-sm text-ink placeholder:text-ink-3">
+<button type="submit" class="${BTN_PRIMARY} whitespace-nowrap">Notify me</button>
 </form>
-<p id="notify-msg" role="status" aria-live="polite" style="font-size:.8rem;color:var(--ink-3);margin-top:.5rem;min-height:1em"></p>
+<p id="notify-msg" role="status" aria-live="polite" class="mt-2 min-h-[1em] font-mono text-xs text-ink-3"></p>
 </div>` : ''}
 </div>`;
 
