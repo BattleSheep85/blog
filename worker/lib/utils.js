@@ -85,6 +85,10 @@ export function timeAgo(epochMs) {
   return `${Math.floor(seconds / 86400)}d ago`;
 }
 
+export function nowEpoch() {
+  return Math.floor(Date.now() / 1000);
+}
+
 export function parseJsonSafe(json, fallback) {
   if (!json) return fallback;
   try {

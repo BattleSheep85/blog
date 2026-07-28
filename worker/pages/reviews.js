@@ -11,7 +11,7 @@
 
 import { layout, jsonLdScript } from '../lib/html.js';
 import { escapeHtml, parseJsonSafe, isValidHttpsUrl, displayQuery } from '../lib/utils.js';
-import { renderItemImage, resolveProductCtas, isNonProductCategory } from './research-page.js';
+import { renderItemImage, resolveProductCtas, isNonProductCategory } from './research-primitives.js';
 import { resolveAmazonTag } from '../lib/affiliate-links.js';
 import { adSlot } from '../lib/ads.js';
 import { jsonEmbed, listLayoutBoot } from '../lib/list-layout-boot.js';

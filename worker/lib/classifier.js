@@ -2,11 +2,13 @@
 // ClassifierResult, and ClarifyingQuestion were TS-only interfaces in the
 // source (../types); their runtime shape is constructed directly here.
 
+import { parseFencedJson } from './llm-json.js';
+
 const CLASSIFIER_MODEL = 'google/gemini-2.5-flash-lite';
 const CLASSIFIER_TIMEOUT_MS = 8_000;
 
 // Strict structured-output schema — makes the classifier JSON schema-guaranteed
-// on the cache-miss path (no prose-wrapped JSON leaning on extractJson). Strict
+// on the cache-miss path (no prose-wrapped JSON leaning on parseFencedJson). Strict
 // mode requires every property in `required` + additionalProperties:false;
 // nullable fields use ["string","null"]. validate() still runs as the net.
 const CLASSIFIER_SCHEMA = {
@@ -232,20 +234,6 @@ function validate(raw) {
   return { accept: false, reject_reason, topical_category: null, facets: DEFAULT_FACETS, suggested_refinement, clarifying_questions: [] };
 }
 
-function extractJson(content) {
-  let text = content.trim();
-  const fence = text.match(/```(?:json)?\s*([\s\S]*?)```/);
-  if (fence) text = fence[1].trim();
-  try { return JSON.parse(text); } catch { /* fall through */ }
-  // Try to locate the first balanced JSON object.
-  const first = text.indexOf('{');
-  const last = text.lastIndexOf('}');
-  if (first >= 0 && last > first) {
-    try { return JSON.parse(text.slice(first, last + 1)); } catch { return null; }
-  }
-  return null;
-}
-
 // Fallback when the classifier is unreachable (network blip, budget exceeded,
 // bad key). We accept the query with a permissive facet set so the pipeline
 // keeps working — better to let some gray-zone queries through than to block
@@ -311,7 +299,7 @@ export async function classifyQuery(env, query, canonical) {
     return withDefaultQuestions(query, FAILOPEN_RESULT);
   }
 
-  const parsed = validate(extractJson(content));
+  const parsed = validate(parseFencedJson(content));
   if (!parsed) {
     console.warn('[classifier] unparseable response:', content.slice(0, 200));
     return withDefaultQuestions(query, FAILOPEN_RESULT);

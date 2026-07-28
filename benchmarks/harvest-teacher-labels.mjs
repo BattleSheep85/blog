@@ -35,7 +35,7 @@ import {
 } from '../worker/engine/verify.js';
 import { gatherParallel } from '../worker/engine/parallel-engine.js';
 import { isManufacturerDomain, scoreSource } from '../worker/lib/credibility.js';
-import { getTierConfig } from '../worker/lib/tiers.js';
+import { ENGINE_CONFIG } from '../worker/lib/engine-config.js';
 import { callLLM as realCallLLM } from '../worker/engine/llm.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -254,7 +254,7 @@ async function main() {
   console.error(`[harvest] mode=${args.dryRun ? 'DRY-RUN (no spend)' : 'LIVE (SPENDS)'} products=${products.length} (${skippedResume} already harvested, skipped)`);
   console.error(`[harvest] estimated spend: ~$${EST_USD_PER_PRODUCT.toFixed(2)}/product → ~$${estTotal} total (hard cap $${SPEND_CAP_USD})`);
 
-  const config = getTierConfig('full');
+  const config = ENGINE_CONFIG;
   let apiKey = null;
   let env = {};
   let callLLM = mockCallLLM;

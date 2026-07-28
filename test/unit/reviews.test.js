@@ -7,7 +7,7 @@
 // signal. Cheap insurance against shipping another render 500.
 
 import { renderReviewsPage } from '../../worker/pages/reviews.js';
-import { starMarkup } from '../../worker/pages/research-page.js';
+import { starMarkup } from '../../worker/pages/research-primitives.js';
 
 const PRODUCT = {
   id: 'abcd1234', name: 'Synology DS224+', brand: 'Synology', price: 499, rating: 4.5,

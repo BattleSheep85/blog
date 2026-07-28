@@ -6,7 +6,7 @@
 // radiogroup and no tier-dependent Turnstile toggle here — tier UI returns
 // in Phase 2.
 
-import { RESEARCH_ETA } from './tiers.js';
+import { RESEARCH_ETA } from './engine-config.js';
 
 export function searchBar(size = 'large') {
   const ph = size === 'large'

@@ -12,18 +12,7 @@ import { gatherParallel } from './parallel-engine.js';
 import { readPageInto } from './tools.js';
 import { scoreSource, isManufacturerDomain } from '../lib/credibility.js';
 import { verdictForClaim, overallVerdict, verificationWeight } from '../lib/verdict.js';
-
-// ── JSON extraction ──────────────────────────────────────────────────────────
-function extractJson(raw) {
-  if (typeof raw !== 'string') return null;
-  const m = raw.match(/```(?:json)?\s*([\s\S]*?)```/);
-  const body = (m ? m[1] : raw).trim();
-  try {
-    return JSON.parse(body);
-  } catch {
-    return null;
-  }
-}
+import { parseFencedJson } from '../lib/llm-json.js';
 
 // ── PROMPTS ───────────────────────────────────────────────────────────────────
 
@@ -195,7 +184,7 @@ export async function extractClaims({ product, claimText, apiKey, model, callLLM
   const resp = await callLLM(apiKey, model, messages, { maxTokens: 2000 });
   const costUsd = Number.isFinite(resp?.usage?.cost) ? resp.usage.cost : 0;
   const raw = resp.choices?.[0]?.message?.content ?? '';
-  const parsed = extractJson(raw);
+  const parsed = parseFencedJson(raw);
   const rawClaims = Array.isArray(parsed?.claims) ? parsed.claims.slice(0, 12) : [];
   const claims = rawClaims
     .filter((c) => c && typeof c.text === 'string' && c.text.trim())
@@ -226,7 +215,7 @@ export async function classifyStance({ claim, evidence, apiKey, model, callLLM }
   const resp = await callLLM(apiKey, model, messages, { maxTokens: 1500 });
   const costUsd = Number.isFinite(resp?.usage?.cost) ? resp.usage.cost : 0;
   const raw = resp.choices?.[0]?.message?.content ?? '';
-  const parsed = extractJson(raw);
+  const parsed = parseFencedJson(raw);
   const verdictsRaw = Array.isArray(parsed?.verdicts) ? parsed.verdicts : [];
 
   const byUrl = new Set(picked.map((s) => s.url));

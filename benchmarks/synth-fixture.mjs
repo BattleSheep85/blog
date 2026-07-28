@@ -55,7 +55,7 @@ export const SYNTH_SCENARIOS = [
   },
 ];
 
-// Per-role report sections (mirrors worker/lib/tiers.js).
+// Per-role report sections (mirrors worker/lib/engine-config.js).
 export const SYNTH_CONFIGS = {
   'instant-synth': { reportSections: ['summary', 'products', 'methodology'] },
   'full-synth': { reportSections: ['summary', 'products', 'comparison', 'methodology'] },

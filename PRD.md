@@ -129,7 +129,7 @@ The final output is a structured comparison report:
 | Background Processing | Cloudflare Queues + cron | Research jobs, reaper, SEO flywheel, re-research sweep |
 | Classifier | gemini-2.5-flash-lite (OpenRouter) | Facets, rejection, clarifying questions, Amazon-viability |
 | Planner / agent loop | gemini-2.5-flash (OpenRouter) | Search planning + note-taking (known credulous — subordinated to deterministic credibility tags) |
-| Synthesis | haiku-4.5 (instant) / sonnet-4.6 (full) / opus-4.8 no-reasoning (exhaustive) | Tier configs in worker/lib/tiers.js; opus-4.8 chosen on BullshitBench BS-detection |
+| Synthesis | Single engine config (OpenRouter) | worker/lib/engine-config.js exports one ENGINE_CONFIG for every run. See CLAUDE.md for the current model. |
 | Web Research | Serper.dev + HN Algolia + DuckDuckGo + RSS + Jina Reader | Provider fan-out in worker/engine/tools.js |
 | Hosting | Cloudflare Workers routes on chrisputer.tech | Worker-first so HTML gets per-request CSP nonces |
 
@@ -140,7 +140,8 @@ cap.
 ### Data Model (D1/SQLite, as shipped — schema/003+)
 
 **research**: Permanent research rows, server-rendered at /research/:slug
-- id, slug, query, canonical_query, status, tier, category, facets,
+- id, slug, query, canonical_query, status, tier (legacy field; it no longer
+  selects engine depth, one config runs every query), category, facets,
   clarifications, summary, result (JSON), sources (JSON with per-source
   credibility tags), cost_usd, synth_model, view_count, timestamps
 

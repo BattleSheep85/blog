@@ -13,6 +13,8 @@ import { buildSynthesisPrompt } from './prompts.js';
 import { callLLM, callLLMStreaming } from './llm.js';
 import { validateResearchResult } from './validate.js';
 import { fossLeadersFor } from '../lib/foss-leaders.js';
+import { parseFencedJson } from '../lib/llm-json.js';
+import { runPool } from '../lib/pool.js';
 
 const PER_ASPECT_QUERIES = 5;
 // Provider rotation across the flattened search queries (cycled for source
@@ -39,20 +41,6 @@ const chunk = (arr, n) => { const out = []; for (let i = 0; i < arr.length; i +=
 
 async function emit(onEvent, type, msg) { if (!onEvent) return; try { await onEvent(type, msg, null); } catch { /* */ } }
 
-// Bounded-concurrency pool (thunks). Failures resolve to null.
-async function runPool(tasks, limit) {
-  const results = new Array(tasks.length);
-  let next = 0;
-  const worker = async () => {
-    while (next < tasks.length) {
-      const i = next++;
-      try { results[i] = await tasks[i](); } catch { results[i] = null; }
-    }
-  };
-  await Promise.all(Array.from({ length: Math.min(limit, tasks.length) || 1 }, worker));
-  return results;
-}
-
 // ── Step 1: decompose into aspects WITH search queries ──────────────────────
 const DECOMPOSE_SYSTEM = `You are the lead planner for an honest product-research project. Break the user's query into independent research aspects, and for EACH aspect write concrete web search queries that would surface credible evidence (expert reviews, hands-on tests, owner complaints, prices). Good aspects: top contenders, build quality & reliability, value picks, common complaints & failure modes, expert hands-on testing, key specs/features. Make queries specific (include the product type, year, "review", "vs", "problems", "best", price bands).
 
@@ -73,8 +61,10 @@ async function decompose(query, key, plannerModel, nAspects, perAspect, plannerO
     const resp = await callLLM(key, plannerModel, messages, { ...plannerOpts });
     if (Number.isFinite(resp.usage?.cost)) cost = resp.usage.cost;
     const raw = resp.choices?.[0]?.message?.content ?? '';
-    const m = raw.match(/```(?:json)?\s*([\s\S]*?)```/);
-    const parsed = JSON.parse((m ? m[1] : raw).trim());
+    // parseFencedJson returns null (never throws) on unparseable content; the
+    // following `.aspects` property read on a null value throws and is caught
+    // by this same try/catch, so the deterministic fallback below still runs.
+    const parsed = parseFencedJson(raw);
     const aspects = Array.isArray(parsed.aspects)
       ? parsed.aspects.filter((a) => a && a.title && Array.isArray(a.queries) && a.queries.length).slice(0, nAspects)
       : [];
@@ -107,8 +97,9 @@ async function extractNotes(query, batch, key, plannerModel, plannerOpts = {}) {
     const resp = await callLLM(key, plannerModel, messages, { maxTokens: 2000, ...plannerOpts });
     const cost = Number.isFinite(resp.usage?.cost) ? resp.usage.cost : 0;
     const raw = resp.choices?.[0]?.message?.content ?? '';
-    const m = raw.match(/```(?:json)?\s*([\s\S]*?)```/);
-    const parsed = JSON.parse((m ? m[1] : raw).trim());
+    // Same null-then-throw-on-property-read pattern as decompose() above: a
+    // failed parse still lands in this catch and returns the same fallback.
+    const parsed = parseFencedJson(raw);
     return { notes: Array.isArray(parsed.notes) ? parsed.notes.filter((n) => n && n.content) : [], cost };
   } catch { return { notes: [], cost: 0 }; }
 }
@@ -241,13 +232,12 @@ export async function runParallelEngine(query, config, openrouterKey, env, onEve
   }
   if (!synthContent) throw Object.assign(new Error('No synthesis response from LLM'), { totalCostUsd });
 
-  const extractJson = (raw) => { let s = raw.trim(); const m = s.match(/```(?:json)?\s*([\s\S]*?)```/); if (m) s = m[1].trim(); try { return JSON.parse(s); } catch { return null; } };
-  let parsed = extractJson(synthContent);
+  let parsed = parseFencedJson(synthContent);
   if (parsed === null) {
     console.warn('[parallel] streamed JSON unparseable, retrying non-streaming');
     const retry = await callLLM(openrouterKey, config.synthModel, synthMessages, { reasoning: config.synthReasoning, maxTokens: config.synthMaxTokens, provider: config.synthProvider });
     if (Number.isFinite(retry.usage?.cost)) totalCostUsd += retry.usage.cost;
-    parsed = extractJson(retry.choices?.[0]?.message?.content ?? '');
+    parsed = parseFencedJson(retry.choices?.[0]?.message?.content ?? '');
     if (parsed === null) throw Object.assign(new Error('Invalid JSON from synthesis'), { totalCostUsd });
   }
 

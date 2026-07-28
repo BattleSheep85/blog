@@ -13,10 +13,10 @@ and produces honest comparison reports. Monetized via affiliate links (Amazon As
 - **AI** (bench-derived paid stack via OpenRouter, all over `fetch()`):
   - **Classifier**: `google/gemini-2.5-flash-lite` (facets + topical category + reject)
   - **Planner / agent loop**: `google/gemini-2.5-flash`
-  - **Synthesis**: `minimax/minimax-m3` (swapped 2026-07-24 per owner no-OpenAI directive; statistical co-leader of the synthesis-gold bench, composite 7.69 vs the prior incumbent `openai/gpt-5.4-mini` 7.61, 8/8 reliable — see `benchmarks/ft-data/README.md` + `worker/lib/tiers.js`. Historical note: gpt-5.4-mini itself was locked 2026-06-29 after a 50-query × 150-juror blind panel, replacing kimi-k2.6 which was slowest and timed out ~1/8 runs — see `issues.md` 2026-06-29)
-  - **Extract (verify claims)**: `anthropic/claude-haiku-4.5` (swapped 2026-07-24 per owner no-OpenAI directive; only non-OpenAI model matching the prior gpt-5.4-mini incumbent on the extract-gold bench, 7.60 quality / 10/10 reliable / 0 hard-fails — `worker/lib/tiers.js` `extractModel`, `worker/engine/verify.js`)
-  - **Stance (verify judge)**: `minimax/minimax-m3` (already OpenAI-free; won the independent-gold stance bench — `worker/lib/tiers.js` `stanceModel`)
-  - **Tiers collapsed to ONE config (2026-06-16):** one model set + ~50-search deep research for every run (no more instant/full/exhaustive). `worker/lib/tiers.js` exposes a single `ENGINE_CONFIG`; all tier keys resolve to it. Rationale + data: `benchmarks/engine-llm-bench-2026-06.md`.
+  - **Synthesis**: `minimax/minimax-m3` (swapped 2026-07-24 per owner no-OpenAI directive; statistical co-leader of the synthesis-gold bench, composite 7.69 vs the prior incumbent `openai/gpt-5.4-mini` 7.61, 8/8 reliable — see `benchmarks/ft-data/README.md` + `worker/lib/engine-config.js`. Historical note: gpt-5.4-mini itself was locked 2026-06-29 after a 50-query × 150-juror blind panel, replacing kimi-k2.6 which was slowest and timed out ~1/8 runs — see `issues.md` 2026-06-29)
+  - **Extract (verify claims)**: `anthropic/claude-haiku-4.5` (swapped 2026-07-24 per owner no-OpenAI directive; only non-OpenAI model matching the prior gpt-5.4-mini incumbent on the extract-gold bench, 7.60 quality / 10/10 reliable / 0 hard-fails — `worker/lib/engine-config.js` `extractModel`, `worker/engine/verify.js`)
+  - **Stance (verify judge)**: `minimax/minimax-m3` (already OpenAI-free; won the independent-gold stance bench — `worker/lib/engine-config.js` `stanceModel`)
+  - **One engine config for every run (2026-06-16):** one model set and about 50 searches of deep research for every run. `worker/lib/engine-config.js` exports a single `ENGINE_CONFIG`. There is no tier selector. Rationale and data: `benchmarks/engine-llm-bench-2026-06.md`.
 - **Search**: Serper.dev Google Search (web + news, primary), SearXNG (self-hosted metasearch on blackbox, free/broad — fills the dead DuckDuckGo rotation slot + leads the web fallback chain), Brave + Tavily (keyed CF-reachable fallbacks / selectable providers), HN Algolia (free), DuckDuckGo (last resort, CAPTCHA-blocked from datacenter IPs), RSS expert feeds. Provider quality benchmark: `benchmarks/bench-providers.mjs` (all four ≈ equal credibility; SearXNG free-equals paid; "use them all" = +50–65% unique-source recall).
 - **Cost governor**: `MONTHLY_BUDGET_USD` (default 60) — each run increments a
   KV `cost:YYYY-MM` counter; `POST /api/research` returns 503 once the month's
@@ -53,7 +53,7 @@ zero-dependency rule is unchanged — do NOT add a dependency that ships to the 
   orchestration), `llm.js` (OpenRouter streaming/non-streaming + context pruning),
   `tools.js` (web_search/read_page/note; Serper + HN + DDG + RSS providers),
   `prompts.js` (agent + synthesis prompts), `validate.js` (result sanitization)
-- `/worker/lib/` — Shared utilities (`db.js`, `tiers.js`, `classifier.js`,
+- `/worker/lib/` — Shared utilities (`db.js`, `engine-config.js`, `classifier.js`,
   `affiliate-links.js`, `credibility.js`, `duckduckgo.js`, `rss.js`, `jina.js`,
   `rate-limit.js`, `utils.js`). NOTE: the old `lib/llm.js` and `lib/search.js`
   were removed — the engine owns its LLM + Serper layers now.

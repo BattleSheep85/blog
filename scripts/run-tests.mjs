@@ -14,6 +14,7 @@ import { runCredibilityExtraTests } from '../test/unit/credibility-extra.test.js
 import { runPromptsTests } from '../test/unit/prompts.test.js';
 import { runLlmTests } from '../test/unit/llm.test.js';
 import { runUtilsTests } from '../test/unit/utils.test.js';
+import { runResearchPrimitivesTests } from '../test/unit/research-primitives.test.js';
 import { runAffiliateLinksTests } from '../test/unit/affiliate-links.test.js';
 import { runLibPureTests } from '../test/unit/lib-pure.test.js';
 import { runAsinResolverTests } from '../test/unit/asin-resolver.test.js';
@@ -22,6 +23,10 @@ import { runVerifyTests } from '../test/unit/verify.test.js';
 import { runVerificationRenderTests } from '../test/unit/verification-render.test.js';
 import { runJinaTests } from '../test/unit/jina.test.js';
 import { runQuotaTests } from '../test/unit/quota.test.js';
+import { runConstraintsTests } from '../test/unit/constraints.test.js';
+import { runBurstGateTests } from '../test/unit/burst-gate.test.js';
+import { runLlmJsonTests } from '../test/unit/llm-json.test.js';
+import { runPoolTests } from '../test/unit/pool.test.js';
 
 const suites = [
   ['credibility', runCredibilityTests],
@@ -29,6 +34,7 @@ const suites = [
   ['product-search', runProductSearchTests],
   ['reviews-render', runReviewsRenderTests], // async suite (awaited below)
   ['utils', runUtilsTests],
+  ['research-primitives', runResearchPrimitivesTests],
   ['affiliate-links', runAffiliateLinksTests],
   ['lib-pure', runLibPureTests],
   ['credibility-extra', runCredibilityExtraTests],
@@ -40,6 +46,10 @@ const suites = [
   ['verification-render', runVerificationRenderTests],
   ['jina', runJinaTests], // async suite (awaited below)
   ['quota', runQuotaTests], // async suite (awaited below)
+  ['constraints', runConstraintsTests],
+  ['burst-gate', runBurstGateTests], // async suite (awaited below)
+  ['llm-json', runLlmJsonTests],
+  ['pool', runPoolTests], // async suite (awaited below)
 ];
 
 let failed = 0;

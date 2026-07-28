@@ -126,6 +126,46 @@ describe('handleStartVerify — needs_input resubmit', () => {
   });
 });
 
+// Same layered guard as /api/research: the atomic RL_BURST binding caps
+// concurrency in front of the non-atomic KV hourly window, so a parallel flood
+// of paid verification runs cannot all read the same pre-write state and land.
+describe('handleStartVerify: concurrent burst gate', () => {
+  const BURST_CEILING = 15; // binding limit 10, plus slack for its permissive counting
+
+  it('admits far fewer than 30 parallel submissions from one IP', async () => {
+    const ip = '203.0.113.70';
+    const results = await Promise.all(
+      Array.from({ length: 30 }, (_, i) => handleStartVerify(
+        post({ product: `Junk Verify Widget ${i}` }, ip),
+        testEnv,
+      )),
+    );
+
+    const statuses = results.map((r) => r.status);
+    const throttled = statuses.filter((s) => s === 429).length;
+    const admitted = statuses.length - throttled;
+
+    expect(admitted).toBeLessThanOrEqual(BURST_CEILING);
+    expect(throttled).toBeGreaterThanOrEqual(30 - BURST_CEILING);
+  });
+
+  it('answers a burst-blocked request with 429 + a ~60s Retry-After', async () => {
+    const ip = '203.0.113.71';
+    const results = await Promise.all(
+      Array.from({ length: 30 }, (_, i) => handleStartVerify(
+        post({ product: `Other Junk Verify Widget ${i}` }, ip),
+        testEnv,
+      )),
+    );
+
+    const blocked = results.find((r) => r.status === 429);
+    expect(blocked).toBeTruthy();
+    const retryAfter = Number(blocked.headers.get('Retry-After'));
+    expect(retryAfter).toBeGreaterThanOrEqual(55);
+    expect(retryAfter).toBeLessThanOrEqual(61);
+  });
+});
+
 describe('handleVerifyStatus', () => {
   it('returns 404 for an unknown id', async () => {
     const res = await handleVerifyStatus('does-not-exist', env);

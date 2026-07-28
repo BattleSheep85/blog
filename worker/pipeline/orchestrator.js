@@ -18,12 +18,12 @@
 
 import { runEngine } from '../engine/engine.js';
 import { classifyQuery } from '../lib/classifier.js';
-import { getTierConfig } from '../lib/tiers.js';
+import { ENGINE_CONFIG } from '../lib/engine-config.js';
 import { buildAffiliateUrl, resolveAmazonTag } from '../lib/affiliate-links.js';
 import { resolveAsins } from '../lib/asin-resolver.js';
 import { resolveImages } from '../lib/image-resolver.js';
 import { getResearchById, generateId } from '../lib/db.js';
-import { sanitizeUrl, slugify } from '../lib/utils.js';
+import { sanitizeUrl, slugify, nowEpoch, parseJsonSafe } from '../lib/utils.js';
 import { submitToIndexNow } from '../lib/indexnow.js';
 import { screenQuery, rejectionMessage, classifierRejectToReason } from '../lib/safety.js';
 
@@ -47,7 +47,7 @@ export async function runResearchPipeline(env, reportId, query) {
         }
 
         const tier = row.tier || 'full';
-        const config = getTierConfig(tier) || getTierConfig('full');
+        const config = ENGINE_CONFIG;
         const cls = await ensureClassified(env, reportId, query, row, progress);
         if (cls.blocked) { await markRejected(env, reportId, cls.blockReason); return; }
         const { facets, topicalCategory, clarifications } = cls;
@@ -292,18 +292,8 @@ export async function claimNextPendingJob(env) {
     const cls = await ensureClassified(env, claimed.id, claimed.query, claimed, null);
     if (cls.blocked) { await markRejected(env, claimed.id, cls.blockReason); return null; }
     const { facets, topicalCategory, clarifications } = cls;
-    const config = getTierConfig(claimed.tier || 'full') || getTierConfig('full');
+    const config = ENGINE_CONFIG;
     return { reportId: claimed.id, query: claimed.query, slug: claimed.slug, facets, topicalCategory, clarifications, config };
-}
-
-function nowEpoch() {
-    return Math.floor(Date.now() / 1000);
-}
-
-function parseJsonSafe(json, fallback) {
-    if (json == null) return fallback;
-    if (typeof json !== 'string') return json;
-    try { return JSON.parse(json); } catch { return fallback; }
 }
 
 /**

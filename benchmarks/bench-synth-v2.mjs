@@ -12,7 +12,7 @@ import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
 import { buildSynthesisPrompt } from '../worker/engine/prompts.js';
 import { callLLMStreaming } from '../worker/engine/llm.js';
 import { validateResearchResult } from '../worker/engine/validate.js';
-import { getTierConfig, PUBLIC_TIERS } from '../worker/lib/tiers.js';
+import { ENGINE_CONFIG } from '../worker/lib/engine-config.js';
 import { gatherParallel, runParallelEngine } from '../worker/engine/parallel-engine.js';
 import { score } from './lib/synth-score.mjs';
 
@@ -85,7 +85,7 @@ if (!process.env.FRESH && existsSync(CORPUS_PATH)) {
   // The full engine runs a synth pass (kimi-k2.6, the slowest model) we'd only
   // discard — corpus only needs sources+notes, which are synth-model-independent.
   // We also gather GATHER_CONC queries concurrently to cut wall-clock ~Nx.
-  const cfg = { ...getTierConfig('full'), maxConcurrency: 6 };
+  const cfg = { ...ENGINE_CONFIG, maxConcurrency: 6 };
   const GATHER_CONC = Number(process.env.GATHER_CONC) || 4;
   const todo = QUERIES.slice(0, MAX_QUERIES);
   corpora = [];
@@ -122,7 +122,7 @@ corpora = corpora.slice(0, MAX_QUERIES).filter((c) => c.sources?.length);
 // Anthropic-batch bench) — imported above.
 
 // ── SYNTH ─────────────────────────────────────────────────────────────────────
-const cfg = getTierConfig('full');
+const cfg = ENGINE_CONFIG;
 
 async function runSynth(corpus, cand) {
   const prompt = buildSynthesisPrompt(corpus.query, corpus.notes, corpus.sources, cfg, corpus.facets, corpus.cat, {});

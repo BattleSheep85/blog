@@ -4,6 +4,8 @@
  * tables are unix epoch SECONDS (INTEGER), not TEXT datetimes.
  */
 
+import { nowEpoch } from './utils.js';
+
 /**
  * Generate a short random ID (URL-safe, [a-z0-9]{16}).
  */
@@ -11,10 +13,6 @@ export function generateId() {
     const bytes = new Uint8Array(12);
     crypto.getRandomValues(bytes);
     return Array.from(bytes, b => b.toString(36).padStart(2, '0')).join('').slice(0, 16);
-}
-
-function nowEpoch() {
-    return Math.floor(Date.now() / 1000);
 }
 
 // -- Research (permanent rows, server-rendered at /research/:slug) --

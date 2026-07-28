@@ -30,7 +30,7 @@ import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { buildSynthesisPrompt } from '../worker/engine/prompts.js';
 import { callLLMStreaming } from '../worker/engine/llm.js';
 import { validateResearchResult } from '../worker/engine/validate.js';
-import { getTierConfig } from '../worker/lib/tiers.js';
+import { ENGINE_CONFIG } from '../worker/lib/engine-config.js';
 import { score } from './lib/synth-score.mjs';
 
 // ── ENV ──────────────────────────────────────────────────────────────────────
@@ -124,7 +124,7 @@ process.stderr.write(
 );
 
 // ── SYNTH ─────────────────────────────────────────────────────────────────────
-const cfg = getTierConfig('full');
+const cfg = ENGINE_CONFIG;
 
 async function runSynth(corpus, cand) {
   const prompt = buildSynthesisPrompt(corpus.query, corpus.notes, corpus.sources, cfg, corpus.facets, corpus.cat, {});

@@ -14,7 +14,7 @@ import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
 import { buildSynthesisPrompt } from '../worker/engine/prompts.js';
 import { callLLMStreaming } from '../worker/engine/llm.js';
 import { validateResearchResult } from '../worker/engine/validate.js';
-import { getTierConfig } from '../worker/lib/tiers.js';
+import { ENGINE_CONFIG } from '../worker/lib/engine-config.js';
 import { score } from './lib/synth-score.mjs';
 import { submitBatch, pollBatch, getResults, textOf } from './lib/anthropic-batch.mjs';
 
@@ -45,7 +45,7 @@ const MAX_Q = Number(process.env.MAX_Q) || Math.min(corpora.length, 8);
 corpora = corpora.slice(0, MAX_Q);
 process.stderr.write(`using cached corpus (${corpora.length} entries)\n`);
 
-const cfg = getTierConfig('full');
+const cfg = ENGINE_CONFIG;
 
 // ── PROMPT BUILD (shared shape for both models) ──────────────────────────────
 function buildPrompt(corpus) {

@@ -1,17 +1,17 @@
 /**
  * Pre-research clarifying-questions interstitial.
  *
- * After the classifier accepts a Full-tier query and returns
- * clarifying_questions, the worker renders this page instead of kicking off the
- * pipeline. The user picks chips (or types free-text), hits Run — the form GETs
- * /research/new with the original query + tier + one clarify_<key> param per
- * question. handleNewResearch sees the clarify_* params, skips this page, and
- * starts research with the answers threaded through.
+ * After the classifier accepts a query and returns clarifying_questions, the
+ * worker renders this page instead of kicking off the pipeline. The user
+ * picks chips (or types free-text), hits Run. The form GETs /research/new
+ * with the original query and one clarify_<key> param per question.
+ * handleNewResearch sees the clarify_* params, skips this page, and starts
+ * research with the answers threaded through.
  */
 
 import { layout } from '../lib/html.js';
 import { escapeHtml, displayQuery } from '../lib/utils.js';
-import { RESEARCH_ETA } from '../lib/tiers.js';
+import { RESEARCH_ETA } from '../lib/engine-config.js';
 
 function renderQuestion(q, idx) {
     const inputName = `clarify_${escapeHtml(q.key)}`;
@@ -36,11 +36,11 @@ ${chips}
  * Render the clarify interstitial. `questions` is the classifier's
  * clarifying_questions array (each: { key, question, suggested_answers }).
  */
-export function renderClarifyPage(query, tier, questions, env) {
+export function renderClarifyPage(query, questions, env) {
     const prettyQuery = displayQuery(query);
-    // Tiers collapsed to one stack (2026-06-16) — single label/time for every run.
-    const tierLabel = 'Deep research';
-    const tierTime = `about ${RESEARCH_ETA}`;
+    // One research depth for every run: a single label and time estimate.
+    const researchLabel = 'Deep research';
+    const researchTime = `about ${RESEARCH_ETA}`;
 
     const body = `<div class="grid-bg border-b border-line">
 <div class="mx-auto max-w-2xl px-6 py-12 md:py-16">
@@ -52,16 +52,15 @@ export function renderClarifyPage(query, tier, questions, env) {
 
 <p class="font-mono text-[11px] uppercase tracking-widest text-ink-3">Instrument &middot; Calibration questions</p>
 <h1 class="mt-2 mb-2 font-serif text-h1 font-semibold text-ink">A couple of questions first</h1>
-<p class="mb-1 text-body text-ink-2">Researching <strong class="font-serif italic text-accent">&ldquo;${escapeHtml(prettyQuery)}&rdquo;</strong> as <strong class="text-ink">${tierLabel}</strong> (${tierTime}).</p>
+<p class="mb-1 text-body text-ink-2">Researching <strong class="font-serif italic text-accent">&ldquo;${escapeHtml(prettyQuery)}&rdquo;</strong> as <strong class="text-ink">${researchLabel}</strong> (${researchTime}).</p>
 <p class="mb-8 text-body-sm text-ink-3">Your answers steer the pick. Skip any question to let the research engine choose defaults.</p>
 
 <form action="/research/new" method="GET" class="clarify-form" id="clarify-form">
 <input type="hidden" name="q" value="${escapeHtml(query)}">
-<input type="hidden" name="tier" value="${escapeHtml(tier)}">
 ${questions.map(renderQuestion).join('')}
 
 <div class="mt-4 flex flex-wrap gap-2">
-<button type="submit" class="inline-flex min-w-[10rem] flex-1 items-center justify-center gap-2 bg-accent-strong px-4 py-2.5 font-mono text-xs font-semibold uppercase tracking-wide text-white transition-colors hover:bg-accent-hover">Run ${escapeHtml(tierLabel)} research &#9656;</button>
+<button type="submit" class="inline-flex min-w-[10rem] flex-1 items-center justify-center gap-2 bg-accent-strong px-4 py-2.5 font-mono text-xs font-semibold uppercase tracking-wide text-white transition-colors hover:bg-accent-hover">Run ${escapeHtml(researchLabel)} research &#9656;</button>
 <button type="submit" name="skip_clarify" value="1" class="inline-flex items-center gap-2 border border-line bg-surface-1 px-4 py-2.5 font-mono text-xs font-semibold uppercase tracking-wide text-ink transition-colors hover:border-ink-3">Skip &mdash; research as-is</button>
 </div>
 </form>

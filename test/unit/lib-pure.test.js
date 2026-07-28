@@ -1,8 +1,8 @@
 // Full-coverage assertions for the remaining small pure modules:
-// status.js, guides.js, tiers.js, ads.js, and html.js's pure helpers + layout().
+// status.js, guides.js, engine-config.js, ads.js, and html.js's pure helpers + layout().
 import { apiStatus } from '../../worker/lib/status.js';
 import { STATIC_GUIDES, STATIC_GUIDE_SLUGS, GUIDES_LASTMOD } from '../../worker/lib/guides.js';
-import { getTierConfig, isValidTier, PUBLIC_TIERS, TIER_CONFIGS } from '../../worker/lib/tiers.js';
+import { ENGINE_CONFIG } from '../../worker/lib/engine-config.js';
 import { adSlot } from '../../worker/lib/ads.js';
 import { html, raw, jsonLdScript, layout } from '../../worker/lib/html.js';
 import { searchBar } from '../../worker/lib/search-bar.js';
@@ -27,14 +27,8 @@ export function runLibPureTests() {
   ok('guide slug set', STATIC_GUIDE_SLUGS.has('synology-vs-qnap'));
   eq('guides lastmod', GUIDES_LASTMOD, '2026-06-09');
 
-  // tiers.js
-  eq('tier full → config', getTierConfig('full'), TIER_CONFIGS.full);
-  eq('tier unknown → default config', getTierConfig('zzz').synthModel, 'minimax/minimax-m3');
-  ok('all tier keys share one config', TIER_CONFIGS.instant === TIER_CONFIGS.full && TIER_CONFIGS.full === TIER_CONFIGS.exhaustive);
-  eq('public tiers', PUBLIC_TIERS, ['instant', 'full']);
-  for (const t of PUBLIC_TIERS) ok(`isValidTier ${t}`, isValidTier(t));
-  ok('isValidTier rejects exhaustive', !isValidTier('exhaustive'));
-  ok('isValidTier rejects bogus', !isValidTier('bogus'));
+  // engine-config.js
+  eq('engine config synth model', ENGINE_CONFIG.synthModel, 'minimax/minimax-m3');
 
   // ads.js
   eq('adSlot no publisher → ""', adSlot({}, 'top', 'Ad'), '');

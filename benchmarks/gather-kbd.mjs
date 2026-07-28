@@ -1,6 +1,6 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { runParallelEngine } from '../worker/engine/parallel-engine.js';
-import { getTierConfig } from '../worker/lib/tiers.js';
+import { ENGINE_CONFIG } from '../worker/lib/engine-config.js';
 const e = {}; for (const l of readFileSync(new URL('../.dev.vars', import.meta.url), 'utf8').split('\n')) { const m = l.match(/^([A-Z_]+)=(.*)$/); if (m) e[m[1]] = m[2].trim(); }
 const F = { needs_location: false, is_buyable: true, is_experience: false, is_content: false, is_service: false, is_comparative: false, sold_on_amazon: true, recency_sensitive: true };
 const QS = [
@@ -11,7 +11,7 @@ const out = [];
 for (const { q, cat } of QS) {
   process.stderr.write('gather: ' + q + '\n');
   try {
-    const r = await runParallelEngine(q, { ...getTierConfig('full'), maxConcurrency: 6 }, e.OPENROUTER_API_KEY, { SERPER_API_KEY: e.SERPER_API_KEY }, async () => {}, F, cat, {});
+    const r = await runParallelEngine(q, { ...ENGINE_CONFIG, maxConcurrency: 6 }, e.OPENROUTER_API_KEY, { SERPER_API_KEY: e.SERPER_API_KEY }, async () => {}, F, cat, {});
     out.push({ query: q, facets: F, cat, sources: r.sources || [], notes: r.notes || [] });
     process.stderr.write('  → ' + (r.sources || []).length + ' sources\n');
   } catch (err) { process.stderr.write('  FAIL ' + err.message + '\n'); }

@@ -87,6 +87,20 @@ max_batch_size = 1
 max_retries = 2
 dead_letter_queue = "truerank-dlq"
 
+# Burst gate for the checked POST paths (research/verify/chat/auth).
+# Atomic per colo = atomic per attacking source. Layered in front of the
+# KV hourly window, which stays the volume ceiling. Free, GA, wrangler >= 4.36.
+# namespace_id is an arbitrary string unique inside this Worker; no dashboard
+# resource exists. Design: docs/rate-limit-design.md.
+# Rollback: delete this block. worker/lib/burst-gate.js fail-opens when
+# env.RL_BURST is undefined and KV keeps enforcing the hourly caps.
+[[ratelimits]]
+name = "RL_BURST"
+namespace_id = "1001"
+[ratelimits.simple]
+limit = 10
+period = 60
+
 # Secrets (set via wrangler secret put):
 # OPENROUTER_API_KEY  — paid OpenRouter key (planner/synth/classifier models)
 # SERPER_API_KEY      — Serper.dev Google Search (web + news providers)

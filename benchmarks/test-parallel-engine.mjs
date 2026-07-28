@@ -6,7 +6,7 @@
 
 import { readFileSync } from 'node:fs';
 import { runParallelEngine } from '../worker/engine/parallel-engine.js';
-import { getTierConfig } from '../worker/lib/tiers.js';
+import { ENGINE_CONFIG } from '../worker/lib/engine-config.js';
 
 function env(path) {
   const out = {};
@@ -20,7 +20,7 @@ const OPENROUTER_API_KEY = e.OPENROUTER_API_KEY;
 const SERPER_API_KEY = e.SERPER_API_KEY;
 
 const query = process.argv[2] || 'best ergonomic office chair under 400';
-const config = { ...getTierConfig('full'), maxConcurrency: 6 };
+const config = { ...ENGINE_CONFIG, maxConcurrency: 6 };
 const facets = { needs_location: false, is_buyable: true, is_experience: false, is_content: false, is_service: false, is_comparative: false, sold_on_amazon: true, recency_sensitive: true };
 
 let events = 0;

@@ -10,7 +10,7 @@ import { layout } from '../lib/html.js';
 import { escapeHtml, displayQuery, isValidHttpsUrl, parseJsonSafe } from '../lib/utils.js';
 import { getResearchBySlug, findRankingForCategory } from '../lib/db.js';
 import { buildAffiliateUrl, retailerLabel, resolveAmazonTag } from '../lib/affiliate-links.js';
-import { starMarkup, renderItemImage } from './research-page.js';
+import { starMarkup, renderItemImage } from './research-primitives.js';
 
 /**
  * GET /verify — the product-entry form. `prefillProduct` comes from the

@@ -23,10 +23,13 @@ INCLUDES=(
   worker/lib/credibility.js
   worker/lib/status.js
   worker/lib/guides.js
-  worker/lib/tiers.js
+  worker/lib/engine-config.js
   worker/lib/ads.js
   worker/lib/html.js
   worker/lib/search-bar.js
+  worker/lib/burst-gate.js
+  worker/lib/llm-json.js
+  worker/lib/pool.js
   worker/engine/validate.js
   worker/engine/prompts.js
 )

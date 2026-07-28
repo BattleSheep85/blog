@@ -11,14 +11,11 @@
  */
 
 import { generateId } from './db.js';
+import { nowEpoch } from './utils.js';
 
 const PBKDF2_ITERATIONS = 600_000;
 const SESSION_COOKIE = 'tr_sess';
 const SESSION_TTL_SECONDS = 30 * 86400; // 30 days
-
-function nowEpoch() {
-    return Math.floor(Date.now() / 1000);
-}
 
 function b64encode(bytes) {
     let s = '';

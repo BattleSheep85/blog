@@ -12,6 +12,7 @@ import {
     createSession, destroySession, clearSessionCookie, getSessionUser, getUserSearches,
 } from '../lib/auth.js';
 import { checkRateLimit } from '../lib/rate-limit.js';
+import { checkBurstGate } from '../lib/burst-gate.js';
 import { layout } from '../lib/html.js';
 import { escapeHtml, displayQuery } from '../lib/utils.js';
 
@@ -24,9 +25,16 @@ function jsonResponse(data, status = 200, extraHeaders = {}) {
 
 // Shared throttle for signup + login attempts: 10/hour/IP. Successful logins
 // are rare enough per-IP that sharing the bucket with failures is fine.
+// The atomic RL_BURST binding caps concurrency (10/60s) in front of the
+// non-atomic KV window: a parallel credential-stuffing burst otherwise reads
+// one pre-write state and lands every attempt, each costing 100k PBKDF2 rounds.
 async function authRateLimited(request, env) {
     const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
-    const check = await checkRateLimit(env.KV, `auth:${ip}`, 10, 3600);
+    const rateKey = `auth:${ip}`;
+    const burst = await checkBurstGate(env.RL_BURST, rateKey);
+    const check = burst.allowed
+        ? await checkRateLimit(env.KV, rateKey, 10, 3600)
+        : burst;
     return !check.allowed;
 }
 

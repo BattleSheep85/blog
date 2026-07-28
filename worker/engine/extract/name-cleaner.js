@@ -6,13 +6,13 @@
 // name may only use words already in the original). Conservative on drops (keep when unsure)
 // so real products aren't lost. Selects + cleans, never generates.
 import { callLLM } from '../llm.js';
+import { parseFencedJson } from '../../lib/llm-json.js';
 
+// Deliberate superset of the shared parseFencedJson: also strips HTML entities
+// before collapsing non-alnum runs, which is load-bearing for the
+// groundedness gate below (cleaned names are compared against decoded
+// original text). Do NOT replace with the plain text.js `norm()`.
 const gNorm = (s) => String(s || '').toLowerCase().replace(/&#?[a-z0-9]+;/g, ' ').replace(/[^a-z0-9]+/g, ' ').replace(/\s+/g, ' ').trim();
-const extractJson = (raw) => {
-  if (raw && typeof raw === 'object') return raw;
-  let s = String(raw || '').trim(); const m = s.match(/```(?:json)?\s*([\s\S]*?)```/); if (m) s = m[1].trim();
-  try { return JSON.parse(s); } catch { return null; }
-};
 
 const SCHEMA = {
   type: 'object', additionalProperties: false, required: ['items'],
@@ -45,7 +45,7 @@ ${list}`,
       reasoning: { effort: 'low' }, maxTokens: 6000,
       responseFormat: { type: 'json_schema', json_schema: { name: 'cleanup', strict: true, schema: SCHEMA } },
     });
-    decisions = extractJson(r.choices?.[0]?.message?.content);
+    decisions = parseFencedJson(r.choices?.[0]?.message?.content);
   } catch (e) { console.log('[name-cleaner] skipped:', e?.message); return report; }
   if (!decisions || !Array.isArray(decisions.items)) return report;
   const byI = new Map(decisions.items.map((d) => [d.i, d]));

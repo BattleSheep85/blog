@@ -1,6 +1,134 @@
 # Issues
 
-Last updated: 2026-07-24
+Last updated: 2026-07-28
+
+## 2026-07-28: Quality, security, and documentation pass (session summary)
+
+This section summarizes today's whole pass. The two 2026-07-28 sections below
+(rate limit and de-duplication work) were added earlier today by other agents.
+They stay as they are. This section does not repeat their detail.
+
+### Closed this session
+- Tier removal: worker/lib/tiers.js is now worker/lib/engine-config.js. It
+  exports ENGINE_CONFIG directly. The dead TIER_CONFIGS, PUBLIC_TIERS,
+  getTierConfig, and isValidTier code is gone. A repo-wide search found zero
+  remaining matches under worker/.
+- File-size splits: research-page.js (was 1304 lines) split into
+  research-primitives.js (275 lines), research-cards.js (298 lines),
+  research-scripts.js (337 lines), and research-jsonld.js (203 lines).
+  research-page.js is now 390 lines. worker/index.js (was 944 lines) split
+  into lib/http-response.js, lib/flags.js, jobs.js, and routes/pages.js.
+  worker/index.js is now 389 lines. extract/engine.js (was 828 lines) split
+  into text.js, candidates.js, and scoring.js. extract/engine.js is now 167
+  lines. No file under worker/ now exceeds 746 lines, so the 800-line cap
+  holds. An equivalence harness checked renderer output, old code against
+  new code, byte for byte.
+- Helper de-duplication: eight copies of the fenced-JSON parser and three
+  copies of the concurrency pool are now one shared module each,
+  worker/lib/llm-json.js and worker/lib/pool.js.
+- Price-cap enforcement: worker/lib/constraints.js reads a price cap or
+  floor from the query text and from the clarification answers.
+  validate.js drops out-of-range products before the quality gate. A
+  product with no known price is never dropped. The filter stands down
+  when it would leave fewer than 2 products.
+- Privacy disclosure: public/privacy.html now names the search providers
+  and the page reader. Correction along the way: Tavily and SearXNG are
+  left out on purpose, because neither key is set on the deployed worker,
+  so no query data reaches them. DuckDuckGo and Hacker News (through
+  Algolia) are now named, because both are keyless and always wired in.
+- Freshness badge: research-primitives.js adds freshnessLabel(). A "Prices
+  checked ..." badge now sits above the Our-pick button. It shows green at
+  30 days old or less, red after that. Past 60 days it shows the month and
+  year instead of a day count.
+
+### Confirmed stale (checked with grep this session, not from memory alone)
+- The mobile-nav fix from the Forensic redesign is real. worker/lib/html.js
+  and public/index.html both carry a checkbox-driven left drawer
+  (drawer-toggle), a labelled open control, a labelled close control, and a
+  panel marked role="dialog".
+- The facets-threading gap is closed for the ranking path only. Live
+  ranking runs worker/engine/engine.js. Its runEngine passes facets into
+  buildAgentPrompt and on into facetFocusBlocks. The blackbox external
+  worker that used to run this path is retired
+  (EXTERNAL_WORKER_ENABLED = "false", since 2026-07-22). The verify path,
+  worker/engine/parallel-engine.js decompose(), still does not receive
+  facets. See the new LOW item below.
+
+### New findings this session
+- [ ] LOW (architecture): monthKey lives in worker/pipeline/orchestrator.js,
+      but worker/lib/keywords.js now imports it. This points a lib module at
+      a pipeline module. It is not a cycle (orchestrator.js does not import
+      keywords.js). monthKey belongs in worker/lib/utils.js. Move it when
+      convenient.
+- [ ] LOW (observability): worker/engine/extract/recall-supplement.js no
+      longer logs its "skipped" diagnostic when the model returns JSON it
+      cannot parse. The shared parser now returns null instead of throwing,
+      so the catch block that used to log the message never runs. The value
+      returned to the caller is unchanged.
+- [ ] LOW (docs): the trailing "Secrets" comment block in wrangler.toml
+      lists 3 of the 7 secrets set on the deployed worker. Missing from the
+      comment: BRAVE_API_KEY, JINA_API_KEY, GSC_SA_KEY, METRICS_TOKEN,
+      WORKER_SECRET.
+- [ ] LOW (cleanup): worker/routes/pages.js still carries a comment above
+      the clarifying-questions interstitial that predates the tier removal
+      ("Tier: default 'full'. Only 'full' submissions get the
+      clarifying-questions grill below; instant (if ever wired) skips it
+      for speed."). The code line it once described is gone. worker/index.js
+      carries no such comment. Its split already removed it.
+- [ ] LOW (quality): worker/engine/parallel-engine.js decompose() still does
+      not receive classifier facets. This path now only runs for /verify
+      claim extraction, not for ranking (the ranking path moved to
+      worker/engine/engine.js when the blackbox worker retired 2026-07-22,
+      and that path does thread facets through). A location/service/
+      experience VERIFY run could still get a product-shaped plan.
+- [ ] MEDIUM (unvalidated, carried forward): the planner role
+      (google/gemini-2.5-flash) is still the one model role never measured
+      on an in-house gold bench. It was deferred as the hardest to
+      gold-label. A bench run costs real money, so it needs an owner
+      go-ahead first.
+
+## 2026-07-28: worker/lib duplication consolidated (llm-json.js, pool.js)
+
+- [ ] LOW (infra): new shared modules `worker/lib/llm-json.js` (`parseFencedJson`) and
+      `worker/lib/pool.js` (`runPool`) replace eight duplicated fenced-JSON parsers and
+      three duplicated concurrency-pool copies across the engine. The homelab rollback
+      copy (`research-worker.mjs`, stopped, `EXTERNAL_WORKER_ENABLED=false`) imports
+      `worker/engine/parallel-engine.js`, so it now needs both new files synced before
+      it could be re-enabled.
+
+## 2026-07-28: rate-limit atomicity closed (burst gate + consumer budget backstop)
+
+Design: `docs/rate-limit-design.md` (Option A: native Cloudflare rate-limiting
+binding, NO Durable Objects). Rollback = delete the `[[ratelimits]]` block;
+`checkBurstGate` fail-opens and KV keeps enforcing the hourly caps.
+
+### Fixed
+- [x] MED (security): rate-limit.js atomicity. Closed WITHOUT Durable Objects. A native
+      `[[ratelimits]]` binding (RL_BURST, 10/60s) now caps per-IP concurrency in front of the
+      non-atomic KV window on research/verify/chat/auth. The binding is atomic per colo, which
+      for a per-IP key equals atomic per attacking source. `worker/lib/rate-limit.js` is
+      unchanged; `go:`/`find:` stay on plain KV (cheap dampers). New: `worker/lib/burst-gate.js`.
+- [x] HIGH (cost): the queue consumer never re-checked the budget, so a burst admitted before
+      any spend landed drained the whole month. `processResearchMessage` +
+      `processVerificationMessage` now call `budgetExhausted()` after the pending->processing
+      claim and fail the row with a user-facing message instead of running the pipeline. This
+      is what bounds the blast radius to "budget plus in-flight". (worker/index.js)
+- [x] MED (cost/test): `npx vitest run` fired a REAL queue delivery from research.spec.js, which
+      claimed the row and ran the full pipeline against the live keys vitest loads from
+      `.dev.vars` (real spend), and raced the isolated-storage teardown ("Failed to pop isolated
+      storage stack frame"). Stubbed RESEARCH_QUEUE in that spec, like verify-route.spec.js. The
+      whole vitest run is now green and exits 0.
+
+### Known consequence (accepted)
+- The burst gate is 10 per 60 s per IP on research/verify/chat/auth, so more than 10 paid
+  submissions from ONE IP inside a minute now get 429 + `Retry-After: 60` even for signed-in
+  users (who are exempt from the lifetime quota, not from abuse damping).
+  `test/integration/quota.spec.js` therefore runs without the binding (the supported fail-open
+  configuration) so it can still prove the 10-verify LIFETIME quota.
+
+### Not done (deliberate)
+- [ ] LOW (cleanup): `RATE_LIMIT_MAX` / `RATE_LIMIT_WINDOW_SECONDS` in `[vars]` are dead config
+      (no code reads them, verified again 2026-07-28). Left in place to keep this diff scoped.
 
 ## 2026-07-24 — Stance judge swap validated + model-benchmark findings
 
@@ -259,8 +387,11 @@ valid 19KB single-line prebuilt file.)
 ### Low (quality / enables UI work)
 - [x] LOW (quality): static homepage footer vs SSR layout footer have drifted (different nav links + disclosure
       text). (public/index.html:405-428, worker/lib/html.js:159-179) — FIXED (4-pass UI/UX sprint 2026-07-08): disclosure text unified; nav-column differences left.
-- [ ] LOW (quality): research-page.js is 1304 lines (>800 cap) with pervasive inline style= duplicating app.css
-      classes; extract inline scripts (~270 lines) + card family (~210) into modules.
+- [x] LOW (quality): research-page.js is 1304 lines (>800 cap) with pervasive inline style= duplicating app.css
+      classes; extract inline scripts (~270 lines) + card family (~210) into modules. RESOLVED 2026-07-28:
+      split into research-primitives.js (275 lines), research-cards.js (298 lines), research-scripts.js
+      (337 lines), and research-jsonld.js (203 lines). research-page.js is now 390 lines. An equivalence
+      harness verified the renderers are byte-identical, old code against new code.
 - [x] LOW (quality): JSON-encode slug/id into inline <script> instead of escapeHtml (wrong escaper for JS-string
       context; latent breakout if slug generation loosens). (worker/pages/research-page.js:1047,1123,1161) — FIXED 2026-07-08
 - [x] LOW (docs): Tailwind rebuild command undocumented + not in CI — new utility classes silently uncompiled. — FIXED 2026-07-08
@@ -269,7 +400,9 @@ valid 19KB single-line prebuilt file.)
 - [x] navigator.share button on the report share bar (progressive enhancement) — SHIPPED 2026-07-08
 - [x] example-query chips are one-tap (start the classify→clarify flow) — SHIPPED 2026-07-08
 - [x] "Searching → Reading → Ranking → Writing" step-progress indicator on the processing page — SHIPPED 2026-07-08
-- [ ] freshness badge at the Our-pick CTA — not yet done
+- [x] freshness badge at the Our-pick CTA — not yet done. SHIPPED 2026-07-28: freshnessLabel() in
+      research-primitives.js plus a "Prices checked ..." badge above the Our-pick button. Green at 30
+      days old or less, red after that, absolute month and year shown after 60 days.
 
 Note: the AdSense-no-consent-banner finding was already logged (see the docs/adsense-consent-plan.md item) — do not duplicate it.
 
@@ -339,12 +472,20 @@ blackbox redeploy needed this pass.
 ### Deferred (with rationale — logged, not done)
 - [ ] MED (perf): getRelatedResearch read amplification — REASSESSED as already mitigated: the research
       page is KV-cached, so the OR-of-8 LIKE runs only on cache MISS, not per view. No change made.
-- [ ] MED (quality): dead "tiers" concept still threaded through handlers/queue/metrics/DB — pervasive,
+- [x] MED (quality): dead "tiers" concept still threaded through handlers/queue/metrics/DB — pervasive,
       cosmetic, real regression risk (queue message shape, metrics by_tier, DB inserts). Deferred.
-- [ ] MED (quality): file-size splits (research-page.js 1298, extract/engine.js 828) — large refactors,
+      RESOLVED 2026-07-28: worker/lib/tiers.js is now worker/lib/engine-config.js, exporting ENGINE_CONFIG
+      directly. TIER_CONFIGS, PUBLIC_TIERS, getTierConfig, and isValidTier are deleted, along with the
+      queue message field and the clarify-page thread. The D1 column, the keywords.js re-research
+      predicate, and the metrics by_tier field were kept on purpose (an external dashboard reads by_tier).
+- [x] MED (quality): file-size splits (research-page.js 1298, extract/engine.js 828) — large refactors,
       one blackbox + honesty-critical; deferred per the "no big refactors late in context" rule.
-- [ ] MED (security): rate-limit.js atomicity — a true fix needs Durable Objects (architectural), not a
-      patch. Left as a documented known limitation; the new research velocity cap is a volume ceiling anyway.
+      RESOLVED 2026-07-28: research-page.js split into research-primitives.js, research-cards.js,
+      research-scripts.js, and research-jsonld.js (390 lines left). extract/engine.js split into text.js,
+      candidates.js, and scoring.js (167 lines left), gated by a golden-output equivalence check.
+- [x] MED (security): rate-limit.js atomicity. RESOLVED 2026-07-28, and Durable Objects were NOT
+      needed. Native `[[ratelimits]]` burst gate in front of the KV window; see the 2026-07-28
+      section at the top and `docs/rate-limit-design.md`.
 - [ ] LOW (cleanup, blackbox-side): DEBUG_FUNNEL scaffolding, buildAgentTools(facets) ignored arg, and the
       parseFencedJson (×5) + runPool (×2) dedups — batched for a future engine-cleanup pass + blackbox
       redeploy (avoid cosmetic drift). NOTE: "sanitizeUrl dead export" was a FALSE POSITIVE (used in orchestrator.js).
@@ -389,48 +530,84 @@ consent gaps, and stale docs — NOT in core logic.
       Steps in docs/adsense-consent-plan.md Step 1 + Verification.
 
 ### Open, logged (not fixed this pass) — MED
-- [ ] MED (security): prompt-injection via the raw user QUERY — it's interpolated into planner/synth
+- [x] MED (security): prompt-injection via the raw user QUERY — it's interpolated into planner/synth
       prompts; the injection defense we shipped covers page CONTENT, not the query. Only the fail-open LLM
-      classifier guards it.
-- [ ] MED (legal): email capture (subscribe.js / 005_subscribers.sql) stores addresses with no consent
+      classifier guards it. STALE, closed 2026-07-08: INJECTION_PATTERNS in safety.js now screens the raw
+      query itself (see the 2026-07-08 "Review-board backlog cleared" section, Fixed list).
+- [x] MED (legal): email capture (subscribe.js / 005_subscribers.sql) stores addresses with no consent
       flag/timestamp and no self-serve unsubscribe / one-click list-unsubscribe (GDPR/CAN-SPAM thin).
-- [ ] MED (security): lib/rate-limit.js sliding window is non-atomic (read-then-write) — soft-defeatable
-      under a concurrent burst (auth/chat/affiliate + the new research cap). Volume ceiling still holds.
-- [ ] MED (quality/CLAUDE.md): file-size limits blown — research-page.js 1298 lines, extract/engine.js
+      STALE, closed 2026-07-08: schema 009 plus the unsubscribe route shipped consent timestamps and
+      one-click unsubscribe (see the 2026-07-08 "Review-board backlog cleared" section, Fixed list).
+- [x] MED (security): lib/rate-limit.js sliding window is non-atomic (read-then-write). RESOLVED
+      2026-07-28 for the four paid/CPU paths (research/verify/chat/auth) by the RL_BURST burst gate
+      layered in front of it. `go:`/`find:` stay soft on purpose (click damper + analytics throttle,
+      both ~$0). See the 2026-07-28 section at the top.
+- [x] MED (quality/CLAUDE.md): file-size limits blown — research-page.js 1298 lines, extract/engine.js
       828 (limit 800); functions far over 50 lines (renderResearchResult ~725, analyzeProduct ~162).
-- [ ] MED (quality): duplication — two runPool impls; ~5 copies of the fenced-JSON parser; duplicated
+      RESOLVED 2026-07-28: research-page.js and extract/engine.js both split (see the file-size items
+      above). worker/index.js (944 lines) also split, into lib/http-response.js, lib/flags.js, jobs.js,
+      and routes/pages.js (389 lines left). No file under worker/ now exceeds 746 lines.
+- [x] MED (quality): duplication — two runPool impls; ~5 copies of the fenced-JSON parser; duplicated
       stream→parse→retry synth orchestration (engine.js ↔ parallel-engine.js); DEFAULT_AFFILIATE_TAG
       hardcoded in research-page.js + reviews.js with DIVERGENT env-key fallbacks (tags can silently differ
-      between /reviews and /research).
-- [ ] MED (quality): "tiers" concept is collapsed to one config but still threaded through handlers/queue/
+      between /reviews and /research). RESOLVED 2026-07-28 for the pool and parser duplication: consolidated
+      into worker/lib/pool.js and worker/lib/llm-json.js. The real count was 8 parser copies and 3 pools,
+      not 5 and 2. The affiliate-tag fallback was already unified earlier (2026-07-08, see that section).
+- [x] MED (quality): "tiers" concept is collapsed to one config but still threaded through handlers/queue/
       metrics (index.js tier='full'|'exhaustive', by_tier). Architecturally dead, pervasively wired.
-- [ ] MED (security): affiliate.js final redirect else-branch 302s to any https product_url (open-redirect
-      if a row is written outside the pipeline). Add a host allowlist on the fallback.
+      RESOLVED 2026-07-28, same fix as the near-duplicate item above (worker/lib/tiers.js to
+      worker/lib/engine-config.js): TIER_CONFIGS, PUBLIC_TIERS, getTierConfig, and isValidTier deleted;
+      the D1 column, keywords.js predicate, and metrics by_tier field kept on purpose.
+- [x] MED (security): affiliate.js final redirect else-branch 302s to any https product_url (open-redirect
+      if a row is written outside the pipeline). Add a host allowlist on the fallback. STALE, closed
+      2026-07-08: the isKnownRetailerUrl gate now guards this redirect (see the 2026-07-08 "Review-board
+      backlog cleared" section, Fixed list).
 - [ ] MED (perf): every page view runs getRelatedResearch (OR-of-8 LIKE, LIMIT 50) + a view_count UPDATE
       = 3+ D1 statements/view — read amplification that scales with traffic.
-- [ ] MED (bug): CACHE_VERSION (tr9) ≠ sitemap XML_CACHE_VERSION (tr1) despite a comment claiming they
-      match — the shared-lastmod invariant is broken.
-- [ ] MED (legal): privacy policy names OpenRouter but not Serper/Brave/Tavily/SearXNG/Jina, which receive
-      the raw search query (GDPR Art.13 transparency).
-- [ ] MED (UX): failure pages show a generic message and hide the real stored result.error ("No reliable
-      products found…"), leaving users without the reason/next step.
+- [x] MED (bug): CACHE_VERSION (tr9) ≠ sitemap XML_CACHE_VERSION (tr1) despite a comment claiming they
+      match — the shared-lastmod invariant is broken. STALE, closed 2026-07-08: the comment was corrected
+      to state the two versions are independent by design (see the 2026-07-08 "Review-board backlog
+      cleared" section, Fixed list, sitemap comment item).
+- [x] MED (legal): privacy policy names OpenRouter but not Serper/Brave/Tavily/SearXNG/Jina, which receive
+      the raw search query (GDPR Art.13 transparency). RESOLVED 2026-07-28: public/privacy.html now
+      discloses the search providers and the page reader. Correction: Tavily and SearXNG are NOT listed,
+      because neither key is set on the deployed worker, so no query data reaches them. DuckDuckGo and
+      Hacker News search (through Algolia) WERE added, because both are keyless and unconditionally wired.
+- [x] MED (UX): failure pages show a generic message and hide the real stored result.error ("No reliable
+      products found…"), leaving users without the reason/next step. STALE, closed 2026-07-08: failure
+      pages now surface the real stored result.error (see the 2026-07-08 "Review-board backlog cleared"
+      section, Fixed list).
 - [ ] MED (correctness, mitigated): incrementMonthlyCost KV read-add-put is non-atomic; concurrent
       completions lose updates. Mitigated by the D1 SUM MAX-gate in budgetExhausted — make KV advisory.
 
 ### Open, logged — LOW
-- [ ] LOW (a11y): no skip-to-content link / no `<main id>` target (WCAG 2.4.1); primary header `<nav>` has
-      no aria-label.
-- [ ] LOW (security): PBKDF2-SHA256 at 100k iterations < OWASP 600k (versioned hash format already supports
+- [x] LOW (a11y): no skip-to-content link / no `<main id>` target (WCAG 2.4.1); primary header `<nav>` has
+      no aria-label. STALE, closed 2026-07-08: skip-to-content link, `<main id>` target, and primary-nav
+      aria-label shipped (see the 2026-07-08 "Review-board backlog cleared" section, Fixed list).
+- [x] LOW (security): PBKDF2-SHA256 at 100k iterations < OWASP 600k (versioned hash format already supports
       raising it); /api/internal/* has no rate limit if WORKER_SECRET leaks; image proxy streams unbounded
-      bodies when no Content-Length; auth rate-limit keys use raw (unhashed) IP in KV.
-- [ ] LOW (robustness): emoji-only query (raw length ≥3) passes the length + safety gates and creates a junk
+      bodies when no Content-Length; auth rate-limit keys use raw (unhashed) IP in KV. STALE for the PBKDF2
+      clause only, closed 2026-07-08: iterations raised 100k to 600k, old hashes still verify via the stored
+      iteration count (see the 2026-07-08 "Review-board backlog cleared" section, Fixed list). The other
+      three clauses in this bundled item (internal rate limit, unbounded image-proxy body, unhashed IP in
+      KV) were not checked this pass and may still be open.
+- [x] LOW (robustness): emoji-only query (raw length ≥3) passes the length + safety gates and creates a junk
       row/sitemap entry — add a "≥3 alphanumerics" gate; SSE stream start() has no try/catch (D1 throw → hung
-      connection); `?src=`/`?from=` query variants bust the page cache (crawler amplification).
-- [ ] LOW (quality/cleanup): sanitizeUrl is a dead export; process.env DEBUG_FUNNEL scaffolding shipped in
+      connection); `?src=`/`?from=` query variants bust the page cache (crawler amplification). STALE for
+      the first two clauses, closed 2026-07-08: emoji/punctuation-only queries are now rejected (≥3
+      alphanumerics gate) and SSE start() is wrapped in try/catch (see the 2026-07-08 "Review-board
+      backlog cleared" section, Fixed list). The `?src=`/`?from=` cache-busting clause was not checked this
+      pass and may still be open.
+- [x] LOW (quality/cleanup): sanitizeUrl is a dead export; process.env DEBUG_FUNNEL scaffolding shipped in
       the extract path (dead in Workers); buildAgentTools(facets) ignores its arg; runParallelEngine synth
       path is dead in prod (bench-only); status vocab inconsistent (DB 'complete' vs API 'completed');
       subscribe.js returns raw machine error codes with no human message; docs/ml-engine-design.md +
-      local-synth-roadmap.md are unbuilt proposals with no status banner.
+      local-synth-roadmap.md are unbuilt proposals with no status banner. FALSE POSITIVE on the first
+      clause only: "sanitizeUrl is a dead export" is not a defect, already recorded as such on 2026-07-08
+      (see the 2026-07-08 "Review-board backlog cleared" section, Deferred list: "sanitizeUrl dead
+      export" was a FALSE POSITIVE, used in orchestrator.js). The other six clauses bundled in this item
+      (DEBUG_FUNNEL scaffolding, buildAgentTools ignored arg, runParallelEngine dead path, status vocab,
+      subscribe.js raw error codes, docs status banners) were not checked this pass and may still be open.
 
 ## 2026-07-08 — Code-review pass on the injection-defense diff (before deploy)
 
@@ -725,17 +902,32 @@ revenue leak. The "funnel freeze until real traffic data" is now satisfied.
       grid is JS-rendered as plain /research/ links with no Buy button and no
       affiliate_url in the embedded data. The whole review catalog (primary nav,
       sitemap 0.8) monetizes nothing. SSR the cards w/ Buy + fixes empty-for-crawlers. **FIXED 2026-07-07 — see the 2026-07-07 section above (SSR renderReviewCard grid).**
-- [ ] HIGH (CONVERSION/UX): mobile nav is broken site-wide — every header link is
+- [x] HIGH (CONVERSION/UX): mobile nav is broken site-wide — every header link is
       `hidden sm:inline` with no hamburger (worker/lib/html.js + public/index.html).
       On phones only "Account" + theme toggle are reachable. Add a disclosure menu.
-- [ ] CRITICAL (QUALITY): location/service/experience queries get a product-shaped
+      RESOLVED by the Forensic redesign (commit 0c4c1f3). Verified by grep 2026-07-28:
+      worker/lib/html.js and public/index.html both now carry a CSS-only left drawer driven by a
+      `drawer-toggle` checkbox, with a labelled open control (aria-label="Open menu"), a labelled close
+      control (aria-label="Close menu"), and a panel marked role="dialog" aria-label="Main navigation".
+- [x] CRITICAL (QUALITY): location/service/experience queries get a product-shaped
       plan — parallel-engine.js decompose() never receives classifier facets, so
       facetFocusBlocks never reach the LIVE plan ("best pho in Wichita" → a Seattle
       Our-Pick). Thread facets into decompose (reuse the clarifications path); needs
       blackbox redeploy (worker/ AND research-worker.mjs) + a backfill of affected pages.
-- [ ] HIGH (QUALITY): in-query budget/spec caps not enforced — a $600 product ranked
+      STALE for the ranking path as of 2026-07-22: the blackbox external worker was retired
+      (EXTERNAL_WORKER_ENABLED = "false"), so live ranking runs worker/engine/engine.js `runEngine`,
+      which DOES thread facets into `buildAgentPrompt` and on into `facetFocusBlocks` (verified by grep
+      2026-07-28: engine.js line 80 passes facets to buildAgentPrompt; prompts.js calls
+      facetFocusBlocks(effectiveFacets)). The verify path, worker/engine/parallel-engine.js
+      `decompose()`, still does not receive facets (verified by grep: its signature has no facets
+      parameter). See the new LOW item logged 2026-07-28 for that residual gap.
+- [x] HIGH (QUALITY): in-query budget/spec caps not enforced — a $600 product ranked
       #1 for "under $500". Extract the cap (classifier.js:154 hasBudget) into
       constraints + a deterministic price guard in validate.js applyQualityGate.
+      RESOLVED 2026-07-28: new worker/lib/constraints.js parses a price cap or floor from the query
+      and the clarification answers. worker/engine/validate.js drops out-of-range products before the
+      quality gate. Products with no known price are never dropped, and the filter stands down when
+      fewer than 2 products would survive.
 - [ ] MED (CONVERSION): ~40% of CTAs degrade to "Search Amazon" (keyword fallback)
       vs exact /dp/ "Buy on Amazon" — lift exact-ASIN coverage (asin-resolver.js).
 - [ ] MED (SEO): SSR the /reviews + /research browse grids (today JS-hydrated, empty

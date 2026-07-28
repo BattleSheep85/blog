@@ -7,6 +7,7 @@
 // appears in the gathered sources AND analyzeProduct finds credible evidence for it. The LLM can
 // widen recall but can NEVER fabricate a product into the report. Proposes, never asserts.
 import { callLLM } from '../llm.js';
+import { parseFencedJson } from '../../lib/llm-json.js';
 
 const SCHEMA = {
   type: 'object', additionalProperties: false, required: ['missing'],
@@ -39,8 +40,7 @@ Return JSON {"missing": [name, ...]}, at most 12.`,
       reasoning: { effort: 'low' }, maxTokens: 2000,
       responseFormat: { type: 'json_schema', json_schema: { name: 'recall', strict: true, schema: SCHEMA } },
     });
-    let raw = r.choices?.[0]?.message?.content;
-    if (typeof raw === 'string') { const m = raw.match(/```(?:json)?\s*([\s\S]*?)```/); raw = JSON.parse(m ? m[1] : raw); }
+    const raw = parseFencedJson(r.choices?.[0]?.message?.content);
     const out = Array.isArray(raw?.missing) ? raw.missing : [];
     return out.map((s) => String(s || '').trim()).filter((s) => s.length >= 3).slice(0, 12);
   } catch (e) { console.log('[recall-supplement] skipped:', e?.message); return []; }
