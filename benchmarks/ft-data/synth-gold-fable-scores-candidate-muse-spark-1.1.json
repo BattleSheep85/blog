@@ -1,0 +1,73 @@
+{
+  "judgeModel": "anthropic/claude-fable-5",
+  "caveat": "Reconstructed rubric from ft-data/README.md documented axes + exact composite formula — the original judging prompt wording was never committed to this repo. Not strictly comparable to synth-gold-fable-scores.json.",
+  "avgComposite": 3.2875,
+  "n": 8,
+  "costUsd": 0.6989993999999999,
+  "results": {
+    "best soundbar 2026": {
+      "grounding": 2,
+      "usefulness": 5,
+      "honesty": 2,
+      "reasoning": "The digest explicitly states no 2026 rankings, prices, pros/cons, or measured results exist, yet the report fabricates numerous specifics: dated citations (RTINGS 2026-03-24 'best for dialogue', PCMag Australia Jun 4 2026, What HiFi Feb 26 2026, a Jan 18 2026 video, a May 23 2026 reliability report), invented ratings, channel specs (11.1.4), and even a product (Hisense HS2100) not in the sources. The structure and tiered recommendations would be useful to a shopper if true, but the confident marketing-style verdicts built on invented citations make it seriously misleading despite one token confidence caveat.",
+      "costUsd": 0.1018116,
+      "composite": 2.75
+    },
+    "best microwave 2026": {
+      "grounding": 3,
+      "usefulness": 5,
+      "honesty": 2,
+      "reasoning": "About half the report is grounded (Breville Combi Wave, Panasonic NN-SN686S, LG NeoChef, GE combo match Bon Appétit notes), but the LG MVEM1825F and Sharp SMC2266KS entries are wholly fabricated—the digest's RTINGS source actually names the Breville Smooth Wave—and the report invents prices ($130), ratings, specific dates (Jun 12/Apr 29/May 29 2026), a SlashGear citation, and a false Reddit 'community crown.' The structure and tradeoff framing would be useful to a shopper, but confident fake attributions and manufactured consensus make it dishonest.",
+      "costUsd": 0.0866943,
+      "composite": 3.15
+    },
+    "best graphics card 2026": {
+      "grounding": 3,
+      "usefulness": 6,
+      "honesty": 4,
+      "reasoning": "The RX 9060 XT and RTX 5060 entries are well-grounded in the digest (PCMag winner status, $449.99, 4.0 rating, memory-cost warnings), but the other three products rely heavily on fabricated sources never in the digest (PC Gamer 'best overall', a retailer guide for the Gigabyte 5070 Ti, Facebook/NeoGAF/Introl citations for the 5090), and 'no new RTX gaming GPUs in 2026 per multiple reports' is asserted as fact when the digest explicitly said that content was inaccessible. The report is usably structured with real tradeoffs and does hedge on the RX 9070, but its invented citations and overstated certainty undermine honesty.",
+      "costUsd": 0.0985446,
+      "composite": 4.1
+    },
+    "best dash cam 2026": {
+      "grounding": 4,
+      "usefulness": 6,
+      "honesty": 3,
+      "reasoning": "Headline picks (A229 Pro via Wirecutter, A329S/E1 Pro/Miofive S1 via Car and Driver, Vueroid S1 for hot climates) are genuinely grounded in the digest, but the report is riddled with fabricated citations — 'Vortex Radar', 'BlackboxMyCar hands-on Jun 2 2026', 'Reddit Jan 8/Mar 27 2026', 'Medium Apr 8 2026', 'community pick Jun 11 2026' — plus invented numeric ratings, unsupported specs (resolutions, form factors), and a possibly wrong model name (N4 Pro S vs N4 Pro). The structure and tradeoff discussion would be useful to a shopper, but the confident, precisely-dated fake sourcing seriously misrepresents the evidence base.",
+      "costUsd": 0.1237698,
+      "composite": 4.15
+    },
+    "best vacuum for pet hair": {
+      "grounding": 3,
+      "usefulness": 5,
+      "honesty": 2,
+      "reasoning": "The report fabricates its top pick entirely — the Dyson V15 Detect appears nowhere in the source digest, complete with an invented 'RTINGS May 14 2026' test citation — and adds other made-up specifics (SEBO S-Class filtration, Reddit/VacuumLand consensus, June 2026 coverage, CR flagging Ryobi models, invented ratings). While the five genuinely-sourced products are covered with reasonable tradeoffs and the structure would help a shopper, the confident phony citations, hallucinated dates, and misattributed claims (e.g., Eufy's 'average vacuum' applied to Narwal) severely undermine honesty.",
+      "costUsd": 0.1030788,
+      "composite": 3.15
+    },
+    "best printer for home": {
+      "grounding": 2,
+      "usefulness": 4,
+      "honesty": 2,
+      "reasoning": "Only two products (Canon G3270 and HP M209d) and the Consumer Reports reliability claims are actually supported by the digest; the Brother DCP-L2640DW, Brother MFC-L3780CDW ($569.98, PCMag 4.5), Epson ET-3950, and Epson XP-8800 — along with all Wirecutter, RTINGS, TechRadar, BGR citations, 2026 dates, and the '80% cheaper ink' figure — are fabricated. The report is well-structured and reads as useful, but its confident, fake-cited specifics make it misleading and dishonest despite a superficially balanced tone.",
+      "costUsd": 0.0857241,
+      "composite": 2.5
+    },
+    "best portable charger for iphone": {
+      "grounding": 6,
+      "usefulness": 8,
+      "honesty": 6,
+      "reasoning": "Most specs, prices, and test results faithfully match the digest, but the report fabricates a few specifics: an LCD display with time-to-full on the MagGo 10K, publication attributions ('Wirecutter' is never named in the digest), invented numeric ratings, and small embellishments (5K bank comparison, 'video calls'). The recommendations, tradeoffs, and price context are otherwise clear and genuinely useful for a shopper, but the confident false attributions and unsupported feature claims undermine honesty.",
+      "costUsd": 0.0993762,
+      "composite": 6.5
+    },
+    "best hair dryer 2026": {
+      "grounding": 0,
+      "usefulness": 0,
+      "honesty": 0,
+      "reasoning": "generation failed: json-parse-fail",
+      "costUsd": 0,
+      "composite": 0
+    }
+  }
+}

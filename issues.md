@@ -2,6 +2,55 @@
 
 Last updated: 2026-07-28
 
+## 2026-07-28: Muse Spark 1.1 candidate benchmark (no production change)
+
+Evaluation only. No production model changed. Full report:
+`benchmarks/muse-spark-bench-2026-07.md`.
+
+- [x] finding 2026-07-28: benchmarked `meta/muse-spark-1.1` at
+      `reasoning_effort: xhigh` (OpenRouter accepted this value on the first
+      call, no retry needed) against all three gold benches. Verdict: do not
+      adopt for stance, extract, or synthesis.
+- [x] finding 2026-07-28, stance: 83.0% accuracy vs the production
+      minimax/minimax-m3's 87.5%, 75% action-precision (n=4, a very small
+      sample because the candidate almost always predicts `neutral`). Costs
+      more per call than the incumbent.
+- [x] finding 2026-07-28, extract: fails hard under production conditions.
+      `extractClaims` uses a fixed 2000-token completion budget. At `xhigh`
+      this model spends nearly all of it on hidden reasoning and returns
+      zero claims on 9 of 10 products (confirmed via `finish_reason:
+      "length"`, 1997 of 2000 completion tokens spent on reasoning). A
+      diagnostic replay at 8000 tokens produced valid claims, so this is a
+      budget collision, not a raw capability gap. The current production
+      extract model, anthropic/claude-haiku-4.5, has zero hard fails at the
+      same budget.
+- [x] finding 2026-07-28, synthesis: composite quality 3.3-3.8 (candidate,
+      reconstructed judge rubric) vs 6.6-7.7 for every viable incumbent. The
+      deterministic grounding gate alone shows 0 fabricated numbers, but a
+      blind judge pass found fabricated citations (fake publication names
+      and dates) and, in two of eight reports, an entire invented top-pick
+      product not present in the source corpus. The deterministic gate
+      cannot catch this failure mode, since it only checks product-name
+      token overlap and numeric closeness, not citation or product
+      existence.
+- [x] finding 2026-07-28, cost: Muse Spark 1.1 is priced at $1.25/M input,
+      $4.25/M output, 4.2x/3.5x the production synth model
+      (minimax/minimax-m3, $0.30/$1.20) and 1.25x/0.85x the production
+      extract model (anthropic/claude-haiku-4.5, $1.00/$5.00). `xhigh`
+      reasoning adds further hidden-token overhead on top of nominal
+      pricing. In the extract role, that overhead is what caused the
+      role to fail outright.
+- Total spend for this evaluation: $3.31, against a $25 cap.
+- Note on methodology: the original judging scripts for the extract and
+  synth gold benches (`benchmarks/extract-gold-blind.mjs` and an equivalent
+  synth judge script) were never committed to this repo, only their bundle
+  inputs and score outputs. This benchmark reconstructed the judging step
+  from the documented rubric in `benchmarks/ft-data/README.md`, using the
+  same judge model (`anthropic/claude-fable-5`, "Fable"). Treat the
+  candidate's judge scores as directionally informative, not strictly
+  apples-to-apples with the stored incumbent numbers. Full caveats in the
+  report.
+
 ## 2026-07-28: Quality, security, and documentation pass (session summary)
 
 This section summarizes today's whole pass. The two 2026-07-28 sections below

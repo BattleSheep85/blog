@@ -1,0 +1,72 @@
+{
+  "label": "muse-spark-1.1",
+  "judgeModel": "anthropic/claude-fable-5",
+  "caveat": "Reconstructed rubric from ft-data/README.md documented criteria — the original judging prompt was never committed to this repo. Not strictly comparable to extract-gold-fable-scores.json.",
+  "avgQualityNonFail": 9.75,
+  "completionsNonFail": 2,
+  "totalProducts": 10,
+  "hardFails": 8,
+  "costUsd": 0.5885352,
+  "results": {
+    "audio": {
+      "product": "Samsung HW-Q990D Soundbar",
+      "score": "FAIL",
+      "reasoning": "The source clearly contains real, checkable product claims for the HW-Q990D (11.1.4 channels, Dolby Atmos, 11 front-facing speakers + 1 subwoofer + 4 up-firing channels, built-in Alexa/Chromecast, Q-Symphony, 2024 model year), yet the model extracted nothing. An empty claim list on a claim-rich source is a hard failure.",
+      "claim_count": 0
+    },
+    "tv_display": {
+      "product": "Samsung QN90D Neo QLED",
+      "score": 9.5,
+      "reasoning": "All claims are grounded in the source text (mainly the Samsung India product page in Source 8), with correct model/size disambiguation (e.g., noting 4K 120Hz applies to the 2.47 m/98\" QN90D variant). The extractor properly ignored star ratings, pricing/nav boilerplate, other models (QN800D, S90D, QN85D), and unrelated support articles; only minor quibble is the India-specific warranty being presented as a general product claim.",
+      "claim_count": 11
+    },
+    "computing": {
+      "product": "Lenovo ThinkPad X1 Carbon",
+      "score": "FAIL",
+      "reasoning": "The source clearly contains real, checkable product claims — e.g., Gen 13 with Ultra 7 265U and 8MP+IR MIPI camera (Source 1), Gen 12 configurations with Ultra 7 155H/255U, 32GB DDR5, 1TB SSD (Sources 5-6), and Aura Edition AI eye-care features (Source 11) — yet the model returned zero claims. An empty extraction on a claim-rich source is a hard failure.",
+      "claim_count": 0
+    },
+    "wearable_health": {
+      "product": "Fitbit Charge 6",
+      "score": "FAIL",
+      "reasoning": "The source clearly contains real, checkable Fitbit Charge 6 claims — e.g., Source 3 (heart rate, GPS, 6-month Premium membership, 50m water resistance), Source 9 (up to 60% more accurate heart rate readings), and Source 6 (ECG functionality) — yet the model extracted nothing. An empty claim list on a claim-rich source is a hard failure.",
+      "claim_count": 0
+    },
+    "kitchen": {
+      "product": "Presto Pressure Cooker 6qt",
+      "score": "FAIL",
+      "reasoning": "The source clearly contains real, checkable Presto 6qt claims — e.g., Source 2 (Presto 01264: cooks 3 to 10 times faster, weighs 5.4 lb), Source 6 (steam basket, easy-open lid, adjustable pressure valve), and Source 8 (Presto 01362: induction compatible, glass lid and steamer rack) — yet the model returned zero claims. An empty list on a claim-bearing source is a hard failure.",
+      "claim_count": 0
+    },
+    "cleaning": {
+      "product": "Samsung Bespoke Jet Vacuum",
+      "score": "FAIL",
+      "reasoning": "(unparseable judge response)",
+      "claim_count": 0
+    },
+    "power_charging": {
+      "product": "Anker 737 Power Bank",
+      "score": "FAIL",
+      "reasoning": "The source clearly contains multiple checkable product claims for the Anker 737 (24,000mAh capacity, 140W output, 3 ports, Power Delivery 3.1, digital display showing input/output power, charges an iPhone 13 ~5 times, model A1289011, $109.99 price), yet the extraction returned zero claims. An empty list on a claim-rich source is a hard failure.",
+      "claim_count": 0
+    },
+    "baby": {
+      "product": "Dr. Brown's Natural Flow Baby Bottles",
+      "score": "FAIL",
+      "reasoning": "The source contains numerous real, checkable product claims for Dr. Brown's Natural Flow bottles (clinically proven anti-colic vent system, BPA-free plastic, top-rack dishwasher safe, #1 pediatrician recommended in the U.S., fits most breast pumps, 100% silicone breast-like nipple), yet the model extracted nothing. An empty claim list on a claim-rich source is a hard failure.",
+      "claim_count": 0
+    },
+    "smart_home": {
+      "product": "Google Nest Hub Max",
+      "score": "FAIL",
+      "reasoning": "While much of the source is nav/deal boilerplate, Source 5 clearly contains real checkable specs for the Nest Hub Max (10-inch display, 2 microphones, built-in camera) and Source 6 states Gemini for Home compatibility for the Nest Hub Max. Returning zero claims on a source with genuine product claims is a hard failure.",
+      "claim_count": 0
+    },
+    "outdoor": {
+      "product": "CamelBak Chute Mag Water Bottle",
+      "score": 10,
+      "reasoning": "The source contains only an Amazon Live video teaser with vague promotional language, Amazon navigation/footer boilerplate, an unrelated stainless bottle listing, and a third-party replacement-lid accessory listing — no real, checkable claims about the CamelBak Chute Mag itself. Returning zero claims is the honest, correct response.",
+      "claim_count": 0
+    }
+  }
+}

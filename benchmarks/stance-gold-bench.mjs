@@ -24,6 +24,13 @@
 //                                                          # inputs, temperature 0.
 //                                                          # Opt-in, paid, hard-capped
 //                                                          # at $1.
+//   node benchmarks/stance-gold-bench.mjs --model <id> \
+//        --reasoning-effort <value>                        # same, but passes a
+//                                                          # reasoning effort
+//                                                          # (e.g. "xhigh") through
+//                                                          # to classifyStance ->
+//                                                          # callLLM, for reasoning-
+//                                                          # capable candidates.
 
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { classifyStance } from '../worker/engine/verify.js';
@@ -46,13 +53,17 @@ const BANNED_MODEL_SUBSTRINGS = ['deepseek-r1'];
 // ── CLI args ─────────────────────────────────────────────────────────────
 function parseArgs(argv) {
   let model = null;
+  let reasoningEffort = null;
   for (let i = 0; i < argv.length; i += 1) {
     if (argv[i] === '--model') {
       model = argv[i + 1] || null;
       i += 1;
+    } else if (argv[i] === '--reasoning-effort') {
+      reasoningEffort = argv[i + 1] || null;
+      i += 1;
     }
   }
-  return { model };
+  return { model, reasoningEffort };
 }
 
 // ── Data loading ─────────────────────────────────────────────────────────
@@ -228,7 +239,9 @@ function assertModelAllowed(model) {
 // Single-evidence-item stance call, matching production's per-source input
 // construction (classifyStance builds one numbered block per evidence item;
 // each gold row is exactly one (claim, source) pair, so evidence=[item]).
-async function classifyOneLive({ apiKey, model, row }) {
+// `reasoningEffort` is optional (undefined for non-reasoning candidates) and
+// is passed straight through to classifyStance -> callLLM's `reasoning` opt.
+async function classifyOneLive({ apiKey, model, row, reasoningEffort }) {
   const claim = { id: 'c1', text: row.claim };
   const evidence = [
     {
@@ -237,18 +250,20 @@ async function classifyOneLive({ apiKey, model, row }) {
       tags: [],
     },
   ];
-  const { rows, costUsd } = await classifyStance({ claim, evidence, apiKey, model, callLLM });
+  const { rows, costUsd } = await classifyStance({
+    claim, evidence, apiKey, model, callLLM, reasoning: reasoningEffort || undefined,
+  });
   const predicted = rows.find((r) => r.url === row.source_url)?.stance ?? 'neutral';
   return { predicted, costUsd };
 }
 
-async function runLive(model, goldMap, inputs) {
+async function runLive(model, goldMap, inputs, reasoningEffort) {
   assertModelAllowed(model);
   const apiKey = loadOpenRouterKey();
 
   const estimatedTotal = inputs.length * ESTIMATED_COST_PER_CALL_USD;
   process.stderr.write(
-    `[live] model=${model} — ${inputs.length} calls, estimated ~$${estimatedTotal.toFixed(4)} ` +
+    `[live] model=${model} effort=${reasoningEffort || 'none'}: ${inputs.length} calls, estimated ~$${estimatedTotal.toFixed(4)} ` +
       `(hard cap $${LIVE_SPEND_HARD_CAP_USD.toFixed(2)})\n`,
   );
 
@@ -262,10 +277,10 @@ async function runLive(model, goldMap, inputs) {
     }
     const gold = goldMap.get(row.id);
     if (!gold) throw new Error(`no gold label for id=${row.id}`);
-    const { predicted, costUsd: callCost } = await classifyOneLive({ apiKey, model, row });
+    const { predicted, costUsd: callCost } = await classifyOneLive({ apiKey, model, row, reasoningEffort });
     costUsd += callCost;
     items.push({ id: row.id, gold, predicted });
-    process.stderr.write(`[live] ${row.id} -> ${predicted} (gold=${gold})\n`);
+    process.stderr.write(`[live] ${row.id} -> ${predicted} (gold=${gold}) cum=$${costUsd.toFixed(4)}\n`);
   }
 
   process.stderr.write(`[live] done — actual spend $${costUsd.toFixed(4)}\n`);
@@ -317,23 +332,26 @@ function printReport(modelLabel, scored) {
 
 // ── MAIN ────────────────────────────────────────────────────────────────
 async function main() {
-  const { model } = parseArgs(process.argv.slice(2));
+  const { model, reasoningEffort } = parseArgs(process.argv.slice(2));
   const goldMap = loadGoldMap();
   const inputs = loadInputs();
 
-  const run = model ? await runLive(model, goldMap, inputs) : runBaseline(goldMap, inputs);
+  const run = model ? await runLive(model, goldMap, inputs, reasoningEffort) : runBaseline(goldMap, inputs);
   const scored = scoreItems(run.items);
 
   printReport(run.modelLabel, scored);
 
   mkdirSync(RESULTS_DIR, { recursive: true });
-  const outFileName = `stance-gold-bench-${model ? model.replace(/[/:]/g, '_') : 'gpt-5.4-mini'}.json`;
+  const modelSlug = model ? model.replace(/[/:]/g, '_') : 'gpt-5.4-mini';
+  const effortSuffix = reasoningEffort ? `-${reasoningEffort}` : '';
+  const outFileName = `stance-gold-bench-${modelSlug}${effortSuffix}.json`;
   const outPath = new URL(outFileName, RESULTS_DIR);
   writeFileSync(
     outPath,
     JSON.stringify(
       {
         modelLabel: run.modelLabel,
+        reasoningEffort: reasoningEffort || null,
         goldSource: 'benchmarks/ft-data/stance-gold-fable.jsonl',
         n: scored.n,
         accuracy: scored.accuracy,

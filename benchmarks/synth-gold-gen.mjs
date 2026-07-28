@@ -22,6 +22,17 @@
 // Usage:
 //   node benchmarks/synth-gold-gen.mjs
 //
+//   node benchmarks/synth-gold-gen.mjs --model <id> --label <label> \
+//        [--reasoning-effort <value>]
+//        # single-candidate mode: runs ONLY <id> over the same 8 queries
+//        # (8 calls, not 48) and MERGES the result into the existing output
+//        # files: rows for this label are replaced, every other label's
+//        # stored rows are preserved untouched. Aborts after the FIRST call
+//        # if its cost is wildly higher than a normal synth call (see
+//        # FIRST_CALL_COST_SANITY_USD), a cheap early guard against an
+//        # xhigh-reasoning model burning an unexpected amount of the 16000
+//        # maxTokens budget on hidden reasoning. Same $3 hard cap applies.
+//
 // Outputs:
 //   benchmarks/ft-data/synth-gold-runs.jsonl        — one line per (query, model)
 //   benchmarks/ft-data/synth-gold-deterministic.json — grounding-gate scores per report
@@ -52,10 +63,30 @@ const KEY = loadOpenRouterKey();
 // ── SPEND GOVERNOR ────────────────────────────────────────────────────────────
 const HARD_SPEND_CAP_USD = 3.0;
 let spentUsd = 0;
+// A normal synth call here costs a few cents (100 sources x 200 chars each,
+// maxTokens 16000). If the very FIRST call of a single-candidate run costs
+// much more than that, something is off (e.g. reasoning tokens consuming
+// far more of the 16000 budget than expected). Abort before spending
+// through the rest of the queries rather than discovering it at the $3 cap.
+const FIRST_CALL_COST_SANITY_USD = 0.5;
 
-// ── CANDIDATES (6) ────────────────────────────────────────────────────────────
+// ── CLI args (single-candidate mode) ─────────────────────────────────────────
+function parseArgs(argv) {
+  let model = null;
+  let label = null;
+  let reasoningEffort = null;
+  for (let i = 0; i < argv.length; i += 1) {
+    if (argv[i] === '--model') { model = argv[i + 1] || null; i += 1; }
+    else if (argv[i] === '--label') { label = argv[i + 1] || null; i += 1; }
+    else if (argv[i] === '--reasoning-effort') { reasoningEffort = argv[i + 1] || null; i += 1; }
+  }
+  return { model, label, reasoningEffort };
+}
+const cliArgs = parseArgs(process.argv.slice(2));
+
+// ── CANDIDATES (6, or 1 in single-candidate mode) ────────────────────────────
 const BANNED_MODEL_SUBSTRINGS = ['deepseek-r1'];
-const CANDIDATES = [
+const DEFAULT_CANDIDATES = [
   { label: 'gpt-5.4-mini',    model: 'openai/gpt-5.4-mini',              reasoning: undefined }, // incumbent
   { label: 'minimax-m3',      model: 'minimax/minimax-m3',               reasoning: undefined },
   { label: 'deepseek-v4-flash', model: 'deepseek/deepseek-v4-flash',     reasoning: undefined },
@@ -63,10 +94,22 @@ const CANDIDATES = [
   { label: 'gpt-5-nano',      model: 'openai/gpt-5-nano',                reasoning: undefined },
   { label: 'claude-haiku-4.5', model: 'anthropic/claude-haiku-4.5',      reasoning: undefined },
 ];
+const CANDIDATES = cliArgs.model
+  ? [{
+      label: cliArgs.label || cliArgs.model.replace(/[/:]/g, '_'),
+      model: cliArgs.model,
+      reasoning: cliArgs.reasoningEffort || undefined,
+    }]
+  : DEFAULT_CANDIDATES;
 for (const c of CANDIDATES) {
   if (BANNED_MODEL_SUBSTRINGS.some((b) => c.model.toLowerCase().includes(b))) {
     throw new Error(`refusing to benchmark vetoed model: ${c.model}`);
   }
+}
+if (cliArgs.model) {
+  process.stderr.write(
+    `[single-candidate mode] model=${cliArgs.model} label=${CANDIDATES[0].label} reasoning=${cliArgs.reasoningEffort || 'none'}\n`,
+  );
 }
 
 // ── CORPUS ────────────────────────────────────────────────────────────────────
@@ -162,10 +205,29 @@ const RUNS_OUT = new URL('./ft-data/synth-gold-runs.jsonl', import.meta.url);
 const DETERMINISTIC_OUT = new URL('./ft-data/synth-gold-deterministic.json', import.meta.url);
 mkdirSync(new URL('./ft-data/', import.meta.url), { recursive: true });
 
+// Labels this invocation is about to (re)generate. Used at write time to
+// merge with, rather than clobber, whatever is already on disk (see
+// extract-gold-gen.mjs, same pattern).
+const labelsThisRun = new Set(CANDIDATES.map((c) => c.label));
+
+function loadExistingRunLines() {
+  if (!existsSync(RUNS_OUT)) return [];
+  return readFileSync(RUNS_OUT, 'utf8')
+    .split('\n')
+    .map((l) => l.trim())
+    .filter(Boolean)
+    .filter((l) => !labelsThisRun.has(JSON.parse(l).label));
+}
+function loadExistingDeterministic() {
+  if (!existsSync(DETERMINISTIC_OUT)) return [];
+  return JSON.parse(readFileSync(DETERMINISTIC_OUT, 'utf8')).filter((r) => !labelsThisRun.has(r.model));
+}
+
 const runLines = [];
 const deterministic = [];
 const rows = [];
 let aborted = false;
+let callsCompleted = 0;
 
 outer:
 for (const corpus of corpora) {
@@ -179,9 +241,22 @@ for (const corpus of corpora) {
     process.stderr.write(`  → ${cand.label}...\n`);
     const r = await runSynth(corpus, cand);
     spentUsd += r.cost || 0;
+    callsCompleted += 1;
     process.stderr.write(
       `    ${cand.label}: ${r.ok ? `ok, ${r.result?.products?.length}p` : r.error} (${r.ms}ms, $${(r.cost || 0).toFixed(4)}, cum=$${spentUsd.toFixed(4)})\n`,
     );
+
+    // First-call cost sanity check (single-candidate mode only). A
+    // reasoning-heavy candidate could burn far more of the 16000-token
+    // budget than expected, so catch that after ONE call, not after the cap.
+    if (cliArgs.model && callsCompleted === 1 && (r.cost || 0) > FIRST_CALL_COST_SANITY_USD) {
+      process.stderr.write(
+        `\n[COST SANITY] first call cost $${(r.cost || 0).toFixed(4)} > sanity threshold $${FIRST_CALL_COST_SANITY_USD.toFixed(2)}, ` +
+          `aborting before running the remaining queries. Investigate before re-running.\n`,
+      );
+      aborted = true;
+      // still record this one call below, then fall through to write+exit.
+    }
 
     runLines.push(JSON.stringify({
       query: corpus.query,
@@ -204,18 +279,25 @@ for (const corpus of corpora) {
       deterministic.push({ ...base, products: 0, name_ung: 0, num_ung: 0 });
       rows.push({ query: corpus.query.slice(0, 24), model: cand.label, ok: '✗', ms: r.ms, cost_c: `$${((r.cost || 0) * 100).toFixed(3)}¢`, ERROR: r.error?.slice(0, 40) });
     }
+
+    if (aborted) break outer; // cost-sanity abort, stop after recording this one call
   }
 }
 
-writeFileSync(RUNS_OUT, runLines.join('\n') + '\n');
-writeFileSync(DETERMINISTIC_OUT, JSON.stringify(deterministic, null, 2));
+// Merge: existing rows for OTHER labels (untouched) + this run's rows.
+const mergedRunLines = [...loadExistingRunLines(), ...runLines];
+const mergedDeterministic = [...loadExistingDeterministic(), ...deterministic];
 
-console.log('\n══ PER-RUN RESULTS ══════════════════════════════════════════════════════════');
+writeFileSync(RUNS_OUT, mergedRunLines.join('\n') + '\n');
+writeFileSync(DETERMINISTIC_OUT, JSON.stringify(mergedDeterministic, null, 2));
+
+console.log('\n══ PER-RUN RESULTS (this invocation only) ══════════════════════════════════════');
 console.table(rows);
 
-// Aggregate per model (completion rate + deterministic gate)
+// Aggregate per model (completion rate + deterministic gate). Computed over
+// the MERGED set so it reflects everyone on disk, not just this run.
 const byModel = {};
-for (const r of deterministic) {
+for (const r of mergedDeterministic) {
   const k = r.model;
   byModel[k] ??= { runs: 0, ok: 0, cost: 0, products: 0, name_ung: 0, num_ung: 0 };
   const b = byModel[k];
