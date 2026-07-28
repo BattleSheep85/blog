@@ -27,6 +27,10 @@ import { runConstraintsTests } from '../test/unit/constraints.test.js';
 import { runBurstGateTests } from '../test/unit/burst-gate.test.js';
 import { runLlmJsonTests } from '../test/unit/llm-json.test.js';
 import { runPoolTests } from '../test/unit/pool.test.js';
+import { runEmailMimeTests } from '../test/unit/email-mime.test.js';
+import { runSmtpTests } from '../test/unit/smtp.test.js';
+import { runEmailTemplatesTests } from '../test/unit/email-templates.test.js';
+import { runSubscribeFlowTests } from '../test/unit/subscribe-flow.test.js';
 
 const suites = [
   ['credibility', runCredibilityTests],
@@ -50,6 +54,10 @@ const suites = [
   ['burst-gate', runBurstGateTests], // async suite (awaited below)
   ['llm-json', runLlmJsonTests],
   ['pool', runPoolTests], // async suite (awaited below)
+  ['email-mime', runEmailMimeTests],
+  ['smtp', runSmtpTests], // async suite (awaited below)
+  ['email-templates', runEmailTemplatesTests],
+  ['subscribe-flow', runSubscribeFlowTests],
 ];
 
 let failed = 0;

@@ -25,6 +25,7 @@ import { resolveImages } from '../lib/image-resolver.js';
 import { getResearchById, generateId } from '../lib/db.js';
 import { sanitizeUrl, slugify, nowEpoch, parseJsonSafe } from '../lib/utils.js';
 import { submitToIndexNow } from '../lib/indexnow.js';
+import { notifySubscribersForResearch } from '../lib/notify.js';
 import { screenQuery, rejectionMessage, classifierRejectToReason } from '../lib/safety.js';
 
 // Monthly spend ceiling default; overridden by env.MONTHLY_BUDGET_USD.
@@ -259,6 +260,15 @@ export async function persistEngineResult(env, reportId, query, facets, topicalC
         const catSlug = cat ? slugify(cat) : '';
         if (catSlug) urls.push(`https://chrisputer.tech/best/${catSlug}`);
         await submitToIndexNow(env, urls);
+    }
+    // Tell the confirmed subscribers of this report that it is live. Inside the
+    // `won` latch, so at most one notify per completion even when two
+    // processors race. notifySubscribersForResearch never throws, and this
+    // try/catch is the second belt: a mail failure must not fail the run.
+    try {
+        await notifySubscribersForResearch(env, { researchId: reportId, query, slug });
+    } catch (err) {
+        console.error(JSON.stringify({ where: 'notify', error: String(err?.message || err) }));
     }
     return { status: 'complete', products: result.products.length };
 }

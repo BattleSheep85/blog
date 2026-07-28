@@ -60,6 +60,16 @@ CF_ANALYTICS_TOKEN = "ea97bb136135401584c3547bd0d73b66"
 # IndexNow verification key. Intentionally public — the protocol requires it to
 # be hosted at https://chrisputer.tech/<key>.txt (served by the worker route).
 INDEXNOW_KEY = "2b049a04674b366dc9b485b792ad823e"
+# Outbound email (docs/email-design.md). MAIL_ENABLED is the emergency off
+# switch AND the release gate: "false" turns every send into a logged skip, so
+# subscribe, confirm and unsubscribe keep working and nothing leaves the
+# worker. Flip it to "true" only after the two SMTP secrets are set.
+MAIL_ENABLED = "false"
+MAIL_FROM = "chris@chrisputer.tech"
+MAIL_FROM_NAME = "Chris at TrueRank"
+SMTP_HOST = "smtp.hostinger.com"
+SMTP_PORT = "465"                # implicit TLS; v1 supports 465 only
+MAIL_DAILY_CAP = "200"           # global outbound ceiling per UTC day
 # (GOOGLE_CSE_ID removed 2026-06-16: the /find Programmable Search Engine widget
 # was retired — /find now 302-redirects to a plain Google search, so the CSE id
 # is dead config. No code reads env.GOOGLE_CSE_ID.)
@@ -105,3 +115,6 @@ period = 60
 # OPENROUTER_API_KEY  — paid OpenRouter key (planner/synth/classifier models)
 # SERPER_API_KEY      — Serper.dev Google Search (web + news providers)
 # AMAZON_ASSOCIATE_TAG — optional; AMAZON_AFFILIATE_TAG in [vars] is the default
+# TRUERANK_SMTP_USER  — full Hostinger mailbox address (also the From address)
+# TRUERANK_SMTP_PASSWORD — mailbox password. Without BOTH, every send is a
+#                      logged no-op, so local dev and CI can never send mail.

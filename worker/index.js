@@ -19,6 +19,7 @@ import { renderBrowse } from './pages/browse.js';
 import { renderHistoryPage } from './pages/history.js';
 import { handleSubscribe } from './handlers/subscribe.js';
 import { handleUnsubscribe } from './handlers/unsubscribe.js';
+import { handleConfirm } from './handlers/confirm.js';
 import { handleChat } from './handlers/chat.js';
 import { handleNextJob, handleProgress, handleComplete } from './handlers/internal.js';
 import { handleSignup, handleLogin, handleLogout, renderLoginPage, renderAccountPage } from './handlers/auth.js';
@@ -159,6 +160,11 @@ export default {
             // Self-serve one-click unsubscribe (GET link + RFC 8058 POST).
             if (path === '/unsubscribe' && (method === 'GET' || method === 'POST')) {
                 return handleUnsubscribe(request, env);
+            }
+
+            // Double opt-in confirmation link from the signup email.
+            if (path === '/confirm' && method === 'GET') {
+                return handleConfirm(request, env);
             }
 
             // "Talk about it" chat — refine a query (home) or ask follow-ups

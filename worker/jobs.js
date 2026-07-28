@@ -11,6 +11,10 @@ import { runFlywheelTick } from './lib/keywords.js';
 import { ingestGsc } from './lib/gsc.js';
 import { externalWorkerEnabled } from './lib/flags.js';
 
+// How long an unconfirmed signup may sit in the table before the cron deletes
+// it. The confirmation link itself dies after 7 days, so this is generous.
+const UNCONFIRMED_MAX_AGE_S = 30 * 86400;
+
 /**
  * Scheduled handler (cron every 10 min) — reap research rows stuck in
  * 'processing' longer than ~20 min. Covers the edge case where the queue
@@ -28,6 +32,23 @@ export async function runScheduledTick(event, env, ctx) {
         if (reaped > 0) console.log(JSON.stringify({ where: 'scheduled-reap', reaped, cutoff }));
     } catch (err) {
         console.error(JSON.stringify({ where: 'scheduled-reap', error: err instanceof Error ? err.message : String(err) }));
+    }
+
+    // Data minimization (GDPR): delete addresses that never confirmed. An
+    // unconfirmed row is an unproven mailbox, so holding it forever is both a
+    // privacy problem and a mail-bomb reset the purge closes. Own try/catch so
+    // it can never break the reaper above.
+    try {
+        const staleCut = Math.floor(now / 1000) - UNCONFIRMED_MAX_AGE_S;
+        const purge = await env.DB.prepare(
+            `DELETE FROM subscribers
+              WHERE confirmed_at IS NULL AND unsubscribed_at IS NULL
+                AND COALESCE(confirm_sent_at, created_at) < ?1`,
+        ).bind(staleCut).run();
+        const purged = purge.meta?.changes ?? 0;
+        if (purged > 0) console.log(JSON.stringify({ where: 'scheduled-purge-unconfirmed', purged }));
+    } catch (err) {
+        console.error(JSON.stringify({ where: 'scheduled-purge-unconfirmed', error: err instanceof Error ? err.message : String(err) }));
     }
 
     // Programmatic-SEO flywheel: drain one keyword per tick into a research
