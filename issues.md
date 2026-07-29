@@ -51,6 +51,76 @@ Evaluation only. No production model changed. Full report:
   apples-to-apples with the stored incumbent numbers. Full caveats in the
   report.
 
+## 2026-07-28: Muse Spark 1.1 zero-reasoning rerun (still no production change)
+
+Follow-up to the entry above. Reran the same three gold benches at the
+lowest reasoning setting this model accepts. Full report:
+`benchmarks/muse-spark-bench-2026-07.md`, section "Rerun:
+reasoning_effort=minimal (2026-07-28, same day)".
+
+- [x] finding 2026-07-28: `reasoning_effort: "none"` and
+      `reasoning: {enabled: false}` are both rejected by the API (HTTP 400,
+      "Reasoning is mandatory for this endpoint and cannot be disabled").
+      `reasoning: {exclude: true}` is accepted but does not lower the
+      reasoning-token count (384 vs a 406-token no-parameter default), so it
+      only hides reasoning from the response, it does not stop the model
+      thinking or lower the bill. `reasoning_effort: "minimal"` gave the
+      lowest reasoning-token count found (186), so all three benches below
+      used it. No setting fully disables reasoning for this model.
+- [x] finding 2026-07-28, extract: the truncation failure is gone. 10/10
+      products completed, 0 hard fails (was 8 hard fails at xhigh),
+      `finish_reason: stop` on every call. Quality is now a real,
+      comparable 7.25 against production's 7.60, close but still behind.
+      One confirmed hallucination (Google Nest Hub Max: invented camera
+      spec and "Ambient EQ" feature, absent from the source text) still
+      happened. Cost per call is about 32% above the current production
+      extract model. Verdict unchanged, do not adopt, but for a close
+      quality-and-cost trade-off now, not a broken budget collision.
+- [x] finding 2026-07-28, stance: accuracy rose to 88.4% (production
+      87.5%, xhigh 83.0%), but its 95% CI [82.1%, 93.8%] overlaps
+      production's number, so this sample cannot call a confident winner.
+      The xhigh failure (extreme conservatism: 15.8% support recall, 0%
+      contradict recall) is gone (52.6% / 100% at minimal). Cost per call
+      fell 54% versus xhigh but is still likely above production's list
+      price. Verdict: not a confirmed win, no longer a confirmed loss
+      either.
+- [x] finding 2026-07-28, synthesis: composite essentially unchanged (3.74
+      vs xhigh's 3.76 for completed reports), still far below every
+      incumbent (6.6-7.7). Investigating this found a real methodology
+      flaw in the reconstructed synth judge: its corpus digest
+      (`synth-gold-blind.mjs`, `CORPUS_DIGEST_CHAR_CAP`, capped at 6000
+      characters) covers only about the first 15-20 sources of each
+      138-200 source corpus, in list order, not by relevance, while the
+      synthesis model itself reads every source. The xhigh report's two
+      named "invented products" (a Dyson V15 Detect top pick, an LG/Sharp
+      microwave pair) are both real, correctly dated, exact-match
+      citations in the full corpus. This is confirmed directly against
+      `benchmarks/results/google-top50-corpus.json`, not inferred. A
+      broader spot check (outlet name plus date, checked against the full
+      corpus) found 29/32 (90.6%) of xhigh's extractable citations and
+      7/7 (100%) of minimal's were genuinely grounded. A smaller number of
+      real fabrications remain (an "Epson ET-3950" and an "80% cheaper
+      ink" figure, both confirmed absent from the full 181-source printer
+      corpus). This digest cap predates this rerun (the original incumbent
+      judge bundles carry the same cap), so it is a pre-existing
+      benchmark-wide limitation, not specific to muse-spark. It does not
+      affect the extract-gold judge, which reads the full source text
+      directly.
+- [x] finding 2026-07-28, cost: this rerun spent $2.03 of a $12 cap.
+      Combined with the earlier xhigh run's $3.31, total spend across both
+      muse-spark evaluations is $5.34.
+- Revised verdict: stance and extract stay at "do not adopt," but the
+  reasons changed from disqualifying failures to close, unfavorable
+  trade-offs. Synthesis stays at "do not adopt" on the composite score,
+  but the true size of the honesty gap versus incumbents is now uncertain,
+  because the judge behind that score cannot see most of the source
+  material for any model it scores, not only muse-spark.
+- Suggested follow-up, not done in this session: raise
+  `CORPUS_DIGEST_CHAR_CAP` in `synth-gold-blind.mjs`, or switch it to a
+  relevance-selected digest instead of a list-order truncation, before
+  trusting synth-gold judge composites at face value for any future
+  candidate.
+
 ## 2026-07-28: Quality, security, and documentation pass (session summary)
 
 This section summarizes today's whole pass. The two 2026-07-28 sections below

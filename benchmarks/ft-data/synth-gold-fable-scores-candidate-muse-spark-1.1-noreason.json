@@ -1,0 +1,73 @@
+{
+  "judgeModel": "anthropic/claude-fable-5",
+  "caveat": "Reconstructed rubric from ft-data/README.md documented axes + exact composite formula. The original judging prompt wording was never committed to this repo. Not strictly comparable to synth-gold-fable-scores.json.",
+  "avgComposite": 3.7437500000000004,
+  "n": 8,
+  "costUsd": 0.7589835,
+  "results": {
+    "best soundbar 2026": {
+      "grounding": 2,
+      "usefulness": 4,
+      "honesty": 2,
+      "reasoning": "The digest explicitly states sources contain no rankings, prices, pros/cons, or measurements for 2026, yet the report fabricates specific claims (RTINGS naming the Q990F 'best for dialogue', ExpertReviews/What HiFi/PCMag rankings, an 11.1.4 spec, a Hisense HS2100 that isn't even in the digest, missing DTS on Arc Ultra); only the KEF XIO award/price is genuinely grounded. The report reads as a usable shopping guide with tiered picks and some confidence caveats, but its authority is largely invented and misattributed to named reviewers, making it misleading despite occasional hedging.",
+      "costUsd": 0.0914067,
+      "composite": 2.5
+    },
+    "best microwave 2026": {
+      "grounding": 3,
+      "usefulness": 5,
+      "honesty": 2,
+      "reasoning": "Core picks and Bon Appétit attributions are grounded, but the report fabricates numerous specifics: a Reddit 'BuyItForLifeUSA' endorsement and ~$130 price for the Panasonic, a 'SlashGear June 2026' LG reliability claim, an 'EasyBear 2026' analysis, invented model numbers (BMO870, JES1109RRSS), a fake CR score for the GE unit, and misattributes RTINGS' 'Smooth Wave' result to the Combi Wave. The structure and tradeoffs would be useful to a shopper, but the confident citation of nonexistent sources makes it dishonest and untrustworthy.",
+      "costUsd": 0.0846252,
+      "composite": 3.15
+    },
+    "best graphics card 2026": {
+      "grounding": 4,
+      "usefulness": 6,
+      "honesty": 4,
+      "reasoning": "Core picks (RX 9060 XT at $449.99 with 4.0 rating, RTX 5060 as 1080p winner) and the memory-shortage/pricing narrative are well grounded, but the report fabricates several specifics: a 'TechSpot 90% game support' claim, a 'Microsoft Build 2026 Surface RTX Spark Dev Box', and FSR 4 'community testing' comparisons appear nowhere in the digest. It also states 'no new RTX gaming GPUs in 2026 per multiple reports' as fact when the digest says that content couldn't be accessed, and mislabels expert-domain Spark roadmap coverage as 'hands-on'. Recommendations are still reasonably actionable with real tradeoffs, but the invented citations and overstated certainty hurt grounding and honesty.",
+      "costUsd": 0.091872,
+      "composite": 4.5
+    },
+    "best dash cam 2026": {
+      "grounding": 4,
+      "usefulness": 7,
+      "honesty": 4,
+      "reasoning": "Core picks (A229 Pro/Wirecutter, A329S/Car and Driver, Garmin specs/PCMag, BlackVue/Vantrue basics) are grounded, but the report fabricates multiple specific attributions and details not in the digest: a 'Vortex Radar' ranking, a 'BlackboxMyCar June 2026 reel', MotorTrend 'confirming' the A229 Pro, A329S parking-mode/firmware specs, LTE subscription cost figures, and 'hardwire-ready' claims. The report is well-structured and genuinely useful for a shopper with real tradeoffs (cloud vs standalone, subscriptions), and includes some honest hedging, but the confident invented citations and specs significantly undercut honesty.",
+      "costUsd": 0.1217304,
+      "composite": 4.75
+    },
+    "best vacuum for pet hair": {
+      "grounding": 4,
+      "usefulness": 6,
+      "honesty": 3,
+      "reasoning": "Most entries (SEBO, Roborock, Black+Decker, Ryobi, Narwal) track the digest's prices and findings, but the report fabricates an entire Dyson V15 Detect entry with an invented 'RTINGS May 2026' citation, invents SEBO 'S-Class filtration', and fabricates a Consumer Reports 'worst-tested list' claim about Ryobi. The structure and tradeoffs are genuinely helpful for shoppers, but confident false attributions and invented ratings seriously undermine honesty.",
+      "costUsd": 0.0878328,
+      "composite": 4.15
+    },
+    "best printer for home": {
+      "grounding": 2,
+      "usefulness": 4,
+      "honesty": 2,
+      "reasoning": "Only two of six products (Canon Pixma G3270 and HP LaserJet M209d) are supported by the digest; the Brother MFC-L3780CDW, Brother DCP-L2640DW, Epson ET-3950, and Epson XP-8800 — along with their prices, ratings, Wirecutter/RTINGS citations, and '80% cheaper ink' figures — are fabricated. The report is well-structured with clear tradeoffs, but it repeatedly asserts 'hands-on testing confirms' for invented picks, which is seriously misleading despite correctly grounding the Consumer Reports reliability point.",
+      "costUsd": 0.0920997,
+      "composite": 2.5
+    },
+    "best portable charger for iphone": {
+      "grounding": 7,
+      "usefulness": 8,
+      "honesty": 6,
+      "reasoning": "Most specs, prices, and test results faithfully match the digest, but the report fabricates a few details: an LCD display with time-to-full on the MagGo 10K, 'Wirecutter' attributions the digest never names, a '2026' framing, and unsupported claims like USB-C PD fast-charging on the budget model. The recommendations are clear, well-differentiated by use case, and honestly note tradeoffs (e.g., PowerCore 10K lacking a dedicated review), though the invented source names and feature slightly overstate the evidence.",
+      "costUsd": 0.1048212,
+      "composite": 6.9
+    },
+    "best hair dryer 2026": {
+      "grounding": 1,
+      "usefulness": 3,
+      "honesty": 1,
+      "reasoning": "The source digest contains only market-size reports, YouTube listicle titles, and safety/ventilation notes — yet the report fabricates detailed test citations (Wirecutter 70+ hours/42 dryers, Consumer Reports Nov 2025 labs, Byrdie/InStyle/LA Times reviews, Reddit threads), invented specs (115,000 RPM, 18-minute drying test, $165 price), and products (Rusk W8less, T3 AireLuxe, Conair InfinitiPRO) with no basis in the digest. While the report is well-structured and would seem helpful, its authoritative-sounding but wholly invented evidence makes it dishonest and dangerously misleading for a shopper.",
+      "costUsd": 0.0845955,
+      "composite": 1.5
+    }
+  }
+}

@@ -13,7 +13,7 @@
 //   node benchmarks/synth-gold-blind.mjs
 //
 //   node benchmarks/synth-gold-blind.mjs --model <id> \
-//        --out-dir <dir> --blinding-out <path>
+//        --out-dir <dir> --blinding-out <path> [--label <label>]
 //        # single-candidate mode: builds a bundle containing ONLY <id>'s
 //        # reports (blinded to a single letter, same shuffle mechanism),
 //        # written to <dir>/<blinding-out> instead of the default stored
@@ -21,6 +21,15 @@
 //        # touched. --out-dir and --blinding-out are required together with
 //        # --model (no default candidate-only location, to force an
 //        # explicit choice rather than risk a silent overwrite).
+//        # --label narrows the filter to rows whose `label` field matches
+//        # (in addition to `model` matching). Needed because two runs of the
+//        # SAME OpenRouter model id at different reasoning settings (e.g.
+//        # "muse-spark-1.1" at xhigh vs "muse-spark-1.1-noreason") share one
+//        # `model` value but carry different `label`s — without this, a
+//        # `--model`-only filter would silently mix both runs' rows into one
+//        # bundle. Added 2026-07-28 for the Muse Spark zero-reasoning rerun;
+//        # optional, so it never changes the earlier xhigh invocation's
+//        # behavior.
 //
 // Outputs (default mode):
 //   benchmarks/ft-data/synth-gold-blind/q<NN>.json  — per-query blinded bundle
@@ -30,14 +39,16 @@ import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 
 function parseArgs(argv) {
   let model = null;
+  let label = null;
   let outDir = null;
   let blindingOut = null;
   for (let i = 0; i < argv.length; i += 1) {
     if (argv[i] === '--model') { model = argv[i + 1] || null; i += 1; }
+    else if (argv[i] === '--label') { label = argv[i + 1] || null; i += 1; }
     else if (argv[i] === '--out-dir') { outDir = argv[i + 1] || null; i += 1; }
     else if (argv[i] === '--blinding-out') { blindingOut = argv[i + 1] || null; i += 1; }
   }
-  return { model, outDir, blindingOut };
+  return { model, label, outDir, blindingOut };
 }
 const cliArgs = parseArgs(process.argv.slice(2));
 if (cliArgs.model && (!cliArgs.outDir || !cliArgs.blindingOut)) {
@@ -125,9 +136,11 @@ function reportForBundle(run) {
 // so each query's bundle contains exactly one report (blinded to label "A")
 // instead of mixing the candidate in among the stored incumbents.
 const allRuns = readJsonl(RUNS_PATH);
-const runs = cliArgs.model ? allRuns.filter((r) => r.model === cliArgs.model) : allRuns;
+const runs = cliArgs.model
+  ? allRuns.filter((r) => r.model === cliArgs.model && (!cliArgs.label || r.label === cliArgs.label))
+  : allRuns;
 if (cliArgs.model && !runs.length) {
-  throw new Error(`no rows found for model="${cliArgs.model}" in ${RUNS_PATH.pathname}`);
+  throw new Error(`no rows found for model="${cliArgs.model}"${cliArgs.label ? ` label="${cliArgs.label}"` : ''} in ${RUNS_PATH.pathname}`);
 }
 const corpora = JSON.parse(readFileSync(CORPUS_PATH, 'utf8'));
 const corpusByQuery = new Map(corpora.map((c) => [c.query, c]));
