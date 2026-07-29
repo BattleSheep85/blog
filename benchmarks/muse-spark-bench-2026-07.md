@@ -232,6 +232,15 @@ xhigh row above. New rows use the label `muse-spark-1.1-noreason` and sit
 alongside the `muse-spark-1.1` (xhigh) rows. No stored file lost a line.
 See the verification note at the end of this section.
 
+Same caveat as the xhigh run, restated here: the extract and synth judge
+scripts (`extract-gold-candidate-judge.mjs`, `synth-gold-candidate-judge.mjs`)
+are unmodified from the earlier run, so the scoring method is identical to
+what produced the xhigh numbers. Their rubrics are RECONSTRUCTED from the
+documented criteria in `ft-data/README.md`, not replayed from the original
+judge prompt, which was never committed to this repo. Treat every judge
+score below, for both xhigh and minimal, as directionally informative, not
+strictly apples-to-apples with the stored incumbent numbers.
+
 ### Step 1: which setting actually turns reasoning off
 
 The probe used the real production stance call (`classifyStance` in
