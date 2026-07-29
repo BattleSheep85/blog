@@ -64,7 +64,7 @@ INDEXNOW_KEY = "2b049a04674b366dc9b485b792ad823e"
 # switch AND the release gate: "false" turns every send into a logged skip, so
 # subscribe, confirm and unsubscribe keep working and nothing leaves the
 # worker. Flip it to "true" only after the two SMTP secrets are set.
-MAIL_ENABLED = "false"
+MAIL_ENABLED = "true"
 MAIL_FROM = "chris@chrisputer.tech"
 MAIL_FROM_NAME = "Chris at TrueRank"
 SMTP_HOST = "smtp.hostinger.com"
