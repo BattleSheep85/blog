@@ -40,6 +40,9 @@ INCLUDES=(
   worker/lib/subscribe-flow.js
   worker/engine/validate.js
   worker/engine/prompts.js
+  benchmarks/lib/grounding-check.mjs
+  benchmarks/lib/outlet-lexicon.mjs
+  benchmarks/lib/citation-scan.mjs
 )
 ARGS=()
 for f in "${INCLUDES[@]}"; do ARGS+=("--test-coverage-include=$f"); done

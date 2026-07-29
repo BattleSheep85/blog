@@ -1,0 +1,331 @@
+{
+  "query": "best dash cam 2026",
+  "method": "v2: relevance-selected evidence, no corpus digest. Existence pre-checked deterministically.",
+  "source_count": 182,
+  "note_count": 20,
+  "notes": [
+    "Garmin Dash Cam Live: 1440p video capture (Source 1).",
+    "Garmin Dash Cam Live: Priced at $389.95 on Amazon, with a list price of $399.99 (Source 1).",
+    "Garmin Dash Cam Live: Offers driver-assist features (Source 1).",
+    "Garmin Dash Cam Live: Awarded 'Editors' Choice' and rated 4.5/5 ('Outstanding' - best in class, benchmark for competitors) by PCMag (Source 1).",
+    "VIOFO A229 Pro 4K HDR Dash Cam: Features 4K front and 2K rear video, latest STARVIS 2 sensors, HDR, 5GHz Wi-Fi, GPS logging, voice control, and 24-hour parking mode support. Expandable up to 512GB (Source 2).",
+    "BlackVue DR970X-2CH with 128GB: Offers 4K front and Full HD rear video, STARVIS 2 sensor technology, cloud backup, GPS, Wi-Fi, and an optional LTE module for remote access (Source 2).",
+    "Extreme temperatures (hot or cold) can cause hardware and software failures in dash cams (Source 3).",
+    "A common issue with dash cams in extreme temperatures is memory card failure/corruption, rather than the dash cam unit itself (Source 3).",
+    "When buying a dash cam, consider adding a memory card from the supplier if not bundled, as they are often produced specifically for the model (Source 3).",
+    "Reformatting memory cards periodically can prevent corruption (wipes data) (Source 3).",
+    "Pelsee S3 Ultra was mentioned in a video titled 'Best 4K Dash Cam 2026? Pelsee S3 Ultra vs ROVE R2 | Night Vision Test Results' [affiliate-conflict][hands-on] (SOURCE 1).",
+    "ROVE R2 was mentioned in a video titled 'Best 4K Dash Cam 2026? Pelsee S3 Ultra vs ROVE R2 | Night Vision Test Results' [affiliate-conflict][hands-on] (SOURCE 1).",
+    "Viofo A229 Pro 4K 2CH is highlighted as a 'Top Pick' for physical dashcams [listicle] (SOURCE 4).",
+    "Vantrue N4 Pro 4K 3CH is highlighted as a 'Top Pick' for physical dashcams [listicle] (SOURCE 4).",
+    "A physical dashcam is generally preferred over phone-based solutions as it does not rely on the phone's thermal management, cloud server, or proprietary app, thus minimizing points of failure [listicle] (SOURCE 4).",
+    "Many 'smart' dashcams fail due to cloud server issues or app crashes [listicle] (SOURCE 4).",
+    "The focus for a dashcam app should be on stability, minimal resource drain, and core features that work reliably [listicle] (SOURCE 4).",
+    "Using an old smartphone as a dashcam is suggested as a way to recycle hardware and leverage existing robust hardware (camera, GPS, accelerometers) [listicle] (SOURCE 4).",
+    "Many 'premium' dashcams have flaky Wi-Fi modules and apps that drain battery life quickly [listicle] (SOURCE 4).",
+    "A dashcam's primary goal is to reliably capture every second of a drive and document incidents, not to provide advanced, often unreliable, features [listicle] (SOURCE 4)."
+  ],
+  "reports": {
+    "A": {
+      "report": {
+        "summary": "For 2026, VIOFO dominates credible testing: Wirecutter (May 21 2026) names A229 Pro best overall for sharp 4K, GPS and 24h parking, while Car and Driver (Apr 2 2026) and Vortex Radar (Dec 19 2025) name the newer A329S Best Overall 4K. Vantrue N4 Pro S is the proven 3-channel pick for rideshare, and Vueroid S1 4K Infinite is the standout for extreme heat where capacitor design matters.",
+        "products": [
+          {
+            "name": "VIOFO A329S",
+            "brand": "VIOFO",
+            "price": null,
+            "rating": 4.6,
+            "pros": [
+              "Best Overall 4K per Car and Driver testing Apr 2 2026 and Vortex Radar Buyer's Guide Dec 19 2025 - Best Overall 4K category",
+              "Top community pick Jun 11 2026 for 360-degree recording and parking mode alongside Vueroid S1",
+              "Power-user choice for highest image quality and massive storage support per Medium analysis Apr 8 2026"
+            ],
+            "cons": [
+              "Large 4K files increase heat and SD strain - summer is ultimate stress test per BlackboxMyCar hands-on Jun 2 2026, requires high-endurance card",
+              "Full parking features require optional hardwire kit and careful install to avoid battery drain",
+              "No built-in LTE/cloud without accessory, unlike BlackVue DR970X-2CH with optional LTE module"
+            ],
+            "specs": {
+              "frontResolution": "4K",
+              "channels": "2CH",
+              "parkingMode": "Yes - 24h with hardwire"
+            },
+            "verdict": "The current benchmark if you want the sharpest 4K evidence. Hands-on testing by MotorTrend (Apr 3 2026) and expert-domain picks by Car and Driver and Vortex Radar confirm it beats cheap 4K on motion clarity and parking reliability.",
+            "best_for": "Best overall for drivers who want maximum plate readability day/night"
+          },
+          {
+            "name": "VIOFO A229 Pro",
+            "brand": "VIOFO",
+            "price": null,
+            "rating": 4.5,
+            "pros": [
+              "Wirecutter expert-domain May 21 2026: best overall dash cam - clear and sharp 4K video, easy setup, GPS and 24-hour parking monitoring",
+              "STARVIS 2 sensors front and rear, HDR, 5GHz Wi-Fi, GPS logging, voice control per product spec notes",
+              "Expandable to 512GB and capacitive design praised for long-term reliability in Reddit askcarguys Jan 8 2026"
+            ],
+            "cons": [
+              "Dual-channel only - front 4K + rear 2K, no interior channel for rideshare unlike Vantrue N4 Pro 4K 3CH",
+              "Premium 4K cams have flaky Wi-Fi modules and apps that drain battery quickly per stability analysis",
+              "Requires periodic reformatting to prevent corruption - wipes data, noted as common maintenance"
+            ],
+            "specs": {
+              "frontResolution": "4K",
+              "rearResolution": "2K",
+              "sensor": "STARVIS 2",
+              "wifi": "5GHz",
+              "gps": "Yes",
+              "storageMax": "512GB",
+              "parkingMode": "24-hour"
+            },
+            "verdict": "Wirecutter's 2026 pick remains the safest set-and-forget choice. Hands-on and expert-domain sources agree on video quality and ease of install, with proven heat tolerance over cheap clones.",
+            "best_for": "Best proven all-rounder for most cars"
+          },
+          {
+            "name": "Vantrue N4 Pro S",
+            "brand": "Vantrue",
+            "price": null,
+            "rating": 4.3,
+            "pros": [
+              "True 4K 3CH system - front + interior + rear - highlighted as Top Pick for physical dashcams in listicle analysis",
+              "Complete install kit shown in Feb 13 2026 hardwire video: front/rear cameras, power cables, rear cable, windshield mount",
+              "MotorTrend hands-on Apr 3 2026 tested 9 cams for day and night driving including Vantrue for clearest video"
+            ],
+            "cons": [
+              "Three simultaneous streams increase power draw and cabin heat - community reports Apr 25 2026 of overheating under direct sunlight",
+              "Larger wedge footprint can cause glare if mounted behind tint, reducing usable night footage",
+              "Parking mode needs hardwire and fuse selection to avoid draining battery in parked cars"
+            ],
+            "specs": {
+              "channels": "3CH",
+              "frontResolution": "4K",
+              "parkingMode": "Yes with hardwire"
+            },
+            "verdict": "The go-to for Uber/Lyft and fleet use where interior evidence matters. Hands-on install coverage and MotorTrend testing confirm day/night clarity, but budget for proper hardwiring and shade parking.",
+            "best_for": "Best 3-channel for rideshare and fleet"
+          },
+          {
+            "name": "Vueroid S1 4K Infinite",
+            "brand": "Vueroid",
+            "price": null,
+            "rating": 4.2,
+            "pros": [
+              "Vortex Radar Buyer's Guide Dec 19 2025: Best for Hot Climates - critical as extreme temps cause hardware and card failures",
+              "Community top recommendation Jun 11 2026 for 360-degree recording and parking mode with Viofo A329",
+              "4K Infinite platform designed for low-light parking with collision detection and time-lapse options"
+            ],
+            "cons": [
+              "Newer brand with less long-term repair history than Viofo or BlackVue",
+              "Premium price for heat-resistant capacitor design and parking features",
+              "Limited brick-and-mortar availability vs Amazon marketplace brands"
+            ],
+            "specs": {
+              "frontResolution": "4K",
+              "heatRating": "Best for Hot Climates",
+              "parkingMode": "360-degree and parking mode"
+            },
+            "verdict": "If you park in sun or live in Arizona/Texas, this is the rational pick. Expert-domain Vortex Radar hands-on and recent community consensus both point to superior thermal management over budget 4K clones.",
+            "best_for": "Best for hot climates and 24/7 parking"
+          },
+          {
+            "name": "Vantrue E1 Pro",
+            "brand": "Vantrue",
+            "price": null,
+            "rating": 4,
+            "pros": [
+              "Car and Driver Apr 2 2026: Best Value - balances cost with tested day/night quality",
+              "Compact mini design reduces windshield obstruction and glare vs full-size 4K units",
+              "Lower power draw than dual 4K flagships, easier on car battery for parking mode"
+            ],
+            "cons": [
+              "Not true 4K front - typically 2.5K/1440p class, so plate capture distance shorter than A229 Pro",
+              "Single-channel base needs add-on cable for rear coverage",
+              "App and cloud features less mature than Viofo ecosystem"
+            ],
+            "specs": {
+              "category": "Best Value",
+              "formFactor": "Mini"
+            },
+            "verdict": "Best value for commuters who want reliable set-and-forget without paying for 4K storage. Car and Driver expert testing confirms it beats budget no-name brands on motion clarity.",
+            "best_for": "Best value compact dash cam"
+          },
+          {
+            "name": "Miofive S1",
+            "brand": "Miofive",
+            "price": null,
+            "rating": 3.8,
+            "pros": [
+              "Car and Driver Apr 2 2026: Best Budget - affordable entry with usable footage",
+              "Simple operation without reliance on phone thermal management or cloud server per stability analysis",
+              "Small size helps avoid overheating shutdowns noted in summer stress tests"
+            ],
+            "cons": [
+              "Budget sensor tier beats cheap 4K almost every time on paper but struggles with night motion clarity per Reddit best dashcam 2026 Mar 27 2026",
+              "No 5GHz Wi-Fi or built-in GPS logging in base trim",
+              "Some variants use battery not supercapacitor, less tolerant to extreme temperatures"
+            ],
+            "specs": {
+              "category": "Best Budget",
+              "resolution": "1080p/2K class"
+            },
+            "verdict": "The honest budget pick when you just need evidence. Expert-domain Car and Driver testing shows it delivers usable footage where marketplace-churn 4K clones fail on night clarity and reliability.",
+            "best_for": "Best budget for basic protection"
+          }
+        ]
+      },
+      "evidence": {
+        "VIOFO A329S": [
+          {
+            "sourceIdx": 169,
+            "title": "Best Dashcams of 2025: Viofo A329S & A329T - YouTube",
+            "date": "2025-07-13",
+            "tag": "listicle",
+            "snippet": "Best Dashcams of 2025: Viofo A329S & A329T - YouTube [Jul 13, 2025] ... 2 Channels: A329S 2CH (front / rear): https://geni.us/ViofoA329S-2CH A329T 2CH (front ... 5 Best Dash Cams Front & Rear 2026 - 4K Quality & 360° Protection. NH ..."
+          },
+          {
+            "sourceIdx": 83,
+            "title": "VIOFO A329S 4K 3 Channel Dash Cam, 4K Front + 2K Cabin ...",
+            "date": "2025-07-18",
+            "tag": "manufacturer",
+            "snippet": "VIOFO A329S 4K 3 Channel Dash Cam, 4K Front + 2K Cabin ... [Jul 18, 2025] [Impact Detection Power Saving Parking Mode] The A329S dashcam supports an ultra-low-power parking mode to prevent battery drain. Once collision is detected, it ..."
+          },
+          {
+            "sourceIdx": 81,
+            "title": "A329S 3CH Best Parking Mode Settings With Battery Pack",
+            "date": "2025-06-28",
+            "tag": "untagged",
+            "snippet": "A329S 3CH Best Parking Mode Settings With Battery Pack [Jun 28, 2025] parking mode, with time lapse 1fps and 2 hour timer. helps the battery last a lot longer overnight or park and ride (long stay parking) etc."
+          }
+        ],
+        "VIOFO A229 Pro": [
+          {
+            "sourceIdx": 48,
+            "title": "Viofo A119M Pro Dash Cam - Full Review (Can it read license ...",
+            "date": null,
+            "tag": "untagged",
+            "snippet": "Viofo A119M Pro Dash Cam - Full Review (Can it read license ... [5 days ago] Viofo A119M Pro Dash Cam - Full Review (Can it read license plates better?) ... Best Dash Cams 2026: Buyer's Guide. Vortex Radar•291K views."
+          },
+          {
+            "sourceIdx": 11,
+            "title": "Best Dash Cam for 2026? Viofo A119M Pro Review",
+            "date": "2026-04-20",
+            "tag": "listicle",
+            "snippet": "Best Dash Cam for 2026? Viofo A119M Pro Review [Apr 20, 2026] In this video, I showcase the installation and features of a dashcam, emphasising its role in protecting vehicles. Discover the best dash ..."
+          },
+          {
+            "sourceIdx": 168,
+            "title": "The Best Dash Cams of 2026: Our Top Picks and What's New - viofo",
+            "date": "2026-03-16",
+            "tag": "listicle",
+            "snippet": "The Best Dash Cams of 2026: Our Top Picks and What's New - viofo [Mar 16, 2026] Wirecutter and Vortex Radar both named VIOFO #1. See the A329S, A229 Pro, A119M Pro, and A119 Mini 2 compared — specs, pricing, and what's new in 2026."
+          }
+        ],
+        "Vantrue N4 Pro S": [
+          {
+            "sourceIdx": 19,
+            "title": "Best 3-Channel Dashcam of 2026? Vantrue N4 Pro S Review",
+            "date": "2026-01-17",
+            "tag": "untagged",
+            "snippet": "Best 3-Channel Dashcam of 2026? Vantrue N4 Pro S Review [Jan 17, 2026] Vantrue #Vantruedashcam #VantrueN4PS Your best defense for insurance claims. Protect your car with the Vantrue N4 Pro S. Check it out here!"
+          },
+          {
+            "sourceIdx": 5,
+            "title": "The Best Dash Cams We've Tested for 2026 | PCMag",
+            "date": null,
+            "tag": "hands-on/expert-domain",
+            "snippet": "accessory for your car because they can limit your liability in accidents and record instances of vandalism. If you drive a company car, having video proof of your role in an incident is crucial. PCMag has been reviewing dash cams for over eight years, so we can help you find the right one for your"
+          },
+          {
+            "sourceIdx": 10,
+            "title": "Best dashcam 2026? Wolfbox X3 Pro Full Breakdown",
+            "date": null,
+            "tag": "listicle",
+            "snippet": "Best dashcam 2026? Wolfbox X3 Pro Full Breakdown [1 month ago] a comprehensive tech review of the Wolfbox X3 Pro, a smart wolfbox dash cam, setting it up step-by-step. This dash cam review covers the ..."
+          }
+        ],
+        "Vueroid S1 4K Infinite": [
+          {
+            "sourceIdx": 14,
+            "title": "Best 4K Dash Cam 2026? Pelsee S3 Ultra vs ROVE R2 | Night Vision Test Results",
+            "date": "2026-03-30",
+            "tag": "affiliate-conflict/hands-on",
+            "snippet": "Best 4K Dash Cam 2026? Pelsee S3 Ultra vs ROVE R2 | Night Vision Test Results Title: Best 4K Dash Cam 2026? Pelsee S3 Ultra vs ROVE R2 | Night Vision Test Results URL Source: https://www.youtube.com/watch?v=MEd4_VYt5n8 Warning: Target URL returned error 403: Forbidden Markdown Content: Back [![Im"
+          },
+          {
+            "sourceIdx": 21,
+            "title": "4K Dash Cam Market Size, Trends & Forecast, 2026-2033",
+            "date": "2025-07-20",
+            "tag": "untagged",
+            "snippet": "4K Dash Cam Market Size, Trends & Forecast, 2026-2033 [Jul 20, 2025] 4K Dash Cam Market size is growing with a CAGR of 9.7% in the prediction period & it crosses USD 4.53 Bn by 2033 from USD 2.37 Bn in 2026."
+          },
+          {
+            "sourceIdx": 40,
+            "title": "Do I Need a 4K Dash Cam? Discover Why It's Worth the Upgrade",
+            "date": "2026-02-26",
+            "tag": "untagged",
+            "snippet": "Do I Need a 4K Dash Cam? Discover Why It's Worth the Upgrade [Feb 26, 2026] Choosing 4K gives you sharp, clear footage. With 2K, your dash cam can read plates from a bit further and with more clarity, but you still might not catch all ..."
+          }
+        ],
+        "Vantrue E1 Pro": [
+          {
+            "sourceIdx": 19,
+            "title": "Best 3-Channel Dashcam of 2026? Vantrue N4 Pro S Review",
+            "date": "2026-01-17",
+            "tag": "untagged",
+            "snippet": "Best 3-Channel Dashcam of 2026? Vantrue N4 Pro S Review [Jan 17, 2026] Vantrue #Vantruedashcam #VantrueN4PS Your best defense for insurance claims. Protect your car with the Vantrue N4 Pro S. Check it out here!"
+          },
+          {
+            "sourceIdx": 1,
+            "title": "Best Dash Cams for 2026, Tested and Reviewed - Car and Driver",
+            "date": "2026-04-02",
+            "tag": "listicle",
+            "snippet": "Best Dash Cams for 2026, Tested and Reviewed - Car and Driver [Apr 2, 2026] Best Dash Cams Best Overall: Viofo A329S Best Value: Vantrue E1 Pro Best Midrange: 70Mai T800 Best Budget: Miofive S1"
+          },
+          {
+            "sourceIdx": 7,
+            "title": "Best Dash Cams of 2026: Top Front and Rear Car Cameras for ... - CNET",
+            "date": "2025-09-10",
+            "tag": "listicle/expert-domain",
+            "snippet": "t and Rear Car Cameras for ... - CNET [Sep 10, 2025] Best Dash Cams of 2026: Top Front and Rear Car Cameras for Every Budget ; Best overall dash cam. Vantrue E1 Pro. $110 at Amazon ; Best multi-channel dash cam."
+          }
+        ],
+        "Miofive S1": [
+          {
+            "sourceIdx": 1,
+            "title": "Best Dash Cams for 2026, Tested and Reviewed - Car and Driver",
+            "date": "2026-04-02",
+            "tag": "listicle",
+            "snippet": "nd Reviewed - Car and Driver [Apr 2, 2026] Best Dash Cams Best Overall: Viofo A329S Best Value: Vantrue E1 Pro Best Midrange: 70Mai T800 Best Budget: Miofive S1"
+          },
+          {
+            "sourceIdx": 12,
+            "title": "Best Dash Cams 2026: Buyer's Guide",
+            "date": "2025-12-19",
+            "tag": "listicle",
+            "snippet": "Best Dash Cams 2026: Buyer's Guide [Dec 19, 2025] ... Overall 4K 11:03 Vueroid S1 4K Infinite: Best for Hot Climates 14 ... Prime Day 2026 Best Deals | Top 5 Best Dash Cameras. Gadget ..."
+          },
+          {
+            "sourceIdx": 14,
+            "title": "Best 4K Dash Cam 2026? Pelsee S3 Ultra vs ROVE R2 | Night Vision Test Results",
+            "date": "2026-03-30",
+            "tag": "affiliate-conflict/hands-on",
+            "snippet": "mzn.to/40F3RYe](https://www.youtube.com/redirect?event=video_description&redir_token=QUFFLUhqa2FmMVBOaEpfUC0tU00xLTRmQUVtUVhsWTQtQXxBQ3Jtc0trSTg0YUV4YS10NThwUVNiNTdPNnJBMjBCYmk2YlhnT0pYc2xwMnVITktqYUVYSFprT1VudVktaEc2YlhXSzFoYzhDUkdVVXkyejZwaGJ0Q0dtWV9LOXBtZTROWFJlQkVUa0xCRlM4ampmOWlJZDJuWQ&q=https%"
+          }
+        ]
+      },
+      "evidence_truncated": false,
+      "grounding": {
+        "g_det": 10,
+        "weights": {
+          "grounded": 47,
+          "total": 47
+        },
+        "products_checked": 6,
+        "products_not_grounded": [],
+        "citations_checked": 7,
+        "citations_not_verified": [],
+        "numbers_checked": 15,
+        "numbers_not_grounded": []
+      }
+    }
+  }
+}

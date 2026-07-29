@@ -1,0 +1,1433 @@
+{
+  "generatedAt": "2026-07-29",
+  "method": "docs/benchmark-validity-audit.md section 5. Exact deterministic grounding against the FULL corpus. No LLM.",
+  "notComparableTo": "synth-gold-fable-scores.json (judged through a 6000-char digest covering 0-13% of sources)",
+  "perModel": [
+    {
+      "label": "gpt-5.4-mini",
+      "model": "openai/gpt-5.4-mini",
+      "completions": "8/8",
+      "completionRate": 1,
+      "gDetMean": 10,
+      "products": 30,
+      "fabricatedProducts": 0,
+      "citationsScored": 11,
+      "fabricatedCitations": 0,
+      "ungroundedNumbers": 0,
+      "numbersChecked": 56,
+      "genCostUsd": 0.19
+    },
+    {
+      "label": "gemma-4-26b",
+      "model": "google/gemma-4-26b-a4b-it:free",
+      "completions": "3/8",
+      "completionRate": 0.38,
+      "gDetMean": 10,
+      "products": 9,
+      "fabricatedProducts": 0,
+      "citationsScored": 1,
+      "fabricatedCitations": 0,
+      "ungroundedNumbers": 0,
+      "numbersChecked": 10,
+      "genCostUsd": 0
+    },
+    {
+      "label": "gpt-5-nano",
+      "model": "openai/gpt-5-nano",
+      "completions": "6/8",
+      "completionRate": 0.75,
+      "gDetMean": 10,
+      "products": 19,
+      "fabricatedProducts": 0,
+      "citationsScored": 12,
+      "fabricatedCitations": 0,
+      "ungroundedNumbers": 0,
+      "numbersChecked": 31,
+      "genCostUsd": 0.04
+    },
+    {
+      "label": "claude-haiku-4.5",
+      "model": "anthropic/claude-haiku-4.5",
+      "completions": "8/8",
+      "completionRate": 1,
+      "gDetMean": 10,
+      "products": 50,
+      "fabricatedProducts": 0,
+      "citationsScored": 24,
+      "fabricatedCitations": 0,
+      "ungroundedNumbers": 0,
+      "numbersChecked": 106,
+      "genCostUsd": 0.37
+    },
+    {
+      "label": "minimax-m3",
+      "model": "minimax/minimax-m3",
+      "completions": "8/8",
+      "completionRate": 1,
+      "gDetMean": 9.98,
+      "products": 49,
+      "fabricatedProducts": 0,
+      "citationsScored": 41,
+      "fabricatedCitations": 0,
+      "ungroundedNumbers": 1,
+      "numbersChecked": 92,
+      "genCostUsd": 0.11
+    },
+    {
+      "label": "muse-spark-1.1",
+      "model": "meta/muse-spark-1.1",
+      "completions": "7/8",
+      "completionRate": 0.88,
+      "gDetMean": 9.98,
+      "products": 41,
+      "fabricatedProducts": 0,
+      "citationsScored": 112,
+      "fabricatedCitations": 1,
+      "ungroundedNumbers": 0,
+      "numbersChecked": 89,
+      "genCostUsd": 0.54
+    },
+    {
+      "label": "muse-spark-1.1-noreason",
+      "model": "meta/muse-spark-1.1",
+      "completions": "8/8",
+      "completionRate": 1,
+      "gDetMean": 9.87,
+      "products": 41,
+      "fabricatedProducts": 1,
+      "citationsScored": 56,
+      "fabricatedCitations": 0,
+      "ungroundedNumbers": 0,
+      "numbersChecked": 79,
+      "genCostUsd": 0.27
+    },
+    {
+      "label": "deepseek-v4-flash",
+      "model": "deepseek/deepseek-v4-flash",
+      "completions": "8/8",
+      "completionRate": 1,
+      "gDetMean": 9.59,
+      "products": 37,
+      "fabricatedProducts": 0,
+      "citationsScored": 38,
+      "fabricatedCitations": 0,
+      "ungroundedNumbers": 22,
+      "numbersChecked": 175,
+      "genCostUsd": 0.02
+    }
+  ],
+  "rows": [
+    {
+      "query": "best soundbar 2026",
+      "model": "openai/gpt-5.4-mini",
+      "label": "gpt-5.4-mini",
+      "ok": true,
+      "products": 3,
+      "gDet": 10,
+      "weights": {
+        "grounded": 11,
+        "total": 11
+      },
+      "citationsScored": 0,
+      "numbersChecked": 2,
+      "fabricatedProducts": [],
+      "fabricatedCitations": [],
+      "ungroundedNumbers": [],
+      "strictMisses": []
+    },
+    {
+      "query": "best soundbar 2026",
+      "model": "minimax/minimax-m3",
+      "label": "minimax-m3",
+      "ok": true,
+      "products": 8,
+      "gDet": 10,
+      "weights": {
+        "grounded": 54,
+        "total": 54
+      },
+      "citationsScored": 12,
+      "numbersChecked": 6,
+      "fabricatedProducts": [],
+      "fabricatedCitations": [],
+      "ungroundedNumbers": [],
+      "strictMisses": []
+    },
+    {
+      "query": "best soundbar 2026",
+      "model": "deepseek/deepseek-v4-flash",
+      "label": "deepseek-v4-flash",
+      "ok": true,
+      "products": 3,
+      "gDet": 10,
+      "weights": {
+        "grounded": 22,
+        "total": 22
+      },
+      "citationsScored": 5,
+      "numbersChecked": 3,
+      "fabricatedProducts": [],
+      "fabricatedCitations": [],
+      "ungroundedNumbers": [],
+      "strictMisses": [
+        "Samsung HW-Q990F Soundbar",
+        "Hisense HS2100 Soundbar"
+      ]
+    },
+    {
+      "query": "best soundbar 2026",
+      "model": "google/gemma-4-26b-a4b-it:free",
+      "label": "gemma-4-26b",
+      "ok": true,
+      "products": 4,
+      "gDet": 10,
+      "weights": {
+        "grounded": 15,
+        "total": 15
+      },
+      "citationsScored": 0,
+      "numbersChecked": 3,
+      "fabricatedProducts": [],
+      "fabricatedCitations": [],
+      "ungroundedNumbers": [],
+      "strictMisses": []
+    },
+    {
+      "query": "best soundbar 2026",
+      "model": "openai/gpt-5-nano",
+      "label": "gpt-5-nano",
+      "ok": true,
+      "products": 3,
+      "gDet": 10,
+      "weights": {
+        "grounded": 35,
+        "total": 35
+      },
+      "citationsScored": 11,
+      "numbersChecked": 4,
+      "fabricatedProducts": [],
+      "fabricatedCitations": [],
+      "ungroundedNumbers": [],
+      "strictMisses": [
+        "Samsung HW-Q990F Soundbar (11.1.4ch with Wireless Rear Speaker Kit)",
+        "Sonos Arc Ultra Dolby Atmos Soundbar",
+        "JBL Bar 1300X Soundbar"
+      ]
+    },
+    {
+      "query": "best soundbar 2026",
+      "model": "anthropic/claude-haiku-4.5",
+      "label": "claude-haiku-4.5",
+      "ok": true,
+      "products": 9,
+      "gDet": 10,
+      "weights": {
+        "grounded": 47,
+        "total": 47
+      },
+      "citationsScored": 3,
+      "numbersChecked": 14,
+      "fabricatedProducts": [],
+      "fabricatedCitations": [],
+      "ungroundedNumbers": [],
+      "strictMisses": []
+    },
+    {
+      "query": "best microwave 2026",
+      "model": "openai/gpt-5.4-mini",
+      "label": "gpt-5.4-mini",
+      "ok": true,
+      "products": 4,
+      "gDet": 10,
+      "weights": {
+        "grounded": 15,
+        "total": 15
+      },
+      "citationsScored": 0,
+      "numbersChecked": 3,
+      "fabricatedProducts": [],
+      "fabricatedCitations": [],
+      "ungroundedNumbers": [],
+      "strictMisses": []
+    },
+    {
+      "query": "best microwave 2026",
+      "model": "minimax/minimax-m3",
+      "label": "minimax-m3",
+      "ok": true,
+      "products": 6,
+      "gDet": 10,
+      "weights": {
+        "grounded": 35,
+        "total": 35
+      },
+      "citationsScored": 6,
+      "numbersChecked": 5,
+      "fabricatedProducts": [],
+      "fabricatedCitations": [],
+      "ungroundedNumbers": [],
+      "strictMisses": [
+        "Breville Smooth Wave (BMO850BSS) / Combi Wave 3-in-1",
+        "GE 1.0 Cu. Ft. Countertop Convection Microwave Oven with Air Fry",
+        "Sharp SMC2266KS Countertop Microwave",
+        "LG MVEM1825F Over-the-Range Microwave"
+      ]
+    },
+    {
+      "query": "best microwave 2026",
+      "model": "deepseek/deepseek-v4-flash",
+      "label": "deepseek-v4-flash",
+      "ok": true,
+      "products": 5,
+      "gDet": 9.86,
+      "weights": {
+        "grounded": 70,
+        "total": 71
+      },
+      "citationsScored": 13,
+      "numbersChecked": 30,
+      "fabricatedProducts": [],
+      "fabricatedCitations": [],
+      "ungroundedNumbers": [
+        {
+          "product": "GE 1.0 Cu. Ft. Capacity Countertop Convection Microwave Oven with Air Fry",
+          "field": "price",
+          "value": 179.99,
+          "number": 179.99
+        }
+      ],
+      "strictMisses": [
+        "Breville Combi Wave 3-in-1 Microwave, Convection Oven, and Air Fryer",
+        "Sharp SMC2266KS 1.5 cu. ft. 1000W Countertop Microwave"
+      ]
+    },
+    {
+      "query": "best microwave 2026",
+      "model": "openai/gpt-5-nano",
+      "label": "gpt-5-nano",
+      "ok": true,
+      "products": 1,
+      "gDet": 10,
+      "weights": {
+        "grounded": 4,
+        "total": 4
+      },
+      "citationsScored": 0,
+      "numbersChecked": 1,
+      "fabricatedProducts": [],
+      "fabricatedCitations": [],
+      "ungroundedNumbers": [],
+      "strictMisses": [
+        "Breville Combi Wave 3-in-1 Microwave Oven (Countertop)"
+      ]
+    },
+    {
+      "query": "best microwave 2026",
+      "model": "anthropic/claude-haiku-4.5",
+      "label": "claude-haiku-4.5",
+      "ok": true,
+      "products": 5,
+      "gDet": 10,
+      "weights": {
+        "grounded": 24,
+        "total": 24
+      },
+      "citationsScored": 1,
+      "numbersChecked": 7,
+      "fabricatedProducts": [],
+      "fabricatedCitations": [],
+      "ungroundedNumbers": [],
+      "strictMisses": [
+        "Breville Combi Wave 3-in-1 Countertop Microwave",
+        "Sharp SMC2266KS Countertop Microwave"
+      ]
+    },
+    {
+      "query": "best graphics card 2026",
+      "model": "openai/gpt-5.4-mini",
+      "label": "gpt-5.4-mini",
+      "ok": true,
+      "products": 2,
+      "gDet": 10,
+      "weights": {
+        "grounded": 14,
+        "total": 14
+      },
+      "citationsScored": 3,
+      "numbersChecked": 2,
+      "fabricatedProducts": [],
+      "fabricatedCitations": [],
+      "ungroundedNumbers": [],
+      "strictMisses": []
+    },
+    {
+      "query": "best graphics card 2026",
+      "model": "minimax/minimax-m3",
+      "label": "minimax-m3",
+      "ok": true,
+      "products": 5,
+      "gDet": 10,
+      "weights": {
+        "grounded": 28,
+        "total": 28
+      },
+      "citationsScored": 1,
+      "numbersChecked": 11,
+      "fabricatedProducts": [],
+      "fabricatedCitations": [],
+      "ungroundedNumbers": [],
+      "strictMisses": [
+        "Nvidia GeForce RTX 5090"
+      ]
+    },
+    {
+      "query": "best graphics card 2026",
+      "model": "deepseek/deepseek-v4-flash",
+      "label": "deepseek-v4-flash",
+      "ok": true,
+      "products": 2,
+      "gDet": 10,
+      "weights": {
+        "grounded": 18,
+        "total": 18
+      },
+      "citationsScored": 4,
+      "numbersChecked": 4,
+      "fabricatedProducts": [],
+      "fabricatedCitations": [],
+      "ungroundedNumbers": [],
+      "strictMisses": []
+    },
+    {
+      "query": "best graphics card 2026",
+      "model": "google/gemma-4-26b-a4b-it:free",
+      "label": "gemma-4-26b",
+      "ok": true,
+      "products": 2,
+      "gDet": 10,
+      "weights": {
+        "grounded": 10,
+        "total": 10
+      },
+      "citationsScored": 1,
+      "numbersChecked": 2,
+      "fabricatedProducts": [],
+      "fabricatedCitations": [],
+      "ungroundedNumbers": [],
+      "strictMisses": []
+    },
+    {
+      "query": "best graphics card 2026",
+      "model": "anthropic/claude-haiku-4.5",
+      "label": "claude-haiku-4.5",
+      "ok": true,
+      "products": 3,
+      "gDet": 10,
+      "weights": {
+        "grounded": 24,
+        "total": 24
+      },
+      "citationsScored": 1,
+      "numbersChecked": 13,
+      "fabricatedProducts": [],
+      "fabricatedCitations": [],
+      "ungroundedNumbers": [],
+      "strictMisses": [
+        "Nvidia RTX Spark (Grace Blackwell, future generations)"
+      ]
+    },
+    {
+      "query": "best dash cam 2026",
+      "model": "openai/gpt-5.4-mini",
+      "label": "gpt-5.4-mini",
+      "ok": true,
+      "products": 4,
+      "gDet": 10,
+      "weights": {
+        "grounded": 25,
+        "total": 25
+      },
+      "citationsScored": 2,
+      "numbersChecked": 9,
+      "fabricatedProducts": [],
+      "fabricatedCitations": [],
+      "ungroundedNumbers": [],
+      "strictMisses": []
+    },
+    {
+      "query": "best dash cam 2026",
+      "model": "minimax/minimax-m3",
+      "label": "minimax-m3",
+      "ok": true,
+      "products": 5,
+      "gDet": 10,
+      "weights": {
+        "grounded": 33,
+        "total": 33
+      },
+      "citationsScored": 3,
+      "numbersChecked": 12,
+      "fabricatedProducts": [],
+      "fabricatedCitations": [],
+      "ungroundedNumbers": [],
+      "strictMisses": [
+        "VIOFO A329S 4K Dash Cam",
+        "Vantrue N4 Pro S 3-Channel Dash Cam",
+        "BlackVue DR970X-2CH Dash Cam",
+        "Thinkware U3000 Dash Cam"
+      ]
+    },
+    {
+      "query": "best dash cam 2026",
+      "model": "deepseek/deepseek-v4-flash",
+      "label": "deepseek-v4-flash",
+      "ok": true,
+      "products": 6,
+      "gDet": 7.75,
+      "weights": {
+        "grounded": 55,
+        "total": 71
+      },
+      "citationsScored": 1,
+      "numbersChecked": 51,
+      "fabricatedProducts": [],
+      "fabricatedCitations": [],
+      "ungroundedNumbers": [
+        {
+          "product": "Viofo A229 Pro 4K 2CH Dash Cam",
+          "field": "Front Resolution",
+          "value": "4K (3840x2160)",
+          "number": 3840
+        },
+        {
+          "product": "Viofo A229 Pro 4K 2CH Dash Cam",
+          "field": "Front Resolution",
+          "value": "4K (3840x2160)",
+          "number": 2160
+        },
+        {
+          "product": "Viofo A229 Pro 4K 2CH Dash Cam",
+          "field": "Rear Resolution",
+          "value": "2K (2560x1440)",
+          "number": 2560
+        },
+        {
+          "product": "BlackVue DR970X-2CH with 128GB",
+          "field": "Front Resolution",
+          "value": "4K (3840x2160)",
+          "number": 3840
+        },
+        {
+          "product": "BlackVue DR970X-2CH with 128GB",
+          "field": "Front Resolution",
+          "value": "4K (3840x2160)",
+          "number": 2160
+        },
+        {
+          "product": "BlackVue DR970X-2CH with 128GB",
+          "field": "Rear Resolution",
+          "value": "Full HD (1920x1080)",
+          "number": 1920
+        },
+        {
+          "product": "Vantrue N4 Pro S 4K 3CH Dash Cam",
+          "field": "Front Resolution",
+          "value": "4K (3840x2160)",
+          "number": 3840
+        },
+        {
+          "product": "Vantrue N4 Pro S 4K 3CH Dash Cam",
+          "field": "Front Resolution",
+          "value": "4K (3840x2160)",
+          "number": 2160
+        },
+        {
+          "product": "Viofo A119 Mini 2 2K Dash Cam",
+          "field": "Resolution",
+          "value": "2K (2560x1600)",
+          "number": 2560
+        },
+        {
+          "product": "Viofo A119 Mini 2 2K Dash Cam",
+          "field": "Resolution",
+          "value": "2K (2560x1600)",
+          "number": 1600
+        },
+        {
+          "product": "Thinkware U3000 4K 2CH Dash Cam",
+          "field": "Front Resolution",
+          "value": "4K (3840x2160)",
+          "number": 3840
+        },
+        {
+          "product": "Thinkware U3000 4K 2CH Dash Cam",
+          "field": "Front Resolution",
+          "value": "4K (3840x2160)",
+          "number": 2160
+        },
+        {
+          "product": "Thinkware U3000 4K 2CH Dash Cam",
+          "field": "Rear Resolution",
+          "value": "2K (2560x1440)",
+          "number": 2560
+        },
+        {
+          "product": "Vueroid S1 4K Infinite Dash Cam",
+          "field": "Front Resolution",
+          "value": "4K (3840x2160)",
+          "number": 3840
+        },
+        {
+          "product": "Vueroid S1 4K Infinite Dash Cam",
+          "field": "Front Resolution",
+          "value": "4K (3840x2160)",
+          "number": 2160
+        },
+        {
+          "product": "Vueroid S1 4K Infinite Dash Cam",
+          "field": "Rear Resolution",
+          "value": "2K (2560x1440)",
+          "number": 2560
+        }
+      ],
+      "strictMisses": [
+        "Viofo A229 Pro 4K 2CH Dash Cam",
+        "Vantrue N4 Pro S 4K 3CH Dash Cam",
+        "Viofo A119 Mini 2 2K Dash Cam",
+        "Thinkware U3000 4K 2CH Dash Cam",
+        "Vueroid S1 4K Infinite Dash Cam"
+      ]
+    },
+    {
+      "query": "best dash cam 2026",
+      "model": "google/gemma-4-26b-a4b-it:free",
+      "label": "gemma-4-26b",
+      "ok": true,
+      "products": 3,
+      "gDet": 10,
+      "weights": {
+        "grounded": 14,
+        "total": 14
+      },
+      "citationsScored": 0,
+      "numbersChecked": 5,
+      "fabricatedProducts": [],
+      "fabricatedCitations": [],
+      "ungroundedNumbers": [],
+      "strictMisses": []
+    },
+    {
+      "query": "best dash cam 2026",
+      "model": "anthropic/claude-haiku-4.5",
+      "label": "claude-haiku-4.5",
+      "ok": true,
+      "products": 6,
+      "gDet": 10,
+      "weights": {
+        "grounded": 47,
+        "total": 47
+      },
+      "citationsScored": 5,
+      "numbersChecked": 19,
+      "fabricatedProducts": [],
+      "fabricatedCitations": [],
+      "ungroundedNumbers": [],
+      "strictMisses": [
+        "VIOFO A229 Pro 4K Dual-Channel Dash Cam",
+        "Vantrue N4 Pro 4K 3-Channel Dash Cam",
+        "VIOFO A329S 4K Dual-Channel Dash Cam",
+        "70mai A810 Lite 4K Dash Cam"
+      ]
+    },
+    {
+      "query": "best vacuum for pet hair",
+      "model": "openai/gpt-5.4-mini",
+      "label": "gpt-5.4-mini",
+      "ok": true,
+      "products": 4,
+      "gDet": 10,
+      "weights": {
+        "grounded": 21,
+        "total": 21
+      },
+      "citationsScored": 0,
+      "numbersChecked": 9,
+      "fabricatedProducts": [],
+      "fabricatedCitations": [],
+      "ungroundedNumbers": [],
+      "strictMisses": []
+    },
+    {
+      "query": "best vacuum for pet hair",
+      "model": "minimax/minimax-m3",
+      "label": "minimax-m3",
+      "ok": true,
+      "products": 8,
+      "gDet": 9.81,
+      "weights": {
+        "grounded": 53,
+        "total": 54
+      },
+      "citationsScored": 4,
+      "numbersChecked": 22,
+      "fabricatedProducts": [],
+      "fabricatedCitations": [],
+      "ungroundedNumbers": [
+        {
+          "product": "Dreame D20 Plus Robot Vacuum",
+          "field": "price",
+          "value": 270,
+          "number": 270
+        }
+      ],
+      "strictMisses": [
+        "Black+Decker 20V Max Dustbuster AdvancedClean+ HHVK515JP07"
+      ]
+    },
+    {
+      "query": "best vacuum for pet hair",
+      "model": "deepseek/deepseek-v4-flash",
+      "label": "deepseek-v4-flash",
+      "ok": true,
+      "products": 6,
+      "gDet": 9.46,
+      "weights": {
+        "grounded": 35,
+        "total": 37
+      },
+      "citationsScored": 3,
+      "numbersChecked": 13,
+      "fabricatedProducts": [],
+      "fabricatedCitations": [],
+      "ungroundedNumbers": [
+        {
+          "product": "Roborock Q7 M5+ Robot Vacuum with Self-Emptying Dock",
+          "field": "Suction",
+          "value": "2500Pa",
+          "number": 2500
+        },
+        {
+          "product": "Dreame D20 Plus Robot Vacuum with Self-Emptying Dock",
+          "field": "price",
+          "value": 275,
+          "number": 275
+        }
+      ],
+      "strictMisses": [
+        "SEBO Airbelt K3 Premium Canister Vacuum",
+        "Roborock Q7 M5+ Robot Vacuum with Self-Emptying Dock",
+        "Black+Decker 20V Max Dustbuster AdvancedClean+ Cordless Pet Hand Vac HHVK515JP07",
+        "Dreame D20 Plus Robot Vacuum with Self-Emptying Dock",
+        "Eufy Robot Vacuum Omni E25 (Self-Cleaning Roller Mop)"
+      ]
+    },
+    {
+      "query": "best vacuum for pet hair",
+      "model": "openai/gpt-5-nano",
+      "label": "gpt-5-nano",
+      "ok": true,
+      "products": 4,
+      "gDet": 10,
+      "weights": {
+        "grounded": 15,
+        "total": 15
+      },
+      "citationsScored": 0,
+      "numbersChecked": 3,
+      "fabricatedProducts": [],
+      "fabricatedCitations": [],
+      "ungroundedNumbers": [],
+      "strictMisses": [
+        "Dyson V15 Detect Cordless Vacuum (Pet-hair testing leader)",
+        "Narwal Freo X10 Pro (robot mop-vac, pet-hair capable)",
+        "SEBO Airbelt K3 Premium (bagged canister, pet-hair friendly)",
+        "Roborock Q7 M5+ (robot vacuum, pet-hair capable)"
+      ]
+    },
+    {
+      "query": "best vacuum for pet hair",
+      "model": "anthropic/claude-haiku-4.5",
+      "label": "claude-haiku-4.5",
+      "ok": true,
+      "products": 5,
+      "gDet": 10,
+      "weights": {
+        "grounded": 34,
+        "total": 34
+      },
+      "citationsScored": 3,
+      "numbersChecked": 13,
+      "fabricatedProducts": [],
+      "fabricatedCitations": [],
+      "ungroundedNumbers": [],
+      "strictMisses": [
+        "Roborock Q7 M5+ Robot Vacuum with Self-Emptying Dock"
+      ]
+    },
+    {
+      "query": "best printer for home",
+      "model": "openai/gpt-5.4-mini",
+      "label": "gpt-5.4-mini",
+      "ok": true,
+      "products": 5,
+      "gDet": 10,
+      "weights": {
+        "grounded": 19,
+        "total": 19
+      },
+      "citationsScored": 1,
+      "numbersChecked": 2,
+      "fabricatedProducts": [],
+      "fabricatedCitations": [],
+      "ungroundedNumbers": [],
+      "strictMisses": []
+    },
+    {
+      "query": "best printer for home",
+      "model": "minimax/minimax-m3",
+      "label": "minimax-m3",
+      "ok": true,
+      "products": 5,
+      "gDet": 10,
+      "weights": {
+        "grounded": 33,
+        "total": 33
+      },
+      "citationsScored": 7,
+      "numbersChecked": 4,
+      "fabricatedProducts": [],
+      "fabricatedCitations": [],
+      "ungroundedNumbers": [],
+      "strictMisses": []
+    },
+    {
+      "query": "best printer for home",
+      "model": "deepseek/deepseek-v4-flash",
+      "label": "deepseek-v4-flash",
+      "ok": true,
+      "products": 4,
+      "gDet": 10,
+      "weights": {
+        "grounded": 19,
+        "total": 19
+      },
+      "citationsScored": 2,
+      "numbersChecked": 3,
+      "fabricatedProducts": [],
+      "fabricatedCitations": [],
+      "ungroundedNumbers": [],
+      "strictMisses": [
+        "Brother MFC-L3780CDW Color Laser All-in-One Printer",
+        "HP LaserJet M209d Monochrome Laser Printer",
+        "Brother DCP-L2640DW Monochrome Laser All-in-One Printer"
+      ]
+    },
+    {
+      "query": "best printer for home",
+      "model": "openai/gpt-5-nano",
+      "label": "gpt-5-nano",
+      "ok": true,
+      "products": 3,
+      "gDet": 10,
+      "weights": {
+        "grounded": 12,
+        "total": 12
+      },
+      "citationsScored": 0,
+      "numbersChecked": 3,
+      "fabricatedProducts": [],
+      "fabricatedCitations": [],
+      "ungroundedNumbers": [],
+      "strictMisses": [
+        "Brother MFC-J4355DW All-in-One Printer"
+      ]
+    },
+    {
+      "query": "best printer for home",
+      "model": "anthropic/claude-haiku-4.5",
+      "label": "claude-haiku-4.5",
+      "ok": true,
+      "products": 9,
+      "gDet": 10,
+      "weights": {
+        "grounded": 39,
+        "total": 39
+      },
+      "citationsScored": 3,
+      "numbersChecked": 6,
+      "fabricatedProducts": [],
+      "fabricatedCitations": [],
+      "ungroundedNumbers": [],
+      "strictMisses": []
+    },
+    {
+      "query": "best portable charger for iphone",
+      "model": "openai/gpt-5.4-mini",
+      "label": "gpt-5.4-mini",
+      "ok": true,
+      "products": 5,
+      "gDet": 10,
+      "weights": {
+        "grounded": 46,
+        "total": 46
+      },
+      "citationsScored": 1,
+      "numbersChecked": 29,
+      "fabricatedProducts": [],
+      "fabricatedCitations": [],
+      "ungroundedNumbers": [],
+      "strictMisses": []
+    },
+    {
+      "query": "best portable charger for iphone",
+      "model": "minimax/minimax-m3",
+      "label": "minimax-m3",
+      "ok": true,
+      "products": 5,
+      "gDet": 10,
+      "weights": {
+        "grounded": 46,
+        "total": 46
+      },
+      "citationsScored": 3,
+      "numbersChecked": 25,
+      "fabricatedProducts": [],
+      "fabricatedCitations": [],
+      "ungroundedNumbers": [],
+      "strictMisses": [
+        "Anker 10,000mAh Portable Charger (with integrated USB-C cable)"
+      ]
+    },
+    {
+      "query": "best portable charger for iphone",
+      "model": "deepseek/deepseek-v4-flash",
+      "label": "deepseek-v4-flash",
+      "ok": true,
+      "products": 5,
+      "gDet": 10,
+      "weights": {
+        "grounded": 44,
+        "total": 44
+      },
+      "citationsScored": 3,
+      "numbersChecked": 23,
+      "fabricatedProducts": [],
+      "fabricatedCitations": [],
+      "ungroundedNumbers": [],
+      "strictMisses": []
+    },
+    {
+      "query": "best portable charger for iphone",
+      "model": "openai/gpt-5-nano",
+      "label": "gpt-5-nano",
+      "ok": true,
+      "products": 5,
+      "gDet": 10,
+      "weights": {
+        "grounded": 35,
+        "total": 35
+      },
+      "citationsScored": 0,
+      "numbersChecked": 20,
+      "fabricatedProducts": [],
+      "fabricatedCitations": [],
+      "ungroundedNumbers": [],
+      "strictMisses": [
+        "Belkin 10K USB-C Portable Power Bank with Integrated Cables"
+      ]
+    },
+    {
+      "query": "best portable charger for iphone",
+      "model": "anthropic/claude-haiku-4.5",
+      "label": "claude-haiku-4.5",
+      "ok": true,
+      "products": 5,
+      "gDet": 10,
+      "weights": {
+        "grounded": 47,
+        "total": 47
+      },
+      "citationsScored": 1,
+      "numbersChecked": 30,
+      "fabricatedProducts": [],
+      "fabricatedCitations": [],
+      "ungroundedNumbers": [],
+      "strictMisses": []
+    },
+    {
+      "query": "best hair dryer 2026",
+      "model": "openai/gpt-5.4-mini",
+      "label": "gpt-5.4-mini",
+      "ok": true,
+      "products": 3,
+      "gDet": 10,
+      "weights": {
+        "grounded": 17,
+        "total": 17
+      },
+      "citationsScored": 4,
+      "numbersChecked": 0,
+      "fabricatedProducts": [],
+      "fabricatedCitations": [],
+      "ungroundedNumbers": [],
+      "strictMisses": [
+        "Conair InfinitiPRO SmoothWrap Hair Dryer"
+      ]
+    },
+    {
+      "query": "best hair dryer 2026",
+      "model": "minimax/minimax-m3",
+      "label": "minimax-m3",
+      "ok": true,
+      "products": 7,
+      "gDet": 10,
+      "weights": {
+        "grounded": 38,
+        "total": 38
+      },
+      "citationsScored": 5,
+      "numbersChecked": 7,
+      "fabricatedProducts": [],
+      "fabricatedCitations": [],
+      "ungroundedNumbers": [],
+      "strictMisses": [
+        "BaByliss Pro Nano Titanium Dryer",
+        "Laifen Swift 4 Hair Dryer",
+        "Conair InfinitiPRO SmoothWrap Hair Dryer"
+      ]
+    },
+    {
+      "query": "best hair dryer 2026",
+      "model": "deepseek/deepseek-v4-flash",
+      "label": "deepseek-v4-flash",
+      "ok": true,
+      "products": 6,
+      "gDet": 9.63,
+      "weights": {
+        "grounded": 77,
+        "total": 80
+      },
+      "citationsScored": 7,
+      "numbersChecked": 48,
+      "fabricatedProducts": [],
+      "fabricatedCitations": [],
+      "ungroundedNumbers": [
+        {
+          "product": "Dyson Supersonic Hair Dryer",
+          "field": "price",
+          "value": 429.99,
+          "number": 429.99
+        },
+        {
+          "product": "Shark SpeedStyle RapidGloss Finisher & High-Velocity Hair Dryer",
+          "field": "weight",
+          "value": "1.4 lbs (635 g)",
+          "number": 635
+        },
+        {
+          "product": "L'Oréal AirLight Pro Infrared Hair Dryer",
+          "field": "weight",
+          "value": "1.3 lbs (590 g)",
+          "number": 590
+        }
+      ],
+      "strictMisses": [
+        "BaBylissPRO Nano Titanium Hair Dryer",
+        "Conair InfinitiPRO SmoothWrap Hair Dryer",
+        "L'Oréal AirLight Pro Infrared Hair Dryer"
+      ]
+    },
+    {
+      "query": "best hair dryer 2026",
+      "model": "openai/gpt-5-nano",
+      "label": "gpt-5-nano",
+      "ok": true,
+      "products": 3,
+      "gDet": 10,
+      "weights": {
+        "grounded": 11,
+        "total": 11
+      },
+      "citationsScored": 1,
+      "numbersChecked": 0,
+      "fabricatedProducts": [],
+      "fabricatedCitations": [],
+      "ungroundedNumbers": [],
+      "strictMisses": [
+        "Rusk W8less Professional Hair Dryer, 2000W",
+        "Laifen Wave Pro Hair Dryer"
+      ]
+    },
+    {
+      "query": "best hair dryer 2026",
+      "model": "anthropic/claude-haiku-4.5",
+      "label": "claude-haiku-4.5",
+      "ok": true,
+      "products": 8,
+      "gDet": 10,
+      "weights": {
+        "grounded": 42,
+        "total": 42
+      },
+      "citationsScored": 7,
+      "numbersChecked": 4,
+      "fabricatedProducts": [],
+      "fabricatedCitations": [],
+      "ungroundedNumbers": [],
+      "strictMisses": [
+        "Babyliss Pro Nano Ionic Hair Dryer",
+        "Laifen Swift 4 Hair Dryer",
+        "BioIonic Powerlight Pro Dryer"
+      ]
+    },
+    {
+      "query": "best soundbar 2026",
+      "model": "meta/muse-spark-1.1",
+      "label": "muse-spark-1.1",
+      "ok": true,
+      "products": 6,
+      "gDet": 9.87,
+      "weights": {
+        "grounded": 78,
+        "total": 79
+      },
+      "citationsScored": 28,
+      "numbersChecked": 5,
+      "fabricatedProducts": [],
+      "fabricatedCitations": [
+        {
+          "outlet": "reddit",
+          "alias": "Reddit",
+          "dateISO": "2026-06-14",
+          "status": "date-mismatch",
+          "field": "products[1].pros[1]",
+          "span": "ded mid-to-high-end option for bass-seekers per Reddit favorites guide Jun 14 2026"
+        }
+      ],
+      "ungroundedNumbers": [],
+      "strictMisses": [
+        "Samsung HW-Q990F 11.1.4 Soundbar System",
+        "Sonos Beam (Gen 2) Compact Soundbar",
+        "Samsung HW-Q600F Soundbar with Subwoofer",
+        "Hisense HS2100 Budget Soundbar"
+      ]
+    },
+    {
+      "query": "best microwave 2026",
+      "model": "meta/muse-spark-1.1",
+      "label": "muse-spark-1.1",
+      "ok": true,
+      "products": 6,
+      "gDet": 10,
+      "weights": {
+        "grounded": 66,
+        "total": 66
+      },
+      "citationsScored": 20,
+      "numbersChecked": 8,
+      "fabricatedProducts": [],
+      "fabricatedCitations": [],
+      "ungroundedNumbers": [],
+      "strictMisses": [
+        "Breville Combi Wave 3-in-1 Microwave BMO850BSS",
+        "LG MVEM1825F Over-the-Range Microwave",
+        "Sharp SMC2266KS Countertop Microwave"
+      ]
+    },
+    {
+      "query": "best graphics card 2026",
+      "model": "meta/muse-spark-1.1",
+      "label": "muse-spark-1.1",
+      "ok": true,
+      "products": 5,
+      "gDet": 10,
+      "weights": {
+        "grounded": 64,
+        "total": 64
+      },
+      "citationsScored": 19,
+      "numbersChecked": 11,
+      "fabricatedProducts": [],
+      "fabricatedCitations": [],
+      "ungroundedNumbers": [],
+      "strictMisses": [
+        "Gigabyte GeForce RTX 5070 Ti Eagle OC ICE",
+        "Nvidia GeForce RTX 5090"
+      ]
+    },
+    {
+      "query": "best dash cam 2026",
+      "model": "meta/muse-spark-1.1",
+      "label": "muse-spark-1.1",
+      "ok": true,
+      "products": 6,
+      "gDet": 10,
+      "weights": {
+        "grounded": 47,
+        "total": 47
+      },
+      "citationsScored": 7,
+      "numbersChecked": 15,
+      "fabricatedProducts": [],
+      "fabricatedCitations": [],
+      "ungroundedNumbers": [],
+      "strictMisses": []
+    },
+    {
+      "query": "best vacuum for pet hair",
+      "model": "meta/muse-spark-1.1",
+      "label": "muse-spark-1.1",
+      "ok": true,
+      "products": 6,
+      "gDet": 10,
+      "weights": {
+        "grounded": 53,
+        "total": 53
+      },
+      "citationsScored": 13,
+      "numbersChecked": 9,
+      "fabricatedProducts": [],
+      "fabricatedCitations": [],
+      "ungroundedNumbers": [],
+      "strictMisses": [
+        "SEBO Airbelt K3 Premium Bagged Canister Vacuum",
+        "Roborock Q7 M5+ Robot Vacuum with Self-Emptying Dock"
+      ]
+    },
+    {
+      "query": "best printer for home",
+      "model": "meta/muse-spark-1.1",
+      "label": "muse-spark-1.1",
+      "ok": true,
+      "products": 6,
+      "gDet": 10,
+      "weights": {
+        "grounded": 68,
+        "total": 68
+      },
+      "citationsScored": 20,
+      "numbersChecked": 10,
+      "fabricatedProducts": [],
+      "fabricatedCitations": [],
+      "ungroundedNumbers": [],
+      "strictMisses": [
+        "Brother DCP-L2640DW Monochrome Laser All-In-One",
+        "Brother MFC-L3780CDW Color Laser All-In-One",
+        "HP LaserJet M209d Monochrome Laser Printer"
+      ]
+    },
+    {
+      "query": "best portable charger for iphone",
+      "model": "meta/muse-spark-1.1",
+      "label": "muse-spark-1.1",
+      "ok": true,
+      "products": 6,
+      "gDet": 10,
+      "weights": {
+        "grounded": 59,
+        "total": 59
+      },
+      "citationsScored": 5,
+      "numbersChecked": 31,
+      "fabricatedProducts": [],
+      "fabricatedCitations": [],
+      "ungroundedNumbers": [],
+      "strictMisses": [
+        "Anker MagGo Power Bank (10K) - Qi2 Certified"
+      ]
+    },
+    {
+      "query": "best soundbar 2026",
+      "model": "meta/muse-spark-1.1",
+      "label": "muse-spark-1.1-noreason",
+      "ok": true,
+      "products": 5,
+      "gDet": 10,
+      "weights": {
+        "grounded": 41,
+        "total": 41
+      },
+      "citationsScored": 10,
+      "numbersChecked": 6,
+      "fabricatedProducts": [],
+      "fabricatedCitations": [],
+      "ungroundedNumbers": [],
+      "strictMisses": []
+    },
+    {
+      "query": "best microwave 2026",
+      "model": "meta/muse-spark-1.1",
+      "label": "muse-spark-1.1-noreason",
+      "ok": true,
+      "products": 4,
+      "gDet": 8.97,
+      "weights": {
+        "grounded": 26,
+        "total": 29
+      },
+      "citationsScored": 6,
+      "numbersChecked": 5,
+      "fabricatedProducts": [
+        {
+          "name": "Breville Combi Wave 3-in-1 BMO870",
+          "presentRatio": 0.75,
+          "tokens": [
+            {
+              "tok": "breville",
+              "present": true,
+              "digitBearing": false,
+              "isBrand": true
+            },
+            {
+              "tok": "combi",
+              "present": true,
+              "digitBearing": false,
+              "isBrand": false
+            },
+            {
+              "tok": "wave",
+              "present": true,
+              "digitBearing": false,
+              "isBrand": false
+            },
+            {
+              "tok": "bmo870",
+              "present": false,
+              "digitBearing": true,
+              "isBrand": false
+            }
+          ]
+        }
+      ],
+      "fabricatedCitations": [],
+      "ungroundedNumbers": [],
+      "strictMisses": [
+        "Breville Combi Wave 3-in-1 BMO870",
+        "GE 1.0 Cu. Ft. Capacity Countertop Convection Microwave Oven with Air Fry JES1109RRSS"
+      ]
+    },
+    {
+      "query": "best graphics card 2026",
+      "model": "meta/muse-spark-1.1",
+      "label": "muse-spark-1.1-noreason",
+      "ok": true,
+      "products": 3,
+      "gDet": 10,
+      "weights": {
+        "grounded": 36,
+        "total": 36
+      },
+      "citationsScored": 10,
+      "numbersChecked": 7,
+      "fabricatedProducts": [],
+      "fabricatedCitations": [],
+      "ungroundedNumbers": [],
+      "strictMisses": [
+        "Nvidia RTX Spark Platform - Grace Blackwell Superchip Dev Box"
+      ]
+    },
+    {
+      "query": "best dash cam 2026",
+      "model": "meta/muse-spark-1.1",
+      "label": "muse-spark-1.1-noreason",
+      "ok": true,
+      "products": 5,
+      "gDet": 10,
+      "weights": {
+        "grounded": 40,
+        "total": 40
+      },
+      "citationsScored": 5,
+      "numbersChecked": 15,
+      "fabricatedProducts": [],
+      "fabricatedCitations": [],
+      "ungroundedNumbers": [],
+      "strictMisses": [
+        "VIOFO A329S 4K 2CH"
+      ]
+    },
+    {
+      "query": "best vacuum for pet hair",
+      "model": "meta/muse-spark-1.1",
+      "label": "muse-spark-1.1-noreason",
+      "ok": true,
+      "products": 6,
+      "gDet": 10,
+      "weights": {
+        "grounded": 39,
+        "total": 39
+      },
+      "citationsScored": 6,
+      "numbersChecked": 9,
+      "fabricatedProducts": [],
+      "fabricatedCitations": [],
+      "ungroundedNumbers": [],
+      "strictMisses": [
+        "SEBO Airbelt K3 Premium Bagged Canister Vacuum",
+        "Roborock Q7 M5+ Robot Vacuum with Self-Emptying Dock"
+      ]
+    },
+    {
+      "query": "best printer for home",
+      "model": "meta/muse-spark-1.1",
+      "label": "muse-spark-1.1-noreason",
+      "ok": true,
+      "products": 6,
+      "gDet": 10,
+      "weights": {
+        "grounded": 38,
+        "total": 38
+      },
+      "citationsScored": 6,
+      "numbersChecked": 8,
+      "fabricatedProducts": [],
+      "fabricatedCitations": [],
+      "ungroundedNumbers": [],
+      "strictMisses": [
+        "Brother MFC-L3780CDW All-in-One Color Laser",
+        "Brother DCP-L2640DW Monochrome Laser All-in-One"
+      ]
+    },
+    {
+      "query": "best portable charger for iphone",
+      "model": "meta/muse-spark-1.1",
+      "label": "muse-spark-1.1-noreason",
+      "ok": true,
+      "products": 6,
+      "gDet": 10,
+      "weights": {
+        "grounded": 54,
+        "total": 54
+      },
+      "citationsScored": 6,
+      "numbersChecked": 24,
+      "fabricatedProducts": [],
+      "fabricatedCitations": [],
+      "ungroundedNumbers": [],
+      "strictMisses": [
+        "Anker MagGo Power Bank (10K) - Qi2 Certified"
+      ]
+    },
+    {
+      "query": "best hair dryer 2026",
+      "model": "meta/muse-spark-1.1",
+      "label": "muse-spark-1.1-noreason",
+      "ok": true,
+      "products": 6,
+      "gDet": 10,
+      "weights": {
+        "grounded": 37,
+        "total": 37
+      },
+      "citationsScored": 7,
+      "numbersChecked": 5,
+      "fabricatedProducts": [],
+      "fabricatedCitations": [],
+      "ungroundedNumbers": [],
+      "strictMisses": [
+        "Laifen Swift 4 Hair Dryer",
+        "Conair InfinitiPRO SmoothWrap Hair Dryer"
+      ]
+    }
+  ]
+}

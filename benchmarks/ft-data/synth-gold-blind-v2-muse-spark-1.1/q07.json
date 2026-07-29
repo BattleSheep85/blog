@@ -1,0 +1,27 @@
+{
+  "query": "best hair dryer 2026",
+  "method": "v2: relevance-selected evidence, no corpus digest. Existence pre-checked deterministically.",
+  "source_count": 165,
+  "note_count": 6,
+  "notes": [
+    "Using hot tools (including hair dryers) heated above 300°F on hair to which hair care products (creams, serums, oils) have been applied can increase exposure to indoor air pollutants, potentially causing lung irritation and respiratory conditions, due to the vaporization of hair care ingredients at high temperatures (Source 2 [expert-domain]).",
+    "The oxidation of hair care products, even without hot tools, can be toxic. Compounds in hair dyes have been linked to cancer and an increased risk of asthma-like symptoms (Source 2 [expert-domain]).",
+    "High heat is particularly important for some Black hair textures, which often require more intense heat to straighten or style effectively. Hot combs can reach up to 500°F (Source 2 [expert-domain]).",
+    "Properly ventilating the space can significantly reduce exposure to indoor air pollutants when styling hair, even with hotter tools (Source 2 [expert-domain]).",
+    "Misha Kollontai, CR’s air purifier testing lead, suggests opening windows and doors, using exhaust fans (especially bathroom fans), or using an air purifier for better air circulation while styling hair (Source 2 [expert-domain]).",
+    "The source 'Parlux 3800 Eco Friendly Flower Edition - Novità 2011' (YouTube) returned an error 403: Forbidden, making its content inaccessible. Even if accessible, the product title indicates it was new in 2011, making it irrelevant for a 'best hair dryer 2026' query. (Source: https://www.youtube.com/watch?v=n0viJ8oa9xs)"
+  ],
+  "reports": {
+    "A": {
+      "report": {
+        "failed": true,
+        "error": "json-parse-fail",
+        "products": [],
+        "summary": ""
+      },
+      "evidence": null,
+      "grounding": null,
+      "evidence_truncated": false
+    }
+  }
+}

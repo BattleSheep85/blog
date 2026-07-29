@@ -2,6 +2,121 @@
 
 Last updated: 2026-07-28
 
+## 2026-07-28: Benchmark validity fix + synthesis re-score (no production change)
+
+Audit: `docs/benchmark-validity-audit.md`. Re-score and corrected leaderboard:
+`benchmarks/synth-rescore-2026-07.md`. No production model changed.
+`worker/lib/engine-config.js` and `worker/lib/tiers.js` untouched. Spend $9.2339
+of a $14 cap. No stored benchmark result was edited or deleted, verified by diff.
+
+### Root cause
+
+- [x] HIGH (Benchmark/Testing, Data Integrity): every LLM-judged grounding,
+      honesty or fabrication number this repo recorded against a large corpus
+      came from a judge that could not see the corpus. `synth-gold-blind.mjs`
+      built a 6,000 character digest in raw list order; measured coverage across
+      the 8 stored bundles was 8/185, 4/147, 10/200, 13/182, 6/171, **0/181**,
+      **0/138**, 19/165 sources. The judge was then asked whether products and
+      citations were invented. FIXED by moving every existence question into
+      exact tested code over the FULL corpus
+      (`benchmarks/lib/grounding-check.mjs`, `citation-scan.mjs`,
+      `outlet-lexicon.mjs`), with the LLM judge kept only for usefulness and
+      evidence discipline. 53 assertions in
+      `benchmarks/tests/grounding-check.test.mjs`, gated in
+      `scripts/run-tests.mjs` and `scripts/coverage.sh`.
+- [x] Three real things were called fabrications by three separate checking
+      layers, and all three are in the corpus: "Seasonic PRIME TX-850" and the
+      "12-year warranty" figure (June juror panel), and the "Epson EcoTank
+      ET-3950" (the muse-spark rerun's own manual audit). All three are now
+      permanent regression fixtures built from verbatim real corpus records
+      (`benchmarks/tests/fixtures/audit-regression-corpus.json`).
+- [x] The new checker was itself wrong twice before it was right, both found by
+      running it, both now pinned by named assertions: (a) the space-stripped
+      haystack glued "ET-3950 $399.99" into `et395039999`, which contains `9999`,
+      so a fabricated "ET-9999" passed; (b) the first full re-score produced 59
+      citation flags, most of them false (a bare year "2026" read as an outlet,
+      "Bon Appétit" captured as "Bon App", "via MagSafe" read as a publication,
+      one date handed to every outlet in its window). After the fixes, 64 reports
+      produce 2 flags, both hand-verified as real.
+
+### Verdicts overturned or annotated (history kept, nothing deleted)
+
+- [x] OVERTURNED: the 2026-07-28 muse-spark synthesis finding below ("fabricated
+      citations ... an entire invented top-pick product not present in the source
+      corpus"). Deterministic re-check against the full corpus: ZERO invented
+      products in the xhigh run, and 1 of 112 checkable citations unverified, that
+      one a date mismatch on the real outlet Reddit. The minimal run has one
+      flagged item, an unsupported model number ("BMO870") on a real product
+      (Breville Combi Wave 3-in-1, 9 corpus mentions). There is no invented top
+      pick in either run. muse-spark's citations verify at 99.1 percent.
+- [x] OVERTURNED: `benchmarks/muse-spark-bench-2026-07.md` named the "Epson
+      ET-3950" a confirmed genuine fabrication with "zero mentions anywhere in the
+      181-source corpus". It appears in at least 6 places in that corpus,
+      including PCMag's "Best All-in-One Printer for Home Offices: Epson EcoTank
+      ET-3950". A correction note is appended to that report; its history is
+      unchanged.
+- [x] MEASURED ON A BROKEN METHOD: the 2026-07-24 synthesis-gold verdict
+      "gpt-5.4-mini DEFENDS the synth seat (most honest 8.6/10)". The 8.6 honesty
+      figure came from the invalid judge axis. The deterministic claims in that
+      entry (0 fabricated numbers, completion counts, deepseek's 22) stand.
+- [x] NO LONGER CITABLE: the 2026-06-29 50-query x 150-juror panel's fabrication
+      and grounding numbers, including "grok-4.20 DQ'd on honesty (3.15
+      fabs/report)". Jurors saw 1,268 of 6,768 sources (18.7 percent), and the
+      very first juror record contains a confirmed false fabrication verdict
+      (TX-850, 12-year warranty). Both affected models are out of production, so
+      no re-run is required. No future decision may cite those numbers. The
+      panel's usefulness axis is not affected the same way.
+- [x] RESOLVED: the 2026-07-24 open item "short SKU-style names (<3 chars, e.g.
+      'V3') silently skip the name-grounding check". Closed in the v2 checker: a
+      token counts as significant at length 3 or more, OR at length 2 with a
+      digit, and every digit-bearing token must be present. Regression assertion
+      added. `benchmarks/lib/synth-score.mjs` deliberately keeps its old behaviour,
+      because changing it would silently alter the stored deterministic numbers it
+      produced.
+
+### Synthesis seat on corrected measurement
+
+- [x] finding 2026-07-28: **synthesis stays on `minimax/minimax-m3`. No change
+      requested.** The audit's tentative lean toward `anthropic/claude-haiku-4.5`
+      (0 vs 1 ungrounded numbers, 50 vs 49 products) is OVERTURNED. In ratio form
+      those are G_det 10.00 vs 9.98, a gap of 0.02 on a 10 point scale. On the
+      corrected judged axes minimax-m3 leads haiku by +0.51 composite_v2, winning
+      5 of 8 queries paired (SEM 0.31, t=1.63, p about 0.15, so directional and
+      inside noise at n=8). haiku is LAST of the six 8/8 completers on both judged
+      axes (evidence discipline 4.63, usefulness 6.63). composite_v2:
+      muse-spark-1.1 8.38, gpt-5.4-mini 8.19, minimax-m3 8.06, deepseek 7.77,
+      muse-spark-noreason 7.72, haiku 7.54, gemma 7.42, gpt-5-nano 7.13.
+      composite_v2 is NOT comparable to the stored composite.
+- [x] finding 2026-07-28: the three earlier disqualifications ALL STAND, each on
+      deterministic ground: gemma-4-26b 3/8 completions, gpt-5-nano 6/8
+      completions, deepseek-v4-flash 22 of 175 numbers ungrounded (unchanged under
+      the corrected checker, every other model has 0 or 1).
+- [x] finding 2026-07-28: `meta/muse-spark-1.1` tops the corrected board (8.38)
+      and its reports are NOT less grounded than the incumbents. "Do not adopt"
+      still stands, but only on the grounds that were always deterministic: 1 of 8
+      generations failed, and generation cost is $0.08 per report against
+      minimax-m3's $0.01, about 8x.
+
+### Extract seat re-verified on full text
+
+- [x] finding 2026-07-28: extract stays on `anthropic/claude-haiku-4.5`, and the
+      case is STRONGER than before. The stored scores were judged from bundles
+      that clipped source text at 5,000 characters, hiding up to 75 percent of the
+      source on 5 of 10 products. Re-judged on full text
+      (`benchmarks/extract-gold-rejudge.mjs`, 30 calls, $2.07): haiku 8.00 (10/10,
+      0 fails), gpt-5.4-mini 7.30 (10/10, 0 fails), minimax-m3 8.19 (8/10, 2 hard
+      fails). Under the clip haiku and gpt were tied at 7.60. On full text haiku
+      wins outright. minimax-m3 still returns empty output on the same 2 rich
+      sources, which is deterministic and still disqualifying for a
+      pipeline-gating step.
+
+### Still sound, checked and unchanged
+
+- [x] The stance gold bench (self-contained 800-char pairs, same input production
+      sees), the ad-resistance canary eval, BaitBench, the provider bench, the
+      engine shootout, the local gate suite, and the real-world benchmark. All are
+      deterministic or self-contained. No re-score needed.
+
 ## 2026-07-28: Muse Spark 1.1 candidate benchmark (no production change)
 
 Evaluation only. No production model changed. Full report:
@@ -33,6 +148,16 @@ Evaluation only. No production model changed. Full report:
       cannot catch this failure mode, since it only checks product-name
       token overlap and numeric closeness, not citation or product
       existence.
+      **CORRECTED 2026-07-28 (same day, see the section at the top of this
+      file): this finding is OVERTURNED. It was measured on a method now known
+      to be broken. The judge saw 0 to 13 percent of the corpus, so it scored
+      real citations as invented. Exact re-check against the FULL corpus:
+      ZERO invented products in either run, and 1 of 112 checkable citations
+      unverified in the xhigh run (a date mismatch on the real outlet Reddit).
+      The corrected composite puts muse-spark-1.1 FIRST of 8 candidates at
+      8.38, not last. "Do not adopt" still holds on completion reliability
+      (7/8) and cost (8x minimax-m3 per report), which were always
+      deterministic. Full detail: `benchmarks/synth-rescore-2026-07.md`.**
 - [x] finding 2026-07-28, cost: Muse Spark 1.1 is priced at $1.25/M input,
       $4.25/M output, 4.2x/3.5x the production synth model
       (minimax/minimax-m3, $0.30/$1.20) and 1.25x/0.85x the production
@@ -278,21 +403,36 @@ binding, NO Durable Objects). Rollback = delete the `[[ratelimits]]` block;
       runtime openai/ reference remains in worker/ or research-worker.mjs.
 
 ### Open
-- [ ] MEDIUM: Synthesis + extract + classifier + planner roles still on unvalidated model
-      choices; synthesis gold bench in progress (blinded 6-model × 8-query run). Grader
-      false-negative: short SKU-style names (<3 chars, e.g. 'V3') silently skip the
-      name-grounding check in synth-score.mjs — needs a scoped fix.
+- [x] RESOLVED 2026-07-28: Synthesis + extract + classifier + planner roles still on
+      unvalidated model choices; synthesis gold bench in progress (blinded 6-model × 8-query
+      run). Grader false-negative: short SKU-style names (<3 chars, e.g. 'V3') silently skip
+      the name-grounding check in synth-score.mjs: needs a scoped fix.
+      **The short-SKU gap is CLOSED in `benchmarks/lib/grounding-check.mjs` (length 2 with a
+      digit now counts as significant, and every digit-bearing token must be present), with a
+      regression assertion. synth-score.mjs keeps the old behaviour on purpose: changing it
+      would silently alter the stored numbers it produced.**
 - [x] Synthesis gold bench complete: gpt-5.4-mini DEFENDS the synth seat (most honest
       8.6/10, 0 fabricated numbers; minimax-m3 statistically tied on composite but looser).
       deepseek-v4-flash DQ'd for synth — 22 fabricated spec numbers across 8 reports (won
       stance, fails synth: role-fitness cuts both ways). gemma-4-26b:free (3/8) + gpt-5-nano
       (6/8) DQ'd on completion reliability. Remaining unvalidated roles: extract, planner.
+      **MEASURED ON A METHOD NOW KNOWN TO BE BROKEN (2026-07-28): the "most honest 8.6/10"
+      figure came from a judge that saw 0 to 13 percent of the corpus. Do not cite it. The
+      deterministic parts of this entry (0 fabricated numbers, the completion counts, and
+      deepseek's 22) were re-verified against the FULL corpus and stand unchanged, so all
+      three DQs stand. Corrected leaderboard: `benchmarks/synth-rescore-2026-07.md`.**
 - [x] Extract gold bench complete: gpt-5.4-mini KEEPS extractClaims (7.60 quality, 0
       hard-fails, 10/10). minimax-m3 higher quality-when-working but 2/10 empty outputs;
       deepseek 3 hard-fails; granite contaminates across products. Role assignments now
       validated for 4/5 roles: stance=minimax-m3, synth=gpt-5.4-mini, extract=gpt-5.4-mini,
       classifier=gemini-flash-lite (deterministic-verified). Planner remains unbenchmarked
       (hardest to gold-label; deferred).
+      **CLIPPED-INPUT CAVEAT (2026-07-28): these quality scores were judged against source
+      text clipped at 5,000 characters, hiding up to 75 percent of the source on 5 of 10
+      products. Re-judged on FULL text: claude-haiku-4.5 8.00 (10/10, 0 fails), gpt-5.4-mini
+      7.30 (10/10, 0 fails), minimax-m3 8.19 (8/10, 2 fails). The tie at 7.60 was an artefact
+      of the clip; on full text haiku wins outright. The reliability numbers, which drove the
+      verdict, are deterministic and unchanged.**
 
 ## 2026-07-22 — Serverless migration complete (blackbox retired)
 
@@ -978,6 +1118,14 @@ underfed/undercapped growth flywheel. Fixed everything in my control; 3 items ne
 
 ### Synth model — benchmarked & locked
 - [x] HIGH — Synth was kimi-k2.6: slowest candidate (~40s), timed out ~1/8 runs. Ran a 50-query × 150-juror blind judge panel on real Google searches; **locked synth to openai/gpt-5.4-mini** (best grounding 7.18 + usefulness 7.31, #1 in 53% of head-to-heads). grok-4.20 DQ'd on honesty (3.15 fabs/report), gemini-flash honest-but-thin, flash-lite last. (worker/lib/tiers.js, research-worker.mjs — A/B rotation retired)
+      **NOT CITABLE ON GROUNDING OR FABRICATION (annotated 2026-07-28): `build-judge-bundles.mjs`
+      capped the corpus digest at 11,000 characters, so across all 50 stored bundles the jurors
+      saw 1,268 of 6,768 sources (18.7 percent). The very FIRST juror record contains a confirmed
+      false fabrication verdict: it called the "Seasonic PRIME TX-850" and the "12-year warranty"
+      invented, and both are in the full corpus. The grounding and fabs/report numbers here,
+      including grok-4.20's honesty DQ, rest on that blindness. Both affected models are out of
+      production, so no re-run was done. Do not cite these numbers in a future decision. The
+      usefulness axis is not affected the same way. See `docs/benchmark-validity-audit.md`.**
 - [x] MEDIUM — synthProvider was the kimi throughput/quantization routing object; gpt-5.4-mini is single-provider so that 404s — set synthProvider:null. (worker/lib/tiers.js)
 - Bench suite added: harvest-google + select-top50 (Google autocomplete → real product queries), bench-synth-v2 (corpus-cached 4-model), build-judge-bundles + aggregate-judges (blinded panel). (benchmarks/)
 

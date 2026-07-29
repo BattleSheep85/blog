@@ -1,0 +1,403 @@
+{
+  "judgeModel": "anthropic/claude-fable-5",
+  "method": "v2: existence pre-checked deterministically, judge scores usefulness + evidence_discipline only.",
+  "notComparableTo": "synth-gold-fable-scores.json (different axes, different inputs).",
+  "bundleDir": "benchmarks/ft-data/synth-gold-blind-v2",
+  "complete": true,
+  "costUsd": 4.950178199999999,
+  "results": {
+    "best soundbar 2026": {
+      "A": {
+        "usefulness": 5,
+        "evidence_discipline": 2,
+        "reasoning": "The report is well-structured with clear picks, tradeoffs, and best-for guidance, but all prices are null while cons cite specific dollar figures, and the detailed spec/performance claims give a false sense of precision. The research notes explicitly state the sources contain no measured results, prices, pros, or cons for these models, yet nearly every verdict asserts 'RTINGS.com testing confirms...' specific sound characteristics, channel configs, and Atmos capabilities as settled fact — a serious overstatement of what the evidence supported.",
+        "costUsd": 0.1560834,
+        "failed": false,
+        "unparseable": false
+      },
+      "B": {
+        "usefulness": 6,
+        "evidence_discipline": 3,
+        "reasoning": "The report offers a clear three-pick structure with distinct use cases and tradeoffs, but lacks prices and much of its differentiation is invented. Evidence discipline is weak: notes explicitly state the sources contain no measured results, pros/cons, or 2026-specific rankings beyond bare listings, yet the report confidently asserts 'class-leading dialogue clarity,' 'best-in-class multi-room,' specific specs like 4K/120Hz passthrough, and cites 'CNET/WhatHiFi aggregations' not in the evidence — all presented as settled fact with no hedging.",
+        "costUsd": 0.0858528,
+        "failed": false,
+        "unparseable": false
+      },
+      "C": {
+        "usefulness": 7.5,
+        "evidence_discipline": 7,
+        "reasoning": "The report covers a genuine budget-to-premium range with clear best_for guidance, real tradeoffs (missing DTS, Sennheiser support complaints, ecosystem lock-in), and commendable explicit hedging where coverage is thin ('review date not confirmed in our sources'). It loses points on usefulness for mostly null prices and on discipline for confidently citing specific outlet rankings (PCMag June 2026, What HiFi Feb 2026) and sound-signature characterizations that go beyond what the visible evidence and research notes support, plus unsourced star ratings.",
+        "costUsd": 0.1856448,
+        "failed": false,
+        "unparseable": false
+      },
+      "D": {
+        "usefulness": 7,
+        "evidence_discipline": 4,
+        "reasoning": "The report gives a clear, well-structured three-tier recommendation set with distinct use cases, but only the Hisense pick is well supported. Despite some hedging (acknowledging limited test data), it asserts unsupported specifics as fact — 'rated best for dialogue by RTINGS,' Sonos' 'missing DTS support,' and invented numeric ratings — when the notes explicitly state the sources lack measured results, pros/cons, or 2026 rankings for these models.",
+        "costUsd": 0.0826452,
+        "failed": false,
+        "unparseable": false
+      },
+      "E": {
+        "usefulness": 6,
+        "evidence_discipline": 3,
+        "reasoning": "The report offers a clear budget-to-premium shortlist with real tradeoffs, but it fails to mention that TechRadar's June 2026 update replaced the HW-Q990F with the Q990H — directly relevant to a 2026 shopper. Evidence discipline is weak: it asserts specific endorsements not present in the shown evidence (RTINGS dialogue guide, PCMag Australia, CNET, a DTS limitation) as settled fact, and contradicts its own research notes stating the sources lacked 2026-specific rankings.",
+        "costUsd": 0.1032867,
+        "failed": false,
+        "unparseable": false
+      },
+      "F": {
+        "usefulness": 6,
+        "evidence_discipline": 4,
+        "reasoning": "The report offers a sensible budget-to-premium spread with clear 'best for' guidance, though prices are mostly missing and pros/cons are fairly generic. On discipline, the notes explicitly state the corpus lacks measured results, prices, pros, and cons for 2026, yet the report asserts confident specifics (dialogue clarity, DTS support gap, spatial audio prowess, numeric ratings) as settled fact with almost no hedging; only the Sennheiser support caveat and Hisense value claim are properly evidence-aligned.",
+        "costUsd": 0.0872091,
+        "failed": false,
+        "unparseable": false
+      }
+    },
+    "best microwave 2026": {
+      "A": {
+        "usefulness": 7,
+        "evidence_discipline": 4,
+        "reasoning": "The report gives clear, differentiated picks with honest hedging about missing prices and thin evidence, making it genuinely helpful. However, it invents a Wirecutter endorsement for the Panasonic (twice, including in the summary) that appears nowhere in the notes/evidence, and misattributes Consumer Reports' generic control-button problem stats as flags specifically against LG, presenting unsupported claims as settled fact.",
+        "costUsd": 0.0942381,
+        "failed": false,
+        "unparseable": false
+      },
+      "B": {
+        "usefulness": 8,
+        "evidence_discipline": 3,
+        "reasoning": "The report is genuinely helpful for shoppers—clear category-based picks (overall, premium, budget, large-capacity, OTR) with real tradeoffs and differentiation. However, evidence discipline is poor: it repeatedly asserts claims absent from the shown evidence/notes as settled fact, including 'Wirecutter's top pick for 2026,' Reddit BuyItForLife consensus, RTINGS naming Breville best overall, SlashGear's LG complaints, CHOICE naming Sharp a 'Best Brand,' and Panasonic/GE ranking among Consumer Reports' most reliable brands—none of which appear in the supplied evidence, and the notes only say CR identifies reliable brands without naming them.",
+        "costUsd": 0.1460844,
+        "failed": false,
+        "unparseable": false
+      },
+      "C": {
+        "usefulness": 7,
+        "evidence_discipline": 3,
+        "reasoning": "The report gives clear tiered picks with real tradeoffs and price context, though the summary recommends an over-the-range LG model (MVEM1825F) never covered in the products or evidence. Evidence discipline is weak: it repeatedly attributes claims to sources not in the shown evidence (Wirecutter, SlashGear, Reddit complaints about Panasonic buttons) and asserts brand-specific Consumer Reports reliability verdicts (Panasonic reliable, GE favorable, Sharp mixed) that the notes never support, plus it embellishes RTINGS findings and includes one ungrounded price.",
+        "costUsd": 0.138105,
+        "failed": false,
+        "unparseable": false
+      },
+      "D": {
+        "usefulness": 3,
+        "evidence_discipline": 6,
+        "reasoning": "Naming only a single product for a 'best microwave 2026' query ignores the corpus's clear alternatives (Panasonic value pick, LG large-capacity, GE budget combo), giving shoppers no tradeoffs, budget tiers, or comparison—so usefulness is low. Evidence discipline is fair: the Breville claims track Bon Appétit's hands-on findings, but the 4.5 rating appears unsupported by any note, the 'limited interior space' con is an extrapolation, and the report presents a single reviewer's pick as a settled 2026 verdict without hedging.",
+        "costUsd": 0.0671814,
+        "failed": false,
+        "unparseable": false
+      },
+      "E": {
+        "usefulness": 7,
+        "evidence_discipline": 4,
+        "reasoning": "The report is genuinely helpful: clear segmentation (overall, premium, family, budget combo, budget large), real tradeoffs, and honest nulls where prices are unknown. However, evidence discipline is weak: the summary asserts Consumer Reports 'confirms Panasonic and GE as the most reliable brands' when the notes never name those brands, and it repeatedly upgrades thin support into 'confirmed' claims (Reddit consensus, GE air-fry performance, Sharp lacking inverter, Sharp's 'consistent reliability ratings'), presenting weakly-supported points as settled fact.",
+        "costUsd": 0.1477773,
+        "failed": false,
+        "unparseable": false
+      },
+      "F": {
+        "usefulness": 0,
+        "evidence_discipline": 0,
+        "reasoning": "generation failed: json-parse-fail",
+        "costUsd": 0,
+        "failed": true
+      }
+    },
+    "best graphics card 2026": {
+      "A": {
+        "usefulness": 6,
+        "evidence_discipline": 9,
+        "reasoning": "The report is honest and well-hedged, clearly stating where evidence is thin, avoiding rumor-based picks, and matching claims to the PCMag/Tom's Hardware notes. However, for a broad 'best graphics card 2026' query it only covers two budget 1080p cards with no mid-range or high-end options and only one sourced price, limiting its value for many shoppers.",
+        "costUsd": 0.0590634,
+        "failed": false,
+        "unparseable": false
+      },
+      "B": {
+        "usefulness": 6,
+        "evidence_discipline": 5,
+        "reasoning": "The report gives clear picks with real tradeoffs and honest gaps (null price, hedged memory type, acknowledged lack of high-end verification), but covers only two budget 1080p cards for a broad 'best GPU' query. Evidence discipline is mixed: good hedging in places, but several claims (RTX 5060's 8GB VRAM, DLSS 4.5, FSR 4 'community testing' comparison, power efficiency) go beyond the shown evidence and notes and are stated with unearned confidence.",
+        "costUsd": 0.0771903,
+        "failed": false,
+        "unparseable": false
+      },
+      "C": {
+        "usefulness": 7,
+        "evidence_discipline": 6,
+        "reasoning": "The report gives clear tier-based picks with real tradeoffs and appropriately hedges the listicle-sourced RX 9070/9070 XT recommendations and supply-constraint uncertainty, but missing prices for 4 of 5 cards weakens purchase utility in a volatile pricing year. Several specific claims (FSR 4 vs DLSS 4 image quality, RDNA 3 power efficiency comparison, 'limiting future driver improvements' inference) are stated as settled fact without visible support in the evidence or notes.",
+        "costUsd": 0.1108305,
+        "failed": false,
+        "unparseable": false
+      },
+      "D": {
+        "usefulness": 6,
+        "evidence_discipline": 7,
+        "reasoning": "The report gives clear, honest verdicts with useful market context (memory shortages, supply strategy) and generally hedges well (RTX 5060 price uncertainty, Spark disclaimed as non-purchasable roadmap), but for a 'best graphics card 2026' query it only offers two budget 1080p cards and a platform roadmap—no mid-range or high-end picks—limiting purchase-decision value. Discipline is mostly good, though some specifics (Ada architecture label for the 5060, driver-crash anecdotes, TDP/VRAM estimates) go beyond the shown evidence with only partial hedging.",
+        "costUsd": 0.1245024,
+        "failed": false,
+        "unparseable": false
+      },
+      "E": {
+        "usefulness": 0,
+        "evidence_discipline": 0,
+        "reasoning": "generation failed: json-parse-fail",
+        "costUsd": 0,
+        "failed": true
+      },
+      "F": {
+        "usefulness": 5,
+        "evidence_discipline": 6,
+        "reasoning": "Only two budget/1080p cards for a broad 'best GPU 2026' query with no high-end or mid-range coverage, and the RTX 5060 lacks price and rating, limiting purchase-decision value despite decent hedging on supply issues. Evidence discipline is mostly sound (supply concerns properly hedged, PCMag claims match notes), but 'DLSS 4.5' and some pros ('efficient AI-driven upscaling', 'top-tier choice') go beyond the shown evidence with a slightly marketing tone.",
+        "costUsd": 0.0642312,
+        "failed": false,
+        "unparseable": false
+      }
+    },
+    "best dash cam 2026": {
+      "A": {
+        "usefulness": 6,
+        "evidence_discipline": 5,
+        "reasoning": "The report offers three clearly differentiated picks with sensible best_for guidance, but two of three prices are missing and cons are fairly generic. On evidence discipline, it contradicts the corpus (Wirecutter says the Viofo is 'easy to set up' while the report lists complex setup as a con), praises BlackVue's cloud features while omitting the corpus's evidence of the app outage and privacy investigation, and invents an ungrounded 4.0 rating and generic reliability claims without hedging.",
+        "costUsd": 0.0779823,
+        "failed": false,
+        "unparseable": false
+      },
+      "B": {
+        "usefulness": 7,
+        "evidence_discipline": 2,
+        "reasoning": "The report is well-structured with clear, differentiated picks, real tradeoffs, and use-case guidance a shopper could act on. However, it invents authority ('Wirecutter, MotorTrend, Consumer Reports, community consensus') not present in the evidence, states dozens of specific claims (app behaviors, capacitor types, prices, ratings, parking-mode details) with full confidence despite thin or purely promotional snippets for products like the Vantrue N4 Pro S and Vueroid S1, and never hedges or acknowledges evidence gaps.",
+        "costUsd": 0.1433718,
+        "failed": false,
+        "unparseable": false
+      },
+      "C": {
+        "usefulness": 7,
+        "evidence_discipline": 4,
+        "reasoning": "The report gives a shopper clear, differentiated picks (best overall, premium 4K, 3-channel, cloud, parking specialist) with real tradeoffs, though missing prices weakens purchase decisions. However, it repeatedly asserts confident outlet attributions (Wirecutter best overall, Car and Driver April 2026, Vortex Radar testing) that are nowhere in the shown evidence or notes, invents ratings, and omits the BlackVue app privacy/outage issue present in the corpus while praising BlackVue's 'established app ecosystem' — an unhedged, marketing-leaning overstatement of thinly supported claims.",
+        "costUsd": 0.1420254,
+        "failed": false,
+        "unparseable": false
+      },
+      "D": {
+        "usefulness": 7,
+        "evidence_discipline": 6,
+        "reasoning": "The report gives a clear ranked set of picks with concrete tradeoffs, best-for guidance, and honest acknowledgment of missing prices, making it genuinely actionable. However, evidence discipline is mixed: it hedges well in places (e.g., BlackVue's weaker validation), but it leans on citations not visible in the notes or evidence table (Car and Driver 'Best Overall', MotorTrend, a VIOFO roundup citing Vortex Radar), attributes 'hybrid parking mode' to notes that don't say that, and assigns unexplained numeric ratings, all of which overstate the support it was actually shown.",
+        "costUsd": 0.1315908,
+        "failed": false,
+        "unparseable": false
+      },
+      "E": {
+        "usefulness": 0,
+        "evidence_discipline": 0,
+        "reasoning": "generation failed: hard",
+        "costUsd": 0,
+        "failed": true
+      },
+      "F": {
+        "usefulness": 8,
+        "evidence_discipline": 6,
+        "reasoning": "The report gives clear tiered picks with real tradeoffs and audience-specific guidance, though missing prices for 5 of 6 products weakens purchase readiness. Evidence discipline is mixed: it hedges appropriately about absent hands-on data and provisional ratings, but attributes endorsements not visible in the evidence (MotorTrend for the A229 Pro, Wirecutter/Vortex Radar for the A329S), calls Vantrue reliability 'proven in hands-on reviews' despite thin promotional sourcing, and omits the notable BlackVue app/privacy incident present in the corpus.",
+        "costUsd": 0.1470447,
+        "failed": false,
+        "unparseable": false
+      }
+    },
+    "best vacuum for pet hair": {
+      "A": {
+        "usefulness": 0,
+        "evidence_discipline": 0,
+        "reasoning": "generation failed: json-parse-fail",
+        "costUsd": 0,
+        "failed": true
+      },
+      "B": {
+        "usefulness": 8,
+        "evidence_discipline": 7,
+        "reasoning": "The report gives clear, well-differentiated picks across form factors (deep-clean canister, daily robot, handheld spot-cleaner, mop-vac combos) with real tradeoffs and honest verdicts, making it genuinely actionable for a shopper. Evidence discipline is mostly good — it attributes claims to hands-on sources and hedges appropriately (e.g., 'stated but not tested', 'may struggle') — but it presents an ungrounded 2500Pa suction spec and a $275 Dreame price as settled fact, and sprinkles in a few unsupported embellishments like 'compact dock fits under furniture'.",
+        "costUsd": 0.1457676,
+        "failed": false,
+        "unparseable": false
+      },
+      "C": {
+        "usefulness": 8,
+        "evidence_discipline": 6,
+        "reasoning": "The report is genuinely helpful — clear category coverage (canister, robots, handheld, cordless), real price/tradeoff differentiation, and honest best_for framing, with good hedging on the thinly-sourced Dyson pick. However, several feature claims are stated as fact beyond the shown evidence (SEBO's 'sealed S-Class filtration', Dyson's laser head and conical brush bar, Saros 10's mapping/no-go zones and self-emptying dock, Dreame's 'reasonable obstacle avoidance'), which are embellishments presented with unwarranted certainty.",
+        "costUsd": 0.159489,
+        "failed": false,
+        "unparseable": false
+      },
+      "D": {
+        "usefulness": 8,
+        "evidence_discipline": 8,
+        "reasoning": "The report gives clear, differentiated picks across form factors (canister, robot, handheld, stick) with prices, tradeoffs, and best-for guidance a shopper could act on. It hedges well where notes were thin (unknown runtimes, missing pet-hair scores, lower confidence on Ryobi) and stays close to the hands-on evidence, though the numeric ratings and slight generalization of the Ryobi recommendation add a bit of unsupported precision.",
+        "costUsd": 0.110682,
+        "failed": false,
+        "unparseable": false
+      },
+      "E": {
+        "usefulness": 5,
+        "evidence_discipline": 3,
+        "reasoning": "The report covers a reasonable spread of vacuum types with verdicts and best-for guidance, but omits prices it had in notes for three picks, lacks a clearly labeled budget option despite claiming one, and pads pros/cons with generic filler. Evidence discipline is weak: it dresses thin listicle mentions as '2026 independent testing (per credible lab)', invents unsupported details (Dyson smart sensing and 'blades', Narwal app scheduling, Roborock mop capability and app syncing complaints), and assigns unhedged ratings without stating uncertainty.",
+        "costUsd": 0.1004256,
+        "failed": false,
+        "unparseable": false
+      },
+      "F": {
+        "usefulness": 7,
+        "evidence_discipline": 4,
+        "reasoning": "The report is genuinely helpful — it covers distinct form factors with clear best-for guidance, real prices, and honest tradeoffs (e.g., handheld and robot picks framed as supplements, not primaries). However, evidence discipline is weak: star ratings appear invented, the 28% 'battery issues' stat is overstated as 'failure rate,' runtimes from two unrelated models (Tineco/Samsung) are misapplied to the Ryobi, several unhedged general claims (robots can't match uprights, combo units compromise both functions, SEBO's 'embedded hair' superiority) go beyond the notes, and the CR 'worst vacuums' mention of Ryobi is ignored while recommending it.",
+        "costUsd": 0.1308879,
+        "failed": false,
+        "unparseable": false
+      }
+    },
+    "best printer for home": {
+      "A": {
+        "usefulness": 0,
+        "evidence_discipline": 0,
+        "reasoning": "generation failed: OpenRouter 429: {\"error\":{\"message\":\"Provider returned error\",\"code\":429,\"metadata\":{\"raw\":\"[model-id-redacted] is tempo",
+        "costUsd": 0,
+        "failed": true
+      },
+      "B": {
+        "usefulness": 8,
+        "evidence_discipline": 8,
+        "reasoning": "The report gives clearly differentiated picks with honest tradeoffs, use-case guidance, and explicit acknowledgment of missing prices/specs, making it genuinely actionable. Evidence discipline is strong overall—claims are attributed and hedged—but it assigns unsourced 4.5 ratings to the Brother DCP-L2640DW and Epson ET-2980 (the notes give no numeric ratings for those), and asserts the DCP-L2640DW is monochrome without support in the shown evidence.",
+        "costUsd": 0.1249776,
+        "failed": false,
+        "unparseable": false
+      },
+      "C": {
+        "usefulness": 8,
+        "evidence_discipline": 7,
+        "reasoning": "The report gives four distinct, well-differentiated picks with clear prices, tradeoffs, and best-for guidance, making it genuinely actionable for a home shopper. Evidence discipline is mostly good—hedges on the unknown Brother DCP-L2640DW price and flags that its recommendation isn't a full hands-on review—but a few claims exceed the shown evidence (the Wirecutter attribution, the ADF on the MFC-L3780CDW, and generic inferred cons stated as fact).",
+        "costUsd": 0.1348578,
+        "failed": false,
+        "unparseable": false
+      },
+      "D": {
+        "usefulness": 8,
+        "evidence_discipline": 3,
+        "reasoning": "The report is well-organized with distinct picks per use case, real tradeoffs, and clear verdicts, making it genuinely helpful for a shopper. However, it repeatedly fabricates or overstates support beyond the shown evidence: RTINGS testing and a Canon MF665Cdw comparison, TechRadar's 80% cost-per-page corroboration, Reddit/BGR toner-lockout commentary, Brother being Consumer Reports' 'top-rated' reliability brand, and a six-color ink system claim — none of which appear in the evidence or notes, and all presented as settled fact.",
+        "costUsd": 0.1455201,
+        "failed": false,
+        "unparseable": false
+      },
+      "E": {
+        "usefulness": 6,
+        "evidence_discipline": 4,
+        "reasoning": "The report offers a sensible three-pick spread (all-in-one inkjet, budget tank, mono laser) with clear best-for labels and tradeoffs, though specs are empty and detail is thin. Evidence discipline is weak: the $380 price is misattributed to the Brother DCP-L2640DW (the source ties it to the MFC-T780DW and calls the L2640DW 'cheap to buy'), several cons and ratings (e.g., 4.5 for the MFC-J4355DW, footprint/photo-quality cons, G3270 speed/refill cons) appear invented rather than drawn from the shown evidence, and there is virtually no hedging about thin support.",
+        "costUsd": 0.1058013,
+        "failed": false,
+        "unparseable": false
+      },
+      "F": {
+        "usefulness": 6,
+        "evidence_discipline": 3,
+        "reasoning": "The report offers clear picks across budget tiers with useful best_for guidance, but it presents 2009-2012 era printers (Officejet Pro 8500, Pixma MG2220, HL 2270DW) as current recommendations without flagging their age, which could mislead a 2026 shopper. Evidence discipline is weak: it invents unsupported specifics (RTINGS testing, '80% cost-per-page reduction', 'pays for itself in 6-12 months', 'proven durability over 3+ years'), assigns ratings not present in the evidence (4.5 for ET-3950 and MFC-L2900DW XL, 4.0 for old CNET picks), and uses marketing phrasing like 'unbeatable' rather than hedging where evidence is thin.",
+        "costUsd": 0.1624293,
+        "failed": false,
+        "unparseable": false
+      }
+    },
+    "best portable charger for iphone": {
+      "A": {
+        "usefulness": 0,
+        "evidence_discipline": 0,
+        "reasoning": "generation failed: OpenRouter 429: {\"error\":{\"message\":\"Provider returned error\",\"code\":429,\"metadata\":{\"raw\":\"[model-id-redacted] is tempo",
+        "costUsd": 0,
+        "failed": true
+      },
+      "B": {
+        "usefulness": 9,
+        "evidence_discipline": 9,
+        "reasoning": "The report gives clear, differentiated recommendations with real tradeoffs, prices, and use-case guidance for each pick. It hedges appropriately where evidence is thin (explicitly flagging that the PowerCore 10K lacks a direct review and that the integrated-cable model lacks measured output data), sticks closely to the notes without marketing voice, and correctly frames wireless-charging limitations from the sources.",
+        "costUsd": 0.1168497,
+        "failed": false,
+        "unparseable": false
+      },
+      "C": {
+        "usefulness": 9,
+        "evidence_discipline": 8,
+        "reasoning": "The report gives clear, differentiated recommendations with real tradeoffs, concrete prices, and honest guidance on when to skip each pick, making it highly actionable. Evidence discipline is strong — it flags the PowerCore 10K's lack of model-specific testing and the MagGo's unconfirmed price — but a few claims edge past the notes (e.g., 'most third-party testing coverage of any power-bank maker', the '2x faster' inference) and are stated with more confidence than the shown evidence strictly supports.",
+        "costUsd": 0.1326897,
+        "failed": false,
+        "unparseable": false
+      },
+      "D": {
+        "usefulness": 8,
+        "evidence_discipline": 8,
+        "reasoning": "The report offers distinct, well-differentiated picks with clear best-for guidance, real tradeoffs, and prices, making it genuinely actionable for a shopper. Evidence handling is mostly disciplined — it flags the unreviewed PowerCore 10K, missing MSRP, and desk-only nature of the Satechi — with only minor extrapolations ('may not last', 'phones may slide off') and invented star ratings beyond what the notes support.",
+        "costUsd": 0.134838,
+        "failed": false,
+        "unparseable": false
+      },
+      "E": {
+        "usefulness": 8,
+        "evidence_discipline": 7,
+        "reasoning": "The report gives five clearly differentiated picks with concrete prices, measured performance data, honest cons, and appropriate flagging that the Satechi is not truly portable, making it genuinely decision-useful. Evidence discipline is mostly good—it explicitly hedges unverified models (PowerCore 10K, integrated-cable Anker)—but adds small unsupported flourishes ('one of the cheapest on the market', 'some users find cumbersome', 'far more stable than magnetic alternatives', attributing to Wirecutter) that go beyond the notes.",
+        "costUsd": 0.1451142,
+        "failed": false,
+        "unparseable": false
+      },
+      "F": {
+        "usefulness": 7,
+        "evidence_discipline": 5,
+        "reasoning": "The report gives clear picks with distinct use cases, tradeoffs, and mostly real prices, making it genuinely helpful, though two picks lack prices and the summary is filler. Evidence discipline is middling: it hedges well on the Belkin (unknown weight/price) but overstates elsewhere — the PowerCore 10K gets a rating and 'trusted reliability' framing despite notes saying it wasn't specifically reviewed and its slimness was only 'on paper', embellishments like 'wobbly with heavier devices' and 'compact, pocketable' aren't in the evidence, and the Satechi's lack of magnets is spun into a pro.",
+        "costUsd": 0.137016,
+        "failed": false,
+        "unparseable": false
+      }
+    },
+    "best hair dryer 2026": {
+      "A": {
+        "usefulness": 0,
+        "evidence_discipline": 0,
+        "reasoning": "generation failed: hard",
+        "costUsd": 0,
+        "failed": true
+      },
+      "B": {
+        "usefulness": 6,
+        "evidence_discipline": 4,
+        "reasoning": "The report offers a clear tiered shortlist with a defensible Wirecutter-backed top pick, but empty specs, no prices, and generic pros/cons limit real decision value. Evidence discipline is weak: invented ratings, unsupported claims (Dyson 'sensors', 'long-term durability'), a con calling the W8less 'heavier' that contradicts its lightweight positioning, and the 4th-gen 115K RPM motor claim from the evidence actually describes the Laifen Swift 4, not the Wave Pro; hedging is decent only on the Laifen's newness.",
+        "costUsd": 0.0816453,
+        "failed": false,
+        "unparseable": false
+      },
+      "C": {
+        "usefulness": 6,
+        "evidence_discipline": 4,
+        "reasoning": "The report is well-structured with clear picks, tradeoffs, and best-for guidance, though most prices are missing and some pros/cons are generic filler. Evidence discipline is inconsistent: while Laifen and T3 are appropriately hedged, several claims overreach the shown evidence — e.g., Dyson customer-service complaints, Babyliss 'multiple Reddit users confirm 10+ year durability' from one comment about a different model, Shark's 'multiple expert-domain sources,' and BioIonic's 'Forbes Vetted' mention and 'consistent positive user reports' which have no visible support — plus invented star ratings presented as settled.",
+        "costUsd": 0.1443915,
+        "failed": false,
+        "unparseable": false
+      },
+      "D": {
+        "usefulness": 8,
+        "evidence_discipline": 7,
+        "reasoning": "The report gives clear tiered recommendations with concrete tradeoffs, prices, and distinct 'best for' use cases, making it genuinely actionable for a shopper, though it ignores the corpus's heat-safety/ventilation guidance. Evidence discipline is mostly good—it appropriately hedges on the thinly-covered L'Oréal AirLight Pro and flags anecdotal Reddit sourcing—but it asserts a few ungrounded numbers (Dyson price, two weights) and presents invented-feeling star ratings and some spec-level claims (e.g., Shark heat settings, attachment behaviors) with more confidence than the shown evidence supports.",
+        "costUsd": 0.1294425,
+        "failed": false,
+        "unparseable": false
+      },
+      "E": {
+        "usefulness": 8,
+        "evidence_discipline": 6,
+        "reasoning": "The report gives clear, well-differentiated picks with concrete best-for guidance, tradeoffs, and honest hedging on Laifen and T3, though prices are mostly missing. However, several confident claims exceed the shown evidence—notably the Shark's 'genuine Consumer Reports validation'/'verified CR testing' (its evidence is only an affiliate link list and a market report) and Dyson's supposed endorsement by four named outlets—presenting weakly-supported validation as settled fact.",
+        "costUsd": 0.1578852,
+        "failed": false,
+        "unparseable": false
+      },
+      "F": {
+        "usefulness": 6,
+        "evidence_discipline": 4,
+        "reasoning": "The report gives a clear ranked recommendation with honest tradeoffs and hedging, though it lacks prices, specs, and any use of the heat-safety notes. Evidence discipline is undermined by two claims not in the shown evidence: the '70 hours of research and tests of 42 hair dryers' detail for the Rusk pick, and attributing the Dyson review to 'Good Housekeeping' when the source is an untagged review—both presented as settled fact despite otherwise careful hedging.",
+        "costUsd": 0.0775269,
+        "failed": false,
+        "unparseable": false
+      }
+    }
+  }
+}

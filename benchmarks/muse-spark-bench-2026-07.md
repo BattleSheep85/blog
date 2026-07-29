@@ -524,3 +524,39 @@ scores, not only muse-spark. Fixing the judge's digest cap (a larger
 budget, or a relevance-selected digest instead of an order-truncated one)
 would need to happen before this composite score can be trusted at face
 value again.
+
+---
+
+## Correction appended 2026-07-28 (history above unchanged)
+
+This report's synthesis section is superseded. Nothing above was edited. Read
+this note before citing any synthesis number from it.
+
+An audit (`docs/benchmark-validity-audit.md`) measured what the synth judge
+could see: 0 to 13 percent of the sources per query, and zero sources on two of
+the eight queries. Every stored report was then re-scored with exact code over
+the FULL corpus (`benchmarks/synth-rescore-2026-07.md`).
+
+Two specific claims in this report were wrong:
+
+1. **The "Epson ET-3950" is NOT a fabrication.** This report called it a
+   confirmed genuine fabrication with "zero mentions anywhere in the 181-source
+   corpus". It appears in at least 6 places in that corpus, including PCMag's
+   "Best All-in-One Printer for Home Offices: Epson EcoTank ET-3950 $399.99 at
+   Amazon" and two YouTube listicles. The manual spot check that produced this
+   claim searched the wrong thing. This was the third layer of the same error the
+   audit was investigating.
+2. **The synthesis composite gap was almost entirely an artefact.** On corrected
+   measurement muse-spark-1.1 scores composite_v2 8.38, FIRST of eight
+   candidates, against minimax-m3's 8.06 and claude-haiku-4.5's 7.54. Its
+   deterministic record is clean: 41 products with zero ungrounded names, 89
+   numbers with zero ungrounded, and 112 checkable citations of which 111 verify
+   (99.1 percent). muse-spark writes far more citations than any other candidate,
+   so a judge that marked unseen citations as invented penalised it hardest.
+
+**The "do not adopt" verdict for synthesis still stands**, on the grounds that
+were always deterministic and are unaffected: 1 of 8 generations failed at
+`xhigh`, and generation cost is $0.08 per report against minimax-m3's $0.01,
+about 8 times more. The stance and extract sections of this report are not
+affected by the digest flaw. The extract section's own numbers were judged on
+full text and remain valid.
