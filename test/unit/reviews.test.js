@@ -89,9 +89,11 @@ export async function runReviewsRenderTests() {
     // is page 2), a page number past the end, and a non-numeric page value —
     // none of these should throw or produce a 500-shaped result.
     { url: '/reviews?page=1', wantNoindex: false },
-    { url: '/reviews?page=2', wantNoindex: true },
-    { url: '/reviews?page=999', wantNoindex: true, expectNull: true },
+    { url: '/reviews?page=2', wantNoindex: false },
+    { url: '/reviews?page=999', wantNoindex: false, expectNull: true },
     { url: '/reviews?page=not-a-number', wantNoindex: false },
+    // A search query on a paginated page must stay noindex regardless of page.
+    { url: '/reviews?q=nas&page=2', wantNoindex: true },
   ];
   for (const c of cases) {
     let html = null, threw = null;

@@ -78,7 +78,17 @@ export async function runBrowseRenderTests() {
     ok('middle page: self-referencing canonical', html.includes(`<link rel="canonical" href="https://chrisputer.tech/research?page=${mid}">`));
     ok('middle page: has rel=prev', html.includes(`rel="prev" href="https://chrisputer.tech/research?page=${mid - 1}"`));
     ok('middle page: has rel=next', html.includes(`rel="next" href="https://chrisputer.tech/research?page=${mid + 1}"`));
-    ok('middle page: noindexed (page>1)', html.includes('noindex, follow'));
+    ok('middle page: NOT noindexed (pagination alone stays indexable)', !html.includes('noindex, follow'));
+  }
+
+  // A page with an active search query: noindex must be present regardless
+  // of page number, since open-ended search results should not be indexed.
+  {
+    const url = new URL('https://chrisputer.tech/research?q=keyboard&page=2');
+    let html = null, threw = null;
+    try { html = await renderBrowse(url, mockEnv()); } catch (e) { threw = e; }
+    ok('search page: no throw', !threw);
+    ok('search page: noindexed', html.includes('noindex, follow'));
   }
 
   // The last real page.

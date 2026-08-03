@@ -150,7 +150,13 @@ ${!searchQuery ? renderPagerNav(totalPages, page, (n) => researchPageHref(n, '')
   const canonical = `<link rel="canonical" href="https://chrisputer.tech${researchPageHref(page, searchQuery)}">`;
   const prevLink = page > 1 ? `<link rel="prev" href="https://chrisputer.tech${researchPageHref(page - 1, searchQuery)}">` : '';
   const nextLink = hasMore ? `<link rel="next" href="https://chrisputer.tech${researchPageHref(page + 1, searchQuery)}">` : '';
-  const noindex = (page > 1 || searchQuery) ? '<meta name="robots" content="noindex, follow">' : '';
+  // Pagination alone must stay indexable: Google eventually treats a long-term
+  // noindex page as nofollow too, which would sever the crawl path this
+  // pagination exists to build (into 687 otherwise-orphaned reports). Google's
+  // pagination guidance is that paginated pages should be indexable with
+  // self-referencing canonicals (already set above). Only open-ended search
+  // results stay noindex.
+  const noindex = searchQuery ? '<meta name="robots" content="noindex, follow">' : '';
   const turnstileScript = env.TURNSTILE_SITE_KEY
     ? '<script nonce="__CSP_NONCE__" src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>'
     : '';

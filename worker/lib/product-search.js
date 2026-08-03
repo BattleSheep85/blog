@@ -84,10 +84,13 @@ export function parseProductFilters(get) {
 // True when any narrowing facet is active (used for noindex + canonical). A bare
 // category filter stays indexable (it maps to a real listing); anything more
 // specific — brand, price (band or custom range), rating, keyword, non-default
-// sort, page>1 — does not.
+// sort — does not. Pagination alone (page>1) does NOT narrow: Google eventually
+// treats a long-term noindex page as nofollow too, which would sever the crawl
+// path pagination exists to build. Each paginated page keeps its own
+// self-referencing canonical instead, per Google's pagination guidance.
 export function isNarrowed(filters) {
   return !!(filters.brand || filters.price || filters.pmin != null || filters.pmax != null
-    || filters.rating || filters.q || (filters.sort && filters.sort !== 'featured') || filters.page > 1);
+    || filters.rating || filters.q || (filters.sort && filters.sort !== 'featured'));
 }
 
 // SQLite LIKE wildcards must be escaped so a user's "%" can't match everything.

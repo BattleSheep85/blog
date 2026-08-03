@@ -327,10 +327,11 @@ ${adSlot(env, 'bottom', 'Advertisement')}
   // noindex,follow and canonicals up to the nearest indexable parent — this is
   // the standard defense against faceted-navigation index bloat (a 192-category
   // × 570-brand × 7-price × 3-rating space is millions of thin URLs otherwise).
-  // Pagination alone (page>1, no other facet) still noindexes — Google should
-  // rank the category/base page, not page 7 of it — but each such page gets
-  // its OWN self-referencing canonical (not page 1's), so it is treated as a
-  // genuine, distinct, crawlable page rather than told to defer to page 1.
+  // Pagination alone (page>1, no other facet) stays indexable: Google treats a
+  // page left noindex long term as nofollow too, which would eventually cut
+  // the crawl path pagination exists to build. Each such page gets its OWN
+  // self-referencing canonical (not page 1's), so it is a genuine, distinct,
+  // crawlable page rather than deferring to page 1.
   const narrowed = isNarrowed(filters);
   const facetsNarrowed = !!(filters.brand || filters.price || filters.pmin != null || filters.pmax != null
     || filters.rating || filters.q || (filters.sort && filters.sort !== 'featured'));
