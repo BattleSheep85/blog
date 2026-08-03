@@ -1,47 +1,28 @@
 #!/usr/bin/env node
-// extract-gold-rejudge.mjs — FULL-TEXT re-judge of stored extract-gold runs
-// (docs/benchmark-validity-audit.md section 6.7).
+// extract-gold-rejudge-opus5.mjs — the same FULL-TEXT re-judge pass as
+// extract-gold-rejudge.mjs, with the judge swapped to Opus 5 run through the
+// Claude Code CLI (owner's rule, 2026-07-29). See
+// benchmarks/lib/claude-code-judge.mjs for the transport.
 //
-// The problem it fixes: the stored incumbent scores in
-// ft-data/extract-gold-fable-scores.json were judged from blinded bundles whose
-// `source_excerpt` was capped at 5,000 characters. Five of ten products were
-// clipped, worst case 75 percent of the source hidden (Samsung QN90D: 20,035
-// characters in, 5,000 shown). The muse-spark candidate rows, by contrast, were
-// judged on the FULL text. The two sets were never strictly comparable.
-//
-// This script judges any label from extract-gold-runs.jsonl against the FULL
-// production input (`record.messages[1].content`, unsliced), the same path
-// extract-gold-candidate-judge.mjs already uses, so every row is measured the
-// same way.
+// Prompt, source text handling, and output shape are byte-identical to
+// extract-gold-rejudge.mjs. The judge model is the only variable changed.
+// Scores from this script are NOT comparable to extract-gold-fable-scores.json
+// or extract-gold-fable-scores-v2-*.json, because the judge changed.
 //
 // Usage:
-//   node benchmarks/extract-gold-rejudge.mjs --labels gpt-5.4-mini,claude-haiku-4.5,minimax-m3 [--cap <usd>]
+//   node benchmarks/extract-gold-rejudge-opus5.mjs --labels gpt-5.4-mini,claude-haiku-4.5,minimax-m3 [--cap <usd>]
 //
 // Writes one NEW file per label:
-//   benchmarks/ft-data/extract-gold-fable-scores-v2-<label>.json
-// Never touches extract-gold-fable-scores.json.
+//   benchmarks/ft-data/extract-gold-fable-scores-v2-opus5-<label>.json
+// Never touches any other stored result.
 
-import { readFileSync, writeFileSync, existsSync } from 'node:fs';
-import { callLLM } from '../worker/engine/llm.js';
+import { readFileSync, writeFileSync } from 'node:fs';
+import { judgeWithClaudeCode } from './lib/claude-code-judge.mjs';
 import { CATEGORY_BUCKETS, SEED, selectProducts } from './lib/extract-gold-selection.mjs';
 import { readJsonl } from './lib/rescore-io.mjs';
-import { assertNotAnthropicOnOpenRouter } from './lib/no-anthropic-on-openrouter.mjs';
 
-const JUDGE_MODEL = 'anthropic/claude-fable-5';
+const JUDGE_MODEL = 'claude-opus-5 (via Claude Code CLI, first-party, owner subscription)';
 const DEFAULT_CAP_USD = 3.0;
-const MAX_TOKENS = 1200;
-
-function loadOpenRouterKey() {
-  const devVarsPath = new URL('../.dev.vars', import.meta.url);
-  if (!existsSync(devVarsPath)) throw new Error('.dev.vars not found, need OPENROUTER_API_KEY');
-  const env = {};
-  for (const line of readFileSync(devVarsPath, 'utf8').split('\n')) {
-    const m = line.match(/^([A-Z_]+)=(.*)$/);
-    if (m) env[m[1]] = m[2].trim();
-  }
-  if (!env.OPENROUTER_API_KEY) throw new Error('OPENROUTER_API_KEY missing from .dev.vars');
-  return env.OPENROUTER_API_KEY;
-}
 
 function parseArgs(argv) {
   const out = { labels: [], cap: DEFAULT_CAP_USD };
@@ -49,13 +30,13 @@ function parseArgs(argv) {
     if (argv[i] === '--labels') { out.labels = String(argv[i + 1] || '').split(',').map((s) => s.trim()).filter(Boolean); i += 1; }
     else if (argv[i] === '--cap') { out.cap = Number(argv[i + 1]); i += 1; }
   }
-  if (!out.labels.length) throw new Error('usage: extract-gold-rejudge.mjs --labels a,b,c [--cap <usd>]');
+  if (!out.labels.length) throw new Error('usage: extract-gold-rejudge-opus5.mjs --labels a,b,c [--cap <usd>]');
   if (!Number.isFinite(out.cap) || out.cap <= 0) throw new Error('--cap must be a positive number of USD');
   return out;
 }
 
-// Byte-for-byte the rubric extract-gold-candidate-judge.mjs uses, so the v2
-// numbers for incumbents and candidates come from one prompt, not two.
+// Byte-for-byte the rubric extract-gold-rejudge.mjs and
+// extract-gold-candidate-judge.mjs use, so the judge is the only variable.
 const JUDGE_SYSTEM = `You are an independent quality judge for a product-claim extraction system. You will be shown the source text a claim-extraction model read, and the list of claims it extracted from that text. Score the extraction on these axes, then give ONE overall score:
 - Grounding: is every claim actually present in the source text (not invented)?
 - Cross-product contamination: does the extraction wrongly attribute another product's specs to this product?
@@ -67,22 +48,20 @@ Return STRICT JSON: {"score": <0-10 number, or the exact string "FAIL">, "reason
 
 const buildUserPrompt = (product, sourceText, claims) => `Product: "${product}"\n\nSOURCE TEXT the extraction model read:\n${sourceText}\n\nCLAIMS the extraction model returned:\n${claims.length ? claims.map((c, i) => `${i + 1}. [${c.type}] ${c.text}`).join('\n') : '(no claims extracted)'}`;
 
-async function judgeOne({ apiKey, product, sourceText, claims }) {
-  assertNotAnthropicOnOpenRouter(JUDGE_MODEL);
-  const resp = await callLLM(apiKey, JUDGE_MODEL, [
-    { role: 'system', content: JUDGE_SYSTEM },
-    { role: 'user', content: buildUserPrompt(product, sourceText, claims) },
-  ], { maxTokens: MAX_TOKENS, temperature: 0 });
+async function judgeOne({ product, sourceText, claims }) {
+  const prompt = `${JUDGE_SYSTEM}\n\n${buildUserPrompt(product, sourceText, claims)}`;
+  const resp = await judgeWithClaudeCode(prompt);
   let parsed = null;
   try {
-    const raw = resp.choices?.[0]?.message?.content ?? '';
+    const raw = resp.text ?? '';
     const fenced = raw.match(/```(?:json)?\s*([\s\S]*?)```/);
     parsed = JSON.parse((fenced ? fenced[1] : raw).trim());
   } catch { parsed = null; }
   return {
     score: parsed && (parsed.score === 'FAIL' || typeof parsed.score === 'number') ? parsed.score : 'FAIL',
     reasoning: parsed && typeof parsed.reasoning === 'string' ? parsed.reasoning : '(unparseable judge response)',
-    costUsd: Number.isFinite(resp?.usage?.cost) ? resp.usage.cost : 0,
+    costUsd: resp.costUsd,
+    durationMs: resp.durationMs,
   };
 }
 
@@ -99,13 +78,12 @@ function summarise(results) {
 
 async function main() {
   const { labels, cap } = parseArgs(process.argv.slice(2));
-  const apiKey = loadOpenRouterKey();
   const runs = readJsonl(new URL('./ft-data/extract-gold-runs.jsonl', import.meta.url));
   const harvested = readJsonl(new URL('./ft-data/extract-harvested.jsonl', import.meta.url));
   const selection = selectProducts(harvested, CATEGORY_BUCKETS, SEED);
   const fullTextByProduct = new Map(selection.map(({ bucket, record }) => [record.meta.product, { bucket, text: record.messages[1].content }]));
 
-  process.stderr.write(`[extract-rejudge] model=${JUDGE_MODEL} labels=${labels.join(',')} cap $${cap.toFixed(2)}\n`);
+  process.stderr.write(`[extract-rejudge-opus5] model=${JUDGE_MODEL} labels=${labels.join(',')} cap $${cap.toFixed(2)}\n`);
   let spentUsd = 0;
   const summary = [];
   for (const label of labels) {
@@ -118,16 +96,17 @@ async function main() {
       const meta = fullTextByProduct.get(run.product);
       if (!meta) { process.stderr.write(`  ! no selection entry for "${run.product}", skipping\n`); continue; }
       const claims = run.ok && Array.isArray(run.claims) ? run.claims : [];
-      const s = await judgeOne({ apiKey, product: run.product, sourceText: meta.text, claims });
+      const s = await judgeOne({ product: run.product, sourceText: meta.text, claims });
       spentUsd += s.costUsd;
       results[meta.bucket] = { product: run.product, score: s.score, reasoning: s.reasoning, claim_count: claims.length, source_chars: meta.text.length };
-      process.stderr.write(`  [${label}/${meta.bucket}] ${run.product.slice(0, 30)} -> ${s.score} (${meta.text.length} chars, cum=$${spentUsd.toFixed(4)})\n`);
+      process.stderr.write(`  [${label}/${meta.bucket}] ${run.product.slice(0, 30)} -> ${s.score} (${meta.text.length} chars, cum=$${spentUsd.toFixed(4)}, ${s.durationMs}ms)\n`);
     }
     const stats = summarise(results);
-    const path = new URL(`./ft-data/extract-gold-fable-scores-v2-${label}.json`, import.meta.url);
+    const path = new URL(`./ft-data/extract-gold-fable-scores-v2-opus5-${label}.json`, import.meta.url);
     writeFileSync(path, JSON.stringify({
       label, judgeModel: JUDGE_MODEL,
-      method: 'v2: judged against the FULL production source text, not the 5,000-char clipped bundle excerpt.',
+      method: 'v2: judged against the FULL production source text, not the 5,000-char clipped bundle excerpt. '
+        + 'Judge is Opus 5 via the Claude Code CLI, billed to the owner subscription, not OpenRouter.',
       complete: !stopped, costUsd: spentUsd, ...stats, results,
     }, null, 2));
     summary.push({ label, ...stats, complete: !stopped });
@@ -135,7 +114,7 @@ async function main() {
     if (stopped) break;
   }
 
-  console.log('\n══ EXTRACT-GOLD FULL-TEXT RE-JUDGE ══');
+  console.log('\n══ EXTRACT-GOLD FULL-TEXT RE-JUDGE (OPUS 5) ══');
   console.table(summary);
   console.log(`spend: $${spentUsd.toFixed(4)}`);
 }

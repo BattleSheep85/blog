@@ -1,0 +1,96 @@
+{
+  "judgeModel": "claude-opus-5 (via Claude Code CLI, first-party, owner subscription)",
+  "method": "v2: existence pre-checked deterministically, judge scores usefulness + evidence_discipline only. Judge is Opus 5 via the Claude Code CLI, billed to the owner subscription, not OpenRouter.",
+  "notComparableTo": "synth-gold-fable-scores.json and synth-gold-quality-v2-*.json (different judge model).",
+  "bundleDir": "benchmarks/ft-data/synth-gold-blind-v2-muse-spark-1.1",
+  "complete": true,
+  "costUsd": 1.841535,
+  "results": {
+    "best soundbar 2026": {
+      "A": {
+        "usefulness": 5,
+        "evidence_discipline": 4,
+        "reasoning": "The report covers a sensible price ladder and does flag one pick as low-confidence, but most pros/cons are generic buying-guide filler (wall-mountable, smart speaker, low-price caveats) rather than model-specific tradeoffs, and 5 of 6 picks have no price, which limits real purchase help. Evidence discipline is weak: the notes state the corpus has no measured results or verdicts for these bars, yet the report repeatedly says RTINGS or TechRadar hands-on testing 'confirms' a pick, converts mere presence in a tested-models list into quality claims, and assigns firm numeric ratings on that basis.",
+        "costUsd": 0.299074,
+        "durationMs": 13301,
+        "failed": false,
+        "unparseable": false
+      }
+    },
+    "best microwave 2026": {
+      "A": {
+        "usefulness": 8,
+        "evidence_discipline": 5,
+        "reasoning": "Six picks span distinct use cases (value, premium combo, capacity, budget combo, OTR, budget large) with concrete tradeoffs and no filler, so a shopper gets real decision structure. But the report repeatedly asserts things the notes never show: Wirecutter [Jan 28, 2026] testing, a Reddit 2026 'community crown', SlashGear warranty complaints, and unhedged claims like 'outperforming units twice its price' and 'genuinely replaces three appliances' state as settled fact what the corpus only weakly supports.",
+        "costUsd": 0.25411599999999995,
+        "durationMs": 5801,
+        "failed": false,
+        "unparseable": false
+      }
+    },
+    "best graphics card 2026": {
+      "A": {
+        "usefulness": 8,
+        "evidence_discipline": 9,
+        "reasoning": "Clear tiered picks with a real price anchor, distinct use cases, and honest tradeoffs (VRAM vs DLSS, supply risk), though three of five picks lack prices and the RTX 5090 entry adds little beyond 'halo, expensive'. Evidence discipline is strong: it repeatedly labels source strength (hands-on PCMag vs listicle-only), downgrades the RX 9070 rating and says so explicitly, and attributes supply/price claims to Tom's Hardware rather than stating them as settled fact; minor slips are the unsourced 'higher board power' and 'likely better raster perf-per-dollar' assertions.",
+        "costUsd": 0.24482600000000002,
+        "durationMs": 6081,
+        "failed": false,
+        "unparseable": false
+      }
+    },
+    "best dash cam 2026": {
+      "A": {
+        "usefulness": 7,
+        "evidence_discipline": 5,
+        "reasoning": "Clear tiered picks with distinct use cases (overall 4K, all-rounder, 3CH rideshare, hot climate, value, budget) and concrete tradeoffs, but no prices at all on any pick, which hurts a real purchase decision. Evidence discipline is weaker: it asserts unhedged specs and cons the corpus does not support (E1 Pro 'not true 4K, typically 2.5K/1440p class', Miofive 'some variants use battery not supercapacitor', Vueroid 'heat-resistant capacitor design', N4 Pro S glare/overheating claims), applies generic listicle warnings about 'premium cams' to named products as if product-specific, and uses confident marketing-tinged verdicts ('the rational pick', 'beats budget no-name brands') without flagging thin or absent testing evidence.",
+        "costUsd": 0.253696,
+        "durationMs": 7667,
+        "failed": false,
+        "unparseable": false
+      }
+    },
+    "best vacuum for pet hair": {
+      "A": {
+        "usefulness": 8,
+        "evidence_discipline": 7,
+        "reasoning": "Six picks span distinct use cases (canister, cordless stick, budget robot, handheld, tool-ecosystem stick, mop-vac) with clear best_for lines, real prices, and honest limits like 'robot alone won't deep-clean embedded hair'; the Ryobi entry even flags the Consumer Reports worst-vacuums caveat against itself. Discipline is mostly good (hedged Dyson price as 'typically $700+ without source-confirmed discount', attributed dates and testers), but it asserts unsupported specifics: SEBO 'S-Class filtration' as a spec, a 4.5/4.0 rating scale nothing in the notes supplies, and Reddit/Feb-2026 community chatter that the notes do not contain.",
+        "costUsd": 0.25956100000000004,
+        "durationMs": 6512,
+        "failed": false,
+        "unparseable": false
+      }
+    },
+    "best printer for home": {
+      "A": {
+        "usefulness": 8,
+        "evidence_discipline": 6,
+        "reasoning": "Strong shopper utility: six distinct picks with clear use-case separation (mono laser default, color laser, budget tank, ultra-budget, high-volume tank, photo), real prices, and honest cons that would actually change a decision. Evidence discipline is weaker: the report repeatedly attributes specific claims to sources the notes do not show (Wirecutter Apr 28 2026 on the DCP-L2640DW, RTINGS Jun 4 speed comparison vs Canon MF665Cdw, TechRadar 80% ink figure, the Epson maintenance-box lock), states them as settled fact with no hedging, and it never says what it does not know despite a corpus whose direct evidence per product is thin.",
+        "costUsd": 0.269636,
+        "durationMs": 6984,
+        "failed": false,
+        "unparseable": false
+      }
+    },
+    "best portable charger for iphone": {
+      "A": {
+        "usefulness": 8,
+        "evidence_discipline": 8,
+        "reasoning": "Six distinct picks with clear role separation (Qi2 flagship, slim, budget magnetic, wired with cable, cheapest wired, dual-device desk stand), concrete measured numbers, and real tradeoffs including honest dealbreakers on the Satechi and micro-USB on the PowerCore. Attribution is careful and sourced hedges are preserved (\"on paper\", \"Anker claims\", \"per hands-on\"), though it invents unstated ratings, leaves two prices null while the Satechi lists $70 with a $100 list-price con, and the summary's \"wired 10K remain best value\" is a generalization the notes do not directly support.",
+        "costUsd": 0.260626,
+        "durationMs": 7308,
+        "failed": false,
+        "unparseable": false
+      }
+    },
+    "best hair dryer 2026": {
+      "A": {
+        "usefulness": 0,
+        "evidence_discipline": 0,
+        "reasoning": "generation failed: json-parse-fail",
+        "costUsd": 0,
+        "failed": true
+      }
+    }
+  }
+}

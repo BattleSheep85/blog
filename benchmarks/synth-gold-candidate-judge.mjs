@@ -39,6 +39,7 @@
 
 import { readFileSync, writeFileSync, readdirSync, existsSync } from 'node:fs';
 import { callLLM } from '../worker/engine/llm.js';
+import { assertNotAnthropicOnOpenRouter } from './lib/no-anthropic-on-openrouter.mjs';
 
 const JUDGE_MODEL = 'anthropic/claude-fable-5';
 const HARD_SPEND_CAP_USD = 1.0;
@@ -99,6 +100,7 @@ async function judgeOne({ apiKey, bundle }) {
   // maxTokens:4000 confirmed the cause (finish_reason:"stop", ~740
   // completion tokens total). 2000 leaves comfortable headroom above the
   // observed worst case.
+  assertNotAnthropicOnOpenRouter(JUDGE_MODEL);
   const resp = await callLLM(apiKey, JUDGE_MODEL, messages, { maxTokens: 2000, temperature: 0 });
   const costUsd = Number.isFinite(resp?.usage?.cost) ? resp.usage.cost : 0;
   const raw = resp.choices?.[0]?.message?.content ?? '';

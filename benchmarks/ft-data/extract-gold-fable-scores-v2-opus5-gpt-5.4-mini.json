@@ -1,0 +1,83 @@
+{
+  "label": "gpt-5.4-mini",
+  "judgeModel": "claude-opus-5 (via Claude Code CLI, first-party, owner subscription)",
+  "method": "v2: judged against the FULL production source text, not the 5,000-char clipped bundle excerpt. Judge is Opus 5 via the Claude Code CLI, billed to the owner subscription, not OpenRouter.",
+  "complete": true,
+  "costUsd": 2.1073150000000003,
+  "avgQualityNonFail": 7.4,
+  "completionsNonFail": 10,
+  "totalProducts": 10,
+  "hardFails": 0,
+  "results": {
+    "audio": {
+      "product": "Samsung HW-Q990D Soundbar",
+      "score": 8.5,
+      "reasoning": "All 11 claims trace to the source text with no cross-product contamination or generation mixing (Q995D and the star ratings were correctly left out), and the model/support split is clean. Minor deduction: claims 10 and 11 are generic Samsung-soundbar support steps, not HW-Q990D specifics, and 'includes rear speakers' is inferred from a product-page title rather than a stated spec.",
+      "claim_count": 11,
+      "source_chars": 5282
+    },
+    "tv_display": {
+      "product": "Samsung QN90D Neo QLED",
+      "score": 8.5,
+      "reasoning": "All 12 claims trace to the source text (mostly SOURCE 8's product page and SOURCE 5), with correct QN90D attribution, no cross-product contamination from the QN800D/S90D/QN85D picker, and no retailer star-ratings or nav boilerplate pulled in as claims. Minor weakness: claim 12 repeats a garbled page dimension (166.0 x 72.2 x 6.9 mm is not a plausible 75-inch TV dimension) without flagging it, and the 144Hz claims omit the source's own footnote that 120Hz applies to the 98-inch model.",
+      "claim_count": 12,
+      "source_chars": 20035
+    },
+    "computing": {
+      "product": "Lenovo ThinkPad X1 Carbon",
+      "score": 6.5,
+      "reasoning": "Claims 1-5 and 8-9 are correctly grounded and keep Gen 12 vs Gen 13 Aura straight, but claim 7 pulls a TrackPoint Quick Menu feature from a ThinkPad X1 Fold 16 support video (cross-product contamination) and claim 6 is generic Lenovo Vantage support boilerplate, not a product claim; it also skipped the concrete Gen 12 specs available in sources 5-7.",
+      "claim_count": 9,
+      "source_chars": 4390
+    },
+    "wearable_health": {
+      "product": "Fitbit Charge 6",
+      "score": 9,
+      "reasoning": "All nine claims trace to Sources 3, 6, and 9, with no contamination from the Fitbit Air specs in Sources 4-5 and no retailer or nav junk pulled in. Minor slack: \"built-in GPS\" adds a qualifier the Walmart blurb does not state, and \"has health tools\" is vague marketing filler rather than a checkable claim.",
+      "claim_count": 9,
+      "source_chars": 5153
+    },
+    "kitchen": {
+      "product": "Presto Pressure Cooker 6qt",
+      "score": 6,
+      "reasoning": "Claims 1-8 and the 5.4 weight are grounded in sources 2, 4, and 6, but claim 3 fuses the Target listing title's 'regulator, cover lock' into one invented feature, and claim 10 is cross-product contamination: the two-year parts-and-labor warranty in source 11 belongs to the Fisher & Paykel wine cabinet, not the Presto. Weight is also stated as '5.4 ...' with units truncated in the source, so 'pounds' is inferred.",
+      "claim_count": 10,
+      "source_chars": 4649
+    },
+    "cleaning": {
+      "product": "Samsung Bespoke Jet Vacuum",
+      "score": 8,
+      "reasoning": "All 12 claims are grounded verbatim in the sources and are correctly attributed to the model they came from (Jet 60 Pet, Jet Bot Combo, Bespoke Jet stick), with junk sources (washer/dryer, SmartThings, dust-bag listings) correctly ignored. Minor gap: it left out checkable headline claims from the target line itself (210AW HexaJet suction, 400AW Bespoke AI Jet Ultra, 1.45kg Jet Lite), and several extracted claims describe a robot vacuum rather than the Bespoke Jet stick asked about.",
+      "claim_count": 12,
+      "source_chars": 9734
+    },
+    "power_charging": {
+      "product": "Anker 737 Power Bank",
+      "score": 9,
+      "reasoning": "Every claim traces to the source text (24000mAh/140W/3-port from titles and Sources 1/5/6, PD 3.1 and bi-directional from Source 3, display details from Source 4, iPhone 13 / iPad Pro / 2× life from Source 1), with correct attribution to the 737 and no leakage from the Anker Prime 250W comparison or the HP laptop thread. Retailer star ratings and review boilerplate in Source 8 were correctly excluded; minor gap is that the well-supported user-reported claims were not captured, but nothing extracted is wrong.",
+      "claim_count": 12,
+      "source_chars": 16184
+    },
+    "baby": {
+      "product": "Dr. Brown's Natural Flow Baby Bottles",
+      "score": 8.5,
+      "reasoning": "All twelve claims trace to the source text, stay hedged with \"some\" where only certain SKUs are covered, and avoid the star-ratings, prices, and video boilerplate. Minor weakness: claim 1 generalizes \"clinically proven to reduce colic\" to all Dr. Brown's bottles when the source ties it to specific Options+ SKUs, and the narrow vs wide-neck model split in the sources is not preserved.",
+      "claim_count": 12,
+      "source_chars": 4541
+    },
+    "smart_home": {
+      "product": "Google Nest Hub Max",
+      "score": 8,
+      "reasoning": "All four claims are grounded: the 10-inch size and 2-microphone count come from the Best Buy listing (Source 5), the camera/mic detail from the same source, and the Gemini support claim from Source 6. It correctly ignored the noise sources (Pixel 10a, Nest Temperature Sensor, Cyber Monday deals) and did not confuse the Nest Hub 2nd Gen listing with the Max, though claims 2 and 3 are redundant and the 10-inch spec comes only from the retailer page title.",
+      "claim_count": 4,
+      "source_chars": 4716
+    },
+    "outdoor": {
+      "product": "CamelBak Chute Mag Water Bottle",
+      "score": 2,
+      "reasoning": "Source 1 is an Amazon Live blurb plus site boilerplate; the only real hints are insulation and unspecified design features. Claim 1 (magnetic cap) is not stated anywhere in the source, only inferred from the product name, and claim 2 restates a user's usage duration, not a checkable product claim. Sources 2 and 3 are a different bottle and a third-party accessory, correctly ignored.",
+      "claim_count": 2,
+      "source_chars": 3572
+    }
+  }
+}

@@ -32,6 +32,8 @@ import { runSmtpTests } from '../test/unit/smtp.test.js';
 import { runEmailTemplatesTests } from '../test/unit/email-templates.test.js';
 import { runSubscribeFlowTests } from '../test/unit/subscribe-flow.test.js';
 import { runGroundingCheckTests } from '../benchmarks/tests/grounding-check.test.mjs';
+import { runNoAnthropicOnOpenRouterTests } from '../benchmarks/tests/no-anthropic-on-openrouter.test.mjs';
+import { runClaudeCodeJudgeTests } from '../benchmarks/tests/claude-code-judge.test.mjs';
 
 const suites = [
   ['credibility', runCredibilityTests],
@@ -62,6 +64,8 @@ const suites = [
   // Benchmark-side, but gated here on purpose: this suite is the guard against
   // shipping another broken grounding measurement (docs/benchmark-validity-audit.md).
   ['grounding-check', runGroundingCheckTests],
+  ['no-anthropic-on-openrouter', runNoAnthropicOnOpenRouterTests],
+  ['claude-code-judge', runClaudeCodeJudgeTests],
 ];
 
 let failed = 0;

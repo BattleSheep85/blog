@@ -40,6 +40,7 @@
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { callLLM } from '../worker/engine/llm.js';
 import { CATEGORY_BUCKETS, SEED, selectProducts } from './lib/extract-gold-selection.mjs';
+import { assertNotAnthropicOnOpenRouter } from './lib/no-anthropic-on-openrouter.mjs';
 
 const JUDGE_MODEL = 'anthropic/claude-fable-5';
 const HARD_SPEND_CAP_USD = 1.0;
@@ -98,6 +99,7 @@ async function judgeOne({ apiKey, product, sourceExcerpt, claims }) {
   // reasons by default) AND the JSON response itself, or the call truncates
   // mid-JSON (finish_reason:"length") and this parse silently falls back to
   // FAIL. 1200 leaves comfortable headroom above the observed worst case.
+  assertNotAnthropicOnOpenRouter(JUDGE_MODEL);
   const resp = await callLLM(apiKey, JUDGE_MODEL, messages, { maxTokens: 1200, temperature: 0 });
   const costUsd = Number.isFinite(resp?.usage?.cost) ? resp.usage.cost : 0;
   const raw = resp.choices?.[0]?.message?.content ?? '';
