@@ -3,11 +3,27 @@ import { timeAgo, escapeHtml, escapeLikeWildcards, displayQuery, publicResearchF
 import { searchBar } from '../lib/search-bar.js';
 import { listCategories } from '../pages/category.js';
 import { jsonEmbed, listLayoutBoot } from '../lib/list-layout-boot.js';
+import { renderPagerNav } from '../lib/pager.js';
+
+// 48 cards/page keeps the archive's ~687 reports reachable in about 15 pages,
+// so the full numbered pager below (see lib/pager.js) can link every page
+// directly from page 1 without a long prev/next chain.
+const PER_PAGE = 48;
+const MAX_PAGE = 1000;
+
+// Builds a /research href for a given page + optional search query. Page 1
+// with no query collapses to the bare /research path.
+function researchPageHref(pageNum, searchQuery) {
+  const params = [];
+  if (pageNum > 1) params.push(`page=${pageNum}`);
+  if (searchQuery) params.push(`q=${encodeURIComponent(searchQuery)}`);
+  return params.length ? `/research?${params.join('&')}` : '/research';
+}
 
 export async function renderBrowse(url, env) {
   const searchQuery = url.searchParams.get('q') ?? '';
-  const page = Math.min(Math.max(1, parseInt(url.searchParams.get('page') ?? '1', 10) || 1), 1000);
-  const perPage = 12;
+  const page = Math.min(Math.max(1, parseInt(url.searchParams.get('page') ?? '1', 10) || 1), MAX_PAGE);
+  const perPage = PER_PAGE;
   const offset = (page - 1) * perPage;
 
   let rows;
@@ -42,6 +58,20 @@ export async function renderBrowse(url, env) {
   const hasMore = rows.length > perPage;
   const results = rows.slice(0, perPage);
 
+  // Total page count, used to render the full numbered pager below. Only the
+  // unfiltered listing gets one (search results are open-ended and noindexed
+  // already, so a prev/next chain is enough there).
+  let totalPages = 1;
+  if (!searchQuery) {
+    const countRow = await env.DB.prepare(
+      `SELECT COUNT(*) AS n FROM (
+         SELECT r.id, ROW_NUMBER() OVER (PARTITION BY COALESCE(r.canonical_query, r.slug) ORDER BY r.created_at DESC) AS rn
+         FROM research r WHERE ${publicResearchFilter('r')}
+       ) WHERE rn = 1`
+    ).first();
+    totalPages = Math.max(1, Math.ceil((countRow?.n ?? 0) / perPage));
+  }
+
   // "Browse by category" strip — links to the /best/:slug hubs. Only shown on
   // the un-filtered first page so search-result and paginated views stay lean.
   // Degrades to empty if the query fails (never break the listing for a strip).
@@ -70,7 +100,6 @@ export async function renderBrowse(url, env) {
     view_count: r.view_count,
   }));
 
-  const qs = searchQuery ? `&q=${encodeURIComponent(searchQuery)}` : '';
 
   const body = `<div class="grid-bg border-b border-line">
 <div class="mx-auto max-w-5xl px-6 py-12 md:py-16">
@@ -111,15 +140,16 @@ ${searchQuery ? `<h2 class="mb-2 font-serif text-h2 font-semibold text-ink">No m
 </div>`}
 
 ${(page > 1 || hasMore) ? `<div class="mt-8 flex justify-center gap-2">
-${page > 1 ? `<a href="/research?page=${page - 1}${qs}" class="inline-flex items-center gap-2 border border-line bg-surface-1 px-4 py-2 font-mono text-xs font-semibold uppercase tracking-wide text-ink transition-colors hover:border-ink-3">&larr; Previous</a>` : ''}
-${hasMore ? `<a href="/research?page=${page + 1}${qs}" class="inline-flex items-center gap-2 border border-line bg-surface-1 px-4 py-2 font-mono text-xs font-semibold uppercase tracking-wide text-ink transition-colors hover:border-ink-3">Next &rarr;</a>` : ''}
+${page > 1 ? `<a href="${researchPageHref(page - 1, searchQuery)}" class="inline-flex items-center gap-2 border border-line bg-surface-1 px-4 py-2 font-mono text-xs font-semibold uppercase tracking-wide text-ink transition-colors hover:border-ink-3">&larr; Previous</a>` : ''}
+${hasMore ? `<a href="${researchPageHref(page + 1, searchQuery)}" class="inline-flex items-center gap-2 border border-line bg-surface-1 px-4 py-2 font-mono text-xs font-semibold uppercase tracking-wide text-ink transition-colors hover:border-ink-3">Next &rarr;</a>` : ''}
 </div>` : ''}
+${!searchQuery ? renderPagerNav(totalPages, page, (n) => researchPageHref(n, ''), 'Research archive pages') : ''}
 </div>
 </div>`;
 
-  const canonical = '<link rel="canonical" href="https://chrisputer.tech/research">';
-  const prevLink = page > 1 ? `<link rel="prev" href="https://chrisputer.tech/research?page=${page - 1}${qs}">` : '';
-  const nextLink = hasMore ? `<link rel="next" href="https://chrisputer.tech/research?page=${page + 1}${qs}">` : '';
+  const canonical = `<link rel="canonical" href="https://chrisputer.tech${researchPageHref(page, searchQuery)}">`;
+  const prevLink = page > 1 ? `<link rel="prev" href="https://chrisputer.tech${researchPageHref(page - 1, searchQuery)}">` : '';
+  const nextLink = hasMore ? `<link rel="next" href="https://chrisputer.tech${researchPageHref(page + 1, searchQuery)}">` : '';
   const noindex = (page > 1 || searchQuery) ? '<meta name="robots" content="noindex, follow">' : '';
   const turnstileScript = env.TURNSTILE_SITE_KEY
     ? '<script nonce="__CSP_NONCE__" src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>'

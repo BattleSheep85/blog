@@ -15,6 +15,7 @@ import { renderItemImage, resolveProductCtas, isNonProductCategory } from './res
 import { resolveAmazonTag } from '../lib/affiliate-links.js';
 import { adSlot } from '../lib/ads.js';
 import { jsonEmbed, listLayoutBoot } from '../lib/list-layout-boot.js';
+import { renderPagerNav } from '../lib/pager.js';
 import {
   PAGE_SIZE, PRICE_BANDS, RATING_OPTIONS, SORT_OPTIONS,
   parseProductFilters, isNarrowed, buildProductWhere, orderByClause, reviewsHref,
@@ -222,12 +223,20 @@ ${activeChips.join('')}
   const sortLinks = SORT_OPTIONS.map((o) =>
     `<a href="${escapeHtml(reviewsHref(filters, { sort: o.key }))}" rel="nofollow" class="border-b-2 px-0.5 py-1 font-mono text-xs no-underline ${filters.sort === o.key ? 'border-accent font-semibold text-ink' : 'border-transparent text-ink-3'}">${escapeHtml(o.label)}</a>`).join('');
 
+  // The prev/newer/older strip stays `rel="nofollow"` (it duplicates the
+  // numbered pager below and existed before this change); the numbered pager
+  // is the crawlable path so every page is reachable in a small hop count.
   const pagerHtml = totalPages > 1
     ? `<nav aria-label="Pagination" class="mt-8 flex items-center justify-center gap-3">
 ${filters.page > 1 ? `<a href="${escapeHtml(reviewsHref(filters, { page: filters.page - 1 }))}" rel="nofollow" class="border border-line px-3.5 py-2 font-mono text-xs uppercase tracking-wide text-ink-2 hover:border-ink-3 hover:text-ink">&larr; Newer</a>` : ''}
 <span class="readout font-mono text-xs text-ink-3">Page ${filters.page} of ${totalPages}</span>
 ${filters.page < totalPages ? `<a href="${escapeHtml(reviewsHref(filters, { page: filters.page + 1 }))}" rel="nofollow" class="border border-line px-3.5 py-2 font-mono text-xs uppercase tracking-wide text-ink-2 hover:border-ink-3 hover:text-ink">Older &rarr;</a>` : ''}
 </nav>` : '';
+  const numberedPagerHtml = renderPagerNav(
+    totalPages, filters.page,
+    (n) => escapeHtml(reviewsHref(filters, { page: n })),
+    'Reviews pages',
+  );
 
   // Category-specific heading only when category is the SOLE active filter (so
   // the H1/title match the indexable category listing); any further narrowing
@@ -274,6 +283,7 @@ ${sidebar}
 ${chipsRow}
 ${resultsHtml}
 ${pagerHtml}
+${numberedPagerHtml}
 </div>
 </div>
 ${adSlot(env, 'bottom', 'Advertisement')}
@@ -313,12 +323,24 @@ ${adSlot(env, 'bottom', 'Advertisement')}
   };
 
   // SEO: only the base listing and a single-category listing are indexable.
-  // Every further facet combination (brand/price/rating/keyword/sort/page>1) is
+  // Every further facet combination (brand/price/rating/keyword/sort) is
   // noindex,follow and canonicals up to the nearest indexable parent — this is
   // the standard defense against faceted-navigation index bloat (a 192-category
   // × 570-brand × 7-price × 3-rating space is millions of thin URLs otherwise).
+  // Pagination alone (page>1, no other facet) still noindexes — Google should
+  // rank the category/base page, not page 7 of it — but each such page gets
+  // its OWN self-referencing canonical (not page 1's), so it is treated as a
+  // genuine, distinct, crawlable page rather than told to defer to page 1.
   const narrowed = isNarrowed(filters);
-  const canonical = `https://chrisputer.tech${reviewsHref({ category: filters.category })}`;
+  const facetsNarrowed = !!(filters.brand || filters.price || filters.pmin != null || filters.pmax != null
+    || filters.rating || filters.q || (filters.sort && filters.sort !== 'featured'));
+  const canonical = facetsNarrowed
+    ? `https://chrisputer.tech${reviewsHref({ category: filters.category })}`
+    : `https://chrisputer.tech${reviewsHref(filters, { page: filters.page })}`;
+  const prevLink = (!facetsNarrowed && filters.page > 1)
+    ? `<link rel="prev" href="https://chrisputer.tech${reviewsHref(filters, { page: filters.page - 1 })}">` : '';
+  const nextLink = (!facetsNarrowed && filters.page < totalPages)
+    ? `<link rel="next" href="https://chrisputer.tech${reviewsHref(filters, { page: filters.page + 1 })}">` : '';
   const imgWireScript = `<script nonce="__CSP_NONCE__">
 (function(){
   document.querySelectorAll('.item-image-photo').forEach(function(img){
@@ -337,6 +359,6 @@ ${adSlot(env, 'bottom', 'Advertisement')}
     ? listLayoutBoot({ dataId: 'reviews-list-data', containerId: 'reviews-list', kind: 'review' })
     : '';
   return layout(heading, desc, body,
-    jsonLdScript(itemListLd) + jsonLdScript(breadcrumbLd) + imgWireScript + reviewsListBoot,
+    prevLink + nextLink + jsonLdScript(itemListLd) + jsonLdScript(breadcrumbLd) + imgWireScript + reviewsListBoot,
     { canonical, noindex: narrowed });
 }

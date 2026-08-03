@@ -16,6 +16,7 @@ import { handleProductImage } from './handlers/image.js';
 import { classifyQuery, userFacingRejection, defaultQuestionsForQuery } from './lib/classifier.js';
 import { screenQuery, rejectionMessage } from './lib/safety.js';
 import { renderBrowse } from './pages/browse.js';
+import { renderHome, renderBestIndex } from './pages/home.js';
 import { renderHistoryPage } from './pages/history.js';
 import { handleSubscribe } from './handlers/subscribe.js';
 import { handleUnsubscribe } from './handlers/unsubscribe.js';
@@ -255,6 +256,17 @@ export default {
 
             // ── Server-rendered pages ───────────────────────────────────────
             if (isGetLike) {
+                // Homepage and the /best/ guide index are static assets with a
+                // recent-reports marker; inject the live section so crawlers
+                // landing on the site's best-linked pages have a path into the
+                // report archive. See worker/pages/home.js.
+                if (path === '/') {
+                    return renderHome(request, env);
+                }
+                if (path === '/best' || path === '/best/') {
+                    return renderBestIndex(request, env);
+                }
+
                 // Account pages — always per-user, never cached.
                 if (path === '/login' || path === '/account') {
                     const page = path === '/login'

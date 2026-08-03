@@ -10,6 +10,8 @@ import { runCredibilityTests } from '../test/unit/credibility.test.js';
 import { runValidateTests } from '../test/unit/validate.test.js';
 import { runProductSearchTests } from '../test/unit/product-search.test.js';
 import { runReviewsRenderTests } from '../test/unit/reviews.test.js';
+import { runBrowseRenderTests } from '../test/unit/browse.test.js';
+import { runPagerTests } from '../test/unit/pager.test.js';
 import { runCredibilityExtraTests } from '../test/unit/credibility-extra.test.js';
 import { runPromptsTests } from '../test/unit/prompts.test.js';
 import { runLlmTests } from '../test/unit/llm.test.js';
@@ -41,6 +43,8 @@ const suites = [
   ['validate-quality-gate', runValidateTests],
   ['product-search', runProductSearchTests],
   ['reviews-render', runReviewsRenderTests], // async suite (awaited below)
+  ['browse-render', runBrowseRenderTests], // async suite (awaited below)
+  ['pager', runPagerTests],
   ['utils', runUtilsTests],
   ['research-primitives', runResearchPrimitivesTests],
   ['affiliate-links', runAffiliateLinksTests],
