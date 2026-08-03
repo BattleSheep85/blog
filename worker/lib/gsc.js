@@ -16,7 +16,13 @@ const GSC_SCOPE = 'https://www.googleapis.com/auth/webmasters.readonly';
 const TOKEN_URI = 'https://oauth2.googleapis.com/token';
 const DEFAULT_SITE = 'sc-domain:chrisputer.tech';
 const API_BASE = 'https://www.googleapis.com/webmasters/v3/sites';
+const URL_INSPECTION_ENDPOINT = 'https://searchconsole.googleapis.com/v1/urlInspection/index:inspect';
 const DAY_MS = 86_400_000;
+
+// Delay between URL Inspection calls. Google documents ~2000 inspections/day
+// and a low per-minute burst limit for this API; a fixed gap keeps a ~30-URL
+// diagnostic run far under either ceiling without needing a token bucket.
+const INSPECTION_DELAY_MS = 1500;
 
 function siteUrl(env) {
     return (env && env.GSC_SITE_URL) || DEFAULT_SITE;
@@ -157,6 +163,198 @@ export async function ingestGsc(env, { days = 5, rowLimit = 5000 } = {}) {
     }
 
     return { ingested: written, startDate, endDate, site: siteUrl(env) };
+}
+
+async function sleep(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/**
+ * Call urlInspection.index:inspect for one URL. Returns the raw
+ * inspectionResult, or throws on a non-OK response (caller decides how to
+ * handle 429 vs other errors).
+ *
+ * Response fields we read (per the URL Inspection API reference):
+ *   indexStatusResult.verdict          — PASS / NEUTRAL / FAIL / VERDICT_UNSPECIFIED
+ *   indexStatusResult.coverageState    — human-readable state, e.g. "Submitted
+ *                                        and indexed", "Crawled - currently not
+ *                                        indexed", "Discovered - currently not
+ *                                        indexed", "URL is unknown to Google"
+ *   indexStatusResult.robotsTxtState   — ALLOWED / DISALLOWED
+ *   indexStatusResult.indexingState    — INDEXING_ALLOWED / BLOCKED_BY_* etc.
+ *   indexStatusResult.pageFetchState   — SUCCESSFUL / NOT_FOUND / SOFT_404 etc.
+ *   indexStatusResult.lastCrawlTime    — RFC3339 timestamp, absent if never crawled
+ */
+async function inspectUrl(accessToken, siteUrl, inspectionUrl) {
+    const res = await fetch(URL_INSPECTION_ENDPOINT, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ inspectionUrl, siteUrl }),
+    });
+    if (res.status === 429) {
+        const err = new Error('urlInspection 429: rate limited');
+        err.rateLimited = true;
+        throw err;
+    }
+    if (!res.ok) {
+        throw new Error(`urlInspection ${res.status}: ${(await res.text()).slice(0, 300)}`);
+    }
+    return res.json();
+}
+
+// Flatten one inspection response into the fields the report needs.
+function summarizeInspection(url, label, body) {
+    const r = body?.inspectionResult?.indexStatusResult ?? {};
+    return {
+        url,
+        label,
+        verdict: r.verdict ?? null,
+        coverageState: r.coverageState ?? null,
+        robotsTxtState: r.robotsTxtState ?? null,
+        indexingState: r.indexingState ?? null,
+        pageFetchState: r.pageFetchState ?? null,
+        lastCrawlTime: r.lastCrawlTime ?? null,
+    };
+}
+
+// Research rows for one labeled slice of the sample. `orderBy` and `having`
+// are literal SQL fragments built from fixed strings only (never user input).
+async function fetchResearchSlugs(env, { orderBy, having = '', limit }) {
+    const sql = `SELECT slug FROM research
+       WHERE status = 'complete' ${having}
+       ORDER BY ${orderBy}
+       LIMIT ?1`;
+    const rows = await env.DB.prepare(sql).bind(limit).all();
+    return (rows.results ?? []).map((r) => r.slug);
+}
+
+// One slug per non-duplicate query (LOWER(TRIM(query)) has exactly one
+// complete row). Picks the newest row per query group.
+async function fetchNoDuplicateSlugs(env, limit) {
+    const rows = await env.DB.prepare(
+        `SELECT r.slug FROM research r
+           JOIN (
+             SELECT LOWER(TRIM(query)) AS q, COUNT(*) AS n
+               FROM research WHERE status = 'complete'
+              GROUP BY q HAVING n = 1
+           ) uniq ON LOWER(TRIM(r.query)) = uniq.q
+          WHERE r.status = 'complete'
+          ORDER BY r.created_at DESC
+          LIMIT ?1`,
+    ).bind(limit).all();
+    return (rows.results ?? []).map((r) => r.slug);
+}
+
+// One slug per duplicate-query group, drawn from distinct groups (so the
+// sample covers separate duplicate clusters rather than one group 5x).
+async function fetchDuplicateGroupSlugs(env, limit) {
+    const groups = await env.DB.prepare(
+        `SELECT LOWER(TRIM(query)) AS q, COUNT(*) AS n
+           FROM research WHERE status = 'complete'
+          GROUP BY q HAVING n > 1
+          ORDER BY n DESC
+          LIMIT ?1`,
+    ).bind(limit).all();
+
+    const slugs = [];
+    for (const g of groups.results ?? []) {
+        const row = await env.DB.prepare(
+            `SELECT slug FROM research
+               WHERE status = 'complete' AND LOWER(TRIM(query)) = ?1
+               ORDER BY created_at DESC LIMIT 1`,
+        ).bind(g.q).first();
+        if (row?.slug) slugs.push(row.slug);
+    }
+    return slugs;
+}
+
+// The one non-research page GSC actually served impressions to, used as a
+// content-type control (indexed blog post vs research pages). Picked from
+// stored gsc_metrics rows rather than hardcoded, since the two blog posts
+// aren't tracked in D1 the way research rows are.
+async function fetchBlogControlUrl(env, origin) {
+    const row = await env.DB.prepare(
+        `SELECT page, SUM(impressions) AS impr
+           FROM gsc_metrics
+          WHERE page NOT LIKE ?1 AND page NOT LIKE ?2 AND page <> ?3
+          GROUP BY page
+          ORDER BY impr DESC
+          LIMIT 1`,
+    ).bind(`${origin}/research/%`, `${origin}/best/%`, `${origin}/`).first();
+    return row?.page ?? null;
+}
+
+// Build the deliberately-chosen diagnostic sample described in the task:
+// homepage, 5 highest-viewed, 5 newest, 5 oldest, 5 non-duplicate queries,
+// 5 distinct duplicate-query groups, and one blog-post control. Duplicate
+// URLs across slices are collapsed to a single inspection (first label wins).
+export async function buildInspectionSample(env, origin) {
+    const SLICE_SIZE = 5;
+    const [topViewed, newest, oldest, noDup, dupGroups, blogUrl] = await Promise.all([
+        fetchResearchSlugs(env, { orderBy: 'view_count DESC, created_at DESC', limit: SLICE_SIZE }),
+        fetchResearchSlugs(env, { orderBy: 'created_at DESC', limit: SLICE_SIZE }),
+        fetchResearchSlugs(env, { orderBy: 'created_at ASC', limit: SLICE_SIZE }),
+        fetchNoDuplicateSlugs(env, SLICE_SIZE),
+        fetchDuplicateGroupSlugs(env, SLICE_SIZE),
+        fetchBlogControlUrl(env, origin),
+    ]);
+
+    const labeled = [
+        { url: `${origin}/`, label: 'homepage' },
+        ...topViewed.map((s) => ({ url: `${origin}/research/${s}`, label: 'top_viewed' })),
+        ...newest.map((s) => ({ url: `${origin}/research/${s}`, label: 'newest' })),
+        ...oldest.map((s) => ({ url: `${origin}/research/${s}`, label: 'oldest' })),
+        ...noDup.map((s) => ({ url: `${origin}/research/${s}`, label: 'no_duplicate' })),
+        ...dupGroups.map((s) => ({ url: `${origin}/research/${s}`, label: 'has_duplicate' })),
+        ...(blogUrl ? [{ url: blogUrl, label: 'blog_control' }] : []),
+    ];
+
+    const seen = new Set();
+    return labeled.filter((entry) => {
+        if (seen.has(entry.url)) return false;
+        seen.add(entry.url);
+        return true;
+    });
+}
+
+/**
+ * Run the URL Inspection sample end to end: build the sample, inspect each
+ * URL with a fixed delay between calls, and stop cleanly (returning whatever
+ * was collected so far) on a 429. Fail-soft: no GSC_SA_KEY returns {skipped}.
+ */
+export async function runUrlInspectionSample(env, origin) {
+    const sa = parseServiceAccount(env);
+    if (!sa) return { skipped: 'no GSC_SA_KEY' };
+    if (!env.DB) return { skipped: 'no DB' };
+
+    const sample = await buildInspectionSample(env, origin);
+    const token = await getAccessToken(sa);
+    const site = siteUrl(env);
+
+    const results = [];
+    let stoppedEarly = false;
+    for (let i = 0; i < sample.length; i++) {
+        const { url, label } = sample[i];
+        try {
+            const body = await inspectUrl(token, site, url);
+            results.push(summarizeInspection(url, label, body));
+        } catch (err) {
+            if (err.rateLimited) {
+                stoppedEarly = true;
+                break;
+            }
+            results.push({ url, label, error: err instanceof Error ? err.message : String(err) });
+        }
+        if (i < sample.length - 1) await sleep(INSPECTION_DELAY_MS);
+    }
+
+    return {
+        site,
+        sample_size: sample.length,
+        inspected: results.length,
+        stopped_early_rate_limited: stoppedEarly,
+        results,
+    };
 }
 
 /**
