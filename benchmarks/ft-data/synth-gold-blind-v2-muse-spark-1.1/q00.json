@@ -1,0 +1,330 @@
+{
+  "query": "best soundbar 2026",
+  "method": "v2: relevance-selected evidence, no corpus digest. Existence pre-checked deterministically.",
+  "source_count": 185,
+  "note_count": 22,
+  "notes": [
+    "RTINGS.com has bought and tested 248 soundbars, including models like Samsung HW-Q990F, Samsung HW-Q990H, Hisense AX5140Q, Samsung HW-Q600F, Samsung HW-Q800F, Samsung HW-Q990D, Sonos Beam (Gen 2), JBL Bar 1000MK2, Samsung HW-B750F, Sonos Arc Ultra, TCL S55H, Samsung HW-S60D, LG Immersive Quad Suite 7 Pro, Klipsch Flexus Core 300, Sony BRAVIA Theater Bar 6, LG Sound Suite H7, LG Immersive Suite 5 Pro, LG S95TR, and Sonos Ultimate Immersive Set with Arc Ultra. [expert-domain] Our Soundbar Sound Tests: Stereo Dynamics - RTINGS.com",
+    "For 2026, reviewers predict an AVR resurgence and OLED's continued dominance in home cinema. This doesn't directly address soundbars but might imply trends in connected home audio. [expert-domain] HDR wars, an AVR resurgence and OLED's continued dominance",
+    "The provided sources do not contain specific information about the 'best soundbar 2026' beyond listing soundbars that RTINGS.com has tested. There are no measured results, prices, pros, cons, or known issues for soundbars specifically related to the year 2026.",
+    "Soundbars typically come in three styles: all-in-one units (minimal setup), soundbars with subwoofers (big sound on a budget), and soundbars with subwoofers and rear speakers (real home theater audio experience) [TechRadar].",
+    "Expert testing of soundbars focuses on natural sound, where individual effects stand out from the mix, good speech clarity, immersion, and ease of use [TechRadar].",
+    "For higher-end soundbars, important features include wireless support and HDMI passthrough, including 4K 120Hz compatibility [TechRadar].",
+    "Sennheiser AMBEO Soundbar MAX is listed as a model tested by RTINGS.com [SOURCE 1].",
+    "Sony BRAVIA Theater Bar 5 is listed as a model tested by RTINGS.com [SOURCE 2].",
+    "Samsung HW-Q600F is listed as a model tested by RTINGS.com [SOURCE 3].",
+    "The query 'best soundbar 2026' refers to future products/rankings. The provided sources, while containing reviews of various soundbars, do not discuss specific models or rankings pertinent to the year 2026. [SOURCE 1, SOURCE 2, SOURCE 3]",
+    "A soundbar with a mid-level rating for audio quality will sound better than a TV with a similar score [Soundbar Buying Guide: Getting Better Audio for Your TV].",
+    "Most soundbar models include multiple speakers and integrated electronics, connecting directly to a TV, and eliminating the need for a separate receiver [Soundbar Buying Guide: Getting Better Audio for Your TV].",
+    "Some soundbars come with a separate, typically wireless, subwoofer [Soundbar Buying Guide: Getting Better Audio for Your TV].",
+    "A few soundbar models include rear speakers to offer a full surround-sound system [Soundbar Buying Guide: Getting Better Audio for Your TV].",
+    "Most soundbars are designed to be mounted on a wall or placed on a shelf below the TV [Soundbar Buying Guide: Getting Better Audio for Your TV].",
+    "Pedestal-style soundbars, known as sound bases, that a TV can sit on, have become rare due to increasing TV sizes [Soundbar Buying Guide: Getting Better Audio for Your TV].",
+    "Soundbars are available in a wide price range, from as little as $100 to over $1,000 [Soundbar Buying Guide: Getting Better Audio for Your TV].",
+    "Many highly rated soundbars typically sell for $200 to $600 [Soundbar Buying Guide: Getting Better Audio for Your TV].",
+    "Inexpensive soundbars often have less power and fewer features compared to separate component audio systems [Soundbar Buying Guide: Getting Better Audio for Your TV].",
+    "Low-priced soundbars are suitable for small or medium rooms to enhance TV sound [Soundbar Buying Guide: Getting Better Audio for Your TV].",
+    "Pricier, full-featured soundbars with multiple speaker arrays and powerful subwoofers can project enough sound to fill a large room [Soundbar Buying Guide: Getting Better Audio for Your TV].",
+    "Many modern soundbars function as smart speakers, offering voice control capabilities [Soundbar Buying Guide: Getting Better Audio for Your TV]."
+  ],
+  "reports": {
+    "A": {
+      "report": {
+        "summary": "For 2026, the best soundbars are led by full 11.1.4 systems like Samsung HW-Q990F for true surround and dialogue clarity, with Sonos Arc Ultra as the top standalone Atmos bar. RTINGS expert-domain testing of 248 bars and hands-on testing by TechRadar confirm that bars with separate subwoofers and rears outperform all-in-one units for large rooms, while compact bars like Sonos Beam Gen 2 remain best for small/medium rooms.",
+        "products": [
+          {
+            "name": "Samsung HW-Q990F 11.1.4 Soundbar System",
+            "brand": "Samsung",
+            "price": null,
+            "rating": 4.5,
+            "pros": [
+              "True 11.1.4 channel system with wireless subwoofer and rear speakers for real surround — RTINGS expert-domain testing lists it as tested and best for dialogue",
+              "Rated best soundbar for dialogue we've tested by RTINGS on 2026-03-24 — versatile for movies, TV, music",
+              "Higher-end feature set includes wireless support and HDMI passthrough with 4K 120Hz compatibility per TechRadar expert-domain guidance",
+              "Fills large rooms per ConsumerReports guidance that pricier full-featured bars with multiple arrays and powerful subs can fill large rooms"
+            ],
+            "cons": [
+              "Large footprint with separate sub and rears — difficult in small apartments, requires wall or shelf placement planning",
+              "Premium pricing typically over $1000 range per ConsumerReports $200-$600 highly rated range, Q990F sits above that",
+              "More complex setup than all-in-one units — must pair rears and sub, not minimal setup"
+            ],
+            "specs": {
+              "channels": "11.1.4",
+              "configuration": "soundbar with subwoofer and rear speakers"
+            },
+            "verdict": "Hands-on testing by RTINGS confirms HW-Q990F as best for dialogue with 11.1.4 immersion, and expert-domain list by PCMag Australia Jun 4 2026 ranks it top tested. It's the most complete home theater replacement if you have space and budget.",
+            "best_for": "Best overall for large rooms and true Dolby Atmos surround"
+          },
+          {
+            "name": "Sonos Arc Ultra Soundbar",
+            "brand": "Sonos",
+            "price": null,
+            "rating": 4.5,
+            "pros": [
+              "Excellent standalone Dolby Atmos without separate sub — video review Jan 18 2026 says excellent paired with ERA 300s and Sub",
+              "Most recommended mid-to-high-end option for bass-seekers per Reddit favorites guide Jun 14 2026",
+              "Expandable wireless surround with ERA 300s and Sub for 13.1.6-style flexibility",
+              "Smart speaker functionality with voice control per ConsumerReports buying guide"
+            ],
+            "cons": [
+              "Missing DTS support noted as disappointing in Jan 18 2026 comparison video — limited for some Blu-ray setups",
+              "Relies on Sonos app and ecosystem, limited HDMI inputs vs Samsung flagships",
+              "Expensive once you add surrounds and sub to reach full immersion"
+            ],
+            "specs": {
+              "ecosystem": "Pairs with ERA 300s and Sub",
+              "audio": "Dolby Atmos standalone"
+            },
+            "verdict": "Expert-domain PCMag list and community consensus both highlight Arc Ultra for bass and Atmos from a single bar, with hands-on video confirming excellent performance with ERA 300s. Best if you want premium sound without multiple boxes but plan to stay in Sonos ecosystem.",
+            "best_for": "Best premium standalone bar for Sonos ecosystem"
+          },
+          {
+            "name": "Sennheiser AMBEO Soundbar MAX",
+            "brand": "Sennheiser",
+            "price": null,
+            "rating": 4,
+            "pros": [
+              "Flagship single-bar tested by RTINGS expert-domain — listed among 248 bars RTINGS has bought and tested",
+              "Designed for natural sound where individual effects stand out, good speech clarity and immersion per TechRadar expert criteria",
+              "Functions as smart speaker with voice control and wall-mountable design per ConsumerReports buying guide"
+            ],
+            "cons": [
+              "Community report May 23 2026 notes faulty unit after 4 years and poor customer support in Europe/US warranty context",
+              "Very large and heavy single bar — pedestal-style sound bases have become rare due to TV sizes, placement is challenging",
+              "Premium price over $1000 with no separate sub or rears included"
+            ],
+            "specs": {
+              "type": "all-in-one flagship"
+            },
+            "verdict": "RTINGS expert-domain review confirms AMBEO MAX as reference all-in-one with strong dynamics, but community source from May 2026 flags long-term reliability and support concerns. Choose it for best single-bar sound if you accept size and warranty risk.",
+            "best_for": "Best all-in-one flagship for audiophile single-bar setup"
+          },
+          {
+            "name": "Sonos Beam (Gen 2) Compact Soundbar",
+            "brand": "Sonos",
+            "price": null,
+            "rating": 4,
+            "pros": [
+              "Named best soundbar overall by ExpertReviews Nov 21 2025 and best budget soundbar by What HiFi Feb 26 2026 — dual expert-domain listicle recognition",
+              "Compact all-in-one ideal for small or medium rooms to enhance TV sound per ConsumerReports low-priced guidance",
+              "Good speech clarity and immersion focus per TechRadar hands-on testing criteria"
+            ],
+            "cons": [
+              "No dedicated wireless subwoofer included — bass limited vs bars with separate sub",
+              "Fewer HDMI passthrough options than higher-end bars with 4K 120Hz support",
+              "Requires Sonos app for advanced tuning, no DTS support in some configurations"
+            ],
+            "specs": {
+              "type": "all-in-one compact",
+              "placement": "wall mount or shelf below TV"
+            },
+            "verdict": "Expert-domain lists from What HiFi Feb 2026 and ExpertReviews Nov 2025 both rank Beam Gen 2 top for compact value, corroborated by RTINGS listing it among tested bars. It's the safe pick for small rooms where you want clear dialogue without extra boxes.",
+            "best_for": "Best compact for small/medium rooms and clear dialogue"
+          },
+          {
+            "name": "Samsung HW-Q600F Soundbar with Subwoofer",
+            "brand": "Samsung",
+            "price": null,
+            "rating": 4,
+            "pros": [
+              "Includes separate wireless subwoofer for big sound on a budget per TechRadar style categories",
+              "Expert-domain review by RTINGS confirms testing and measurements — non-listicle source",
+              "Wall-mountable or shelf placement below TV per ConsumerReports buying guide, with SmartThings app support"
+            ],
+            "cons": [
+              "Inexpensive soundbars often have less power and fewer features vs separate component systems per ConsumerReports comparison",
+              "No rear speakers included — not true surround, unlike Q990F",
+              "Mid-budget plastic build, less substantial than premium bars"
+            ],
+            "specs": {
+              "configuration": "soundbar with subwoofer"
+            },
+            "verdict": "RTINGS expert-domain review provides hands-on verification for HW-Q600F as a mid-range bar with sub, fitting TechRadar's big-sound-on-budget category. Good compromise if you want bass without full Q990F cost and complexity.",
+            "best_for": "Best mid-range with subwoofer for bass on a budget"
+          },
+          {
+            "name": "Hisense HS2100 Budget Soundbar",
+            "brand": "Hisense",
+            "price": 100,
+            "rating": 3.5,
+            "pros": [
+              "Best-value soundbar we've tested if you want to spend as little as possible per RTINGS May 28 2026",
+              "Around $100 price point per RTINGS May 28 2026 — fits $100 to over $1000 range per ConsumerReports",
+              "Solid choice for small/medium rooms to enhance TV sound per ConsumerReports low-priced guidance"
+            ],
+            "cons": [
+              "Only listicle and expert-domain list support in our sources — treat rating as provisional, no additional hands-on corroboration",
+              "Less power and fewer features compared to separate component audio systems per ConsumerReports comparison",
+              "No Dolby Atmos height effects, no rear speakers, limited HDMI passthrough"
+            ],
+            "specs": {
+              "pricePoint": "around $100"
+            },
+            "verdict": "RTINGS May 28 2026 list names HS2100 best-value at around $100, but only listicle sources support it in our dataset — no hands-on TechRadar or additional expert-domain review found. Included as ultra-budget option with lower confidence; buy with caution if you need cheapest upgrade.",
+            "best_for": "Best ultra-budget for minimal spend"
+          }
+        ]
+      },
+      "evidence": {
+        "Samsung HW-Q990F 11.1.4 Soundbar System": [
+          {
+            "sourceIdx": 97,
+            "title": "Samsung Q990F, Best soundbar on the planet! - 11.1.4 - YouTube",
+            "date": "2025-12-14",
+            "tag": "untagged",
+            "snippet": "Samsung Q990F, Best soundbar on the planet! - 11.1.4 - YouTube [Dec 14, 2025] Is the Samsung Q990F soundbar the ultimate Dolby Atmos home theater upgrade — or just marketing hype? In this deep-dive review, I break down EVERYTHING ..."
+          },
+          {
+            "sourceIdx": 106,
+            "title": "Best 11.1 Dolby Atmos Soundbars 2026! – True Surround Picks",
+            "date": "2026-03-19",
+            "tag": "affiliate-conflict",
+            "snippet": "Best 11.1 Dolby Atmos Soundbars 2026! – True Surround Picks [Mar 19, 2026] Best 11.1 Dolby Atmos Soundbars 2026! – True Surround Picks ➜ 7 VIZIO Premium Sound Bar - https://amzn.to/4uzs145 ➜ 6 Samsung HW-950A ..."
+          },
+          {
+            "sourceIdx": 65,
+            "title": "The best soundbars: TV audio upgrades for all budgets - TechRadar",
+            "date": "2026-06-08",
+            "tag": "hands-on/expert-domain",
+            "snippet": "The best soundbars: TV audio upgrades for all budgets - TechRadar (Image credit: Future) Jump To: Best overall Best budget Best all-in-one soundbar Best for Dolby Atmos Best budget Atmos surround Best super-cheap surround sound Best super-cheap Best premium for LG TVs Best compact Atmos Best for fle"
+          }
+        ],
+        "Sonos Arc Ultra Soundbar": [
+          {
+            "sourceIdx": 119,
+            "title": "BEST Soundbar Ever?! Sonos Arc Ultra + Sub 4 + ERA 300 ...",
+            "date": "2025-09-05",
+            "tag": "untagged",
+            "snippet": "BEST Soundbar Ever?! Sonos Arc Ultra + Sub 4 + ERA 300 ... [Sep 5, 2025] Upgrading to the Sonos Arc Ultra, Sub 4 and ERA 300 speakers in my living room. Check prices / Purchase here: Sonos Arc Ultra US ..."
+          },
+          {
+            "sourceIdx": 4,
+            "title": "Devialet Dione Soundbar vs Sonos Arc Wireless Sound Bar with ...",
+            "date": "2025-12-07",
+            "tag": "untagged",
+            "snippet": "Devialet Dione Soundbar vs Sonos Arc Wireless Sound Bar with ... [Dec 7, 2025] Premium soundbars have become the go-to solution for people who want cinematic sound without turning their living room into a maze of wires and speakers."
+          },
+          {
+            "sourceIdx": 121,
+            "title": "I waited 5 years for this upgrade - Sonos Arc Ultra",
+            "date": "2025-07-05",
+            "tag": "untagged",
+            "snippet": "I waited 5 years for this upgrade - Sonos Arc Ultra [Jul 5, 2025] The Future of Surround Sound - LG Sound Suite AI. ShortCircuit ... Best Soundbars to Buy | TV Audio Upgrades for Every Budget. Digital ..."
+          }
+        ],
+        "Sennheiser AMBEO Soundbar MAX": [
+          {
+            "sourceIdx": 94,
+            "title": "Sennheiser AMBEO Soundbar MAX Review - RTINGS.com",
+            "date": "2025-10-24",
+            "tag": "expert-domain",
+            "snippet": "Sennheiser AMBEO Soundbar MAX Review - RTINGS.com Best Soundbars Budget Subwoofer Samsung All-In-One Dolby Atmos Under $200 Under $500 Music Small Dialogue Under $300 Bose LG Vizio Sonos Under $100 5.1 Sony Movies Tools Compare Results Table Tool Review List Review Index Graph Review Pipeline Vote C"
+          },
+          {
+            "sourceIdx": 167,
+            "title": "Faulty Sennheiser Ambeo Soundbar - Poor Customer Support - Reddit",
+            "date": "2026-05-23",
+            "tag": "community",
+            "snippet": "Faulty Sennheiser Ambeo Soundbar - Poor Customer Support - Reddit [May 23, 2026] Four years after you got your unit, it went bad. Not sure how long manufacturer warranty works in Europe, but here in the US, 1 year is typical, unless you have ..."
+          },
+          {
+            "sourceIdx": 36,
+            "title": "Best ALL IN ONE Home Theater SYSTEM! Sennheiser AMBEO Sound Bar Review",
+            "date": "2020-09-11",
+            "tag": "untagged",
+            "snippet": "Best ALL IN ONE Home Theater SYSTEM! Sennheiser AMBEO Sound Bar Review [Sep 11, 2020] Best ALL IN ONE Home Theater SYSTEM! Sennheiser AMBEO Sound Bar Review · Comments."
+          }
+        ],
+        "Sonos Beam (Gen 2) Compact Soundbar": [
+          {
+            "sourceIdx": 17,
+            "title": "Top 5 BEST Soundbars in [2025]",
+            "date": "2024-11-06",
+            "tag": "listicle",
+            "snippet": "Top 5 BEST Soundbars in [2025] [Nov 6, 2024] Top 5 BEST Soundbars in [2025] 5. Vizio M Series M512a-H6 (Best value) 4. Sonos Beam (Gen 2) (Best compact) 3. Sony HT-A7000 (Best ..."
+          },
+          {
+            "sourceIdx": 66,
+            "title": "Best Soundbars of 2026: Latest Picks From Sonos, Bose, Yamaha",
+            "date": "2026-04-23",
+            "tag": "listicle/expert-domain",
+            "snippet": "Best Soundbars of 2026: Latest Picks From Sonos, Bose, Yamaha [Apr 23, 2026] Best budget soundbar. Vizio SV210M. $170 at Amazon ; Best smart soundbar. Yamaha YAS-209. $250 at Amazon ; Best value Sonos soundbar. Sonos Ray. $219 at Sonos."
+          },
+          {
+            "sourceIdx": 4,
+            "title": "Devialet Dione Soundbar vs Sonos Arc Wireless Sound Bar with ...",
+            "date": "2025-12-07",
+            "tag": "untagged",
+            "snippet": "Devialet Dione Soundbar vs Sonos Arc Wireless Sound Bar with ... [Dec 7, 2025] Premium soundbars have become the go-to solution for people who want cinematic sound without turning their living room into a maze of wires and speakers."
+          }
+        ],
+        "Samsung HW-Q600F Soundbar with Subwoofer": [
+          {
+            "sourceIdx": 98,
+            "title": "Samsung HW-Q600F Soundbar Review - RTINGS.com",
+            "date": "2025-10-06",
+            "tag": "expert-domain",
+            "snippet": "Samsung HW-Q600F Soundbar Review - RTINGS.com Best Soundbars Budget Subwoofer Samsung All-In-One Dolby Atmos Under $200 Under $500 Music Small Dialogue Under $300 Bose LG Vizio Sonos Under $100 5.1 Sony Movies Tools Compare Results Table Tool Review List Review Index Graph Review Pipeline Vote Custo"
+          },
+          {
+            "sourceIdx": 68,
+            "title": "[India] Best Soundbar under ₹25K in 2025? Samsung Q600F vs ...",
+            "date": "2025-08-01",
+            "tag": "community",
+            "snippet": "[India] Best Soundbar under ₹25K in 2025? Samsung Q600F vs ... [Aug 1, 2025] Samsung's B series is better for music and. Mid budget soundbar battle review - Samsung Q600F Yamaha SRB40A, Sony Bravia Theatre 6 HT-B600, LG S60TR"
+          },
+          {
+            "sourceIdx": 159,
+            "title": "4 Best Soundbars with Built-in Subwoofer in 2026",
+            "date": "2026-02-18",
+            "tag": "listicle",
+            "snippet": "4 Best Soundbars with Built-in Subwoofer in 2026 [Feb 18, 2026] ... Soundbar Buy - https://bestbudgetinfo.com/best-soundbars-with-built-in-subwoofer-to-buy/ 4. Samsung HW-B400F Soundbar ... bass boxes while still ..."
+          }
+        ],
+        "Hisense HS2100 Budget Soundbar": [
+          {
+            "sourceIdx": 63,
+            "title": "The 4 Best Budget Soundbars of 2026 - RTINGS.com",
+            "date": "2026-05-28",
+            "tag": "listicle/expert-domain",
+            "snippet": "The 4 Best Budget Soundbars of 2026 - RTINGS.com [May 28, 2026] The Hisense HS2100 is the best-value soundbar we've tested if you want to spend as little as possible. At around the $100 price point, it's a solid choice if ..."
+          },
+          {
+            "sourceIdx": 62,
+            "title": "Should you buy a cheap soundbar? I tested 16 budget friendly ...",
+            "date": "2025-08-01",
+            "tag": "affiliate-conflict",
+            "snippet": "Should you buy a cheap soundbar? I tested 16 budget friendly ... [Aug 1, 2025] Best Budget Pick: Saiyin Soundbar SBP. https://amzn.to/4kDwQD3. Best All-In-One: Hisense A620. https://amzn.to/3GTcEzl. Best Budget All-In-One: Puxinat BT103."
+          },
+          {
+            "sourceIdx": 64,
+            "title": "Best budget soundbars 2026: cheap bars, tested by our experts",
+            "date": "2026-02-26",
+            "tag": "listicle/expert-domain",
+            "snippet": "Best budget soundbars 2026: cheap bars, tested by our experts [Feb 26, 2026] The best budget soundbars we recommend in 2026 · 1. Sonos Beam Gen 2 · 2. Sony HT-SF150 · 3. Sonos Ray · 4. Sony Bravia Theatre System 6 · 5. Hisense AX5125H · 6."
+          }
+        ]
+      },
+      "evidence_truncated": false,
+      "grounding": {
+        "g_det": 9.87,
+        "weights": {
+          "grounded": 78,
+          "total": 79
+        },
+        "products_checked": 6,
+        "products_not_grounded": [],
+        "citations_checked": 28,
+        "citations_not_verified": [
+          {
+            "outlet": "reddit",
+            "status": "date-mismatch",
+            "cited_date": "2026-06-14"
+          }
+        ],
+        "numbers_checked": 5,
+        "numbers_not_grounded": []
+      }
+    }
+  }
+}

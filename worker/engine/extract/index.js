@@ -9,8 +9,7 @@ import { buildVerdict, buildBestFor, buildSummary, buildBuyersGuide } from './pr
 import { selectCons } from './con-selector.js';
 import { cleanProducts } from './name-cleaner.js';
 import { proposeMissingLeaders } from './recall-supplement.js';
-
-const _k = (s) => String(s || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+import { norm } from './text.js';
 
 // HYBRID con enrichment (opt-in): for products the deterministic pass left thin on
 // cons, ask the GATED LLM con-selector to pick criticism from real source spans. The
@@ -31,11 +30,11 @@ export async function enrichConsLLM(report, sources, apiKey, model, { minCons = 
       if (spans.length < 2) continue;
       let picked = [];
       try { picked = await selectCons(p.name, spans, apiKey, model, maxCons); } catch { picked = []; }
-      const have = new Set((p.cons || []).map(_k));
+      const have = new Set((p.cons || []).map(norm));
       let gained = false;
       for (const c of picked) {
         if ((p.cons || []).length >= maxCons) break;
-        const k = _k(c);
+        const k = norm(c);
         if (k && !have.has(k)) { (p.cons ||= []).push(c); have.add(k); gained = true; }
       }
       // Rebuild the verdict so it no longer claims "no specific criticism" once cons exist.

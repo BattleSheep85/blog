@@ -22,9 +22,9 @@ vi.mock('../../worker/engine/tools.js', () => ({
 }));
 
 const { runParallelEngine } = await import('../../worker/engine/parallel-engine.js');
-const { getTierConfig } = await import('../../worker/lib/tiers.js');
+const { ENGINE_CONFIG } = await import('../../worker/lib/engine-config.js');
 
-const CONFIG = getTierConfig('full');
+const CONFIG = ENGINE_CONFIG;
 
 // A valid synthesis report (3 products clears validate's quality gate + min-3).
 const REPORT = {

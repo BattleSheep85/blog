@@ -15,6 +15,7 @@
  */
 
 import { checkRateLimit } from '../lib/rate-limit.js';
+import { checkBurstGate } from '../lib/burst-gate.js';
 import { getResearchBySlug, getProductsByResearchId } from '../lib/db.js';
 import { parseJsonSafe, displayQuery } from '../lib/utils.js';
 import { budgetExhausted, incrementMonthlyCost } from '../pipeline/orchestrator.js';
@@ -144,8 +145,14 @@ export async function handleChat(request, env) {
     const messages = sanitizeMessages(body?.messages);
     if (!messages) return jsonResponse({ error: 'Invalid messages' }, 400);
 
+    // Atomic burst gate (10/60s per IP) in front of the non-atomic KV hourly
+    // window, so a concurrent flood cannot slip past the 20/hr ceiling.
     const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
-    const rate = await checkRateLimit(env.KV, `chat:${ip}`, 20, 3600);
+    const rateKey = `chat:${ip}`;
+    const burst = await checkBurstGate(env.RL_BURST, rateKey);
+    const rate = burst.allowed
+        ? await checkRateLimit(env.KV, rateKey, 20, 3600)
+        : burst;
     if (!rate.allowed) {
         return jsonResponse({ error: 'Chat limit reached for now — try again in a bit.' }, 429);
     }

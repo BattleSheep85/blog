@@ -1,0 +1,603 @@
+{
+  "generatedAt": "2026-07-29",
+  "formula": "composite_v2 = 0.45*gDet + 0.30*evidence_discipline + 0.25*usefulness",
+  "notComparableTo": "synth-gold-fable-scores.json composites (0.4*g + 0.35*h + 0.25*u, judged through a 6000-char digest)",
+  "judgeCostUsd": 7.005873599999999,
+  "incompleteSets": [],
+  "leaderboard": [
+    {
+      "label": "muse-spark-1.1",
+      "model": "meta/muse-spark-1.1",
+      "n": 7,
+      "completions": "7/8",
+      "gDet": 9.98,
+      "evidenceDiscipline": 6.43,
+      "usefulness": 7.86,
+      "compositeV2": 8.38,
+      "stdevComposite": 0.4,
+      "sem": 0.15,
+      "fabricatedProducts": 0,
+      "fabricatedCitations": 1,
+      "ungroundedNumbers": 0,
+      "genCostUsd": 0.54,
+      "costPerReportUsd": 0.08,
+      "oldComposite": null
+    },
+    {
+      "label": "gpt-5.4-mini",
+      "model": "openai/gpt-5.4-mini",
+      "n": 8,
+      "completions": "8/8",
+      "gDet": 10,
+      "evidenceDiscipline": 6.38,
+      "usefulness": 7.13,
+      "compositeV2": 8.19,
+      "stdevComposite": 0.93,
+      "sem": 0.33,
+      "fabricatedProducts": 0,
+      "fabricatedCitations": 0,
+      "ungroundedNumbers": 0,
+      "genCostUsd": 0.19,
+      "costPerReportUsd": 0.02,
+      "oldComposite": 7.61
+    },
+    {
+      "label": "minimax-m3",
+      "model": "minimax/minimax-m3",
+      "n": 8,
+      "completions": "8/8",
+      "gDet": 9.98,
+      "evidenceDiscipline": 5.38,
+      "usefulness": 7.81,
+      "compositeV2": 8.06,
+      "stdevComposite": 0.62,
+      "sem": 0.22,
+      "fabricatedProducts": 0,
+      "fabricatedCitations": 0,
+      "ungroundedNumbers": 1,
+      "genCostUsd": 0.11,
+      "costPerReportUsd": 0.01,
+      "oldComposite": 7.69
+    },
+    {
+      "label": "deepseek-v4-flash",
+      "model": "deepseek/deepseek-v4-flash",
+      "n": 8,
+      "completions": "8/8",
+      "gDet": 9.59,
+      "evidenceDiscipline": 5.38,
+      "usefulness": 7.38,
+      "compositeV2": 7.77,
+      "stdevComposite": 1.01,
+      "sem": 0.36,
+      "fabricatedProducts": 0,
+      "fabricatedCitations": 0,
+      "ungroundedNumbers": 22,
+      "genCostUsd": 0.02,
+      "costPerReportUsd": 0,
+      "oldComposite": 6.64
+    },
+    {
+      "label": "muse-spark-1.1-noreason",
+      "model": "meta/muse-spark-1.1",
+      "n": 8,
+      "completions": "8/8",
+      "gDet": 9.87,
+      "evidenceDiscipline": 4.88,
+      "usefulness": 7.25,
+      "compositeV2": 7.72,
+      "stdevComposite": 0.82,
+      "sem": 0.29,
+      "fabricatedProducts": 1,
+      "fabricatedCitations": 0,
+      "ungroundedNumbers": 0,
+      "genCostUsd": 0.27,
+      "costPerReportUsd": 0.03,
+      "oldComposite": null
+    },
+    {
+      "label": "claude-haiku-4.5",
+      "model": "anthropic/claude-haiku-4.5",
+      "n": 8,
+      "completions": "8/8",
+      "gDet": 10,
+      "evidenceDiscipline": 4.63,
+      "usefulness": 6.63,
+      "compositeV2": 7.54,
+      "stdevComposite": 0.75,
+      "sem": 0.27,
+      "fabricatedProducts": 0,
+      "fabricatedCitations": 0,
+      "ungroundedNumbers": 0,
+      "genCostUsd": 0.37,
+      "costPerReportUsd": 0.05,
+      "oldComposite": 6.88
+    },
+    {
+      "label": "gemma-4-26b",
+      "model": "google/gemma-4-26b-a4b-it:free",
+      "n": 3,
+      "completions": "3/8",
+      "gDet": 10,
+      "evidenceDiscipline": 5,
+      "usefulness": 5.67,
+      "compositeV2": 7.42,
+      "stdevComposite": 0.19,
+      "sem": 0.11,
+      "fabricatedProducts": 0,
+      "fabricatedCitations": 0,
+      "ungroundedNumbers": 0,
+      "genCostUsd": 0,
+      "costPerReportUsd": 0,
+      "oldComposite": 6.22
+    },
+    {
+      "label": "gpt-5-nano",
+      "model": "openai/gpt-5-nano",
+      "n": 6,
+      "completions": "6/8",
+      "gDet": 10,
+      "evidenceDiscipline": 4.17,
+      "usefulness": 5.5,
+      "compositeV2": 7.13,
+      "stdevComposite": 0.37,
+      "sem": 0.15,
+      "fabricatedProducts": 0,
+      "fabricatedCitations": 0,
+      "ungroundedNumbers": 0,
+      "genCostUsd": 0.04,
+      "costPerReportUsd": 0.01,
+      "oldComposite": 5.91
+    }
+  ],
+  "perReport": [
+    {
+      "query": "best soundbar 2026",
+      "label": "claude-haiku-4.5",
+      "usefulness": 5,
+      "evidenceDiscipline": 2,
+      "gDet": 10,
+      "composite": 6.35
+    },
+    {
+      "query": "best soundbar 2026",
+      "label": "gpt-5-nano",
+      "usefulness": 6,
+      "evidenceDiscipline": 3,
+      "gDet": 10,
+      "composite": 6.9
+    },
+    {
+      "query": "best soundbar 2026",
+      "label": "minimax-m3",
+      "usefulness": 7.5,
+      "evidenceDiscipline": 7,
+      "gDet": 10,
+      "composite": 8.48
+    },
+    {
+      "query": "best soundbar 2026",
+      "label": "deepseek-v4-flash",
+      "usefulness": 7,
+      "evidenceDiscipline": 4,
+      "gDet": 10,
+      "composite": 7.45
+    },
+    {
+      "query": "best soundbar 2026",
+      "label": "gpt-5.4-mini",
+      "usefulness": 6,
+      "evidenceDiscipline": 3,
+      "gDet": 10,
+      "composite": 6.9
+    },
+    {
+      "query": "best soundbar 2026",
+      "label": "gemma-4-26b",
+      "usefulness": 6,
+      "evidenceDiscipline": 4,
+      "gDet": 10,
+      "composite": 7.2
+    },
+    {
+      "query": "best microwave 2026",
+      "label": "gpt-5.4-mini",
+      "usefulness": 7,
+      "evidenceDiscipline": 4,
+      "gDet": 10,
+      "composite": 7.45
+    },
+    {
+      "query": "best microwave 2026",
+      "label": "minimax-m3",
+      "usefulness": 8,
+      "evidenceDiscipline": 3,
+      "gDet": 10,
+      "composite": 7.4
+    },
+    {
+      "query": "best microwave 2026",
+      "label": "deepseek-v4-flash",
+      "usefulness": 7,
+      "evidenceDiscipline": 3,
+      "gDet": 9.86,
+      "composite": 7.09
+    },
+    {
+      "query": "best microwave 2026",
+      "label": "gpt-5-nano",
+      "usefulness": 3,
+      "evidenceDiscipline": 6,
+      "gDet": 10,
+      "composite": 7.05
+    },
+    {
+      "query": "best microwave 2026",
+      "label": "claude-haiku-4.5",
+      "usefulness": 7,
+      "evidenceDiscipline": 4,
+      "gDet": 10,
+      "composite": 7.45
+    },
+    {
+      "query": "best graphics card 2026",
+      "label": "gpt-5.4-mini",
+      "usefulness": 6,
+      "evidenceDiscipline": 9,
+      "gDet": 10,
+      "composite": 8.7
+    },
+    {
+      "query": "best graphics card 2026",
+      "label": "deepseek-v4-flash",
+      "usefulness": 6,
+      "evidenceDiscipline": 5,
+      "gDet": 10,
+      "composite": 7.5
+    },
+    {
+      "query": "best graphics card 2026",
+      "label": "minimax-m3",
+      "usefulness": 7,
+      "evidenceDiscipline": 6,
+      "gDet": 10,
+      "composite": 8.05
+    },
+    {
+      "query": "best graphics card 2026",
+      "label": "claude-haiku-4.5",
+      "usefulness": 6,
+      "evidenceDiscipline": 7,
+      "gDet": 10,
+      "composite": 8.1
+    },
+    {
+      "query": "best graphics card 2026",
+      "label": "gemma-4-26b",
+      "usefulness": 5,
+      "evidenceDiscipline": 6,
+      "gDet": 10,
+      "composite": 7.55
+    },
+    {
+      "query": "best dash cam 2026",
+      "label": "gemma-4-26b",
+      "usefulness": 6,
+      "evidenceDiscipline": 5,
+      "gDet": 10,
+      "composite": 7.5
+    },
+    {
+      "query": "best dash cam 2026",
+      "label": "deepseek-v4-flash",
+      "usefulness": 7,
+      "evidenceDiscipline": 2,
+      "gDet": 7.75,
+      "composite": 5.84
+    },
+    {
+      "query": "best dash cam 2026",
+      "label": "minimax-m3",
+      "usefulness": 7,
+      "evidenceDiscipline": 4,
+      "gDet": 10,
+      "composite": 7.45
+    },
+    {
+      "query": "best dash cam 2026",
+      "label": "gpt-5.4-mini",
+      "usefulness": 7,
+      "evidenceDiscipline": 6,
+      "gDet": 10,
+      "composite": 8.05
+    },
+    {
+      "query": "best dash cam 2026",
+      "label": "claude-haiku-4.5",
+      "usefulness": 8,
+      "evidenceDiscipline": 6,
+      "gDet": 10,
+      "composite": 8.3
+    },
+    {
+      "query": "best vacuum for pet hair",
+      "label": "deepseek-v4-flash",
+      "usefulness": 8,
+      "evidenceDiscipline": 7,
+      "gDet": 9.46,
+      "composite": 8.36
+    },
+    {
+      "query": "best vacuum for pet hair",
+      "label": "minimax-m3",
+      "usefulness": 8,
+      "evidenceDiscipline": 6,
+      "gDet": 9.81,
+      "composite": 8.21
+    },
+    {
+      "query": "best vacuum for pet hair",
+      "label": "gpt-5.4-mini",
+      "usefulness": 8,
+      "evidenceDiscipline": 8,
+      "gDet": 10,
+      "composite": 8.9
+    },
+    {
+      "query": "best vacuum for pet hair",
+      "label": "gpt-5-nano",
+      "usefulness": 5,
+      "evidenceDiscipline": 3,
+      "gDet": 10,
+      "composite": 6.65
+    },
+    {
+      "query": "best vacuum for pet hair",
+      "label": "claude-haiku-4.5",
+      "usefulness": 7,
+      "evidenceDiscipline": 4,
+      "gDet": 10,
+      "composite": 7.45
+    },
+    {
+      "query": "best printer for home",
+      "label": "gpt-5.4-mini",
+      "usefulness": 8,
+      "evidenceDiscipline": 8,
+      "gDet": 10,
+      "composite": 8.9
+    },
+    {
+      "query": "best printer for home",
+      "label": "deepseek-v4-flash",
+      "usefulness": 8,
+      "evidenceDiscipline": 7,
+      "gDet": 10,
+      "composite": 8.6
+    },
+    {
+      "query": "best printer for home",
+      "label": "minimax-m3",
+      "usefulness": 8,
+      "evidenceDiscipline": 3,
+      "gDet": 10,
+      "composite": 7.4
+    },
+    {
+      "query": "best printer for home",
+      "label": "gpt-5-nano",
+      "usefulness": 6,
+      "evidenceDiscipline": 4,
+      "gDet": 10,
+      "composite": 7.2
+    },
+    {
+      "query": "best printer for home",
+      "label": "claude-haiku-4.5",
+      "usefulness": 6,
+      "evidenceDiscipline": 3,
+      "gDet": 10,
+      "composite": 6.9
+    },
+    {
+      "query": "best portable charger for iphone",
+      "label": "gpt-5.4-mini",
+      "usefulness": 9,
+      "evidenceDiscipline": 9,
+      "gDet": 10,
+      "composite": 9.45
+    },
+    {
+      "query": "best portable charger for iphone",
+      "label": "minimax-m3",
+      "usefulness": 9,
+      "evidenceDiscipline": 8,
+      "gDet": 10,
+      "composite": 9.15
+    },
+    {
+      "query": "best portable charger for iphone",
+      "label": "deepseek-v4-flash",
+      "usefulness": 8,
+      "evidenceDiscipline": 8,
+      "gDet": 10,
+      "composite": 8.9
+    },
+    {
+      "query": "best portable charger for iphone",
+      "label": "claude-haiku-4.5",
+      "usefulness": 8,
+      "evidenceDiscipline": 7,
+      "gDet": 10,
+      "composite": 8.6
+    },
+    {
+      "query": "best portable charger for iphone",
+      "label": "gpt-5-nano",
+      "usefulness": 7,
+      "evidenceDiscipline": 5,
+      "gDet": 10,
+      "composite": 7.75
+    },
+    {
+      "query": "best hair dryer 2026",
+      "label": "gpt-5-nano",
+      "usefulness": 6,
+      "evidenceDiscipline": 4,
+      "gDet": 10,
+      "composite": 7.2
+    },
+    {
+      "query": "best hair dryer 2026",
+      "label": "claude-haiku-4.5",
+      "usefulness": 6,
+      "evidenceDiscipline": 4,
+      "gDet": 10,
+      "composite": 7.2
+    },
+    {
+      "query": "best hair dryer 2026",
+      "label": "deepseek-v4-flash",
+      "usefulness": 8,
+      "evidenceDiscipline": 7,
+      "gDet": 9.63,
+      "composite": 8.43
+    },
+    {
+      "query": "best hair dryer 2026",
+      "label": "minimax-m3",
+      "usefulness": 8,
+      "evidenceDiscipline": 6,
+      "gDet": 10,
+      "composite": 8.3
+    },
+    {
+      "query": "best hair dryer 2026",
+      "label": "gpt-5.4-mini",
+      "usefulness": 6,
+      "evidenceDiscipline": 4,
+      "gDet": 10,
+      "composite": 7.2
+    },
+    {
+      "query": "best soundbar 2026",
+      "label": "muse-spark-1.1-noreason",
+      "usefulness": 6,
+      "evidenceDiscipline": 3,
+      "gDet": 10,
+      "composite": 6.9
+    },
+    {
+      "query": "best microwave 2026",
+      "label": "muse-spark-1.1-noreason",
+      "usefulness": 7,
+      "evidenceDiscipline": 3,
+      "gDet": 8.97,
+      "composite": 6.69
+    },
+    {
+      "query": "best graphics card 2026",
+      "label": "muse-spark-1.1-noreason",
+      "usefulness": 5,
+      "evidenceDiscipline": 3,
+      "gDet": 10,
+      "composite": 6.65
+    },
+    {
+      "query": "best dash cam 2026",
+      "label": "muse-spark-1.1-noreason",
+      "usefulness": 8,
+      "evidenceDiscipline": 6,
+      "gDet": 10,
+      "composite": 8.3
+    },
+    {
+      "query": "best vacuum for pet hair",
+      "label": "muse-spark-1.1-noreason",
+      "usefulness": 8,
+      "evidenceDiscipline": 6,
+      "gDet": 10,
+      "composite": 8.3
+    },
+    {
+      "query": "best printer for home",
+      "label": "muse-spark-1.1-noreason",
+      "usefulness": 8,
+      "evidenceDiscipline": 5,
+      "gDet": 10,
+      "composite": 8
+    },
+    {
+      "query": "best portable charger for iphone",
+      "label": "muse-spark-1.1-noreason",
+      "usefulness": 8,
+      "evidenceDiscipline": 7,
+      "gDet": 10,
+      "composite": 8.6
+    },
+    {
+      "query": "best hair dryer 2026",
+      "label": "muse-spark-1.1-noreason",
+      "usefulness": 8,
+      "evidenceDiscipline": 6,
+      "gDet": 10,
+      "composite": 8.3
+    },
+    {
+      "query": "best soundbar 2026",
+      "label": "muse-spark-1.1",
+      "usefulness": 7,
+      "evidenceDiscipline": 6,
+      "gDet": 9.87,
+      "composite": 7.99
+    },
+    {
+      "query": "best microwave 2026",
+      "label": "muse-spark-1.1",
+      "usefulness": 8,
+      "evidenceDiscipline": 6,
+      "gDet": 10,
+      "composite": 8.3
+    },
+    {
+      "query": "best graphics card 2026",
+      "label": "muse-spark-1.1",
+      "usefulness": 7,
+      "evidenceDiscipline": 7,
+      "gDet": 10,
+      "composite": 8.35
+    },
+    {
+      "query": "best dash cam 2026",
+      "label": "muse-spark-1.1",
+      "usefulness": 8,
+      "evidenceDiscipline": 5,
+      "gDet": 10,
+      "composite": 8
+    },
+    {
+      "query": "best vacuum for pet hair",
+      "label": "muse-spark-1.1",
+      "usefulness": 8,
+      "evidenceDiscipline": 6,
+      "gDet": 10,
+      "composite": 8.3
+    },
+    {
+      "query": "best printer for home",
+      "label": "muse-spark-1.1",
+      "usefulness": 8,
+      "evidenceDiscipline": 7,
+      "gDet": 10,
+      "composite": 8.6
+    },
+    {
+      "query": "best portable charger for iphone",
+      "label": "muse-spark-1.1",
+      "usefulness": 9,
+      "evidenceDiscipline": 8,
+      "gDet": 10,
+      "composite": 9.15
+    }
+  ]
+}

@@ -1,20 +1,20 @@
-// SINGLE ENGINE CONFIG — tiers collapsed to one stack (2026-06-16).
+// ENGINE CONFIG: the one model set and research depth used for every run.
 //
-// One model set, one research depth, for every run. No more instant/full/
-// exhaustive. Benchmark-derived (see benchmarks/engine-llm-bench-2026-06.md):
+// Benchmark-derived (see benchmarks/engine-llm-bench-2026-06.md):
 //   - classifier: google/gemini-2.5-flash-lite  (set in worker/lib/classifier.js)
 //   - planner:    google/gemini-2.5-flash        (perfect skepticism + tool-calls,
 //                 cheapest + fastest; the feared "15% BS" failure did not reproduce)
 //   - synthesis:  minimax/minimax-m3             (owner no-OpenAI directive, 2026-07-24;
-//                 was the synth-gold co-leader — see synthModel comment below)
+//                 was the synth-gold co-leader, see synthModel comment below)
 //   - extract:    anthropic/claude-haiku-4.5     (owner no-OpenAI directive, 2026-07-24;
 //                 only non-OpenAI extractor matching the incumbent on the extract-gold bench)
 //
-// Depth is tuned to "deep & sustainable" within Cloudflare's per-run limits
-// (~950 subrequests, ~20-min reaper). The off-Cloudflare research worker
-// (track 2) removes that ceiling so depth/parallelism can scale much higher.
+// Depth is tuned to "deep and sustainable" within Cloudflare's per-run limits
+// (about 950 subrequests, about a 20-minute reaper). The off-Cloudflare
+// research worker (track 2) removes that ceiling, so depth and parallelism
+// can scale much higher.
 
-const ENGINE_CONFIG = {
+export const ENGINE_CONFIG = {
   maxToolCalls: 70,
   maxSearches: 50,
   maxFetches: 20,
@@ -66,27 +66,6 @@ const ENGINE_CONFIG = {
   requireTurnstile: false,
   requireSubscription: false,
 };
-
-// Tiers are collapsed: every tier key resolves to the SAME config, so existing
-// callers that still pass 'instant'/'full'/'exhaustive'/'unbound' keep working
-// unchanged — they all now run the one stack above.
-export const TIER_CONFIGS = {
-  instant: ENGINE_CONFIG,
-  full: ENGINE_CONFIG,
-  exhaustive: ENGINE_CONFIG,
-  unbound: ENGINE_CONFIG,
-};
-
-// Kept for the public UI / validation surface; all entries behave identically now.
-export const PUBLIC_TIERS = ['instant', 'full'];
-
-export function getTierConfig(tier) {
-  return TIER_CONFIGS[tier] ?? ENGINE_CONFIG;
-}
-
-export function isValidTier(value) {
-  return PUBLIC_TIERS.includes(value);
-}
 
 // Single source of truth for the user-facing research wait-time estimate.
 // Any copy that quotes how long a run takes should import this constant

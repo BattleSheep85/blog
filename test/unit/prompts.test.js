@@ -3,9 +3,9 @@
 // open-source inclusion, rank-tracks-quality) so an accidental edit can't silently
 // drop them.
 import { buildAgentPrompt, buildSynthesisPrompt } from '../../worker/engine/prompts.js';
-import { getTierConfig } from '../../worker/lib/tiers.js';
+import { ENGINE_CONFIG } from '../../worker/lib/engine-config.js';
 
-const CONFIG = getTierConfig('full');
+const CONFIG = ENGINE_CONFIG;
 
 export function runPromptsTests() {
   const report = { passed: 0, failed: 0, failures: [] };

@@ -1,0 +1,89 @@
+{
+  "judgeModel": "anthropic/claude-fable-5",
+  "method": "v2: existence pre-checked deterministically, judge scores usefulness + evidence_discipline only.",
+  "notComparableTo": "synth-gold-fable-scores.json (different axes, different inputs).",
+  "bundleDir": "benchmarks/ft-data/synth-gold-blind-v2-muse-spark-1.1",
+  "complete": true,
+  "costUsd": 1.0238382,
+  "results": {
+    "best soundbar 2026": {
+      "A": {
+        "usefulness": 7,
+        "evidence_discipline": 6,
+        "reasoning": "The report gives clear tier-based picks with distinct use cases and honest confidence caveats (notably on the Hisense), but lacks prices for most picks and pads pros/cons with generic buying-guide material. Evidence discipline is mixed: it hedges well in places and flags weak support, yet it repeatedly stretches generic ConsumerReports/TechRadar guidance onto specific products as if product-specific, assigns numeric ratings with no measured basis, and leans on the date-mismatched Reddit citation and some seemingly unsupported cons (e.g., 'plastic build').",
+        "costUsd": 0.1578456,
+        "failed": false,
+        "unparseable": false
+      }
+    },
+    "best microwave 2026": {
+      "A": {
+        "usefulness": 8,
+        "evidence_discipline": 6,
+        "reasoning": "The report gives distinct, well-differentiated picks with clear best-for use cases and real tradeoffs, though four of six products lack prices. Evidence discipline is middling: citations are grounded, but several cons and claims (fingerprint-prone exterior, 'outperforming units twice its price', category-wide Consumer Reports failure rates applied as model-specific cons, NeoChef feature 'carry over') are stated as settled facts without hedging, and the report never acknowledges gaps like missing pricing or thin evidence for some picks.",
+        "costUsd": 0.1299177,
+        "failed": false,
+        "unparseable": false
+      }
+    },
+    "best graphics card 2026": {
+      "A": {
+        "usefulness": 7,
+        "evidence_discipline": 7,
+        "reasoning": "The report offers a clear budget-to-halo segmentation with honest best_for labels and real caveats about supply/price volatility, but 4 of 5 picks lack prices and concrete performance numbers, limiting purchase-decision value. Evidence discipline is mostly good — it explicitly flags listicle-only and low-quality (Facebook/NeoGAF) support and downgrades confidence for the RX 9070 — yet a few speculative claims (e.g., 'likely better raster perf-per-dollar', 'higher board power') are stated as pros/cons without visible support.",
+        "costUsd": 0.125037,
+        "failed": false,
+        "unparseable": false
+      }
+    },
+    "best dash cam 2026": {
+      "A": {
+        "usefulness": 8,
+        "evidence_discipline": 5,
+        "reasoning": "The report is genuinely useful: six clearly differentiated picks with specific best-for categories, real tradeoffs, and practical cons (hardwiring, SD card maintenance, heat), though missing prices weakens purchase guidance. Evidence discipline is mixed: while claims are grounded, the report speaks with settled confidence beyond what the shown evidence supports — e.g., citing a Wirecutter #1 claim that appears sourced from VIOFO's own marketing page, calling Vueroid's 'capacitor design' and 'superior thermal management' proven, and using promotional verdict language ('the current benchmark', 'proven heat tolerance') with little hedging on thin evidence.",
+        "costUsd": 0.1568358,
+        "failed": false,
+        "unparseable": false
+      }
+    },
+    "best vacuum for pet hair": {
+      "A": {
+        "usefulness": 8,
+        "evidence_discipline": 6,
+        "reasoning": "The report is genuinely helpful: six picks span distinct categories with clear best-for guidance, real tradeoffs, and grounded pricing. However, several claims exceed the shown evidence — Dyson's laser detection, SEBO's 'S-Class filtration', a 'self-cleaning dock' on the Narwal, and vague attributions like 'Reddit' recommendations and 'Feb 2026 community chatter' appear nowhere in the notes or snippets, presented as settled fact despite otherwise good hedging (e.g., on Dyson pricing and Ryobi performance).",
+        "costUsd": 0.14454,
+        "failed": false,
+        "unparseable": false
+      }
+    },
+    "best printer for home": {
+      "A": {
+        "usefulness": 8,
+        "evidence_discipline": 7,
+        "reasoning": "The report covers six clearly differentiated picks (mono laser, color laser, budget tank, ultra-budget, high-volume, photo) with concrete verdicts, real tradeoffs, and best-for guidance, making it genuinely actionable for a shopper. Evidence discipline is mostly solid—claims are attributed, cons include reliability caveats from Consumer Reports and community reports—but there are some sloppy extrapolations (e.g., applying Brother HL-series speed evidence to the HP M209d, generic unsourced claims about clogging and photo quality) and confident ratings/claims for the DCP-L2640DW that lean on thin corroboration in the shown evidence.",
+        "costUsd": 0.1615185,
+        "failed": false,
+        "unparseable": false
+      }
+    },
+    "best portable charger for iphone": {
+      "A": {
+        "usefulness": 9,
+        "evidence_discipline": 8,
+        "reasoning": "The report gives clearly differentiated picks (Qi2 vs slim vs budget wired vs dual-desk) with concrete tested numbers, prices, and honest tradeoffs, making it genuinely decision-ready for an iPhone shopper. Evidence discipline is strong overall—it correctly hedges the unreviewed PowerCore 10K as 'on paper'/manufacturer claims and flags hands-on caveats—but it attributes Source 1 to 'Wirecutter' without note support and assigns numeric ratings that have no basis in the evidence.",
+        "costUsd": 0.1481436,
+        "failed": false,
+        "unparseable": false
+      }
+    },
+    "best hair dryer 2026": {
+      "A": {
+        "usefulness": 0,
+        "evidence_discipline": 0,
+        "reasoning": "generation failed: json-parse-fail",
+        "costUsd": 0,
+        "failed": true
+      }
+    }
+  }
+}

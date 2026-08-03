@@ -7,6 +7,8 @@ import { buildAgentPrompt, buildSynthesisPrompt } from './prompts.js';
 import { callLLM, callLLMStreaming, pruneMessages } from './llm.js';
 import { validateResearchResult } from './validate.js';
 import { synthesizeHonest } from './extract/index.js';
+import { parseFencedJson } from '../lib/llm-json.js';
+import { runPool } from '../lib/pool.js';
 
 // ─── Event emission ────────────────────────────────────────────────────────
 //
@@ -207,7 +209,12 @@ export async function runEngine(
     }
 
     // Run admitted calls concurrently (capped pool); fold actual subs + results.
-    const settled = await runPool(admitted.map((tc) => () => executeTool(tc, state, config, toolCtx)), config.maxConcurrency || 6);
+    // onError mirrors the tool-error tuple downstream code already expects.
+    const settled = await runPool(
+      admitted.map((tc) => () => executeTool(tc, state, config, toolCtx)),
+      config.maxConcurrency || 6,
+      (err) => [`Tool error: ${err instanceof Error ? err.message : String(err)}`, 0],
+    );
     for (let i = 0; i < admitted.length; i++) {
       const [result, subs] = settled[i] || ['Tool error.', 0];
       subrequestsUsed += subs;
@@ -247,7 +254,7 @@ export async function runEngine(
       query, notes: state.notes, sources: state.sources, facets, topicalCategory,
       openrouterKey, conSelectorModel: config.conSelectorModel, cleanupModel: config.cleanupModel, recallModel: config.recallModel,
     });
-    const result = validateResearchResult(extracted, { query, topicalCategory });
+    const result = validateResearchResult(extracted, { query, topicalCategory, clarifications });
     await emitEvent(onEvent, state, 'status', `Report complete: ${result.products.length} products ranked.`);
     return {
       result,
@@ -324,14 +331,7 @@ export async function runEngine(
   }
 
   // Extract JSON — first pass on streamed content.
-  const extractJson = (raw) => {
-    let jsonStr = raw.trim();
-    const jsonMatch = jsonStr.match(/```(?:json)?\s*([\s\S]*?)```/);
-    if (jsonMatch) jsonStr = jsonMatch[1].trim();
-    try { return JSON.parse(jsonStr); } catch { return null; }
-  };
-
-  let parsed = extractJson(synthContent);
+  let parsed = parseFencedJson(synthContent);
 
   // If the streamed content didn't parse (stream truncation, early close), retry
   // with the non-streaming path which buffers the full response. This keeps the
@@ -352,13 +352,13 @@ export async function runEngine(
       state.totalCostUsd += retryResponse.usage.cost;
     }
     const retryContent = retryResponse.choices?.[0]?.message?.content ?? '';
-    parsed = extractJson(retryContent);
+    parsed = parseFencedJson(retryContent);
     if (parsed === null) {
       throw Object.assign(new Error(`Invalid JSON from synthesis: ${retryContent.slice(0, 200)}`), { totalCostUsd: state.totalCostUsd });
     }
   }
 
-  const result = validateResearchResult(parsed, { query, topicalCategory });
+  const result = validateResearchResult(parsed, { query, topicalCategory, clarifications });
 
   await emitEvent(onEvent, state, 'status', `Report complete: ${result.products.length} products ranked.`);
 
@@ -379,23 +379,6 @@ function safeParseArgs(argsStr) {
   } catch {
     return {};
   }
-}
-
-// Bounded-concurrency pool: run thunks with at most `limit` in flight, preserving
-// result order. A thrown thunk resolves to a tool-error tuple so one failure can't
-// reject the whole batch.
-async function runPool(thunks, limit) {
-  const results = new Array(thunks.length);
-  let next = 0;
-  const worker = async () => {
-    while (next < thunks.length) {
-      const idx = next++;
-      try { results[idx] = await thunks[idx](); }
-      catch (e) { results[idx] = [`Tool error: ${e instanceof Error ? e.message : String(e)}`, 0]; }
-    }
-  };
-  await Promise.all(Array.from({ length: Math.max(1, Math.min(limit, thunks.length)) }, worker));
-  return results;
 }
 
 function formatToolEvent(name, args) {

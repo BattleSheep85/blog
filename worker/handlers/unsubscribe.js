@@ -8,7 +8,15 @@
  *   - send `List-Unsubscribe: <https://<host>/unsubscribe?token=...>` +
  *     `List-Unsubscribe-Post: List-Unsubscribe=One-Click` (RFC 8058) — this
  *     handler accepts POST for that one-click flow and GET for a clicked link.
+ *
+ * After the database UPDATE we send one receipt. It is a transactional
+ * acknowledgement of the reader's own action, so it carries no
+ * List-Unsubscribe header. The send is best effort and can never change the
+ * response the reader sees.
  */
+
+import { sendMail } from '../lib/mailer.js';
+import { unsubReceiptEmail } from '../lib/email-templates.js';
 
 function page(title, message, status) {
     const body = `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
@@ -43,9 +51,14 @@ export async function handleUnsubscribe(request, env) {
         }
         const now = Math.floor(Date.now() / 1000);
         // Remove this address from every notification in one click.
-        await env.DB.prepare(
+        const removed = await env.DB.prepare(
             'UPDATE subscribers SET unsubscribed_at = ? WHERE email = ? AND unsubscribed_at IS NULL'
         ).bind(now, row.email).run();
+        // Receipt only on a real state change, so a repeat click stays quiet.
+        if ((removed.meta?.changes ?? 0) > 0) {
+            await sendMail(env, { to: row.email, ...unsubReceiptEmail() })
+                .catch((err) => console.error('Unsubscribe receipt failed:', err instanceof Error ? err.message : String(err)));
+        }
         return page('Unsubscribed', 'You have been removed from TrueRank email notifications. You will not receive further emails.', 200);
     } catch (err) {
         console.error('Unsubscribe failed:', err instanceof Error ? err.message : String(err));

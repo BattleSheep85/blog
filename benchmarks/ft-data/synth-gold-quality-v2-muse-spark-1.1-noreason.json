@@ -1,0 +1,90 @@
+{
+  "judgeModel": "anthropic/claude-fable-5",
+  "method": "v2: existence pre-checked deterministically, judge scores usefulness + evidence_discipline only.",
+  "notComparableTo": "synth-gold-fable-scores.json (different axes, different inputs).",
+  "bundleDir": "benchmarks/ft-data/synth-gold-blind-v2-muse-spark-1.1-noreason",
+  "complete": true,
+  "costUsd": 1.0318572000000001,
+  "results": {
+    "best soundbar 2026": {
+      "A": {
+        "usefulness": 6,
+        "evidence_discipline": 3,
+        "reasoning": "The report offers a clear, well-differentiated set of picks across price tiers with real tradeoffs, but it asserts many claims not visible in the evidence or notes (e.g., 'RTINGS names Q990F best for dialogue', ExpertReviews/What HiFi/PCMag rankings for the Beam) even though the notes explicitly state the sources lack 2026 rankings, measurements, prices, and pros/cons. Hedging is present for KEF XIO and Arc Ultra, but the overall tone presents weakly-supported 'consensus' as settled fact.",
+        "costUsd": 0.1135332,
+        "failed": false,
+        "unparseable": false
+      }
+    },
+    "best microwave 2026": {
+      "A": {
+        "usefulness": 7,
+        "evidence_discipline": 3,
+        "reasoning": "The report gives clear, differentiated picks with real tradeoffs (combo vs pure microwave, capacity, budget), making it reasonably actionable despite missing prices for three of four products. However, it repeatedly invents corroboration beyond the research notes — Wirecutter/RTINGS lab picks, a Reddit 'BuyItForLife' consensus at ~$130, SlashGear reliability complaints, model-specific Consumer Reports scores, and an 'EasyBear 2026 analysis' — none of which appear in the notes, and it presents these thin or unsupported claims as settled fact with confident marketing-flavored language ('value king').",
+        "costUsd": 0.1068903,
+        "failed": false,
+        "unparseable": false
+      }
+    },
+    "best graphics card 2026": {
+      "A": {
+        "usefulness": 5,
+        "evidence_discipline": 3,
+        "reasoning": "The report covers only 1080p budget cards plus an AI dev box that isn't a gaming GPU, missing mid/high-end options a shopper searching 'best graphics card 2026' would want, though the pricing/supply context is genuinely helpful. Evidence discipline is weak: it invents claims not in the shown evidence (DLSS 4.5 with '90% game support per TechSpot', FSR 4 'community testing' comparisons, Surface Dev Box workload claims) and mislabels Spark roadmap coverage as 'hands-on reporting,' presenting speculation as verified fact.",
+        "costUsd": 0.0851004,
+        "failed": false,
+        "unparseable": false
+      }
+    },
+    "best dash cam 2026": {
+      "A": {
+        "usefulness": 8,
+        "evidence_discipline": 6,
+        "reasoning": "The report gives clearly differentiated picks with real tradeoffs (subscription costs, heat load, cloud dependence) and some commendable hedging (provisional Vantrue rating, manufacturer-roundup disclosure), making it genuinely helpful despite missing prices for most models. However, it overstates in places: it claims MotorTrend hands-on confirmation not shown in evidence, calls Vantrue's apparently sponsored YouTube coverage 'independent,' attributes generic Wi-Fi/app complaints specifically to BlackVue, and omits the significant BlackVue app-down/privacy investigation present in the corpus.",
+        "costUsd": 0.1531332,
+        "failed": false,
+        "unparseable": false
+      }
+    },
+    "best vacuum for pet hair": {
+      "A": {
+        "usefulness": 8,
+        "evidence_discipline": 6,
+        "reasoning": "The report is genuinely helpful: it covers distinct form factors with clear best-for labels, real prices, cross-product comparisons, and honest tradeoffs. However, evidence discipline slips in places: unsupported ratings (4-4.5) are invented, the SEBO gains 'S-Class filtration' and dander-containment claims not in the evidence, the Narwal 'average vacuum' claim appears misattributed from the Eufy note, and several cons (Dyson dustbin size, Narwal dock) are asserted rather than sourced, though the report does hedge well on Ryobi and battery-life risks.",
+        "costUsd": 0.1370061,
+        "failed": false,
+        "unparseable": false
+      }
+    },
+    "best printer for home": {
+      "A": {
+        "usefulness": 8,
+        "evidence_discipline": 5,
+        "reasoning": "The report offers clear, differentiated picks spanning budget, mono laser, color laser, ink-tank, and photo use cases with real tradeoffs, making it genuinely helpful for a shopper. However, several confident claims exceed the evidence shown — e.g., the Wirecutter 'Best Home Printer' attribution for the DCP-L2640DW (whose corpus evidence is thin community chatter), the RTINGS speed comparison, the '80% less than cartridges' ink figure, and Brother-specific Consumer Reports reliability claims — with little hedging, so evidence discipline is only middling despite well-supported PCMag-based claims elsewhere.",
+        "costUsd": 0.1536579,
+        "failed": false,
+        "unparseable": false
+      }
+    },
+    "best portable charger for iphone": {
+      "A": {
+        "usefulness": 8,
+        "evidence_discipline": 7,
+        "reasoning": "The report gives clear, differentiated picks with real prices, measured performance data, and honest tradeoffs (including flagging the unreviewed PowerCore 10K), making it genuinely decision-ready. Evidence discipline is mostly solid but slips slightly: it names publications (Wirecutter) not confirmed in notes, embellishes phrases like 'slim magnetic sweet spot' and 'phone can slide' beyond documented evidence, and the summary's 'clear winners' framing overstates certainty for the non-Qi2 633.",
+        "costUsd": 0.1560933,
+        "failed": false,
+        "unparseable": false
+      }
+    },
+    "best hair dryer 2026": {
+      "A": {
+        "usefulness": 8,
+        "evidence_discipline": 6,
+        "reasoning": "The report is genuinely helpful, with distinct picks per use case, real price/performance tradeoffs, and honest cons. However, it repeatedly uses settled 'confirms' language on thin evidence: the Shark pick's visible support is an affiliate-conflict listicle yet is framed as expert-domain tested, and the Laifen Swift 4 is recommended as a top pick largely from CES preview coverage rather than hands-on testing, with insufficient hedging about how new and lightly-tested those products are.",
+        "costUsd": 0.1264428,
+        "failed": false,
+        "unparseable": false
+      }
+    }
+  }
+}

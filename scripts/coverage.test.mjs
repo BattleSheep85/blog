@@ -18,6 +18,14 @@ import { runLlmTests } from '../test/unit/llm.test.js';
 import { runUtilsTests } from '../test/unit/utils.test.js';
 import { runAffiliateLinksTests } from '../test/unit/affiliate-links.test.js';
 import { runLibPureTests } from '../test/unit/lib-pure.test.js';
+import { runBurstGateTests } from '../test/unit/burst-gate.test.js';
+import { runLlmJsonTests } from '../test/unit/llm-json.test.js';
+import { runPoolTests } from '../test/unit/pool.test.js';
+import { runEmailMimeTests } from '../test/unit/email-mime.test.js';
+import { runSmtpTests } from '../test/unit/smtp.test.js';
+import { runEmailTemplatesTests } from '../test/unit/email-templates.test.js';
+import { runSubscribeFlowTests } from '../test/unit/subscribe-flow.test.js';
+import { runGroundingCheckTests } from '../benchmarks/tests/grounding-check.test.mjs';
 
 const suites = [
   ['credibility', runCredibilityTests],
@@ -30,6 +38,14 @@ const suites = [
   ['credibility-extra', runCredibilityExtraTests],
   ['prompts', runPromptsTests],
   ['llm', runLlmTests],
+  ['burst-gate', runBurstGateTests],
+  ['llm-json', runLlmJsonTests],
+  ['pool', runPoolTests],
+  ['email-mime', runEmailMimeTests],
+  ['smtp', runSmtpTests],
+  ['email-templates', runEmailTemplatesTests],
+  ['subscribe-flow', runSubscribeFlowTests],
+  ['grounding-check', runGroundingCheckTests],
 ];
 
 for (const [name, fn] of suites) {

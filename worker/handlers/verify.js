@@ -16,6 +16,7 @@ import { generateSlug } from '../lib/utils.js';
 import { screenQuery, rejectionMessage } from '../lib/safety.js';
 import { budgetExhausted } from '../pipeline/orchestrator.js';
 import { checkRateLimit } from '../lib/rate-limit.js';
+import { checkBurstGate } from '../lib/burst-gate.js';
 import { getSessionUser } from '../lib/auth.js';
 import { getQuota, consumeQuota, FREE_VERIFIES } from '../lib/quota.js';
 
@@ -65,10 +66,16 @@ export async function handleStartVerify(request, env) {
 
     const reportId = typeof body.reportId === 'string' ? body.reportId.trim() : '';
 
-    // Wallet-DoS defense — same generous per-IP velocity cap as /api/research.
+    // Wallet-DoS defense. Same generous per-IP velocity cap as /api/research,
+    // and the same layering: the atomic RL_BURST binding caps concurrency
+    // (10/60s) in front of the non-atomic KV hourly window.
     // Applies to both new submissions and resubmits (both enqueue paid work).
     const clientIp = request.headers.get('CF-Connecting-IP') || 'unknown';
-    const velocity = await checkRateLimit(env.KV, `verify:${clientIp}`, 20, 3600);
+    const rateKey = `verify:${clientIp}`;
+    const burst = await checkBurstGate(env.RL_BURST, rateKey);
+    const velocity = burst.allowed
+        ? await checkRateLimit(env.KV, rateKey, 20, 3600)
+        : burst;
     if (!velocity.allowed) {
         const retryAfter = Math.max(1, Math.ceil((velocity.resetAt - Date.now()) / 1000));
         return jsonResponse(

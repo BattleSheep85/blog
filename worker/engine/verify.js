@@ -12,18 +12,7 @@ import { gatherParallel } from './parallel-engine.js';
 import { readPageInto } from './tools.js';
 import { scoreSource, isManufacturerDomain } from '../lib/credibility.js';
 import { verdictForClaim, overallVerdict, verificationWeight } from '../lib/verdict.js';
-
-// ── JSON extraction ──────────────────────────────────────────────────────────
-function extractJson(raw) {
-  if (typeof raw !== 'string') return null;
-  const m = raw.match(/```(?:json)?\s*([\s\S]*?)```/);
-  const body = (m ? m[1] : raw).trim();
-  try {
-    return JSON.parse(body);
-  } catch {
-    return null;
-  }
-}
+import { parseFencedJson } from '../lib/llm-json.js';
 
 // ── PROMPTS ───────────────────────────────────────────────────────────────────
 
@@ -187,15 +176,19 @@ export function selectSourcesToHydrate(claimSources, { thinChars = THIN_CONTENT_
  * `claimText` is the pre-assembled source block (title/url/content per
  * source, already capped by the caller). Returns { claims, costUsd }.
  */
-export async function extractClaims({ product, claimText, apiKey, model, callLLM }) {
+export async function extractClaims({ product, claimText, apiKey, model, callLLM, reasoning }) {
   const messages = [
     { role: 'system', content: CLAIM_EXTRACTION_SYSTEM },
     { role: 'user', content: `Product: "${product}"\n\n${claimText}` },
   ];
-  const resp = await callLLM(apiKey, model, messages, { maxTokens: 2000 });
+  // `reasoning` is optional (undefined in every production call site today).
+  // It exists so benchmark harnesses can test reasoning-model candidates
+  // through this exact production code path without changing production
+  // behavior. See worker/lib/engine-config.js's extractReasoning field.
+  const resp = await callLLM(apiKey, model, messages, { maxTokens: 2000, reasoning });
   const costUsd = Number.isFinite(resp?.usage?.cost) ? resp.usage.cost : 0;
   const raw = resp.choices?.[0]?.message?.content ?? '';
-  const parsed = extractJson(raw);
+  const parsed = parseFencedJson(raw);
   const rawClaims = Array.isArray(parsed?.claims) ? parsed.claims.slice(0, 12) : [];
   const claims = rawClaims
     .filter((c) => c && typeof c.text === 'string' && c.text.trim())
@@ -212,7 +205,7 @@ export async function extractClaims({ product, claimText, apiKey, model, callLLM
  * is expected to already be the top-N slice (see `topEvidenceForClaim`).
  * Returns { rows: [{url,stance,span}], costUsd }.
  */
-export async function classifyStance({ claim, evidence, apiKey, model, callLLM }) {
+export async function classifyStance({ claim, evidence, apiKey, model, callLLM, reasoning }) {
   const picked = Array.isArray(evidence) ? evidence : [];
   if (picked.length === 0) return { rows: [], costUsd: 0 };
 
@@ -223,10 +216,12 @@ export async function classifyStance({ claim, evidence, apiKey, model, callLLM }
     { role: 'system', content: STANCE_SYSTEM },
     { role: 'user', content: `Claim: "${claim.text}"\n\nEvidence sources:\n${block}` },
   ];
-  const resp = await callLLM(apiKey, model, messages, { maxTokens: 1500 });
+  // `reasoning` is optional (undefined in every production call site today).
+  // See extractClaims above for why this parameter exists.
+  const resp = await callLLM(apiKey, model, messages, { maxTokens: 1500, reasoning });
   const costUsd = Number.isFinite(resp?.usage?.cost) ? resp.usage.cost : 0;
   const raw = resp.choices?.[0]?.message?.content ?? '';
-  const parsed = extractJson(raw);
+  const parsed = parseFencedJson(raw);
   const verdictsRaw = Array.isArray(parsed?.verdicts) ? parsed.verdicts : [];
 
   const byUrl = new Set(picked.map((s) => s.url));

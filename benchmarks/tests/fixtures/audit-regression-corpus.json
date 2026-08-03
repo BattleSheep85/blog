@@ -1,0 +1,152 @@
+{
+  "_provenance": "Verbatim source records copied from benchmarks/results/google-top50-corpus.json (gitignored, 9.6 MB) on 2026-07-28. Committed so the audit regression assertions run offline in every test pass.",
+  "corpora": [
+    {
+      "query": "best power supply for pc",
+      "cat": "power supply",
+      "sources": [
+        {
+          "url": "https://seasonic.com/insights/seasonic-power-supplies-for-quiet-builds/",
+          "title": "Best Power Supplies for Quiet Builds - Seasonic",
+          "content": "[Dec 30, 2025]\nSeasonic PRIME TX-850. A premium power supply with high efficiency and reliability, which also has a good reputation for low noise levels. Seasonic VERTEX GX ...",
+          "source": "web",
+          "publishedAt": 1767074400,
+          "credibility": {
+            "tags": [],
+            "score": 50,
+            "reasons": []
+          }
+        },
+        {
+          "url": "https://seasonic.com/insights/seasonic-prime-psu-warranty/",
+          "title": "Warranty and Longevity in Seasonic PRIME PSUs",
+          "content": "[Mar 19, 2026]\nThe 12-year warranty for Seasonic PRIME puts this series in the top category for long-term service protection and peace of mind for professional PC builders.",
+          "source": "web",
+          "publishedAt": 1773896400,
+          "credibility": {
+            "tags": [],
+            "score": 50,
+            "reasons": []
+          }
+        },
+        {
+          "url": "https://www.instagram.com/reel/DZAyfskCvdZ/",
+          "title": "Tier A power supplies aren't a bad investment at all. Do that if ...",
+          "content": "[4 weeks ago]\nI got my Seasonic Prime Titanium 850 in 2017 for $200, and it's an amazing PSU, 12 year warranty so I'm covered till 2029 if anything goes wrong ...",
+          "source": "video",
+          "credibility": {
+            "tags": [],
+            "score": 55,
+            "reasons": [
+              "video provider (weak hands-on prior)"
+            ]
+          }
+        }
+      ],
+      "notes": []
+    },
+    {
+      "query": "best printer for home",
+      "cat": "printer",
+      "sources": [
+        {
+          "url": "https://www.youtube.com/watch?v=qN6IEaQIYgg",
+          "title": "Best Printer for Small Business 2026 | Fast & Reliable - YouTube",
+          "content": "[Jan 29, 2026]\nLinks Of Products ▻5. Epson EcoTank ET-3950 All-in-One Supertank Printer https://amzn.to/4b9Bp6x ▻4. HP Color LaserJet Pro 3201dw Color Laser Printer ...",
+          "source": "web",
+          "publishedAt": 1769666400,
+          "credibility": {
+            "tags": [
+              "affiliate-conflict",
+              "listicle"
+            ],
+            "score": 0,
+            "reasons": [
+              "contains affiliate-tracked outbound links",
+              "top-N listicle title/structure"
+            ]
+          }
+        },
+        {
+          "url": "https://www.pcmag.com/picks/the-best-printers",
+          "title": "The Best Printers We've Tested for 2026 - PCMag",
+          "content": "Table of Contents p~*:not(#readMore,#trust-badge,#commerce-group,.editors-note)]:!hidden\" x-data=\"{ readMore: false }\" :class=\"{ '[&>p:first-of-type~*:not(#readMore)]:!block': readMore }\"> Choosing a printer may sound easy. But once you dive into printer features, it gets daunting. Do you need a basic model just for printing, or one for scanning and copying, too? What about faxes? How do you choose between inkjets and lasers? What&rsquo;s the real difference between a $100 and a $500 model? Don't fret: This guide will help. As PCMag's resident printer expert, I've been evaluating home and office printers for nearly four decades. PC Labs evaluates printers based on image quality, design, usability, ink cost, and overall value, and we run each printer through rigorous, repeatable speed and imaging tests. This guide has details on our current top picks for home printers, the HP LaserJet M209d and the Epson EcoTank ET-2980, along with vetted picks for more specialized needs. (We stand behind them all.) See below for the pros and cons of each, plus key points to consider when shopping for the best printer for you. Our Top Tested Picks div:nth-of-type(n+11)]:hidden\" :class=\"{ '[&>div:nth-of-type(n+11)]:!flex': showMore }\"> Best Laser Printer for Homes HP LaserJet M209d $109.00 at Amazon $159.00 Save $50.00 See It Bottom Line Editors' Choice 4.0 Excellent this.$refs.template.innerHTML, onCreate: (instance) => this.tippyInstance = instance, onShow: (instance) => { this.escapeHandler = (e) => { if (e.key === 'Escape') instance.hide(); }; window.addEventListener('keydown', this.escapeHandler); }, onHide: (instance) => { if (this.escapeHandler) { window.removeEventListener('keydown', this.escapeHandler); this.escapeHandler = null; } }, onMount: (instance) => { const closeBtn = instance.popper.querySelector('[data-tooltip-close]'); if (closeBtn) closeBtn.addEventListener('click', () => instance.hide()); }, }; }, }\"> What Our Ratings Mean 5.0 - Exemplary: Near perfection, ground-breaking 4.5 - Outstanding: Best in class, acts as a benchmark for measuring competitors 4.0 - Excellent: A performance, feature, or value leader in its class, with few shortfalls 3.5 - Good: Does what the product should do, and does so better than many competitors 3.0 - Average: Does what the product should do, and sits in the middle of the pack 2.5 - Fair: We have some reservations, buy with caution 2.0 - Subpar: We do not recommend, buy with extreme caution 1.5 - Poor: Do not buy this product 1.0 - Dismal: Don&#039;t even think about buying this product Read Our Editorial Mission Statement and Testing Methodologies . If you don&#039;t need a network connection, don&#039;t print a lot, and never print in color, the HP LaserJet M209d is the reasonably priced printer for you. Jump To See More Details product_name }} Review\" x-track-ga-click>HP LaserJet M209d Review Pros li]:leading-normal\"> Better print quality than most lasers in its price range Front-loading tray for easy refills and paper-type changes 150-sheet capacity Automatic duplex (two-sided) printing Cons li]:leading-normal\"> No bypass paper feed or optional additional trays No Wi-Fi or Ethernet Does not support mobile printing EXPAND PROS & CONS Best All-in-One Printer for Homes Epson EcoTank ET-2980 $229.99 at Amazon $329.99 Save $100.00 See It Bottom Line 4.0 Excellent this.$refs.template.innerHTML, onCreate: (instance) => this.tippyInstance = instance, onShow: (instance) => { this.escapeHandler = (e) => { if (e.key === 'Escape') instance.hide(); }; window.addEventListener('keydown', this.escapeHandler); }, onHide: (instance) => { if (this.escapeHandler) { window.removeEventListener('keydown', this.escapeHandler); this.escapeHandler = null; } }, onMount: (instance) => { const closeBtn = instance.popper.querySelector('[data-tooltip-close]'); if (closeBtn) closeBtn.addEventListener('click', () => instance.hide()); }, }; }, }\"> What Our Ratings Mean 5.0 - Exemplary: Near perfection, ground-breaking 4.5 - Outstanding: Best in class, acts as a benchmark for measuring competitors 4.0 - Excellent: A performance, feature, or value leader in its class, with few shortfalls 3.5 - Good: Does what the product should do, and does so better than many competitors 3.0 - Average: Does what the product should do, and sits in the middle of the pack 2.5 - Fair: We have some reservations, buy with caution 2.0 - Subpar: We do not recommend, buy with extreme caution 1.5 - Poor: Do not buy this product 1.0 - Dismal: Don&#039;t even think about buying this product Read Our Editorial Mission Statement and Testing Methodologies . The Epson EcoTank ET-2980 delivers low running costs, snappy print speeds, and more-than-acceptable output quality, making it an excellent light-duty inkjet for a home or home office. Jump To See More Details product_name }} Review\" x-track-ga-click>Epson EcoTank ET-2980 Review Pros li]:leading-normal\"> Prints, scans, and copies Low running costs Automatic print duplexing Supports mobile printing and scanning USB and Wi-Fi connectivity Cons li]:leading-normal\"> Scanning limited to flatbed only Only one paper tray and a 100-page capacity No Ethernet port EXPAND PROS & CONS Best All-in-One Printer for Home Offices Epson EcoTank ET-3950 $399.99 at Amazon $419.99 Save $20.00 See It Bottom Line Editors' Choice 4.0 Excellent this.$refs.template.innerHTML, onCreate: (instance) => this.tippyInstance = instance, onShow: (instance) => { this.escapeHandler = (e) => { if (e.key === 'Escape') instance.hide(); }; window.addEventListener('keydown', this.escapeHandler); }, onHide: (instance) => { if (this.escapeHandler) { window.removeEventListener('keydown', this.escapeHandler); this.escapeHandler = null; } }, onMount: (instance) => { const closeBtn = instance.popper.querySelector('[data-tooltip-close]'); if (closeBtn) closeBtn.addEventListener('click', () => instance.hide()); }, }; }, }\"> What Our Ratings Mean 5.0 - Exemplary: Near perfection, ground-breaking 4.5 - Outstanding: Best in class, acts as a benchmark for measuring competitors 4.0 - Excellent: A performance, feature, or value leader in its class, with few shortfalls 3.5 - Good: Does what the product should do, and does so better than many competitors 3.0 - Average: Does what the product should do, and sits in the middle of the pack 2.5 - Fair: We have some reservations, buy with caution 2.0 - Subpar: We do not recommend, buy with extreme caution 1.5 - Poor: Do not buy this product 1.0 - Dismal: Don&#039;t even think about buying this product Read Our Editorial Mission Statement and Testing Methodologies . The Epson EcoTank ET-3950 stands out for its fast simplex (one-sided) printing and its automatic duplex scanning, making it the all-in-one inkjet printer to beat for micro or home offices. Jump To See More Details product_name }} Review\" x-track-ga-click>Epson EcoTank ET-3950 Review Pros li]:leading-normal\"> Supports printing, scanning, and copying Low running cost Automatic duplex (two-sided) printing and scanning Robust mobile printing and scanning features Cons li]:leading-normal\"> Duplex scanning uses a reversing ADF rather than a single-pass ADF Only one paper input tray EXPAND PROS & CONS Best Ink Tank Printer for Business Epson EcoTank Pro ET-5850 $799.99 at Amazon $849.99 Save $50.00 See It Bottom Line Editors' Choice 4.5 Outstanding this.$refs.template.innerHTML, onCreate: (instance) => this.tippyInstance = instance, onShow: (instance) => { this.escapeHandler = (e) => { if (e.key === 'Escape') instance.hide(); }; window.addEventListener('keydown', this.escapeHandler); }, onHide: (instance) => { if (this.escapeHandler) { window.removeEventListener('keydown', this.escapeHandler); this.escapeHandler = null; } }, onMount: (instance) => { const closeBtn = instance.popper.querySelector('[data-tooltip-close]'); if (closeBtn) closeBtn.addEventListener('click', () => instance.hide()); }, }; }, }\"> What Our Ratings Mean 5.0 - Exemplary: Near perfection, ground-breaking 4.5 - Outstanding: Best in class, acts as a benchmark for measuring competitors 4.0 - Excellent: A performance, feature, or value leader in its class, with few shortfalls 3.5 - Good: Does what the product should do, and does so better than many competitors 3.0 - Average: Does what the product should do, and sits in the middle of the pack 2.5 - Fair: We have some reservations, buy with caution 2.0 - Subpar: We do not recommend, buy with extreme caution 1.5 - Poor: Do not buy this product 1.0 - Dismal: Don&#039;t even think about buying this product Read Our Editorial Mission Statement and Testing Methodologies . The Epson EcoTank Pro ET-5850 AIO prints well and inexpensively, and it offers generous input capacity and lofty volume ratings. It&#039;s an incomparable value for small businesses and workgroups. Jump To See More Details product_name }} Review\" x-track-ga-click>Epson EcoTank Pro ET-5850 Review Pros li]:leading-normal\"> Very low running costs Terrific print quality Auto-duplexing ADF PrecisionCore 4S printhead Excellent mobile connectivity options Two-year warranty with registration Cons li]:leading-normal\"> High initial purchase price EXPAND PROS & CONS Best Color Laser All-in-One Printer Brother MFC-L3780CDW $569.98 at Amazon See It Bottom Line Editors' Choice 4.5 Outstanding this.$refs.template.innerHTML, onCreate: (instance) => this.tippyInstance = instance, onShow: (instance) => { this.escapeHandler = (e) => { if (e.key === 'Escape') instance.hide(); }; window.addEventListener('keydown', this.escapeHandler); }, onHide: (instance) => { if (this.escapeHandler) { window.removeEventListener('keydown', this.escapeHandler); this.escapeHandler = null; } }, onMount: (instance) => { const closeBtn = instance.popper.querySelector('[data-tooltip-close]'); if (closeBtn) closeBtn.addEventListener('click', () => instance.hide()); }, }; }, }\"> What Our Ratings Mean 5.0 - Exemplary: Near perfection, ground-breaking 4.5 - Outstanding: Best in class, acts as a benchmark for measuring competitors 4.0 - Excellent: A performance, feature, or value leader in its class, with few shortfalls 3.5 - Good: Does what the product should do, and does so better than many competitors 3.0 - Average: Does what the product should do, and sits in the middle of the pack 2.5 - Fair: We have some reservations, buy with caution 2.0 - Subpar: We do not recommend, buy with extreme caution 1.5 - Poor: Do not buy this product 1.0 - Dismal: Don&#039;t even think about buying this product Read Our Editorial Mission Statement and Testing Methodologies . The Brother MFC-L3780CDW offers excellent output quality with relatively low print costs, making it our top recommendation for a budget color laser all-in-one printer. Jump To See More Details product_name }} Review\" x-track-ga-click>Brother MFC-L3780CDW Review Pros li]:leading-normal\"> Prints, scans, copies, and faxes Relatively fast Competitive toner costs Excellent print, copy, and scan quality 50-page single-pass auto-duplexing ADF Wide range of wireless connection options, including NFC Cons li]:leading-normal\"> Modest 30-sheet multipurpose tray EXPAND PROS & CONS Best Mono Laser All-in-One Printer Brother MFC-L2900DW XL $329.98 at Amazon See It Bottom Line Editors' Choice 4.0 Excellent this.$refs.template.innerHTML, onCreate: (instance) => this.tippyInstance = instance, onShow: (instance) => { this.escapeHandler = (e) => { if (e.key === 'Escape') instance.hide(); }; window.addEventListener('keydown', this.escapeHandler); }, onHide: (instance) => { if (this.escapeHandler) { window.removeEventListener('keydown', this.escapeHandler); this.escapeHandler = null; } }, onMount: (instance) => { const closeBtn = instance.popper.querySelector('[data-tooltip-close]'); if (closeBtn) closeBtn.addEventListener('click', () => instance.hide()); }, }; }, }\"> What Our Ratings Mean 5.0 - Exemplary: Near perfection, ground-breaking 4.5 - Outstanding: Best in class, acts as a benchmark for measuring competitors 4.0 - Excellent: A performance, feature, or value leader in its class, with few shortfalls 3.5 - Good: Does what the product should do, and does so better than many competitors 3.0 - Average: Does what the product should do, and sits in the middle of the pack 2.5 - Fair: We have some reservations, buy with caution 2.0 - Subpar: We do not recommend, buy with extreme caution 1.5 - Poor: Do not buy this product 1.0 - Dismal: Don&#039;t even think about buying this product Read Our Editorial Mission Statement and Testing Methodologies . The Brother MFC-L2900DW XL mono laser all-in-one printer delivers every feature a small office needs, including the convenience of single-pass duplexing for copying, scanning, and faxing. Jump To See More Details product_name }} Review\" x-track-ga-click>Brother MFC-L2900DW XL Review Pros li]:leading-normal\"> Prints, scans, copies, and faxes 250-sheet paper tray; single-sheet manual feed 50-sheet automatic document feeder Automatic duplex printing; single-pass duplexing for scanning Compact size suitable for small offices or personal printing Cons li]:leading-normal\"> Separate imaging unit requires costly replacement No option for additional paper trays EXPAND PROS & CONS Best Photo Printer Epson Expression Photo XP-8800 Wireless Color All-in-One $229.99 at Amazon $329.99 Save $100.00 See It Bottom Line Editors' Choice 4.0 Excellent this.$refs.template.innerHTML, onCreate: (instance) => this.tippyInstance = instance, onShow: (instance) => { this.escapeHandler = (e) => { if (e.key === 'Escape') instance.hide(); }; window.addEventListener('keydown', this.escapeHandler); }, onHide: (instance) => { if (this.escapeHandler) { window.removeEventListener('keydown', this.escapeHandler); this.escapeHandler = null; } }, onMount: (instance) => { const closeBtn = instance.popper.querySelector('[data-tooltip-close]'); if (closeBtn) closeBtn.addEventListener('click', () => instance.hide()); }, }; }, }\"> What Our Ratings Mean 5.0 - Exemplary: Near perfection, ground-breaking 4.5 - Outstanding: Best in class, acts as a benchmark for measuring competitors 4.0 - Excellent: A performance, feature, or value leader in its class, with few shortfalls 3.5 - Good: Does what the product should do, and does so better than many competitors 3.0 - Average: Does what the product should do, and sits in the middle of the pack 2.5 - Fair: We have some reservations, buy with caution 2.0 - Subpar: We do not recommend, buy with extreme caution 1.5 - Poor: Do not buy this product 1.0 - Dismal: Don&#039;t even think about buying this product Read Our Editorial Mission Statement and Testing Methodologies . High-quality photo output—plus the ability to scan, copy, and print on discs—makes the Epson XP-8800 a solid choice for printing photos at home. Jump To See More Details product_name }} Review\" x-track-ga-click>Epson Expression Photo XP-8800 Wireless Color All-in-One Review Pros li]:leading-normal\"> Prints, scans, and copies Mobile printing support Prints from and scans to USB mem",
+          "source": "web",
+          "publishedAt": 1780290000,
+          "credibility": {
+            "tags": [
+              "hands-on",
+              "expert-domain"
+            ],
+            "score": 90,
+            "reasons": [
+              "hands-on testing language detected",
+              "established review outlet"
+            ]
+          }
+        },
+        {
+          "url": "https://www.youtube.com/watch?v=A54umN_NC7U",
+          "title": "5 Best All-In-One Printers",
+          "content": "[Mar 11, 2026]\nProduct Link : No 1. Canon Color imageCLASS MF665Cdw. https://amzn.to/4b4sovQ No 2. Epson EcoTank ET-3950. https://amzn.to/4rq153M No 3.",
+          "source": "video",
+          "publishedAt": 1773205200,
+          "credibility": {
+            "tags": [
+              "affiliate-conflict",
+              "listicle"
+            ],
+            "score": 0,
+            "reasons": [
+              "contains affiliate-tracked outbound links",
+              "top-N listicle title/structure"
+            ]
+          }
+        }
+      ],
+      "notes": []
+    },
+    {
+      "query": "best vacuum for pet hair",
+      "cat": "vacuum",
+      "sources": [
+        {
+          "url": "https://www.rtings.com/vacuum/reviews/best/pet-hair",
+          "title": "The 5 Best Vacuums For Pet Hair of 2026 - RTINGS.com",
+          "content": "[May 14, 2026]\nThe Dyson V15 Detect is the best vacuum cleaner for pet hair we've tested. Vacuum Type Upright ・ more than a match for both when it comes to pet hair pickup, ...",
+          "source": "web",
+          "publishedAt": 1778734800,
+          "credibility": {
+            "tags": [
+              "listicle",
+              "expert-domain"
+            ],
+            "score": 35,
+            "reasons": [
+              "top-N listicle title/structure",
+              "established review outlet"
+            ]
+          }
+        },
+        {
+          "url": "https://www.youtube.com/watch?v=p9BejkJ5tfo&vl=en",
+          "title": "Best Vacuums for Pet Hair Worth Buying in 2026",
+          "content": "[Mar 23, 2026]\nBest Vacuums for Pet Hair Worth Buying in 2026 ➡ Links of the Best Vacuums for Pet Hair we listed in this video. 1. Dyson V15 Detect – Best ...",
+          "source": "video",
+          "publishedAt": 1774242000,
+          "credibility": {
+            "tags": [
+              "listicle"
+            ],
+            "score": 25,
+            "reasons": [
+              "top-N listicle title/structure",
+              "video provider (weak hands-on prior)"
+            ]
+          }
+        }
+      ],
+      "notes": []
+    }
+  ]
+}

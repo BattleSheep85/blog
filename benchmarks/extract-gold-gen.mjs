@@ -24,6 +24,14 @@
 // Usage:
 //   node benchmarks/extract-gold-gen.mjs
 //
+//   node benchmarks/extract-gold-gen.mjs --model <id> --label <label> \
+//        [--reasoning-effort <value>]
+//        # single-candidate mode: runs ONLY <id> over the same 10 products
+//        # (10 calls, not 50) and MERGES the result into the existing output
+//        # files: rows for this label are replaced, every other label's
+//        # stored rows are preserved untouched (never overwrites the
+//        # incumbents). Same $1.50 hard cap applies.
+//
 // Outputs:
 //   benchmarks/ft-data/extract-gold-runs.jsonl        — one line per (product, model)
 //   benchmarks/ft-data/extract-gold-deterministic.json — deterministic checks per candidate
@@ -32,6 +40,7 @@ import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { extractClaims } from '../worker/engine/verify.js';
 import { callLLM } from '../worker/engine/llm.js';
 import { norm } from './lib/synth-score.mjs';
+import { CATEGORY_BUCKETS, SEED, selectProducts } from './lib/extract-gold-selection.mjs';
 
 // ── ENV ──────────────────────────────────────────────────────────────────────
 function loadOpenRouterKey() {
@@ -53,19 +62,45 @@ const KEY = loadOpenRouterKey();
 const HARD_SPEND_CAP_USD = 1.5;
 let spentUsd = 0;
 
-// ── CANDIDATES (5) ────────────────────────────────────────────────────────────
+// ── CLI args (single-candidate mode) ─────────────────────────────────────────
+function parseArgs(argv) {
+  let model = null;
+  let label = null;
+  let reasoningEffort = null;
+  for (let i = 0; i < argv.length; i += 1) {
+    if (argv[i] === '--model') { model = argv[i + 1] || null; i += 1; }
+    else if (argv[i] === '--label') { label = argv[i + 1] || null; i += 1; }
+    else if (argv[i] === '--reasoning-effort') { reasoningEffort = argv[i + 1] || null; i += 1; }
+  }
+  return { model, label, reasoningEffort };
+}
+const cliArgs = parseArgs(process.argv.slice(2));
+
+// ── CANDIDATES (5, or 1 in single-candidate mode) ────────────────────────────
 const BANNED_MODEL_SUBSTRINGS = ['deepseek-r1'];
-const CANDIDATES = [
+const DEFAULT_CANDIDATES = [
   { label: 'gpt-5.4-mini',     model: 'openai/gpt-5.4-mini' },              // incumbent
   { label: 'minimax-m3',       model: 'minimax/minimax-m3' },
   { label: 'deepseek-v4-flash', model: 'deepseek/deepseek-v4-flash' },
   { label: 'claude-haiku-4.5', model: 'anthropic/claude-haiku-4.5' },
   { label: 'granite-4.1-8b',   model: 'ibm-granite/granite-4.1-8b' },       // cheap wildcard
 ];
+const CANDIDATES = cliArgs.model
+  ? [{
+      label: cliArgs.label || cliArgs.model.replace(/[/:]/g, '_'),
+      model: cliArgs.model,
+      reasoning: cliArgs.reasoningEffort || undefined,
+    }]
+  : DEFAULT_CANDIDATES;
 for (const c of CANDIDATES) {
   if (BANNED_MODEL_SUBSTRINGS.some((b) => c.model.toLowerCase().includes(b))) {
     throw new Error(`refusing to benchmark vetoed model: ${c.model}`);
   }
+}
+if (cliArgs.model) {
+  process.stderr.write(
+    `[single-candidate mode] model=${cliArgs.model} label=${CANDIDATES[0].label} reasoning=${cliArgs.reasoningEffort || 'none'}\n`,
+  );
 }
 
 // ── HARVESTED CORPUS ──────────────────────────────────────────────────────────
@@ -83,57 +118,9 @@ function readJsonl(url) {
 const harvested = readJsonl(HARVESTED_PATH);
 
 // ── DETERMINISTIC PRODUCT SELECTION (seed 42, spread categories) ─────────────
-// mulberry32 — small, fast, seedable PRNG (public-domain algorithm), same as
-// synth-gold-gen.mjs so selection conventions match across gold benchmarks.
-function mulberry32(seed) {
-  let a = seed >>> 0;
-  return function rand() {
-    a |= 0; a = (a + 0x6d2b79f5) | 0;
-    let t = Math.imul(a ^ (a >>> 15), 1 | a);
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
-
-// Category buckets, one per product-family, chosen for topical diversity
-// across the 265 harvested products. Each bucket lists case-insensitive
-// substrings matched against the record's product name.
-const CATEGORY_BUCKETS = {
-  audio:            ['Sony WH-1000XM6', 'Bose QuietComfort Ultra', 'Sony WF-1000XM5', 'Galaxy Buds3 Pro', 'Ultimate Ears Boom', 'HW-Q990D'],
-  tv_display:       ['Samsung QN90D', 'LG C4 OLED', 'Odyssey G7'],
-  computing:        ['Surface Laptop', 'ThinkPad X1 Carbon', 'ROG Zephyrus', 'ROG Ally', 'iPad Air', 'T7 Shield', 'ZenWiFi', 'Keychron'],
-  wearable_health:  ['Fitbit Charge', 'Garmin Forerunner', 'Renpho Smart Scale', 'Waterpik Aquarius'],
-  kitchen:          ['Presto Pressure Cooker', 'Presto Salad Shooter'],
-  cleaning:         ['Bespoke Jet Vacuum', 'Shark Navigator'],
-  power_charging:   ['Anker 737', 'Belkin BoostCharge'],
-  baby:             ["Dr. Brown's", 'Graco Pack N Play'],
-  smart_home:       ['Roku Ultra', 'Google Nest Hub Max'],
-  outdoor:          ['CamelBak Chute Mag'],
-};
-const SEED = 42;
-
-function selectProducts(records, buckets, seed) {
-  const rand = mulberry32(seed);
-  const selected = [];
-  for (const [bucketName, patterns] of Object.entries(buckets)) {
-    const candidates = records.filter((r) =>
-      patterns.some((p) => r.meta.product.toLowerCase().includes(p.toLowerCase())),
-    );
-    if (!candidates.length) throw new Error(`no harvested records for bucket "${bucketName}"`);
-    // Bias toward substantial input blocks: sort by content length desc,
-    // then draw (deterministically) from the longer half of the bucket so
-    // shorter/thinner-content duplicates within a bucket lose out, but the
-    // draw itself stays seeded/reproducible rather than always-the-longest.
-    const byLenDesc = [...candidates].sort(
-      (a, b) => b.messages[1].content.length - a.messages[1].content.length,
-    );
-    const pool = byLenDesc.slice(0, Math.max(1, Math.ceil(byLenDesc.length / 2)));
-    const idx = Math.floor(rand() * pool.length);
-    selected.push({ bucket: bucketName, record: pool[idx] });
-  }
-  return selected;
-}
-
+// Selection logic lives in ./lib/extract-gold-selection.mjs so
+// extract-gold-candidate-judge.mjs can rebuild the identical 10-product
+// input text without duplicating this code.
 const selection = selectProducts(harvested, CATEGORY_BUCKETS, SEED);
 process.stderr.write(
   `selected ${selection.length} products (seed=${SEED}):\n` +
@@ -209,6 +196,7 @@ async function runExtract(record, cand) {
       apiKey: KEY,
       model: cand.model,
       callLLM,
+      reasoning: cand.reasoning,
     });
     return { ok: true, claims, cost: costUsd, ms: Date.now() - t0 };
   } catch (err) {
@@ -220,6 +208,26 @@ async function runExtract(record, cand) {
 const RUNS_OUT = new URL('./ft-data/extract-gold-runs.jsonl', import.meta.url);
 const DETERMINISTIC_OUT = new URL('./ft-data/extract-gold-deterministic.json', import.meta.url);
 mkdirSync(new URL('./ft-data/', import.meta.url), { recursive: true });
+
+// Labels this invocation is about to (re)generate. Used at write time to
+// merge with, rather than clobber, whatever is already on disk. This way
+// single-candidate mode sits its new rows alongside the stored incumbent
+// rows instead of overwriting them (and reruns of the SAME label replace
+// only that label's rows, never anyone else's).
+const labelsThisRun = new Set(CANDIDATES.map((c) => c.label));
+
+function loadExistingRunLines() {
+  if (!existsSync(RUNS_OUT)) return [];
+  return readFileSync(RUNS_OUT, 'utf8')
+    .split('\n')
+    .map((l) => l.trim())
+    .filter(Boolean)
+    .filter((l) => !labelsThisRun.has(JSON.parse(l).label));
+}
+function loadExistingDeterministic() {
+  if (!existsSync(DETERMINISTIC_OUT)) return [];
+  return JSON.parse(readFileSync(DETERMINISTIC_OUT, 'utf8')).filter((r) => !labelsThisRun.has(r.model));
+}
 
 const runLines = [];
 const deterministic = [];
@@ -278,15 +286,20 @@ for (const { bucket, record } of selection) {
   }
 }
 
-writeFileSync(RUNS_OUT, runLines.join('\n') + '\n');
-writeFileSync(DETERMINISTIC_OUT, JSON.stringify(deterministic, null, 2));
+// Merge: existing rows for OTHER labels (untouched) + this run's rows.
+const mergedRunLines = [...loadExistingRunLines(), ...runLines];
+const mergedDeterministic = [...loadExistingDeterministic(), ...deterministic];
 
-console.log('\n══ PER-RUN RESULTS ══════════════════════════════════════════════════════════');
+writeFileSync(RUNS_OUT, mergedRunLines.join('\n') + '\n');
+writeFileSync(DETERMINISTIC_OUT, JSON.stringify(mergedDeterministic, null, 2));
+
+console.log('\n══ PER-RUN RESULTS (this invocation only) ══════════════════════════════════════');
 console.table(rows);
 
-// Aggregate per model (completion rate + deterministic table)
+// Aggregate per model (completion rate + deterministic table). Computed
+// over the MERGED set so it reflects everyone on disk, not just this run.
 const byModel = {};
-for (const r of deterministic) {
+for (const r of mergedDeterministic) {
   const k = r.model;
   byModel[k] ??= { runs: 0, ok: 0, cost: 0, claims: 0, dup: 0, len: 0, grounded: 0 };
   const b = byModel[k];

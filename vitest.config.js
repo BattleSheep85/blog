@@ -31,6 +31,17 @@ export default defineWorkersConfig({
         // wrangler config; Miniflare provides in-memory local D1/KV for tests
         // so nothing touches production.
         wrangler: { configPath: './wrangler.toml' },
+        miniflare: {
+          // HARD GUARD: the wrangler config also loads .dev.vars, which on a
+          // developer machine holds the real mailbox credentials. Blank them
+          // for the whole pool so no spec can ever open a socket to the mail
+          // server, even if it forgets the env.__mailTransport stub.
+          bindings: {
+            MAIL_ENABLED: 'false',
+            TRUERANK_SMTP_USER: '',
+            TRUERANK_SMTP_PASSWORD: '',
+          },
+        },
       },
     },
   },

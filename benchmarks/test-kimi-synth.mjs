@@ -5,12 +5,12 @@ import { readFileSync } from 'node:fs';
 import { callLLM, callLLMStreaming } from '../worker/engine/llm.js';
 import { buildSynthesisPrompt } from '../worker/engine/prompts.js';
 import { SYNTH_SCENARIOS } from './synth-fixture.mjs';
-import { getTierConfig } from '../worker/lib/tiers.js';
+import { ENGINE_CONFIG } from '../worker/lib/engine-config.js';
 
 const e = {}; for (const l of readFileSync(new URL('../.dev.vars', import.meta.url), 'utf8').split('\n')) { const m = l.match(/^([A-Z_]+)=(.*)$/); if (m) e[m[1]] = m[2].trim(); }
 const KEY = e.OPENROUTER_API_KEY;
 const sc = SYNTH_SCENARIOS[0];
-const config = getTierConfig('full');
+const config = ENGINE_CONFIG;
 const prompt = buildSynthesisPrompt(sc.query, sc.notes, sc.sources, config, sc.facets, sc.topicalCategory, {});
 const msgs = [{ role: 'system', content: prompt }, { role: 'user', content: `Write the research report for: "${sc.query}". Respond ONLY with valid JSON.` }];
 

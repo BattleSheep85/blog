@@ -1,5 +1,6 @@
 import { isChurnBrand } from '../lib/brand-quality.js';
 import { filterByCategory } from '../lib/category-gate.js';
+import { parsePriceConstraint, applyPriceConstraint } from '../lib/constraints.js';
 
 // Hosts that only serve pages (never direct images) — if the LLM hands us one
 // of these, it's a review/video/listing URL, not an image.
@@ -115,9 +116,17 @@ export function applyQualityGate(products) {
     .map(({ p }, i) => ({ ...p, rank: i + 1 }));
 }
 
+// Space-joined clarification answer values. The classifier's answer map
+// should always hold strings, but upstream data is never trusted blindly, so
+// a non-string value is skipped rather than coerced.
+function clarificationValues(clarifications) {
+  if (!clarifications || typeof clarifications !== 'object') return [];
+  return Object.values(clarifications).filter((v) => typeof v === 'string');
+}
+
 /**
  * @param {object} data - raw synth JSON
- * @param {{ query?: string, topicalCategory?: string }} [ctx] - when set, drops cross-category products
+ * @param {{ query?: string, topicalCategory?: string, clarifications?: object }} [ctx] - when set, drops cross-category products and enforces a stated price cap or floor
  */
 export function validateResearchResult(data, ctx = {}) {
   if (!data || typeof data !== 'object') throw new Error('Response is not an object');
@@ -171,6 +180,21 @@ export function validateResearchResult(data, ctx = {}) {
   // (bench scripts parsing cached JSON without query context).
   if (ctx.query || ctx.topicalCategory) {
     filtered = filterByCategory(filtered, ctx.topicalCategory, ctx.query);
+  }
+
+  // Price gate: enforce a budget cap or floor stated in the query or in the
+  // clarification answers (for example "under $500"). Before this gate, that
+  // text was read ONLY to decide whether to ask a clarifying question
+  // (worker/lib/classifier.js), so an over-cap product could still rank #1.
+  // Fail-open when ctx.query is absent (bench scripts parsing cached JSON
+  // without query context). A product with no known price is never dropped:
+  // an honest "price not found" is not proof of an over-budget pick. The cap
+  // or floor is only applied while at least two products would still be
+  // left, so a strict budget can never collapse a thin category down to a
+  // broken report.
+  if (ctx.query) {
+    const priceSource = [ctx.query, ...clarificationValues(ctx.clarifications)].join(' ');
+    filtered = applyPriceConstraint(filtered, parsePriceConstraint(priceSource));
   }
 
   // Quality gate: drop picks the synth itself rated below the floor. The rating

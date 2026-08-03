@@ -17,7 +17,16 @@ beforeAll(async () => {
 
 // Same RESEARCH_QUEUE stub pattern as verify-route.spec.js — a real queue
 // send races the isolated per-file D1/KV storage this spec gets.
-const testEnv = { ...env, RESEARCH_QUEUE: { send: async () => {} } };
+//
+// RL_BURST is omitted on purpose. Proving a LIFETIME quota of 10 verifies
+// needs 11+ requests from one IP, and this spec fires them in milliseconds,
+// which the 10-per-60s burst gate would answer with 429 before the quota gate
+// ever ran. Dropping the binding is the supported fail-open configuration
+// (worker/lib/burst-gate.js), so these cases measure the quota gate alone.
+// The burst gate has its own coverage in burst-gate.spec.js, research.spec.js
+// and verify-route.spec.js.
+const { RL_BURST: _unusedBurstGate, ...envWithoutBurstGate } = env;
+const testEnv = { ...envWithoutBurstGate, RESEARCH_QUEUE: { send: async () => {} } };
 
 const researchPost = (query, ip, extra = {}, cookie) => new Request('https://chrisputer.tech/api/research', {
   method: 'POST',

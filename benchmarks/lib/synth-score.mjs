@@ -12,7 +12,10 @@ export const nums = (t) => {
 export const close = (n, s) => n === s || Math.abs(n - s) <= 0.5 || (s !== 0 && Math.abs(n - s) / Math.abs(s) <= 0.03);
 export const norm = (s) => String(s || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').replace(/\s+/g, ' ').trim();
 
-const NAME_STOP = new Set(['with','the','and','for','app','edition','version','size','fit','pack','set']);
+// Exported (2026-07-28) so benchmarks/lib/grounding-check.mjs reuses the SAME
+// stop list instead of forking a second copy that could drift. Behaviour of
+// score() below is unchanged.
+export const NAME_STOP = new Set(['with','the','and','for','app','edition','version','size','fit','pack','set']);
 
 export function score(report, corpus) {
   const prods = report?.products || [];

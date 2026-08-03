@@ -15,7 +15,7 @@ import { synthesizeExtractive } from '../worker/engine/extract/index.js';
 import { buildSynthesisPrompt } from '../worker/engine/prompts.js';
 import { callLLMStreaming } from '../worker/engine/llm.js';
 import { validateResearchResult } from '../worker/engine/validate.js';
-import { getTierConfig } from '../worker/lib/tiers.js';
+import { ENGINE_CONFIG } from '../worker/lib/engine-config.js';
 
 const e = {}; for (const l of readFileSync(new URL('../.dev.vars', import.meta.url), 'utf8').split('\n')) { const m = l.match(/^([A-Z_]+)=(.*)$/); if (m) e[m[1]] = m[2].trim(); }
 const KEY = e.OPENROUTER_API_KEY, SERPER = e.SERPER_API_KEY;
@@ -99,7 +99,7 @@ if (!process.env.FRESH && existsSync(CORPUS)) {
   corpora = JSON.parse(readFileSync(CORPUS, 'utf8'));
   process.stderr.write(`loaded cached corpus (${corpora.length} queries)\n`);
 } else {
-  const cfg = { ...getTierConfig('full'), maxConcurrency: 6 };
+  const cfg = { ...ENGINE_CONFIG, maxConcurrency: 6 };
   const gathered = [];
   for (const { q, facets, cat } of QUERIES) {
     process.stderr.write(`### gathering: ${q}\n`);
@@ -115,7 +115,7 @@ if (!process.env.FRESH && existsSync(CORPUS)) {
 }
 
 // ── Phase 2: synth shootout ──────────────────────────────────────────────────
-const cfg = getTierConfig('full');
+const cfg = ENGINE_CONFIG;
 const rows = []; const dump = [];
 for (const corpus of corpora) {
   if (!corpus.sources?.length) { process.stderr.write(`skip (no sources): ${corpus.query}\n`); continue; }

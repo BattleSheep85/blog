@@ -8,8 +8,8 @@
 // ("the app is required to change EQ"), but it is allowed to recognize, not invent.
 import { callLLM } from '../llm.js';
 import { sentencePolarity } from './engine.js';
+import { norm } from './text.js';
 
-const gNorm = (s) => String(s || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').replace(/\s+/g, ' ').trim();
 // "video playback isn't a problem", "no issues", "not a dealbreaker" — a NEGATED
 // negative is PRAISE, not a con. The grounding gate can't catch this (it's a real
 // span); a polarity guard must.
@@ -47,11 +47,11 @@ export async function selectCons(productName, spans, apiKey, model, maxCons = 3)
   } catch { return []; }
 
   // GROUNDEDNESS GATE — drop any con not traceable to the supplied spans.
-  const corpus = ' ' + spans.map(gNorm).join(' ') + ' ';
+  const corpus = ' ' + spans.map(norm).join(' ') + ' ';
   const out = []; const used = new Set();
   for (const c of (Array.isArray(parsed?.cons) ? parsed.cons : [])) {
     const t = String(c?.text || '').trim();
-    const g = gNorm(t);
+    const g = norm(t);
     if (g.length < 8 || t.length > 220) continue;
     if (!corpus.includes(g)) continue;          // invented / paraphrased-too-far → DROP
     if (POSITIVE_NEGATION.test(t)) continue;     // "isn't a problem" = praise, not a con
