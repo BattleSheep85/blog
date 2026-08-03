@@ -70,6 +70,36 @@ the escalation threshold stated in section 4.
   `v=spf1 include:_spf.mail.hostinger.com ~all`, three DKIM CNAMEs
   (`hostingermail-a/b/c._domainkey`), and `_dmarc` = `v=DMARC1; p=none`.
 
+## 2a. Re-check of Cloudflare Email Service (checked 2026-08-03)
+
+Re-read against the current official Cloudflare documentation, per an owner
+request to try option C2 again. Findings:
+
+1. **Status.** Still public beta. Email Sending is Workers Paid plan only.
+   Email Routing (the separate, older, inbound-only product) is GA.
+2. **Enabling it needs a human click. No API path exists.** Onboarding a
+   domain for outbound sending is: dashboard -> Compute -> Email Service ->
+   Email Sending -> "Onboard Domain" -> pick the domain -> review the DNS
+   records Cloudflare proposes -> "Done". There is no REST API endpoint for
+   this step. A Cloudflare API token, however broad its scopes, cannot do it.
+   This is a dashboard-only action, full stop.
+3. **DNS records it adds.** MX, SPF TXT, and DKIM TXT under a `cf-bounce`
+   subdomain it creates, plus a `_dmarc` TXT for that subdomain. Scoping SPF to
+   a subdomain rather than the root would in fact sidestep the two-SPF-records
+   hazard flagged in section 6, which is better than first assumed. That
+   finding does not change the disqualifier in point 2.
+4. Whether onboarding could touch the root MX records was not reachable from
+   the docs alone (the process is dashboard-driven and not fully documented in
+   text). Given point 2 already stops this option, that question was not
+   pursued further.
+5. Free quota: 3,000 sends per month included, then $0.35 per 1,000, matching
+   the 2026-07-28 note in section 2.
+
+**Conclusion: unchanged.** Option C2 needs the owner to click "Onboard Domain"
+in the Cloudflare dashboard. That is a human action this session cannot take
+on the owner's behalf, so option C2 stays deferred. No code changed as a
+result of this re-check.
+
 ## 3. Option comparison
 
 | Criterion | A. Hand-written SMTP to Hostinger over `connect()` | B. Provider API over `fetch` (Resend / Postmark / Brevo / MailerSend) | C1. CF Email Routing | C2. CF Email Service (beta) | D. Send nothing |

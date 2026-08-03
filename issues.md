@@ -38,6 +38,16 @@ worker. The same code delivered real mail through `npx wrangler dev`.
       `fetch`, for example Resend or Postmark) or option C2 (Cloudflare Email
       Service, beta) in `docs/email-design.md` section 3. Owner decision. The
       `worker/lib/mailer.js` transport seam is the only file that changes.
+- [x] Re-checked option C2 (Cloudflare Email Service) against current docs,
+      2026-08-03: still disqualified. Onboarding a domain for outbound sending
+      is dashboard-only ("Compute > Email Service > Email Sending > Onboard
+      Domain"), no REST API path exists for that step, so it cannot be
+      finished with the Cloudflare API token alone. See
+      `docs/email-design.md` section 2a. Option B (a provider API over
+      `fetch`) remains the path that this session could finish unattended, if
+      the owner authorizes creating an account with such a provider (Resend,
+      Postmark, Brevo, or MailerSend). No such signup was authorized in this
+      session, so no transport was built.
 - [ ] MEDIUM (UX): while mail is off, the signup form still tells the visitor to
       check an inbox. Consider softening that copy until a transport works.
 
