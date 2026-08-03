@@ -12,6 +12,7 @@ import { runProductSearchTests } from '../test/unit/product-search.test.js';
 import { runReviewsRenderTests } from '../test/unit/reviews.test.js';
 import { runBrowseRenderTests } from '../test/unit/browse.test.js';
 import { runPagerTests } from '../test/unit/pager.test.js';
+import { runListableTests } from '../test/unit/listable.test.js';
 import { runCredibilityExtraTests } from '../test/unit/credibility-extra.test.js';
 import { runPromptsTests } from '../test/unit/prompts.test.js';
 import { runLlmTests } from '../test/unit/llm.test.js';
@@ -45,6 +46,7 @@ const suites = [
   ['reviews-render', runReviewsRenderTests], // async suite (awaited below)
   ['browse-render', runBrowseRenderTests], // async suite (awaited below)
   ['pager', runPagerTests],
+  ['listable', runListableTests],
   ['utils', runUtilsTests],
   ['research-primitives', runResearchPrimitivesTests],
   ['affiliate-links', runAffiliateLinksTests],

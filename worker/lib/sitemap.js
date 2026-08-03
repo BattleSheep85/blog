@@ -1,4 +1,5 @@
 import { displayQuery, escapeXml, publicResearchFilter, isNotModified } from './utils.js';
+import { listableRowsSql, FEED_ORDER } from './listable.js';
 import { listCategories, MIN_HUB_GUIDES } from '../pages/category.js';
 import { STATIC_GUIDES, STATIC_GUIDE_SLUGS } from './guides.js';
 // STATIC_GUIDES / STATIC_GUIDE_SLUGS are the single source of truth for the
@@ -86,15 +87,11 @@ export async function generateSitemap(origin, env, ifModifiedSince, guidesLastmo
   // (garbage queries, insufficient source data) are thin content and will hurt
   // ranking if Google crawls them.
   const rows = await env.DB.prepare(
-    `WITH ranked AS (
-       SELECT r.slug, r.created_at, COALESCE(r.completed_at, r.created_at) AS lastmod,
-              ROW_NUMBER() OVER (PARTITION BY COALESCE(r.canonical_query, r.slug) ORDER BY r.created_at DESC) AS rn
-       FROM research r
-       WHERE ${publicResearchFilter('r')}
-     )
-     SELECT slug, created_at, lastmod FROM ranked WHERE rn = 1
-     ORDER BY created_at DESC
-     LIMIT 5000`
+    listableRowsSql({
+      columns: 'r.id, r.slug, r.created_at, COALESCE(r.completed_at, r.created_at) AS lastmod',
+      select: 'slug, created_at, lastmod',
+      tail: 'LIMIT 5000',
+    })
   ).all();
 
   const results = rows.results ?? [];
@@ -164,15 +161,12 @@ export async function generateAtomFeed(origin, env, ifModifiedSince) {
   }
 
   const rows = await env.DB.prepare(
-    `WITH ranked AS (
-       SELECT r.slug, r.query, r.summary, r.category, r.created_at, COALESCE(r.completed_at, r.created_at) AS updated,
-              ROW_NUMBER() OVER (PARTITION BY COALESCE(r.canonical_query, r.slug) ORDER BY r.created_at DESC) AS rn
-       FROM research r
-       WHERE ${publicResearchFilter('r')}
-     )
-     SELECT slug, query, summary, category, created_at, updated FROM ranked WHERE rn = 1
-     ORDER BY updated DESC
-     LIMIT 50`
+    listableRowsSql({
+      columns: 'r.id, r.slug, r.query, r.summary, r.category, r.created_at, COALESCE(r.completed_at, r.created_at) AS updated',
+      select: 'slug, query, summary, category, created_at, updated',
+      orderBy: FEED_ORDER,
+      tail: 'LIMIT 50',
+    })
   ).all();
 
   const results = rows.results ?? [];

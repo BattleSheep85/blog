@@ -11,7 +11,8 @@ import { renderCategoryHub } from '../pages/category.js';
 import { classifyQuery } from '../lib/classifier.js';
 import { renderClarifyPage, extractClarifications } from '../pages/clarify.js';
 import { handleStartResearch } from '../handlers/research.js';
-import { displayQuery, escapeLikeWildcards, publicResearchFilter, canonicalizeQuery } from '../lib/utils.js';
+import { displayQuery, escapeLikeWildcards, canonicalizeQuery } from '../lib/utils.js';
+import { listableRowsSql } from '../lib/listable.js';
 
 // --- Server-rendered research page with KV page cache ---------------------
 
@@ -180,14 +181,17 @@ export async function handleSearchSuggest(url, env) {
     const sanitized = q.replace(/[^\w\s-]/g, '').trim();
     if (!sanitized) return suggestJson([]);
 
+    // The cluster winner comes from lib/listable.js, so autocomplete suggests
+    // the same slug the listing and the sitemap link. Only the result ordering
+    // is autocomplete's own (most-viewed first).
     const rows = await env.DB.prepare(
-        `WITH ranked AS (
-           SELECT slug, query, category, view_count,
-                  ROW_NUMBER() OVER (PARTITION BY COALESCE(canonical_query, slug) ORDER BY view_count DESC, created_at DESC) AS rn
-           FROM research WHERE ${publicResearchFilter('research')} AND query LIKE ?1 ESCAPE '\\'
-         )
-         SELECT slug, query, category, view_count FROM ranked WHERE rn = 1
-         ORDER BY view_count DESC LIMIT 6`
+        listableRowsSql({
+            columns: 'r.id, r.slug, r.query, r.category, r.view_count, r.created_at',
+            select: 'slug, query, category, view_count',
+            extraWhere: `r.query LIKE ?1 ESCAPE '\\'`,
+            orderBy: 'view_count DESC, created_at DESC, id DESC',
+            tail: 'LIMIT 6',
+        })
     ).bind(`%${escapeLikeWildcards(sanitized)}%`).all();
 
     const pretty = (rows.results || []).map((r) => ({ ...r, query: displayQuery(r.query) }));

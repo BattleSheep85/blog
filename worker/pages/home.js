@@ -9,7 +9,8 @@
  * in the HTML a crawler actually fetches (no client JS required).
  */
 
-import { escapeHtml, displayQuery, timeAgo, publicResearchFilter } from '../lib/utils.js';
+import { escapeHtml, displayQuery, timeAgo } from '../lib/utils.js';
+import { listableRowsSql } from '../lib/listable.js';
 import { notFound, withSecurityHeaders, makeNonce } from '../lib/http-response.js';
 
 const RECENT_HOME_LIMIT = 6;
@@ -19,13 +20,10 @@ const MARKER = '<!--RECENT_REPORTS-->';
 // link section. Failure degrades to an empty string (never break the page).
 export async function recentReportsSection(env, limit = RECENT_HOME_LIMIT) {
   const stmt = env.DB.prepare(
-    `WITH ranked AS (
-       SELECT r.*, ROW_NUMBER() OVER (PARTITION BY COALESCE(r.canonical_query, r.slug) ORDER BY r.created_at DESC) AS rn
-       FROM research r
-       WHERE ${publicResearchFilter('r')}
-     )
-     SELECT slug, query, category, created_at FROM ranked WHERE rn = 1
-     ORDER BY created_at DESC LIMIT ?1`
+    listableRowsSql({
+      select: 'slug, query, category, created_at',
+      tail: 'LIMIT ?1',
+    })
   ).bind(limit);
   const rows = (await stmt.all()).results ?? [];
   if (rows.length === 0) return '';

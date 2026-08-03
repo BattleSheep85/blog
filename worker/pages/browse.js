@@ -1,15 +1,19 @@
 import { layout, jsonLdScript } from '../lib/html.js';
-import { timeAgo, escapeHtml, escapeLikeWildcards, displayQuery, publicResearchFilter } from '../lib/utils.js';
+import { timeAgo, escapeHtml, escapeLikeWildcards, displayQuery } from '../lib/utils.js';
 import { searchBar } from '../lib/search-bar.js';
 import { listCategories } from '../pages/category.js';
 import { jsonEmbed, listLayoutBoot } from '../lib/list-layout-boot.js';
 import { renderPagerNav } from '../lib/pager.js';
+import { listableCountSql, listableRowsSql, PRODUCT_COUNT_SELECT } from '../lib/listable.js';
 
-// 48 cards/page keeps the archive's ~687 reports reachable in about 15 pages,
-// so the full numbered pager below (see lib/pager.js) can link every page
-// directly from page 1 without a long prev/next chain.
+// 48 cards/page keeps the archive's listable reports reachable in a handful of
+// pages, so the full numbered pager below (see lib/pager.js) can link every
+// page directly from page 1 without a long prev/next chain. The listing, its
+// page count and the sitemap all come from lib/listable.js, so what the pager
+// promises and what the pages serve cannot drift apart.
 const PER_PAGE = 48;
 const MAX_PAGE = 1000;
+const SITE = 'https://chrisputer.tech';
 
 // Builds a /research href for a given page + optional search query. Page 1
 // with no query collapses to the bare /research path.
@@ -20,76 +24,172 @@ function researchPageHref(pageNum, searchQuery) {
   return params.length ? `/research?${params.join('&')}` : '/research';
 }
 
+// One page of listable reports, plus one extra row as the "is there a next
+// page" probe. Search narrows the same listable set with a LIKE on the query.
+function fetchListingRows(env, { searchQuery, perPage, offset }) {
+  if (searchQuery) {
+    const sql = listableRowsSql({
+      select: `*, ${PRODUCT_COUNT_SELECT}`,
+      extraWhere: `r.query LIKE ?1 ESCAPE '\\'`,
+      tail: 'LIMIT ?2 OFFSET ?3',
+    });
+    const escaped = `%${escapeLikeWildcards(searchQuery)}%`;
+    return env.DB.prepare(sql).bind(escaped, perPage + 1, offset).all();
+  }
+  const sql = listableRowsSql({
+    select: `*, ${PRODUCT_COUNT_SELECT}`,
+    tail: 'LIMIT ?1 OFFSET ?2',
+  });
+  return env.DB.prepare(sql).bind(perPage + 1, offset).all();
+}
+
+// Total page count for the numbered pager. Counted from the same CTE the
+// listing uses, so ceil(count / perPage) is exactly the number of pages that
+// actually serve cards.
+async function fetchTotalPages(env, perPage) {
+  const row = await env.DB.prepare(listableCountSql()).first();
+  return Math.max(1, Math.ceil((row?.n ?? 0) / perPage));
+}
+
+// "Browse by category" strip — links to the /best/:slug hubs. Only shown on
+// the un-filtered first page so search-result and paginated views stay lean.
+// Degrades to empty if the query fails (never break the listing for a strip).
+async function renderCategoryStrip(env) {
+  const categories = await listCategories(env).catch(() => []);
+  const top = categories.slice(0, 12);
+  if (top.length === 0) return '';
+  const chips = top.map((c) =>
+    `<a href="/best/${escapeHtml(c.slug)}" class="inline-flex items-center gap-1.5 border border-line bg-surface-1 px-3 py-1.5 font-mono text-xs text-ink-2 transition-colors hover:border-ink-3 hover:text-ink">${escapeHtml(c.category)} <span class="readout text-ink-3">${c.count}</span></a>`
+  ).join('');
+  return `<div class="mb-8">
+<h2 class="mb-3 font-mono text-[11px] uppercase tracking-widest text-ink-3">Index &middot; Browse by category</h2>
+<div class="flex flex-wrap gap-2">${chips}</div>
+</div>`;
+}
+
+function renderCards(results) {
+  return results.map((r) => `<a class="card" href="/research/${escapeHtml(r.slug)}">
+${r.category ? `<div class="card-top"><span class="card-badge">${escapeHtml(r.category)}</span><span class="card-time readout">${timeAgo(r.created_at * 1000)}</span></div>` : `<div class="card-top"><span class="card-time readout">${timeAgo(r.created_at * 1000)}</span></div>`}
+<h3>${escapeHtml(displayQuery(r.query))}</h3>
+${r.summary ? `<p>${escapeHtml(r.summary.slice(0, 140))}${r.summary.length > 140 ? '…' : ''}</p>` : ''}
+</a>`).join('');
+}
+
+// Only reachable for page 1 (a page past the last one 404s before we render).
+function renderEmptyState(searchQuery) {
+  const icon = `<div class="mx-auto mb-6 flex h-16 w-16 items-center justify-center border border-line text-ink-3"><svg width="32" height="32" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg></div>`;
+  const inner = searchQuery
+    ? `<h2 class="mb-2 font-serif text-h2 font-semibold text-ink">No matches for &ldquo;${escapeHtml(searchQuery)}&rdquo;</h2>
+<p class="mb-6 text-body text-ink-2">Try a broader search or start new research:</p>
+<form method="POST" action="/research/new" class="mt-4"><input type="hidden" name="q" value="${escapeHtml(searchQuery)}"><button type="submit" class="inline-flex items-center gap-2 bg-accent-strong px-4 py-2.5 font-mono text-xs font-semibold uppercase tracking-wide text-white transition-colors hover:bg-accent-hover">Start new research</button></form>`
+    : `<h2 class="mb-2 font-serif text-h2 font-semibold text-ink">No research yet</h2>
+<p class="text-body text-ink-2">Be the first to research a product!</p>`;
+  return `<div class="border border-line bg-surface-1 py-16 text-center">${icon}${inner}</div>`;
+}
+
+function renderPrevNext(page, hasMore, searchQuery) {
+  if (page <= 1 && !hasMore) return '';
+  const prev = page > 1
+    ? `<a href="${researchPageHref(page - 1, searchQuery)}" class="inline-flex items-center gap-2 border border-line bg-surface-1 px-4 py-2 font-mono text-xs font-semibold uppercase tracking-wide text-ink transition-colors hover:border-ink-3">&larr; Previous</a>`
+    : '';
+  const next = hasMore
+    ? `<a href="${researchPageHref(page + 1, searchQuery)}" class="inline-flex items-center gap-2 border border-line bg-surface-1 px-4 py-2 font-mono text-xs font-semibold uppercase tracking-wide text-ink transition-colors hover:border-ink-3">Next &rarr;</a>`
+    : '';
+  return `<div class="mt-8 flex justify-center gap-2">${prev}${next}</div>`;
+}
+
+function renderSearchChip(searchQuery) {
+  if (!searchQuery) return '';
+  return `<div class="mb-6 flex items-center gap-2 font-mono text-xs">
+<span class="text-ink-2">Results for:</span>
+<span class="inline-flex items-center border border-line-strong px-2 py-1 uppercase tracking-wide text-accent">${escapeHtml(searchQuery)}</span>
+<a href="/research" class="ml-1 text-ink-3 hover:text-ink">Clear</a>
+</div>`;
+}
+
+function buildStructuredData(results, { searchQuery, page, offset }) {
+  const breadcrumbLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE}/` },
+      { '@type': 'ListItem', position: 2, name: 'Research', item: `${SITE}/research` },
+    ],
+  };
+  if (results.length === 0) return jsonLdScript(breadcrumbLd);
+
+  const collectionUrl = searchQuery
+    ? `${SITE}/research?q=${encodeURIComponent(searchQuery)}${page > 1 ? `&page=${page}` : ''}`
+    : `${SITE}/research${page > 1 ? `?page=${page}` : ''}`;
+  const itemListLd = {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    '@id': collectionUrl,
+    url: collectionUrl,
+    name: searchQuery ? `Search: ${searchQuery} | Chrisputer Labs` : 'Browse Research',
+    description: searchQuery
+      ? `Research results matching "${searchQuery}".`
+      : 'AI-powered product research archive.',
+    inLanguage: 'en-US',
+    isPartOf: { '@id': `${SITE}/#website` },
+    publisher: { '@id': `${SITE}/#organization` },
+    mainEntity: {
+      '@type': 'ItemList',
+      numberOfItems: results.length,
+      itemListOrder: 'https://schema.org/ItemListOrderDescending',
+      itemListElement: results.map((r, i) => ({
+        '@type': 'ListItem',
+        position: offset + i + 1,
+        url: `${SITE}/research/${r.slug}`,
+        name: displayQuery(r.query),
+      })),
+    },
+  };
+  return jsonLdScript(breadcrumbLd) + jsonLdScript(itemListLd);
+}
+
+// Head tags. Pagination alone must stay indexable: Google eventually treats a
+// long-term noindex page as nofollow too, which would sever the crawl path this
+// pagination exists to build. Google's pagination guidance is that paginated
+// pages should be indexable with self-referencing canonicals. Only open-ended
+// search results stay noindex.
+function buildHead(env, { page, searchQuery, hasMore, results, offset }) {
+  const canonical = `<link rel="canonical" href="${SITE}${researchPageHref(page, searchQuery)}">`;
+  const prevLink = page > 1 ? `<link rel="prev" href="${SITE}${researchPageHref(page - 1, searchQuery)}">` : '';
+  const nextLink = hasMore ? `<link rel="next" href="${SITE}${researchPageHref(page + 1, searchQuery)}">` : '';
+  const noindex = searchQuery ? '<meta name="robots" content="noindex, follow">' : '';
+  const turnstileScript = env.TURNSTILE_SITE_KEY
+    ? '<script nonce="__CSP_NONCE__" src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>'
+    : '';
+  const structuredData = buildStructuredData(results, { searchQuery, page, offset });
+  return canonical + prevLink + nextLink + noindex + turnstileScript + structuredData;
+}
+
+/**
+ * Renders /research. Returns an HTML string, or null when the requested page
+ * number is past the last page that serves cards. The router turns that into
+ * a 404 (see worker/index.js), the same contract /reviews already uses. An
+ * endless run of empty 200 pages is a crawl trap, so out-of-range pages must
+ * be a hard "this does not exist".
+ */
 export async function renderBrowse(url, env) {
   const searchQuery = url.searchParams.get('q') ?? '';
   const page = Math.min(Math.max(1, parseInt(url.searchParams.get('page') ?? '1', 10) || 1), MAX_PAGE);
   const perPage = PER_PAGE;
   const offset = (page - 1) * perPage;
 
-  let rows;
-
-  if (searchQuery) {
-    const escaped = `%${escapeLikeWildcards(searchQuery)}%`;
-    const stmt = env.DB.prepare(
-      `WITH ranked AS (
-         SELECT r.*, ROW_NUMBER() OVER (PARTITION BY COALESCE(r.canonical_query, r.slug) ORDER BY r.created_at DESC) AS rn
-         FROM research r
-         WHERE ${publicResearchFilter('r')} AND r.query LIKE ?1 ESCAPE '\\'
-       )
-       SELECT *, (SELECT COUNT(*) FROM products WHERE products.research_id = ranked.id) AS product_count
-       FROM ranked WHERE rn = 1
-       ORDER BY created_at DESC LIMIT ?2 OFFSET ?3`
-    ).bind(escaped, perPage + 1, offset);
-    rows = (await stmt.all()).results ?? [];
-  } else {
-    const stmt = env.DB.prepare(
-      `WITH ranked AS (
-         SELECT r.*, ROW_NUMBER() OVER (PARTITION BY COALESCE(r.canonical_query, r.slug) ORDER BY r.created_at DESC) AS rn
-         FROM research r
-         WHERE ${publicResearchFilter('r')}
-       )
-       SELECT *, (SELECT COUNT(*) FROM products WHERE products.research_id = ranked.id) AS product_count
-       FROM ranked WHERE rn = 1
-       ORDER BY created_at DESC LIMIT ?1 OFFSET ?2`
-    ).bind(perPage + 1, offset);
-    rows = (await stmt.all()).results ?? [];
-  }
-
+  const [listing, totalPages] = await Promise.all([
+    fetchListingRows(env, { searchQuery, perPage, offset }),
+    searchQuery ? Promise.resolve(1) : fetchTotalPages(env, perPage),
+  ]);
+  const rows = listing?.results ?? [];
   const hasMore = rows.length > perPage;
   const results = rows.slice(0, perPage);
 
-  // Total page count, used to render the full numbered pager below. Only the
-  // unfiltered listing gets one (search results are open-ended and noindexed
-  // already, so a prev/next chain is enough there).
-  let totalPages = 1;
-  if (!searchQuery) {
-    const countRow = await env.DB.prepare(
-      `SELECT COUNT(*) AS n FROM (
-         SELECT r.id, ROW_NUMBER() OVER (PARTITION BY COALESCE(r.canonical_query, r.slug) ORDER BY r.created_at DESC) AS rn
-         FROM research r WHERE ${publicResearchFilter('r')}
-       ) WHERE rn = 1`
-    ).first();
-    totalPages = Math.max(1, Math.ceil((countRow?.n ?? 0) / perPage));
-  }
+  // Past the end: no cards on a page above 1. 404 rather than an empty 200.
+  if (results.length === 0 && page > 1) return null;
 
-  // "Browse by category" strip — links to the /best/:slug hubs. Only shown on
-  // the un-filtered first page so search-result and paginated views stay lean.
-  // Degrades to empty if the query fails (never break the listing for a strip).
-  let categoryStrip = '';
-  if (!searchQuery && page === 1) {
-    const categories = await listCategories(env).catch(() => []);
-    const top = categories.slice(0, 12);
-    if (top.length > 0) {
-      const chips = top.map((c) =>
-        `<a href="/best/${escapeHtml(c.slug)}" class="inline-flex items-center gap-1.5 border border-line bg-surface-1 px-3 py-1.5 font-mono text-xs text-ink-2 transition-colors hover:border-ink-3 hover:text-ink">${escapeHtml(c.category)} <span class="readout text-ink-3">${c.count}</span></a>`
-      ).join('');
-      categoryStrip = `<div class="mb-8">
-<h2 class="mb-3 font-mono text-[11px] uppercase tracking-widest text-ink-3">Index &middot; Browse by category</h2>
-<div class="flex flex-wrap gap-2">${chips}</div>
-</div>`;
-    }
-  }
-
+  const categoryStrip = !searchQuery && page === 1 ? await renderCategoryStrip(env) : '';
   const listItems = results.map((r) => ({
     slug: r.slug,
     query: displayQuery(r.query),
@@ -100,6 +200,11 @@ export async function renderBrowse(url, env) {
     view_count: r.view_count,
   }));
 
+  const grid = listItems.length
+    ? `${jsonEmbed('research-list-data', listItems)}<div id="research-list">
+<div class="grid">${renderCards(results)}</div>
+</div>`
+    : renderEmptyState(searchQuery);
 
   const body = `<div class="grid-bg border-b border-line">
 <div class="mx-auto max-w-5xl px-6 py-12 md:py-16">
@@ -118,90 +223,19 @@ ${searchBar('compact')}
 <div class="mx-auto max-w-5xl px-6 py-10">
 ${categoryStrip}
 
-${searchQuery ? `<div class="mb-6 flex items-center gap-2 font-mono text-xs">
-<span class="text-ink-2">Results for:</span>
-<span class="inline-flex items-center border border-line-strong px-2 py-1 uppercase tracking-wide text-accent">${escapeHtml(searchQuery)}</span>
-<a href="/research" class="ml-1 text-ink-3 hover:text-ink">Clear</a>
-</div>` : ''}
+${renderSearchChip(searchQuery)}
 
-${listItems.length ? `${jsonEmbed('research-list-data', listItems)}<div id="research-list">
-<div class="grid">${results.map((r) => `<a class="card" href="/research/${escapeHtml(r.slug)}">
-${r.category ? `<div class="card-top"><span class="card-badge">${escapeHtml(r.category)}</span><span class="card-time readout">${timeAgo(r.created_at * 1000)}</span></div>` : `<div class="card-top"><span class="card-time readout">${timeAgo(r.created_at * 1000)}</span></div>`}
-<h3>${escapeHtml(displayQuery(r.query))}</h3>
-${r.summary ? `<p>${escapeHtml(r.summary.slice(0, 140))}${r.summary.length > 140 ? '…' : ''}</p>` : ''}
-</a>`).join('')}</div>
-</div>` : `<div class="border border-line bg-surface-1 py-16 text-center">
-<div class="mx-auto mb-6 flex h-16 w-16 items-center justify-center border border-line text-ink-3"><svg width="32" height="32" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg></div>
-${searchQuery ? `<h2 class="mb-2 font-serif text-h2 font-semibold text-ink">No matches for &ldquo;${escapeHtml(searchQuery)}&rdquo;</h2>
-<p class="mb-6 text-body text-ink-2">Try a broader search or start new research:</p>
-<form method="POST" action="/research/new" class="mt-4"><input type="hidden" name="q" value="${escapeHtml(searchQuery)}"><button type="submit" class="inline-flex items-center gap-2 bg-accent-strong px-4 py-2.5 font-mono text-xs font-semibold uppercase tracking-wide text-white transition-colors hover:bg-accent-hover">Start new research</button></form>` : page > 1 ? `<h2 class="mb-2 font-serif text-h2 font-semibold text-ink">You&rsquo;ve reached the end</h2>
-<p class="text-body text-ink-2">No more research on this page. <a href="/research" class="text-accent hover:text-accent-hover">Back to the latest</a>.</p>` : `<h2 class="mb-2 font-serif text-h2 font-semibold text-ink">No research yet</h2>
-<p class="text-body text-ink-2">Be the first to research a product!</p>`}
-</div>`}
+${grid}
 
-${(page > 1 || hasMore) ? `<div class="mt-8 flex justify-center gap-2">
-${page > 1 ? `<a href="${researchPageHref(page - 1, searchQuery)}" class="inline-flex items-center gap-2 border border-line bg-surface-1 px-4 py-2 font-mono text-xs font-semibold uppercase tracking-wide text-ink transition-colors hover:border-ink-3">&larr; Previous</a>` : ''}
-${hasMore ? `<a href="${researchPageHref(page + 1, searchQuery)}" class="inline-flex items-center gap-2 border border-line bg-surface-1 px-4 py-2 font-mono text-xs font-semibold uppercase tracking-wide text-ink transition-colors hover:border-ink-3">Next &rarr;</a>` : ''}
-</div>` : ''}
+${renderPrevNext(page, hasMore, searchQuery)}
 ${!searchQuery ? renderPagerNav(totalPages, page, (n) => researchPageHref(n, ''), 'Research archive pages') : ''}
 </div>
 </div>`;
 
-  const canonical = `<link rel="canonical" href="https://chrisputer.tech${researchPageHref(page, searchQuery)}">`;
-  const prevLink = page > 1 ? `<link rel="prev" href="https://chrisputer.tech${researchPageHref(page - 1, searchQuery)}">` : '';
-  const nextLink = hasMore ? `<link rel="next" href="https://chrisputer.tech${researchPageHref(page + 1, searchQuery)}">` : '';
-  // Pagination alone must stay indexable: Google eventually treats a long-term
-  // noindex page as nofollow too, which would sever the crawl path this
-  // pagination exists to build (into 687 otherwise-orphaned reports). Google's
-  // pagination guidance is that paginated pages should be indexable with
-  // self-referencing canonicals (already set above). Only open-ended search
-  // results stay noindex.
-  const noindex = searchQuery ? '<meta name="robots" content="noindex, follow">' : '';
-  const turnstileScript = env.TURNSTILE_SITE_KEY
-    ? '<script nonce="__CSP_NONCE__" src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>'
-    : '';
-
-  const breadcrumbLd = {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://chrisputer.tech/' },
-      { '@type': 'ListItem', position: 2, name: 'Research', item: 'https://chrisputer.tech/research' },
-    ],
-  };
-  const collectionUrl = searchQuery
-    ? `https://chrisputer.tech/research?q=${encodeURIComponent(searchQuery)}${page > 1 ? `&page=${page}` : ''}`
-    : `https://chrisputer.tech/research${page > 1 ? `?page=${page}` : ''}`;
-  const itemListLd = results.length > 0 ? {
-    '@context': 'https://schema.org',
-    '@type': 'CollectionPage',
-    '@id': collectionUrl,
-    url: collectionUrl,
-    name: searchQuery ? `Search: ${searchQuery} | Chrisputer Labs` : 'Browse Research',
-    description: searchQuery
-      ? `Research results matching "${searchQuery}".`
-      : 'AI-powered product research archive.',
-    inLanguage: 'en-US',
-    isPartOf: { '@id': 'https://chrisputer.tech/#website' },
-    publisher: { '@id': 'https://chrisputer.tech/#organization' },
-    mainEntity: {
-      '@type': 'ItemList',
-      numberOfItems: results.length,
-      itemListOrder: 'https://schema.org/ItemListOrderDescending',
-      itemListElement: results.map((r, i) => ({
-        '@type': 'ListItem',
-        position: offset + i + 1,
-        url: `https://chrisputer.tech/research/${r.slug}`,
-        name: displayQuery(r.query),
-      })),
-    },
-  } : null;
-  const structuredData = jsonLdScript(breadcrumbLd) +
-    (itemListLd ? jsonLdScript(itemListLd) : '');
-
+  const head = buildHead(env, { page, searchQuery, hasMore, results, offset });
   const listBoot = listItems.length > 0
     ? listLayoutBoot({ dataId: 'research-list-data', containerId: 'research-list', kind: 'research' })
     : '';
 
-  return layout('Browse Research', 'Explore past AI-powered product research.', body, canonical + prevLink + nextLink + noindex + turnstileScript + structuredData + listBoot, { ogUrl: 'https://chrisputer.tech/research' });
+  return layout('Browse Research', 'Explore past AI-powered product research.', body, head + listBoot, { ogUrl: `${SITE}/research` });
 }

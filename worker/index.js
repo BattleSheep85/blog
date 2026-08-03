@@ -306,6 +306,10 @@ export default {
                         renderBrowse(url, env),
                         getLatestResearchLastmod(env, CACHE_VERSION),
                     ]);
+                    // renderBrowse returns null for a page past the last one
+                    // that serves cards. A run of empty 200 pages is a crawl
+                    // trap, so answer 404 (same contract as /reviews).
+                    if (!html) return notFound();
                     const listingCc = 'public, max-age=60, s-maxage=60, stale-while-revalidate=3600';
                     const notModified = maybe304(request.headers.get('If-Modified-Since'), latestLm, listingCc);
                     if (notModified) return notModified;

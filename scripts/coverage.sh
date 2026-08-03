@@ -38,6 +38,7 @@ INCLUDES=(
   worker/lib/smtp.js
   worker/lib/email-templates.js
   worker/lib/subscribe-flow.js
+  worker/lib/listable.js
   worker/engine/validate.js
   worker/engine/prompts.js
   benchmarks/lib/grounding-check.mjs

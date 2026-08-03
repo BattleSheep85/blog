@@ -2,6 +2,54 @@
 
 Last updated: 2026-08-03
 
+## 2026-08-03: Research archive pagination, one definition of "listable"
+
+Follow-up to the 2026-08-02 pagination fix. The report was "roughly a third of
+the reports are unreachable" and "three numbers disagree" (687 / 541 / 441).
+
+### Diagnosis (production D1, measured)
+
+- `status='complete'` = **687**.
+- `status='complete'` + canonical dedupe = **541**.
+- `publicResearchFilter` (complete + thin-page gate) = **570**, and with the
+  canonical dedupe = **441**.
+- The listing served 441, `totalPages` rendered 10 = `ceil(441/48)`, and the
+  sitemap held 441 research URLs. So the count query, the listing and the
+  sitemap already agreed. The 541 came from running the dedupe count with
+  `status='complete'` in place of the full filter, so that number never
+  described a listable set. 687 - 441 = 246 rows are excluded on purpose: 117
+  fail the thin-page gate (they render noindex) and 129 are older members of a
+  canonical cluster whose winner is listed.
+
+### Real defects found
+
+- [x] HIGH (SEO, Data Integrity): no tiebreak in the dedupe window
+      (`ORDER BY r.created_at DESC`) or in the listing (`ORDER BY created_at
+      DESC`). `created_at` has one-second resolution and does tie, so SQLite
+      was free to promote a different cluster member per execution and to order
+      tied rows differently per page. Proven live: a crawl walk of /research
+      linked `best-mesh-wifi-4c83a2dd` while the same query with an `id`
+      tiebreak named `best-mesh-wifi-3f5b47bc` for that cluster. Tied rows that
+      straddle a LIMIT/OFFSET boundary can be served on no page at all. Fixed
+      by making both orderings total (`..., r.id DESC`).
+- [x] HIGH (SEO): `/research?page=N` past the last page answered 200 with an
+      empty grid, for every N up to 1000. That is a crawl trap. It now 404s,
+      the contract /reviews already used.
+- [x] MEDIUM (Consistency): autocomplete partitioned clusters by
+      `view_count DESC` while every other surface used `created_at DESC`, so it
+      could suggest a slug the listing and sitemap never link. It now shares
+      the one winner rule and keeps only its own result ordering.
+- [x] MEDIUM (Maintainability): the dedupe CTE was copy-pasted into seven
+      places. All of them now build SQL from `worker/lib/listable.js`.
+
+### Open
+
+- [ ] MEDIUM (SEO): the 129 non-winning cluster members each render a full
+      self-canonical report page that nothing links to (duplicate content plus
+      orphan). Pointing their canonical at the cluster winner is the obvious
+      move but it would deindex 129 live URLs, so it needs an owner decision
+      rather than a silent change.
+
 ## 2026-08-03: Outbound mail dead in production (SMTP host is behind Cloudflare)
 
 Incident. Two live `POST /api/subscribe` calls returned `{"ok":true}` and logged
@@ -2239,7 +2287,7 @@ verified live. One real instant-tier run executed (cost $0.0102, correctly recor
 
 ### Deferred (tracked, not bugs)
 - [x] LOW: Status-vocabulary translation (complete/completed, failed/error) — consolidated into worker/lib/status.js (apiStatus); research.js + report.js import it (2026-06-16).
-- [ ] LOW: Canonical-dedup ROW_NUMBER CTE repeated across suggest/browse/sitemap — extract SQL-fragment helper. (Still deferred — the four call sites differ in table alias, ORDER BY, and selected columns, so a clean shared fragment isn't safely factorable without a dev server to verify; low value vs. regression risk.)
+- [x] LOW: Canonical-dedup ROW_NUMBER CTE repeated across suggest/browse/sitemap. Extracted into `worker/lib/listable.js` (2026-08-03). Every caller (browse listing, browse count, sitemap, Atom feed, home, category hub, autocomplete) now builds its SQL from one filter + one cluster-winner rule. See the 2026-08-03 pagination section above.
 - [x] LOW: maybe304() duplicated between index.js and sitemap.js — unified via isNotModified() in worker/lib/utils.js; both call sites import it (2026-06-16).
 - [x] LOW: Static guide URLs hardcoded in sitemap.js + GUIDES_LASTMOD in index.js — derived from worker/lib/guides.js manifest (STATIC_GUIDES/STATIC_GUIDE_SLUGS/GUIDES_LASTMOD); add a guide in one place (2026-06-16).
 - [ ] LOW: research.result JSON shape is an implicit contract across orchestrator/report.js/research-page.js — Phase 2 engine swap defines the canonical shape.

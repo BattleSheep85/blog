@@ -25,6 +25,7 @@ import { runEmailMimeTests } from '../test/unit/email-mime.test.js';
 import { runSmtpTests } from '../test/unit/smtp.test.js';
 import { runEmailTemplatesTests } from '../test/unit/email-templates.test.js';
 import { runSubscribeFlowTests } from '../test/unit/subscribe-flow.test.js';
+import { runListableTests } from '../test/unit/listable.test.js';
 import { runGroundingCheckTests } from '../benchmarks/tests/grounding-check.test.mjs';
 
 const suites = [
@@ -45,6 +46,7 @@ const suites = [
   ['smtp', runSmtpTests],
   ['email-templates', runEmailTemplatesTests],
   ['subscribe-flow', runSubscribeFlowTests],
+  ['listable', runListableTests],
   ['grounding-check', runGroundingCheckTests],
 ];
 
