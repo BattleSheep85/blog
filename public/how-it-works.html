@@ -3,23 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About TrueRank by Chrisputer Labs</title>
-    <meta name="description" content="TrueRank by Chrisputer Labs is brutally honest product research. We read the real reviews, down-weight affiliate bait and marketing-only sources, and source every claim. No sponsored picks.">
-    <link rel="canonical" href="https://chrisputer.tech/about">
+    <title>How TrueRank Works | TrueRank by Chrisputer Labs</title>
+    <meta name="description" content="TrueRank reports are written by AI, not a human editor. This page explains which models we use, how many sources they read, how we score and filter those sources, and when the system refuses to answer.">
+    <link rel="canonical" href="https://chrisputer.tech/how-it-works">
     <meta name="robots" content="index, follow">
 
     <!-- Open Graph / Twitter -->
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="TrueRank">
-    <meta property="og:title" content="About TrueRank by Chrisputer Labs">
-    <meta property="og:description" content="Brutally honest product research. Real reviews, marketing bait filtered out, every claim sourced. No sponsored picks.">
-    <meta property="og:url" content="https://chrisputer.tech/about">
+    <meta property="og:title" content="How TrueRank Works">
+    <meta property="og:description" content="TrueRank reports are written by AI, not a human editor. Here is exactly which models we use, how sources are scored, and when we refuse to answer.">
+    <meta property="og:url" content="https://chrisputer.tech/how-it-works">
     <meta property="og:image" content="https://chrisputer.tech/og.png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="About TrueRank by Chrisputer Labs">
-    <meta name="twitter:description" content="Brutally honest product research. Real reviews, marketing bait filtered out, every claim sourced.">
+    <meta name="twitter:title" content="How TrueRank Works">
+    <meta name="twitter:description" content="TrueRank reports are written by AI, not a human editor. Here is exactly which models we use, how sources are scored, and when we refuse to answer.">
     <meta name="twitter:image" content="https://chrisputer.tech/og.png">
 
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
@@ -51,10 +51,10 @@
     {
       "@context": "https://schema.org",
       "@type": "AboutPage",
-      "@id": "https://chrisputer.tech/about",
-      "name": "About TrueRank by Chrisputer Labs",
-      "url": "https://chrisputer.tech/about",
-      "description": "Brutally honest product research from Chrisputer Labs. Real reviews, marketing bait filtered out, every claim sourced. No sponsored picks."
+      "@id": "https://chrisputer.tech/how-it-works",
+      "name": "How TrueRank Works",
+      "url": "https://chrisputer.tech/how-it-works",
+      "description": "TrueRank reports are written by AI, not a human editor. This page explains which models we use, how many sources they read, how we score and filter those sources, and when the system refuses to answer."
     }
     </script>
     <script nonce="__CSP_NONCE__" type="application/ld+json">
@@ -63,7 +63,7 @@
       "@type": "BreadcrumbList",
       "itemListElement": [
         { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://chrisputer.tech/" },
-        { "@type": "ListItem", "position": 2, "name": "About", "item": "https://chrisputer.tech/about" }
+        { "@type": "ListItem", "position": 2, "name": "How it works", "item": "https://chrisputer.tech/how-it-works" }
       ]
     }
     </script>
@@ -117,35 +117,49 @@
         <nav aria-label="Breadcrumb" class="mb-6 text-caption text-ink-3">
             <a href="/" class="hover:text-ink">Home</a>
             <span aria-hidden="true" class="mx-1.5">/</span>
-            <span class="text-ink-2">About</span>
+            <span class="text-ink-2">How it works</span>
         </nav>
 
-        <h1 class="font-serif text-h1 font-semibold text-ink">About TrueRank by Chrisputer Labs</h1>
+        <h1 class="font-serif text-h1 font-semibold text-ink">How TrueRank works</h1>
 
         <div class="mt-8 flex flex-col gap-5 text-body text-ink-2">
-            <p class="text-lead">Product research sucks. You Google something, get ten SEO-optimized listicles that all recommend the same Amazon bestsellers, and walk away knowing less than when you started.</p>
+            <p class="text-lead">Every report on this site is written by an AI system, not a human editor. This page states which models do the work, how many sources they read, how we score those sources, what gets filtered out, and when the system refuses to give an answer.</p>
 
-            <p>TrueRank was built to fix that. When you ask a question here, we don't just check one source. We read Reddit discussions, forum posts, independent reviews, and manufacturer specs, then hand it all to AI for a brutally honest analysis. One ranking, not two hundred reviews.</p>
+            <h2 class="mt-6 font-serif text-h2 font-semibold text-ink">The short version</h2>
+            <p>You ask a question. A planning model breaks it into search queries and reads real pages: reviews, forum threads, and manufacturer specs. A scoring step marks each source as hands-on testing, an expert outlet, a community post, or marketing, and downgrades or drops the marketing. A writing model turns the surviving evidence into a ranked comparison, citing sources, and it is instructed to leave a product out rather than invent facts about it. A separate check step then re-reads a product's own claims against independent sources before publishing.</p>
 
-            <h2 class="mt-6 font-serif text-h2 font-semibold text-ink">What makes this different</h2>
+            <h2 class="mt-6 font-serif text-h2 font-semibold text-ink">The models, by step</h2>
             <ul class="flex flex-col gap-3">
-                <li class="flex gap-2"><span class="mt-0.5 shrink-0 text-trust-high">+</span><span><strong class="text-ink">Real sources.</strong> We pull from actual user discussions and reviews, not just manufacturer claims.</span></li>
-                <li class="flex gap-2"><span class="mt-0.5 shrink-0 text-trust-high">+</span><span><strong class="text-ink">No sponsored picks.</strong> We don't get paid to recommend products. Affiliate links exist, but they never influence rankings.</span></li>
-                <li class="flex gap-2"><span class="mt-0.5 shrink-0 text-trust-high">+</span><span><strong class="text-ink">Honest cons.</strong> Every product has drawbacks. We tell you what they are instead of burying them.</span></li>
-                <li class="flex gap-2"><span class="mt-0.5 shrink-0 text-trust-high">+</span><span><strong class="text-ink">Shareable results.</strong> Every report gets a permanent link you can bookmark or share.</span></li>
+                <li class="flex gap-2"><span class="mt-0.5 shrink-0 text-trust-high">+</span><span><strong class="text-ink">Planning and search (Gemini 2.5 Flash).</strong> Decides what to search for and which pages to open, up to 50 searches and 20 page reads per report.</span></li>
+                <li class="flex gap-2"><span class="mt-0.5 shrink-0 text-trust-high">+</span><span><strong class="text-ink">Writing the report (MiniMax M3).</strong> Turns the gathered notes and sources into the summary, product list, pros and cons, and buyer's guide you read.</span></li>
+                <li class="flex gap-2"><span class="mt-0.5 shrink-0 text-trust-high">+</span><span><strong class="text-ink">Claim checking (Claude Haiku 4.5).</strong> Pulls specific, checkable claims (battery life, warranty length, a spec figure) from a product's own pages.</span></li>
+                <li class="flex gap-2"><span class="mt-0.5 shrink-0 text-trust-high">+</span><span><strong class="text-ink">Claim verdicts (MiniMax M3).</strong> Checks each claim against independent sources and marks it confirmed, disputed, or unaddressed. A source restating the manufacturer's own words does not count as confirmation, only a source's own testing or measurement does.</span></li>
+            </ul>
+            <p>All four models run through OpenRouter. We do not train on your queries, and no OpenAI model is used anywhere in this pipeline.</p>
+
+            <h2 class="mt-6 font-serif text-h2 font-semibold text-ink">Where the sources come from</h2>
+            <p>Search runs across several providers so no single index limits what we see: Google results and news through Serper, a self-hosted metasearch engine, Brave and Tavily as fallbacks, Hacker News discussions, and review-site RSS feeds. Page content is fetched and converted to plain text for the models to read. A report typically draws on several dozen sources; the exact count is shown at the end of the search phase in the report's activity log.</p>
+
+            <h2 class="mt-6 font-serif text-h2 font-semibold text-ink">How we score and filter sources</h2>
+            <p>Every source gets tagged, not just read. Hands-on testing and established review outlets are weighted up. Listicles, manufacturer pages, sponsored posts, and pages carrying affiliate tracking links are weighted down, and none of them can be the sole basis for a recommendation, so a single affiliate-laden "top 10" post can never anchor a pick on its own. We also flag reviewer independence on a spectrum: buying the product yourself is a positive signal, an honest disclosed loaner is neutral, and a free product given in exchange for a review is treated as a real conflict.</p>
+            <p>Pages that contain hidden text addressed to AI tools, telling an automated reader what to recommend, are treated as an attempted manipulation. That text is read as data, never followed as an instruction, and its presence marks the page as untrustworthy.</p>
+            <p>We are also skeptical of the product itself, separately from the source. A no-name brand that exists only as a marketplace listing, with no independent review coverage and no real brand presence, is never ranked above an established, independently reviewed brand, and is only included at all when there is genuinely no credible alternative, with that caveat stated plainly in its verdict.</p>
+
+            <h2 class="mt-6 font-serif text-h2 font-semibold text-ink">What the system will not do</h2>
+            <ul class="flex flex-col gap-3">
+                <li class="flex gap-2"><span class="mt-0.5 shrink-0 text-trust-high">+</span><span><strong class="text-ink">It will not invent a price.</strong> A price appears only when a source states one. If no source gives a price, the report shows no price, rather than a guess.</span></li>
+                <li class="flex gap-2"><span class="mt-0.5 shrink-0 text-trust-high">+</span><span><strong class="text-ink">It will not fabricate a product URL.</strong> Product links come from URLs found in the actual sources, never a guessed or invented address.</span></li>
+                <li class="flex gap-2"><span class="mt-0.5 shrink-0 text-trust-high">+</span><span><strong class="text-ink">It will not attribute a claim to a source that did not make it.</strong> Citing a trusted name for something it never said is treated as the worst kind of error the system can make.</span></li>
+                <li class="flex gap-2"><span class="mt-0.5 shrink-0 text-trust-high">+</span><span><strong class="text-ink">It will not fake precision.</strong> Our editorial rating is a 0-5 score built from the balance of evidence, not a lab measurement. When the evidence is too thin to judge fairly, the rating is left blank rather than filled in with a guess.</span></li>
+                <li class="flex gap-2"><span class="mt-0.5 shrink-0 text-trust-high">+</span><span><strong class="text-ink">It will drop a product rather than misrepresent it.</strong> A product without at least one real, sourced pro or con does not make the list. If a whole category turns up too little credible evidence, the report says so instead of filling space with weak picks.</span></li>
+                <li class="flex gap-2"><span class="mt-0.5 shrink-0 text-trust-high">+</span><span><strong class="text-ink">It will honor a stated budget.</strong> If you ask for something "under $500," products priced above that are filtered out of the ranking, not just noted as expensive.</span></li>
             </ul>
 
-            <h2 class="mt-6 font-serif text-h2 font-semibold text-ink">How the research works</h2>
-            <p>Every report on TrueRank is written by AI, not a human editor. Every time you submit a query, TrueRank runs a multi-stage pipeline. A planning model decomposes your question into sub-queries. A request for "best budget mesh wifi" expands into separate searches for coverage, throughput, ease of setup, price, and common failure modes. Those sub-queries fan out across search engines, Reddit threads, manufacturer spec sheets, and review-site feeds.</p>
-            <p>The raw sources get scored and deduplicated. An agent loop takes notes as it reads, so the final write-up has a grounded paper trail instead of a pile of fragments. A separate writing model turns that paper trail into the report, prompted to surface cons, call out marketing fluff, and skip products it can't verify. "We honestly don't have enough data" is a valid answer here, and you'll see it occasionally. That's intentional. The full breakdown, including which models do which step, lives on the <a href="/how-it-works" class="underline hover:text-ink">how it works</a> page.</p>
-            <p>Results get cached so you don't pay for a re-run. If someone asked the same question (or a canonically equivalent one) in the last 14 days, you get that existing report, with a "Re-research with fresh data" button in case you want a fresh run anyway.</p>
+            <h2 class="mt-6 font-serif text-h2 font-semibold text-ink">Where AI can still be wrong</h2>
+            <p>None of this makes the system infallible. A language model can still misread a source, miss a newer review, or misjudge which pros and cons matter most to you. The filtering above reduces fabrication and marketing noise; it does not guarantee the ranking matches your own priorities. If a report looks off, the "Re-run fresh" button on that page starts a new search from scratch.</p>
 
-            <h2 class="mt-6 font-serif text-h2 font-semibold text-ink">What we don't do</h2>
-            <p>We don't fabricate product data. If the sources don't support a claim, it doesn't end up in the report. We don't rank products by commission rate. We don't republish manufacturer press releases as reviews. We keep thin, product-less pages out of discovery, because they hurt everyone.</p>
-
-            <h2 class="mt-6 font-serif text-h2 font-semibold text-ink">Affiliate disclosure</h2>
-            <p>TrueRank contains Amazon Associates and other affiliate links. When you buy a product through one of our links, we may earn a small commission at no extra cost to you. This helps keep the site running. Affiliate relationships never influence our product rankings or recommendations. The product that wins is the product the reviews say wins.</p>
-            <p>The source code is intentionally zero-dependency: no npm, no package-lock, no node_modules. Every line is hand-written and auditable, a deliberate stance against supply-chain risk.</p>
+            <h2 class="mt-6 font-serif text-h2 font-semibold text-ink">Affiliate links do not affect ranking</h2>
+            <p>TrueRank carries Amazon Associates and other affiliate links, and we earn a commission on qualifying purchases at no extra cost to you. That income does not reach the models that write the report: the pipeline described above ranks products by the evidence it finds, then a separate step attaches an affiliate link to whichever retailer page matched. The order of products is decided before any affiliate link is chosen.</p>
         </div>
 
         <div class="mt-12 border-t border-line pt-8">
@@ -169,6 +183,7 @@
     <li><a href="/research" class="hover:text-ink">Browse</a></li>
     <li><a href="/reviews" class="hover:text-ink">Reviews</a></li>
     <li><a href="/about" class="hover:text-ink">About</a></li>
+    <li><a href="/how-it-works" class="hover:text-ink">How it works</a></li>
     </ul>
     </div>
     <div>

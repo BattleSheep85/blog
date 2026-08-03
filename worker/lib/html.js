@@ -186,6 +186,7 @@ sync(isDark);
 <li><a href="/research" class="hover:text-ink">Browse</a></li>
 <li><a href="/reviews" class="hover:text-ink">Reviews</a></li>
 <li><a href="/about" class="hover:text-ink">About</a></li>
+<li><a href="/how-it-works" class="hover:text-ink">How it works</a></li>
 </ul>
 </div>
 <div>
