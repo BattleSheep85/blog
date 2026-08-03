@@ -358,6 +358,65 @@ export async function runUrlInspectionSample(env, origin) {
 }
 
 /**
+ * List the sitemaps Search Console has registered for the configured site,
+ * per https://developers.google.com/webmaster-tools/v1/sitemaps/list.
+ * Read-only, works with the webmasters.readonly scope. Fail-soft: no
+ * GSC_SA_KEY returns {skipped}.
+ */
+export async function listSitemaps(env) {
+    const sa = parseServiceAccount(env);
+    if (!sa) return { skipped: 'no GSC_SA_KEY' };
+
+    const token = await getAccessToken(sa);
+    const site = siteUrl(env);
+    const url = `${API_BASE}/${encodeURIComponent(site)}/sitemaps`;
+    const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
+    if (!res.ok) {
+        return { site, status: res.status, error: (await res.text()).slice(0, 500) };
+    }
+    const data = await res.json();
+    return { site, sitemap: data.sitemap ?? [] };
+}
+
+/**
+ * List the Search Console properties this service account can see, per
+ * https://developers.google.com/webmaster-tools/v1/sites/list. Read-only.
+ * Fail-soft: no GSC_SA_KEY returns {skipped}.
+ */
+export async function listSites(env) {
+    const sa = parseServiceAccount(env);
+    if (!sa) return { skipped: 'no GSC_SA_KEY' };
+
+    const token = await getAccessToken(sa);
+    const res = await fetch(API_BASE, { headers: { Authorization: `Bearer ${token}` } });
+    if (!res.ok) {
+        return { status: res.status, error: (await res.text()).slice(0, 500) };
+    }
+    const data = await res.json();
+    return { siteEntry: data.siteEntry ?? [] };
+}
+
+/**
+ * Submit a sitemap, per
+ * https://developers.google.com/webmaster-tools/v1/sitemaps/submit.
+ * The webmasters.readonly scope cannot write, so this is expected to return
+ * a 403. Callers should surface that plainly rather than retry.
+ */
+export async function submitSitemap(env, feedpath) {
+    const sa = parseServiceAccount(env);
+    if (!sa) return { skipped: 'no GSC_SA_KEY' };
+
+    const token = await getAccessToken(sa);
+    const site = siteUrl(env);
+    const url = `${API_BASE}/${encodeURIComponent(site)}/sitemaps/${encodeURIComponent(feedpath)}`;
+    const res = await fetch(url, { method: 'PUT', headers: { Authorization: `Bearer ${token}` } });
+    if (!res.ok) {
+        return { site, feedpath, status: res.status, error: (await res.text()).slice(0, 500) };
+    }
+    return { site, feedpath, status: res.status, submitted: true };
+}
+
+/**
  * Top GSC rows for the /metrics snapshot + flywheel demand. Returns the highest
  * impression queries and the "opportunity" set (high impressions, weak CTR or
  * positions 5-20 a dedicated page could win). Aggregated across the stored

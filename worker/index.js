@@ -33,6 +33,7 @@ import { GUIDES_LASTMOD } from './lib/guides.js';
 import { CACHE_VERSION } from './lib/flags.js';
 import { notFound, redirect301, maybe304, withSecurityHeaders, htmlPageResponse, serveAsset } from './lib/http-response.js';
 import { handleResearchPage, handleBestHub, handleNewResearch, handleSearchSuggest } from './routes/pages.js';
+import { deadUrlResponse } from './lib/dead-urls.js';
 import { processResearchMessage, processVerificationMessage, runScheduledTick } from './jobs.js';
 
 // Dev-only HTTP Basic Auth wall. Active ONLY when BOTH DEV_AUTH_USER and
@@ -341,6 +342,15 @@ export default {
                 if (bestMatch) {
                     return handleBestHub(bestMatch[1], request, env);
                 }
+            }
+
+            // Known-dead pages that GSC still has impressions for. Answer
+            // with a 301 (equivalent content moved) or 410 (genuinely gone)
+            // instead of a plain 404, so Google drops or redirects the URL
+            // instead of retrying it for months. See worker/lib/dead-urls.js.
+            if (isGetLike) {
+                const deadUrl = deadUrlResponse(path);
+                if (deadUrl) return withSecurityHeaders(deadUrl, null);
             }
 
             // IndexNow ownership verification file. Must echo the key exactly,

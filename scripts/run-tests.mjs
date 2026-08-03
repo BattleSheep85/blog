@@ -31,6 +31,7 @@ import { runEmailMimeTests } from '../test/unit/email-mime.test.js';
 import { runSmtpTests } from '../test/unit/smtp.test.js';
 import { runEmailTemplatesTests } from '../test/unit/email-templates.test.js';
 import { runSubscribeFlowTests } from '../test/unit/subscribe-flow.test.js';
+import { runDeadUrlsTests } from '../test/unit/dead-urls.test.js';
 import { runGroundingCheckTests } from '../benchmarks/tests/grounding-check.test.mjs';
 import { runNoAnthropicOnOpenRouterTests } from '../benchmarks/tests/no-anthropic-on-openrouter.test.mjs';
 import { runClaudeCodeJudgeTests } from '../benchmarks/tests/claude-code-judge.test.mjs';
@@ -61,6 +62,7 @@ const suites = [
   ['smtp', runSmtpTests], // async suite (awaited below)
   ['email-templates', runEmailTemplatesTests],
   ['subscribe-flow', runSubscribeFlowTests],
+  ['dead-urls', runDeadUrlsTests],
   // Benchmark-side, but gated here on purpose: this suite is the guard against
   // shipping another broken grounding measurement (docs/benchmark-validity-audit.md).
   ['grounding-check', runGroundingCheckTests],
