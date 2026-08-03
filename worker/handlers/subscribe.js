@@ -105,6 +105,10 @@ async function applyAction(db, plan, rows, { email, researchId, now }) {
  * Send the confirmation mail and record it. The counter moves only for the
  * target row, and the cooldown stamp moves for the whole address, so the
  * lifetime cap counts real messages and the cooldown holds address-wide.
+ *
+ * Returns the mailer outcome so the caller can log a lost message. A send that
+ * fails or is skipped stamps NOTHING, so the 24 h cooldown and the lifetime
+ * cap both stay unspent and the very next submit retries the mail.
  */
 async function sendConfirmation(env, { email, rowId, confirmToken, researchId, now }) {
     const research = researchId
@@ -115,13 +119,37 @@ async function sendConfirmation(env, { email, rowId, confirmToken, researchId, n
         confirmUrl: `${SITE_URL}/confirm?token=${confirmToken}`,
     });
     const result = await sendMail(env, { to: email, ...message });
-    if (!result.ok) return; // leave confirm_sent_at alone so the next submit retries
+    if (!result.ok) return result; // leave confirm_sent_at alone so the next submit retries
     await env.DB.prepare(
         `UPDATE subscribers
             SET confirm_sent_at = ?1,
                 confirm_send_count = confirm_send_count + (CASE WHEN id = ?2 THEN 1 ELSE 0 END)
           WHERE email = ?3`,
     ).bind(now, rowId, email).run();
+    return result;
+}
+
+/**
+ * The response is the same generic {ok:true} on every path, by design, so a
+ * lost confirmation is invisible to the visitor and invisible in the database.
+ * This line is the only signal that it happened. The address never enters the
+ * log: the mailer logs its own hashed tag on the same request, and the row id
+ * traces the rest. `retryable` records that nothing was spent, so the next
+ * submit sends again.
+ */
+function logUndeliveredConfirmation(outcome, rowId) {
+    const record = JSON.stringify({
+        where: 'subscribe',
+        step: 'confirm-send',
+        ok: false,
+        rowId,
+        retryable: true,
+        skipped: outcome.skipped ?? null,
+        error: outcome.error ?? null,
+    });
+    // A skip is a configured decision. An error is a defect. Keep them apart.
+    if (outcome.skipped) console.log(record);
+    else console.error(record);
 }
 
 /** Read and validate the request body. Returns either `error` or the fields. */
@@ -184,9 +212,12 @@ export async function handleSubscribe(request, env) {
     }
 
     if (plan.sendConfirmation && applied.rowId != null && applied.confirmToken) {
-        // Best effort: a mail failure never changes the response.
-        await sendConfirmation(env, { email, researchId, now, ...applied })
-            .catch((err) => console.error('Confirmation send failed:', err instanceof Error ? err.message : String(err)));
+        // Best effort: a mail failure never changes the response, because the
+        // response must not reveal which state this address is in. The send is
+        // awaited, so the SMTP dialogue can never outlive the request context.
+        const outcome = await sendConfirmation(env, { email, researchId, now, ...applied })
+            .catch((err) => ({ ok: false, error: err instanceof Error ? err.message : String(err) }));
+        if (!outcome?.ok) logUndeliveredConfirmation(outcome || {}, applied.rowId);
     }
 
     return jsonResponse({ ok: true });

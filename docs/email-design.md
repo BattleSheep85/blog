@@ -35,6 +35,21 @@ the escalation threshold stated in section 4.
   `compatibility_date = "2025-01-01"` is sufficient.
 - Outbound port 25 is blocked: "Workers cannot create outbound TCP connections
   on port 25". Ports 465 (implicit TLS) and 587 (STARTTLS) are not blocked.
+  - **CORRECTION, 2026-08-03 (measured at the edge, not assumed).** The port
+    rule is true but it was the wrong rule to check. Cloudflare also blocks
+    outbound TCP from a Worker to Cloudflare's own IP ranges, and
+    `smtp.hostinger.com` resolves to 172.65.255.143, inside 172.65.240.0/20,
+    AS13335 CLOUDFLARENET. `mx1`/`mx2.hostinger.com` sit in the same network.
+    A deployed Worker therefore cannot reach Hostinger SMTP on ANY port.
+    Evidence from a gated diagnostic route on the live worker: `connect()` to
+    `8.8.8.8:853` with implicit TLS opens normally, while `connect()` to
+    `smtp.hostinger.com:465` and `:587` both reject in under 20 ms with
+    "proxy request failed, cannot connect to the specified address", before
+    any TLS handshake or SMTP greeting. `npx wrangler dev` succeeded against
+    the same host because it egresses from the developer LAN, which has no
+    such rule. Option A below is therefore NOT implementable on Cloudflare.
+    `MAIL_ENABLED` is now "false" and the choice between option B (provider
+    API over `fetch`) and option C2 (Cloudflare Email Service) is open.
 - Hostinger SMTP submission: host `smtp.hostinger.com`, port 465 with SSL or
   port 587 with STARTTLS. Username is the full mailbox address.
 - Hostinger send caps are real: about 500 per hour over SMTP and a rolling

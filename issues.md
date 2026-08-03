@@ -1,6 +1,60 @@
 # Issues
 
-Last updated: 2026-07-28
+Last updated: 2026-08-03
+
+## 2026-08-03: Outbound mail dead in production (SMTP host is behind Cloudflare)
+
+Incident. Two live `POST /api/subscribe` calls returned `{"ok":true}` and logged
+`{"where":"mailer","ok":false,"error":"Stream was cancelled."}`. No mail left the
+worker. The same code delivered real mail through `npx wrangler dev`.
+
+### Root cause
+
+- [x] HIGH (Email, Production): a deployed Worker cannot reach
+      `smtp.hostinger.com` at all. The host resolves to `172.65.255.143`, inside
+      `172.65.240.0/20`, AS13335 CLOUDFLARENET, and Cloudflare blocks outbound
+      TCP from Workers to its own IP ranges. `mx1`/`mx2.hostinger.com` share the
+      same network, so no hostname and no port avoids it. Measured at the edge
+      with a gated, now-removed diagnostic route: `connect()` to `8.8.8.8:853`
+      with implicit TLS opened normally, `connect()` to `smtp.hostinger.com:465`
+      and `:587` both rejected in under 20 ms with "proxy request failed, cannot
+      connect to the specified address", before any TLS handshake. `wrangler dev`
+      passed only because it egresses from the developer LAN. "Stream was
+      cancelled." was the downstream symptom: the code read the socket without
+      awaiting `socket.opened`, so the real reason was discarded.
+- [x] Not a request-lifecycle bug. Every send site awaits the mailer before the
+      Response or inside its own handler context: `worker/handlers/subscribe.js`,
+      `worker/handlers/unsubscribe.js`, and `notifySubscribersForResearch` from
+      `persistEngineResult` (queue consumer, and `ctx.waitUntil` on the cron
+      path in `worker/jobs.js`). No `waitUntil` was missing.
+
+### Actions taken
+
+- [x] `MAIL_ENABLED = "false"` in `wrangler.toml`. A known-off feature beats a
+      feature that lies to visitors. Every send is now a logged skip.
+- [x] `docs/email-design.md` section 2 corrected. Option A (hand-written SMTP to
+      Hostinger) is NOT implementable on Cloudflare.
+- [ ] HIGH (Email, Product): pick a new transport. Option B (provider API over
+      `fetch`, for example Resend or Postmark) or option C2 (Cloudflare Email
+      Service, beta) in `docs/email-design.md` section 3. Owner decision. The
+      `worker/lib/mailer.js` transport seam is the only file that changes.
+- [ ] MEDIUM (UX): while mail is off, the signup form still tells the visitor to
+      check an inbox. Consider softening that copy until a transport works.
+
+### Related defect, fixed
+
+- [x] MEDIUM (Email, Observability): a confirmation that never left produced no
+      log tying it to the signup, and a disabled mailer produced no log at all.
+      `POST /api/subscribe` must keep returning the same generic `{"ok":true}` in
+      every state (no email-enumeration surface), so the log is the only signal.
+      `worker/lib/mailer.js` now logs the `disabled` skip, and
+      `worker/handlers/subscribe.js` logs one
+      `{"where":"subscribe","step":"confirm-send","ok":false,"rowId":N,
+      "retryable":true,...}` line per lost confirmation, at `error` level for a
+      real failure and `log` level for a configured skip. No address is logged.
+- [x] Verified in production that a failed send spends nothing: after two live
+      submits, `confirm_sent_at` is NULL and `confirm_send_count` is 0, so the
+      24 h cooldown and the lifetime cap are intact and the next submit retries.
 
 ## 2026-07-28: Benchmark validity fix + synthesis re-score (no production change)
 

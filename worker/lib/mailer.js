@@ -103,7 +103,12 @@ async function bumpDailyCount(kv, key, current) {
  * @returns {Promise<{ok: true, response?: string} | {ok: false, skipped?: string, error?: string}>}
  */
 export async function sendMail(env, message) {
-    if (!mailEnabled(env)) return { ok: false, skipped: 'disabled' };
+    if (!mailEnabled(env)) {
+        // Loud on purpose. While the switch is off this line is the ONLY
+        // evidence that a visitor was promised a mail that never left.
+        console.log(JSON.stringify({ where: 'mailer', skipped: 'disabled' }));
+        return { ok: false, skipped: 'disabled' };
+    }
     if (!env?.TRUERANK_SMTP_USER || !env?.TRUERANK_SMTP_PASSWORD) {
         console.log(JSON.stringify({ where: 'mailer', skipped: 'not-configured' }));
         return { ok: false, skipped: 'not-configured' };

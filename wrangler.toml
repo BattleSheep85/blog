@@ -63,8 +63,19 @@ INDEXNOW_KEY = "2b049a04674b366dc9b485b792ad823e"
 # Outbound email (docs/email-design.md). MAIL_ENABLED is the emergency off
 # switch AND the release gate: "false" turns every send into a logged skip, so
 # subscribe, confirm and unsubscribe keep working and nothing leaves the
-# worker. Flip it to "true" only after the two SMTP secrets are set.
-MAIL_ENABLED = "true"
+# worker.
+#
+# OFF since 2026-08-03. The SMTP transport cannot work from a deployed Worker.
+# smtp.hostinger.com resolves to 172.65.255.143 (AS13335, CLOUDFLARENET), and
+# Cloudflare blocks outbound TCP from Workers to its own IP ranges. Every
+# Hostinger mail endpoint (smtp, mx1, mx2) is behind the same network, so no
+# port and no hostname avoids it. Measured at the edge: connect() to
+# 8.8.8.8:853 succeeds, connect() to smtp.hostinger.com:465 and :587 both fail
+# in under 20 ms with "proxy request failed, cannot connect to the specified
+# address". `wrangler dev` passed only because it egresses from the LAN.
+# Turning this back on needs a transport change (docs/email-design.md s.3),
+# not a config change. See issues.md 2026-08-03.
+MAIL_ENABLED = "false"
 MAIL_FROM = "chris@chrisputer.tech"
 MAIL_FROM_NAME = "Chris at TrueRank"
 SMTP_HOST = "smtp.hostinger.com"
