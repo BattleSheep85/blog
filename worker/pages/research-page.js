@@ -2,7 +2,7 @@ import { layout } from '../lib/html.js';
 import { parseJsonSafe, isValidHttpsUrl, escapeHtml, timeAgo, displayQuery } from '../lib/utils.js';
 import { resolveAmazonTag } from '../lib/affiliate-links.js';
 import { adSlot } from '../lib/ads.js';
-import { getResearchBySlug, getProductsByResearchId } from '../lib/db.js';
+import { getResearchBySlug, getProductsByResearchId, getClusterWinnerSlug } from '../lib/db.js';
 import { searchBar } from '../lib/search-bar.js';
 import { RESEARCH_ETA } from '../lib/engine-config.js';
 import { jsonEmbed, productLayoutBoot } from '../lib/list-layout-boot.js';
@@ -73,11 +73,13 @@ export async function renderResearchResult(slug, env, fromQuery = null, cleanLin
 
   const isComplete = entry.status === 'complete';
 
-  // The three post-entry queries are independent — fetch products, related
-  // research, and bump the view counter concurrently instead of serializing.
-  const [productRows, related] = await Promise.all([
+  // The four post-entry queries are independent — fetch products, related
+  // research, the cluster winner, and bump the view counter concurrently
+  // instead of serializing.
+  const [productRows, related, winnerSlug] = await Promise.all([
     getProductsByResearchId(env.DB, entry.id),
     isComplete ? getRelatedResearch(env.DB, slug, entry.canonical_query, entry.category) : Promise.resolve([]),
+    isComplete ? getClusterWinnerSlug(env.DB, entry.canonical_query) : Promise.resolve(null),
     // Increment views only for completed research.
     isComplete
       ? env.DB.prepare('UPDATE research SET view_count = view_count + 1 WHERE id = ?').bind(entry.id).run()
@@ -147,6 +149,13 @@ export async function renderResearchResult(slug, env, fromQuery = null, cleanLin
         bhphoto: env.BHPHOTO_AFFILIATE_ID || undefined,
       };
   const pageUrl = `https://chrisputer.tech/research/${escapeHtml(slug)}`;
+  // isWinner: this page is the winner of its canonical cluster (or a cluster
+  // of one, winnerSlug === null). A non-winner keeps its own full readable
+  // page (200, no noindex) but points its canonical + structured data at the
+  // winner, so Google consolidates ranking signal onto one page instead of
+  // treating two near-identical reports as competitors.
+  const isWinner = !winnerSlug || winnerSlug === slug;
+  const winnerUrl = isWinner ? pageUrl : `https://chrisputer.tech/research/${escapeHtml(winnerSlug)}`;
   const displayTitle = displayQuery(entry.query);
   const shareText = encodeURIComponent(displayTitle);
   const shareUrl = encodeURIComponent(pageUrl);
@@ -197,6 +206,7 @@ export async function renderResearchResult(slug, env, fromQuery = null, cleanLin
 <p class="font-mono text-[11px] uppercase tracking-widest text-ink-3">Ledger &middot; Ranked comparison report</p>
 <h1 class="mt-3 font-serif text-h1 font-semibold text-ink">${escapeHtml(displayTitle)}</h1>
 ${entry.category ? `<span class="card-badge mt-3 inline-block">${escapeHtml(entry.category)}</span>` : ''}
+${!isWinner ? `<div class="mt-4 border border-line bg-surface-1 px-4 py-3 text-body-sm text-ink-2">A newer report answers this question. <a href="${winnerUrl}" class="underline hover:text-ink">Read the current version</a>.</div>` : ''}
 <div class="mt-4 border border-line bg-surface-1 px-4 py-3 text-body-sm text-ink-2">This report was written by AI from real reviews we gathered and read, not by a human editor. <a href="/how-it-works" class="underline hover:text-ink">See how it works</a>.</div>
 <div class="page-meta mt-4 flex flex-wrap gap-4 font-mono text-[13px] text-ink-3 readout">
 <span>Published <time datetime="${createdIso}">${date}</time></span>
@@ -349,8 +359,13 @@ ${entry.status === 'complete' ? `<div class="notify-footer mt-8 border-t border-
 </div>` : ''}
 </div>`;
 
+  // Structured data and canonical/OG metadata all key off winnerUrl, not
+  // pageUrl: winnerUrl === pageUrl for a cluster winner (or a cluster of
+  // one), and points at the winning report for a non-winner. A canonical
+  // link that disagrees with the JSON-LD url/@id is a mixed signal Google
+  // may ignore entirely, so every one of these must agree.
   const { structuredData, layoutMeta } = buildResearchSeo({
-    entry, products, affiliateIds, pageUrl, displayTitle, lastModifiedTs, hasBuyersGuide, buyersGuide, isService,
+    entry, products, affiliateIds, pageUrl: winnerUrl, displayTitle, lastModifiedTs, hasBuyersGuide, buyersGuide, isService,
   });
 
   const turnstileScript = env.TURNSTILE_SITE_KEY
