@@ -56,7 +56,7 @@ export function runLibPureTests() {
       ogType: 'article', ogUrl: 'https://x/y', canonical: 'https://x/c', noindex: true, ogImage: 'https://cdn/x.svg',
       article: { publishedTime: '2026-01-01', modifiedTime: '2026-01-02', author: 'A', section: 'Tech', tags: ['t1', 't2'] },
     });
-    ok('layout title', out.includes('<title>Title | TrueRank</title>'));
+    ok('layout title', out.includes('<title>Title | Frank</title>'));
     ok('layout canonical', out.includes('rel="canonical" href="https://x/c"'));
     ok('layout noindex', out.includes('name="robots" content="noindex,follow"'));
     ok('layout article meta', out.includes('article:published_time') && out.includes('article:tag'));

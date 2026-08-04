@@ -80,7 +80,7 @@ describe('subscribe: double opt-in', () => {
     expect(calls).toHaveLength(1);
     expect(calls[0].to).toBe('new@example.test');
     expect(readableBody(calls[0].raw)).toContain(`https://chrisputer.tech/confirm?token=${row.confirm_token}`);
-    expect(calls[0].raw).toContain('Subject: Confirm your TrueRank email notification');
+    expect(calls[0].raw).toContain('Subject: Confirm your Frank email notification');
   });
 
   it('names the research query in the confirmation when there is one', async () => {
@@ -274,7 +274,7 @@ describe('unsubscribe receipt', () => {
     const active = await env.DB.prepare("SELECT COUNT(*) n FROM subscribers WHERE email = 'bye@example.test' AND unsubscribed_at IS NULL").first();
     expect(active.n).toBe(0);
 
-    const receipts = calls.filter((c) => c.raw.includes('You are unsubscribed from TrueRank'));
+    const receipts = calls.filter((c) => c.raw.includes('You are unsubscribed from Frank'));
     expect(receipts).toHaveLength(1);
     expect(receipts[0].to).toBe('bye@example.test');
     expect(receipts[0].raw).not.toContain('List-Unsubscribe');

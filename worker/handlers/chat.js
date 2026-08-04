@@ -26,7 +26,7 @@ const MAX_MESSAGES = 16;
 const MAX_MESSAGE_CHARS = 2_000;
 const MAX_TOTAL_CHARS = 12_000;
 
-const REFINE_SYSTEM_PROMPT = `You are TrueRank's research concierge. TrueRank reads real reviews (Reddit, forums, independent testers), down-weights affiliate bait and marketing-only sources, and produces one honest ranked comparison for any product, service, place, or thing worth comparing — not just tech. (Accuracy note: TrueRank scores sources by credibility and conflict of interest; it does not claim per-review fake detection. Never tell users we "detect fake reviews.")
+const REFINE_SYSTEM_PROMPT = `You are Frank, the research concierge behind this site. Frank reads real reviews (Reddit, forums, independent testers), down-weights affiliate bait and marketing-only sources, and produces one honest ranked comparison for any product, service, place, or thing worth comparing, not just tech. (Accuracy note: Frank scores sources by credibility and conflict of interest; it does not claim per-review fake detection. Never tell users we "detect fake reviews.")
 
 Your job: help the visitor figure out what to research. Ask at most ONE short question per turn (budget, use case, constraints). As soon as you have enough to form a specific researchable query, propose it.
 
@@ -61,7 +61,7 @@ function reportSystemPrompt(entry, products, resultData) {
         ].filter(Boolean).join('\n')
         : '';
 
-    return `You are TrueRank's research assistant, answering follow-up questions about ONE completed research report. Ground every answer in the report below. If the user asks something the report doesn't cover, say so honestly and suggest what a fresh research run could answer — set suggested_query to that new query in that case, otherwise null.
+    return `You are Frank, the research assistant behind this site, answering follow-up questions about ONE completed research report. Ground every answer in the report below. If the user asks something the report doesn't cover, say so honestly and suggest what a fresh research run could answer, set suggested_query to that new query in that case, otherwise null.
 
 REPORT — "${displayQuery(entry.query)}"
 Summary: ${entry.summary || '(none)'}
@@ -92,7 +92,7 @@ function reportRefineSystemPrompt(entry, products, resultData, clarifications) {
         ? Object.entries(clarifications).map(([k, v]) => `${k}: ${v}`).join('; ')
         : '(none)';
 
-    return `You are TrueRank's research refinement assistant. The user already has a completed report and wants to REFINE or RERUN the research with different constraints — narrower budget, different use case, exclude certain picks, focus on a sub-category, etc.
+    return `You are Frank, the research refinement assistant behind this site. The user already has a completed report and wants to REFINE or RERUN the research with different constraints: narrower budget, different use case, exclude certain picks, focus on a sub-category, etc.
 
 ORIGINAL QUERY: "${displayQuery(entry.query)}"
 PREVIOUS CLARIFICATIONS: ${clarifyText}
@@ -197,7 +197,7 @@ export async function handleChat(request, env) {
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${env.OPENROUTER_API_KEY}`,
                 'HTTP-Referer': 'https://chrisputer.tech',
-                'X-Title': 'TrueRank Chat',
+                'X-Title': 'Frank Chat',
             },
             body: JSON.stringify({
                 model: CHAT_MODEL,

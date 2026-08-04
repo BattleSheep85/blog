@@ -6,7 +6,7 @@
 
 // Bump when the page template/schema shape changes in a way that should
 // invalidate every KV-cached HTML blob. Old keys age out on their own TTL.
-export const CACHE_VERSION = 'tr12';
+export const CACHE_VERSION = 'tr13';
 
 // Phase-B cutover flag: when 'true', the off-Cloudflare research worker is the
 // primary processor — the queue consumer defers (acks without processing,

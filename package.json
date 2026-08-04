@@ -1,5 +1,5 @@
 {
-  "name": "truerank-dev-tests",
+  "name": "frank-dev-tests",
   "private": true,
   "type": "module",
   "description": "DEV/TEST ONLY. The deployed Cloudflare Worker is plain JS with ZERO runtime dependencies (see CLAUDE.md). These devDependencies exist solely for the Miniflare/vitest Workers integration-test harness and never ship to the worker.",

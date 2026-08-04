@@ -22,7 +22,7 @@ export function runEmailTemplatesTests() {
   // 1. Confirmation message.
   {
     const msg = confirmationEmail({ query: 'best office chairs', confirmUrl: CONFIRM_URL });
-    eq('subject is fixed', msg.subject, 'Confirm your TrueRank email notification');
+    eq('subject is fixed', msg.subject, 'Confirm your Frank email notification');
     ok('text names the topic', msg.text.includes('"best office chairs"'));
     ok('text carries the link', msg.text.includes(CONFIRM_URL));
     ok('text states the 7 day window', msg.text.includes('works for 7 days'));
@@ -37,7 +37,7 @@ export function runEmailTemplatesTests() {
   // 2. Confirmation with no known query falls back to the general sentence.
   {
     const msg = confirmationEmail({ query: null, confirmUrl: CONFIRM_URL });
-    ok('general opening used', msg.text.startsWith('You asked TrueRank to email you when new research is ready.'));
+    ok('general opening used', msg.text.startsWith('You asked Frank to email you when new research is ready.'));
     ok('still carries the link', msg.text.includes(CONFIRM_URL));
     const blank = confirmationEmail({ query: '   ', confirmUrl: CONFIRM_URL });
     ok('a blank query is treated as unknown', blank.text.includes('when new research is ready'));
@@ -46,7 +46,7 @@ export function runEmailTemplatesTests() {
   // 3. Report-ready message carries the unsubscribe link in body AND headers.
   {
     const msg = reportReadyEmail({ query: 'best office chairs', reportUrl: REPORT_URL, unsubUrl: UNSUB_URL });
-    eq('subject names the query', msg.subject, 'Your TrueRank report is ready: best office chairs');
+    eq('subject names the query', msg.subject, 'Your Frank report is ready: best office chairs');
     ok('text carries the report link', msg.text.includes(REPORT_URL));
     ok('text carries the unsubscribe link', msg.text.includes(UNSUB_URL));
     ok('text explains why it arrived', msg.text.includes('because you asked'));
@@ -74,7 +74,7 @@ export function runEmailTemplatesTests() {
   // 5. Unsubscribe receipt is transactional: no list headers at all.
   {
     const msg = unsubReceiptEmail();
-    eq('subject is fixed', msg.subject, 'You are unsubscribed from TrueRank');
+    eq('subject is fixed', msg.subject, 'You are unsubscribed from Frank');
     ok('no List-Unsubscribe header', msg.extraHeaders === undefined);
     ok('text has no unsubscribe link', !msg.text.includes('/unsubscribe'));
     ok('text says we will not write again', msg.text.includes('will not send you further email'));

@@ -1,5 +1,5 @@
 /**
- * The three messages TrueRank sends. Every function is pure and returns
+ * The three messages Frank sends. Every function is pure and returns
  * `{ subject, text, html }` (plus `extraHeaders` where the message belongs to
  * a list). The plain-text part is the canonical copy.
  *
@@ -49,8 +49,8 @@ function htmlDocument({ title, paragraphs, action }) {
 export function confirmationEmail({ query, confirmUrl }) {
     const topic = sanitizeLine(query);
     const opening = topic
-        ? `You asked TrueRank to email you when research on "${topic}" is ready.`
-        : 'You asked TrueRank to email you when new research is ready.';
+        ? `You asked Frank to email you when research on "${topic}" is ready.`
+        : 'You asked Frank to email you when new research is ready.';
     const text = [
         opening,
         '',
@@ -61,19 +61,20 @@ export function confirmationEmail({ query, confirmUrl }) {
         'The link works for 7 days. If you did not request this, ignore this',
         'email. We will not email you again.',
         '',
+        'Frank',
         SIGNATURE,
     ].join('\n');
     const html = htmlDocument({
-        title: 'Confirm your TrueRank email notification',
+        title: 'Confirm your Frank email notification',
         paragraphs: [
             escapeHtml(opening),
             'Confirm this address to turn the notification on.',
             'The link works for 7 days. If you did not request this, ignore this email. We will not email you again.',
-            'Chris<br>chrisputer.tech',
+            'Frank<br>Chris<br>chrisputer.tech',
         ],
         action: { url: confirmUrl, label: 'Confirm my email address' },
     });
-    return { subject: 'Confirm your TrueRank email notification', text, html };
+    return { subject: 'Confirm your Frank email notification', text, html };
 }
 
 /**
@@ -94,7 +95,7 @@ export function reportReadyEmail({ query, reportUrl, unsubUrl }) {
         `One-click unsubscribe: ${unsubUrl}`,
     ].join('\n');
     const html = htmlDocument({
-        title: 'Your TrueRank report is ready',
+        title: 'Your Frank report is ready',
         paragraphs: [
             'The research you asked about is done.',
             `<strong>${escapeHtml(topic)}</strong>`,
@@ -104,7 +105,7 @@ export function reportReadyEmail({ query, reportUrl, unsubUrl }) {
         action: { url: reportUrl, label: 'Read the report' },
     });
     return {
-        subject: `Your TrueRank report is ready: ${topic}`,
+        subject: `Your Frank report is ready: ${topic}`,
         text,
         html,
         // RFC 8058. The handler at /unsubscribe accepts the POST with no
@@ -124,20 +125,21 @@ export function reportReadyEmail({ query, reportUrl, unsubUrl }) {
 export function unsubReceiptEmail() {
     const text = [
         'This confirms your unsubscribe request. We removed your address from',
-        'all TrueRank email notifications. We will not send you further email.',
+        'all Frank email notifications. We will not send you further email.',
         '',
         'If this was a mistake, subscribe again on any report page.',
         '',
+        'Frank',
         SIGNATURE,
     ].join('\n');
     const html = htmlDocument({
-        title: 'You are unsubscribed from TrueRank',
+        title: 'You are unsubscribed from Frank',
         paragraphs: [
-            'This confirms your unsubscribe request. We removed your address from all TrueRank email notifications. We will not send you further email.',
+            'This confirms your unsubscribe request. We removed your address from all Frank email notifications. We will not send you further email.',
             'If this was a mistake, subscribe again on any report page.',
-            'Chris<br>chrisputer.tech',
+            'Frank<br>Chris<br>chrisputer.tech',
         ],
         action: null,
     });
-    return { subject: 'You are unsubscribed from TrueRank', text, html };
+    return { subject: 'You are unsubscribed from Frank', text, html };
 }

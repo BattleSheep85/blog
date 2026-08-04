@@ -68,23 +68,23 @@ export function layout(title, description, body, extra_head = '', meta) {
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>${escapedTitle} | TrueRank</title>
+<title>${escapedTitle} | Frank</title>
 <meta name="description" content="${escapedDesc}">
-<meta property="og:title" content="${escapedTitle} | TrueRank">
+<meta property="og:title" content="${escapedTitle} | Frank">
 <meta property="og:description" content="${escapedDesc}">
 <meta property="og:type" content="${ogType}">${ogUrl}
-<meta property="og:site_name" content="TrueRank">
+<meta property="og:site_name" content="Frank">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="${escapeHtml(ogImage)}">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="${escapedTitle} — TrueRank">
+<meta property="og:image:alt" content="${escapedTitle}: Frank">
 <meta property="og:image:type" content="${ogImageType}">
 <meta name="twitter:card" content="${twitterCard}">
-<meta name="twitter:title" content="${escapedTitle} | TrueRank">
+<meta name="twitter:title" content="${escapedTitle} | Frank">
 <meta name="twitter:description" content="${escapedDesc}">
 <meta name="twitter:image" content="${escapeHtml(ogImage)}">
-<meta name="twitter:image:alt" content="${escapedTitle} — TrueRank">${
+<meta name="twitter:image:alt" content="${escapedTitle}: Frank">${
     meta?.canonical ? `\n<link rel="canonical" href="${escapeHtml(meta.canonical)}">` : ''
   }${
     meta?.noindex ? '\n<meta name="robots" content="noindex,follow">' : ''
@@ -128,7 +128,7 @@ ${extra_head}
 <label for="drawer-toggle" class="drawer-overlay fixed inset-0 z-40 bg-ink/50 opacity-0 pointer-events-none peer-checked:opacity-100 peer-checked:pointer-events-auto dark:bg-black/70" aria-hidden="true"></label>
 <aside class="drawer-panel fixed inset-y-0 left-0 z-50 w-[86vw] max-w-xs -translate-x-full border-r border-line bg-surface-1 peer-checked:translate-x-0 sm:w-80" role="dialog" aria-label="Main navigation">
 <div class="flex items-center justify-between border-b border-line px-5 py-4">
-<a href="/" class="font-mono text-base font-bold tracking-tight text-ink">TRUE<span class="text-accent">RANK</span></a>
+<a href="/" class="font-mono text-base font-bold tracking-tight text-ink">FR<span class="text-accent">ANK</span></a>
 <label for="drawer-toggle" class="cursor-pointer border border-line p-1.5 text-ink-2 hover:border-line-strong hover:text-ink" aria-label="Close menu">
 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
 </label>
@@ -157,7 +157,7 @@ ${extra_head}
 <span class="block h-[1.5px] w-5 bg-ink"></span>
 <span class="block h-[1.5px] w-5 bg-ink"></span>
 </label>
-<a href="/" class="font-mono text-lg font-bold tracking-tight text-ink">TRUE<span class="text-accent">RANK</span></a>
+<a href="/" class="font-mono text-lg font-bold tracking-tight text-ink">FR<span class="text-accent">ANK</span></a>
 </div>
 <a href="/account" class="border border-line px-3 py-1.5 font-mono text-xs uppercase tracking-wide text-ink-2 hover:border-line-strong hover:text-ink" title="Your account">Account</a>
 </div>
@@ -185,7 +185,7 @@ sync(isDark);
 <div class="mx-auto max-w-5xl px-6 py-12">
 <div class="grid gap-10 font-mono text-xs sm:grid-cols-4">
 <div class="sm:col-span-2">
-<a href="/" class="text-base font-bold tracking-tight text-ink">TRUE<span class="text-accent">RANK</span></a>
+<a href="/" class="text-base font-bold tracking-tight text-ink">FR<span class="text-accent">ANK</span></a>
 <p class="mt-3 max-w-sm leading-relaxed text-ink-3">A verification console for product claims. Input the product, output the evidence.</p>
 </div>
 <div>
