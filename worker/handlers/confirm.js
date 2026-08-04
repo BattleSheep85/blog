@@ -17,11 +17,11 @@ function page(title, message, status) {
     const body = `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
-<title>${title} · TrueRank</title>
+<title>${title} · Frank</title>
 <style>body{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:#0b0b0c;color:#e7e7ea;display:flex;min-height:100vh;margin:0;align-items:center;justify-content:center;padding:1.5rem}
 .card{max-width:32rem;background:#161618;border:1px solid #2a2a2e;border-radius:1rem;padding:2rem;text-align:center}
 h1{font-size:1.25rem;margin:0 0 .75rem}p{color:#a8a8b0;line-height:1.6;margin:0 0 1.25rem}a{color:#8ab4ff}</style>
-</head><body><div class="card"><h1>${title}</h1><p>${message}</p><a href="/">Back to TrueRank</a></div></body></html>`;
+</head><body><div class="card"><h1>${title}</h1><p>${message}</p><a href="/">Back to Frank</a></div></body></html>`;
     return new Response(body, {
         status,
         headers: {

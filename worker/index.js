@@ -1,5 +1,5 @@
 /**
- * TrueRank — Cloudflare Worker entry point.
+ * Frank: Cloudflare Worker entry point.
  * Routes HTTP requests and processes Queue messages.
  * Server-rendered pages live under /research/:slug (permanent); the legacy
  * client-rendered /report/:id permalinks 301 there.
@@ -59,7 +59,7 @@ function requireDevAuth(request, env) {
   return new Response('Authentication required.', {
     status: 401,
     headers: {
-      'WWW-Authenticate': 'Basic realm="TrueRank Dev", charset="UTF-8"',
+      'WWW-Authenticate': 'Basic realm="Frank Dev", charset="UTF-8"',
       'Cache-Control': 'no-store',
       'Content-Type': 'text/plain; charset=utf-8',
     },

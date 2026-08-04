@@ -97,7 +97,7 @@ ${r.summary ? `<p class="mt-2 line-clamp-2 text-body-sm text-ink-2">${escapeHtml
         '@type': 'CollectionPage',
         '@id': canonicalUrl,
         url: canonicalUrl,
-        name: `Best ${categoryName} | Chrisputer Labs`,
+        name: `Best ${categoryName} | Frank`,
         description: `Source-backed ${categoryName.toLowerCase()} research and buying guides.`,
         inLanguage: 'en-US',
         isPartOf: { '@id': `${SITE}/#website` },
@@ -123,7 +123,7 @@ ${r.summary ? `<p class="mt-2 line-clamp-2 text-body-sm text-ink-2">${escapeHtml
 
     return layout(
         `Best ${categoryName}`,
-        `Honest, source-backed ${categoryName.toLowerCase()} research and buying guides from Chrisputer Labs.`,
+        `Honest, source-backed ${categoryName.toLowerCase()} research and buying guides from Frank.`,
         body,
         robots + canonical + structuredData,
         { ogUrl: canonicalUrl },

@@ -126,7 +126,7 @@ function buildStructuredData(results, { searchQuery, page, offset }) {
     '@type': 'CollectionPage',
     '@id': collectionUrl,
     url: collectionUrl,
-    name: searchQuery ? `Search: ${searchQuery} | Chrisputer Labs` : 'Browse Research',
+    name: searchQuery ? `Search: ${searchQuery} | Frank` : 'Browse Research',
     description: searchQuery
       ? `Research results matching "${searchQuery}".`
       : 'AI-powered product research archive.',

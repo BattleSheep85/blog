@@ -213,7 +213,7 @@ ${accountBenefits()}
 </div>
 </div>
 </div>`;
-    const html = layout('Sign in', 'Sign in to TrueRank to see your past research.', body, '<meta name="robots" content="noindex, follow">' + AUTH_PAGE_SCRIPT, { canonical: 'https://chrisputer.tech/login' });
+    const html = layout('Sign in', 'Sign in to Frank to see your past research.', body, '<meta name="robots" content="noindex, follow">' + AUTH_PAGE_SCRIPT, { canonical: 'https://chrisputer.tech/login' });
     return html;
 }
 
@@ -270,5 +270,5 @@ export async function renderAccountPage(request, env) {
 <script type="application/json" id="account-history-data">${historyJson}</script>
 <div id="account-history-list" aria-live="polite"></div>
 </div>`;
-    return layout('Your research', 'Your past TrueRank searches.', body, '<meta name="robots" content="noindex, follow">' + ACCOUNT_PAGE_SCRIPT, { canonical: 'https://chrisputer.tech/account' });
+    return layout('Your research', 'Your past Frank searches.', body, '<meta name="robots" content="noindex, follow">' + ACCOUNT_PAGE_SCRIPT, { canonical: 'https://chrisputer.tech/account' });
 }

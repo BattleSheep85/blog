@@ -25,7 +25,7 @@ import { sendViaSmtp } from './smtp.js';
 const DEFAULT_HOST = 'smtp.hostinger.com';
 const DEFAULT_PORT = '465';
 const DEFAULT_FROM = 'chris@chrisputer.tech';
-const DEFAULT_FROM_NAME = 'Chris at TrueRank';
+const DEFAULT_FROM_NAME = 'Frank';
 const DEFAULT_DAILY_CAP = 200;
 // Two days of TTL covers the UTC-day rollover with room to inspect the counter.
 const COUNTER_TTL_S = 2 * 86400;

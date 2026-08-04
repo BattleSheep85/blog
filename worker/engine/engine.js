@@ -1,6 +1,6 @@
 // Research agent engine. Plain ES module, ported from src/lib/engine.ts.
 // Types erased. Event writes go through an async onEvent(type, message, detail)
-// callback instead of a D1 research_events table (TrueRank has no events table;
+// callback instead of a D1 research_events table (Frank has no events table.
 // the wiring agent connects onEvent to the KV progress updater).
 import { buildAgentTools, executeTool } from './tools.js';
 import { buildAgentPrompt, buildSynthesisPrompt } from './prompts.js';

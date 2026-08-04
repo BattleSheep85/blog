@@ -71,7 +71,7 @@ export async function callLLMStreaming(apiKey, model, messages, onToken, opts = 
         'Content-Type': 'application/json',
         Authorization: `Bearer ${apiKey}`,
         'HTTP-Referer': 'https://chrisputer.tech',
-        'X-Title': 'Chrisputer Labs',
+        'X-Title': 'Frank',
         Accept: 'text/event-stream',
       },
       body: JSON.stringify({
@@ -175,7 +175,7 @@ export async function callLLM(apiKey, model, messages, opts = {}) {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${apiKey}`,
         'HTTP-Referer': 'https://chrisputer.tech',
-        'X-Title': 'Chrisputer Labs',
+        'X-Title': 'Frank',
       },
       body: JSON.stringify(body),
     });

@@ -275,7 +275,7 @@ export async function classifyQuery(env, query, canonical) {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${env.OPENROUTER_API_KEY}`,
         'HTTP-Referer': 'https://chrisputer.tech',
-        'X-Title': 'Chrisputer Labs Classifier',
+        'X-Title': 'Frank Classifier',
       },
       body: JSON.stringify({
         model: CLASSIFIER_MODEL,

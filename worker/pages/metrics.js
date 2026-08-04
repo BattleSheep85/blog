@@ -1,4 +1,4 @@
-// /metrics — pull-based metrics snapshot for the Chrisputer Labs dashboard.
+// /metrics: pull-based metrics snapshot for the Frank dashboard.
 //
 // Bearer-token auth via the METRICS_TOKEN env secret:
 //   - 503 if METRICS_TOKEN is unset (endpoint not configured)
