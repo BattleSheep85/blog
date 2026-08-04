@@ -207,7 +207,7 @@ export async function renderResearchResult(slug, env, fromQuery = null, cleanLin
 <h1 class="mt-3 font-serif text-h1 font-semibold text-ink">${escapeHtml(displayTitle)}</h1>
 ${entry.category ? `<span class="card-badge mt-3 inline-block">${escapeHtml(entry.category)}</span>` : ''}
 ${!isWinner ? `<div class="mt-4 border border-line bg-surface-1 px-4 py-3 text-body-sm text-ink-2">A newer report answers this question. <a href="${winnerUrl}" class="underline hover:text-ink">Read the current version</a>.</div>` : ''}
-<div class="mt-4 border border-line bg-surface-1 px-4 py-3 text-body-sm text-ink-2">This report was written by AI from real reviews we gathered and read, not by a human editor. <a href="/how-it-works" class="underline hover:text-ink">See how it works</a>.</div>
+<div class="mt-4 border border-line bg-surface-1 px-4 py-3 text-body-sm text-ink-2">Frank wrote this from real reviews he read himself, not a human editor. <a href="/how-it-works" class="underline hover:text-ink">See how Frank works</a>.</div>
 <div class="page-meta mt-4 flex flex-wrap gap-4 font-mono text-[13px] text-ink-3 readout">
 <span>Published <time datetime="${createdIso}">${date}</time></span>
 ${entry.completed_at && entry.completed_at !== entry.created_at ? `<span>Last updated <time datetime="${lastUpdatedIso}">${lastUpdatedLabel}</time></span>` : ''}

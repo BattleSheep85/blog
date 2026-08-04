@@ -305,7 +305,7 @@ ${adSlot(env, 'bottom', 'Advertisement')}
         item.review = {
           '@type': 'Review',
           reviewBody: r.verdict,
-          author: { '@type': 'Organization', name: 'Chrisputer Labs', url: 'https://chrisputer.tech' },
+          author: { '@type': 'Organization', name: 'Frank', url: 'https://chrisputer.tech' },
           ...(r.rating != null ? { reviewRating: { '@type': 'Rating', ratingValue: r.rating, bestRating: 5, worstRating: 0 } } : {}),
         };
       }
@@ -355,7 +355,7 @@ ${adSlot(env, 'bottom', 'Advertisement')}
 </script>`;
   const desc = categoryOnly
     ? `Honest reviews of ${filters.category} — ratings, pros and cons, and verdicts synthesized from real user reviews. No paid placements.`
-    : 'Every product TrueRank has reviewed, filterable by category, brand, price, and rating. Honest ratings, pros and cons, and verdicts synthesized from real user reviews. No paid placements.';
+    : 'Every product Frank has reviewed, filterable by category, brand, price, and rating. Honest ratings, pros and cons, and verdicts synthesized from real user reviews. No paid placements.';
   const reviewsListBoot = reviewListItems.length > 0
     ? listLayoutBoot({ dataId: 'reviews-list-data', containerId: 'reviews-list', kind: 'review' })
     : '';

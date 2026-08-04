@@ -193,13 +193,13 @@ export async function generateAtomFeed(origin, env, ifModifiedSince) {
   const currentYear = new Date(latestUpdated * 1000).getUTCFullYear();
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
-<title>Chrisputer Labs — Research Feed</title>
+<title>Frank: Research Feed</title>
 <link href="${origin}/feed.xml" rel="self"/>
 <link href="${origin}/"/>
 <id>${origin}/</id>
 <updated>${feedUpdated}</updated>
 <author><name>Chrisputer Labs</name><uri>${origin}/</uri></author>
-<subtitle>Latest AI-powered product research</subtitle>
+<subtitle>Frank's latest product research</subtitle>
 <icon>${origin}/favicon.svg</icon>
 <logo>${origin}/og.png</logo>
 <rights>© ${currentYear} Chrisputer Labs. All rights reserved.</rights>

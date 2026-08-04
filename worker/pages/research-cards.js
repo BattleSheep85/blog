@@ -233,7 +233,7 @@ export function renderOurPick(p, ids, isService, slug, cleanLinks, webOnly, last
     ? `<div class="ourpick-freshness mt-4 font-mono text-[11px] uppercase tracking-widest ${freshness.isStale ? 'text-trust-low' : 'text-trust-high'}">Prices checked ${freshness.text}</div>`
     : '';
   return `<div class="ourpick-box mt-6 border-2 border-trust-medium bg-surface-1 p-6" id="our-pick">
-<div class="ourpick-eyebrow font-mono text-[11px] font-semibold uppercase tracking-widest text-trust-medium">Our pick</div>
+<div class="ourpick-eyebrow font-mono text-[11px] font-semibold uppercase tracking-widest text-trust-medium">Frank's pick</div>
 <h2 class="ourpick-name wrap-anywhere mt-2 font-serif text-h3 font-semibold text-ink">${escapeHtml(p.name)}</h2>
 ${(ratingHtml || priceHtml) ? `<div class="ourpick-meta mt-2 flex flex-wrap items-center gap-x-4 gap-y-1">${ratingHtml}${priceHtml}</div>` : ''}
 ${ratingNote(p, Array.isArray(p.cons) ? p.cons : [])}

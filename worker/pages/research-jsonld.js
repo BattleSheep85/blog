@@ -44,7 +44,7 @@ function buildProductNodes(products, affiliateIds, priceValidUntil, isoDate) {
         '@type': 'Review',
         reviewBody: p.verdict,
         datePublished: isoDate,
-        author: { '@type': 'Organization', name: 'Chrisputer Labs', url: 'https://chrisputer.tech' },
+        author: { '@type': 'Organization', name: 'Frank', url: 'https://chrisputer.tech' },
       };
       if (p.rating != null) review.reviewRating = { '@type': 'Rating', ratingValue: p.rating, bestRating: 5, worstRating: 0 };
       item.review = review;
@@ -76,13 +76,13 @@ function buildArticleJsonLd(entry, pageUrl, displayTitle, isoDate, isoModified, 
     author: {
       '@id': 'https://chrisputer.tech/#organization',
       '@type': 'Organization',
-      name: 'Chrisputer Labs',
+      name: 'Frank',
       url: 'https://chrisputer.tech',
     },
     publisher: {
       '@id': 'https://chrisputer.tech/#organization',
       '@type': 'Organization',
-      name: 'Chrisputer Labs',
+      name: 'Frank',
       url: 'https://chrisputer.tech',
       logo: { '@type': 'ImageObject', url: 'https://chrisputer.tech/og.png' },
     },
@@ -167,7 +167,7 @@ function buildLayoutMeta(pageUrl, isoDate, isoModified, entry, keywordTerms) {
     article: {
       publishedTime: isoDate,
       modifiedTime: isoModified,
-      author: 'Chrisputer Labs',
+      author: 'Frank',
       ...(entry.category ? { section: entry.category } : {}),
       ...(keywordTerms.length > 0 ? { tags: keywordTerms } : {}),
     },
