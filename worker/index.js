@@ -34,6 +34,7 @@ import { GUIDES_LASTMOD } from './lib/guides.js';
 import { CACHE_VERSION } from './lib/flags.js';
 import { notFound, redirect301, maybe304, withSecurityHeaders, htmlPageResponse, serveAsset } from './lib/http-response.js';
 import { handleResearchPage, handleBestHub, handleNewResearch, handleSearchSuggest } from './routes/pages.js';
+import { renderFrankPage } from './pages/frank-egg.js';
 import { deadUrlResponse } from './lib/dead-urls.js';
 import { processResearchMessage, processVerificationMessage, runScheduledTick } from './jobs.js';
 
@@ -278,6 +279,12 @@ export default {
 
                 if (path === '/history' || path === '/history/') {
                     return htmlPageResponse(renderHistoryPage(), env, { cacheControl: 'no-store' });
+                }
+
+                // Hidden, unlinked easter-egg page. Never referenced from nav,
+                // footer, or the sitemap — see worker/pages/frank-egg.js.
+                if (path === '/frank') {
+                    return htmlPageResponse(renderFrankPage(), env, { cacheControl: 'no-store' });
                 }
 
                 // Monetized Google hand-off for not-sold-on-Amazon categories.

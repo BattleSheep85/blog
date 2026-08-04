@@ -1,5 +1,14 @@
 import { escapeHtml } from './utils.js';
 
+// Nonce'd external script tag for the site-wide fun easter eggs (Konami
+// code, typed "frank" trigger, devtools console message). The listener JS
+// lives in public/js/frank-egg.js; a nonce-carrying <script src> tag is
+// allowed directly under the nonce-based CSP, no strict-dynamic needed.
+// public/index.html (the one static page that skips this layout()) repeats
+// this same tag. Delete both call sites plus public/js/frank-egg.js and
+// worker/pages/frank-egg.js to fully remove the feature.
+const FRANK_EGG_SCRIPT_TAG = '<script nonce="__CSP_NONCE__" src="/js/frank-egg.js" defer></script>';
+
 // Tagged template literal for safe HTML — auto-escapes interpolated values
 export function html(strings, ...values) {
   let result = '';
@@ -203,6 +212,7 @@ sync(isDark);
 </div>
 </div>
 </footer>
+${FRANK_EGG_SCRIPT_TAG}
 </body>
 </html>`;
 }
