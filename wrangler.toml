@@ -77,7 +77,7 @@ INDEXNOW_KEY = "2b049a04674b366dc9b485b792ad823e"
 # not a config change. See issues.md 2026-08-03.
 MAIL_ENABLED = "false"
 MAIL_FROM = "chris@chrisputer.tech"
-MAIL_FROM_NAME = "Chris at TrueRank"
+MAIL_FROM_NAME = "Frank"
 SMTP_HOST = "smtp.hostinger.com"
 SMTP_PORT = "465"                # implicit TLS; v1 supports 465 only
 MAIL_DAILY_CAP = "200"           # global outbound ceiling per UTC day
