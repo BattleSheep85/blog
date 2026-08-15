@@ -122,6 +122,22 @@ namespace_id = "1001"
 limit = 10
 period = 60
 
+# SITE-WIDE gate for the affiliate redirect surface (/api/go/*). Separate
+# binding from RL_BURST so the two tunings stay independent. Called with a
+# CONSTANT key, so every request on the site shares ONE counter: that is what
+# catches an IP-rotating bot, which a per-IP cap cannot see (incident
+# 2026-08-14/15: 1,232 clicks, 1,232 distinct IPs, ~1 click each).
+# 6 per 60 s = a 360/hour site ceiling, 15x the busiest hour ever recorded and
+# 2x the busiest real minute. Sizing data: worker/lib/affiliate-gate.js.
+# Rollback: delete this block. worker/lib/affiliate-gate.js fail-opens when
+# env.RL_AFFILIATE_GLOBAL is undefined and the per-IP KV cap still applies.
+[[ratelimits]]
+name = "RL_AFFILIATE_GLOBAL"
+namespace_id = "1002"
+[ratelimits.simple]
+limit = 6
+period = 60
+
 # Secrets (set via wrangler secret put):
 # OPENROUTER_API_KEY  — paid OpenRouter key (planner/synth/classifier models)
 # SERPER_API_KEY      — Serper.dev Google Search (web + news providers)

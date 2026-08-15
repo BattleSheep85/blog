@@ -28,6 +28,7 @@ import { runJinaTests } from '../test/unit/jina.test.js';
 import { runQuotaTests } from '../test/unit/quota.test.js';
 import { runConstraintsTests } from '../test/unit/constraints.test.js';
 import { runBurstGateTests } from '../test/unit/burst-gate.test.js';
+import { runAffiliateGateTests } from '../test/unit/affiliate-gate.test.js';
 import { runLlmJsonTests } from '../test/unit/llm-json.test.js';
 import { runPoolTests } from '../test/unit/pool.test.js';
 import { runEmailMimeTests } from '../test/unit/email-mime.test.js';
@@ -63,6 +64,7 @@ const suites = [
   ['quota', runQuotaTests], // async suite (awaited below)
   ['constraints', runConstraintsTests],
   ['burst-gate', runBurstGateTests], // async suite (awaited below)
+  ['affiliate-gate', runAffiliateGateTests], // async suite (awaited below)
   ['llm-json', runLlmJsonTests],
   ['pool', runPoolTests], // async suite (awaited below)
   ['email-mime', runEmailMimeTests],

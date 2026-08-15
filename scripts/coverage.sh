@@ -32,6 +32,7 @@ INCLUDES=(
   worker/lib/html.js
   worker/lib/search-bar.js
   worker/lib/burst-gate.js
+  worker/lib/affiliate-gate.js
   worker/lib/llm-json.js
   worker/lib/pool.js
   worker/lib/mime.js

@@ -1,6 +1,71 @@
 # Issues
 
-Last updated: 2026-08-03
+Last updated: 2026-08-15
+
+## 2026-08-15: IP-rotating affiliate click fraud, site-wide gate added
+
+Second incident on the affiliate redirect surface, and the first one the
+existing defenses could not see.
+
+### Incident (production D1, measured)
+
+- 2026-08-14 21:00 to 2026-08-15 01:00 UTC: **1,232 logged affiliate clicks**
+  across 213 report pages (owner's count over the wider window: 1,256).
+- **1,232 distinct `ip_hash` values for 1,232 clicks**, so about one click per
+  address, spread over the whole site instead of a few pages.
+- Spread over 183 distinct minutes, peaks of 17 to 23 clicks a minute.
+- Baseline before it (5 weeks, 2026-07-08 to 2026-08-13): median 4 clicks a
+  day, busiest multi-visitor hour 9, busiest hour of any kind 24, busiest
+  multi-visitor minute 3.
+
+### Why the existing defense missed it
+
+The 2026-06-21 incident was 6 hot IPs, so the fix was a PER-IP cap
+(`checkRateLimit(env.KV, 'go:' + ip, 30, 3600)`). This attacker never put more
+than one click on an address, so it never got within 29 of that cap. A per-IP
+cap cannot see an IP-rotating source by construction. Nothing on the endpoint
+looked at total volume.
+
+### Fixed
+- [x] HIGH (security/revenue): no SITE-WIDE volume limit on `/api/go/*`, so an
+      IP-rotating bot could send unlimited tagged clicks through the Amazon
+      Associates link and risk account suspension for invalid traffic. Added
+      `worker/lib/affiliate-gate.js`: `checkBurstGate` called with the CONSTANT
+      key `affiliate:global` on a NEW native binding, `RL_AFFILIATE_GLOBAL`
+      (namespace_id 1002, 6 per 60 s). A constant key means one counter for the
+      whole site, which is what makes it global instead of per-visitor. It is a
+      second layer, checked after UA screening and before the per-IP cap. The
+      per-IP cap is unchanged. Rollback = delete the `[[ratelimits]]` block, the
+      gate fail-opens the same way `RL_BURST` does.
+- [x] Limit sizing: 6 per 60 s is 2x the busiest real minute on record and its
+      360/hour ceiling is 15x the busiest hour of any kind, so real traffic at
+      today's scale cannot reach it. The worst incident hour on record (1,475
+      clicks, 2026-06-21) would have been held to 360. Every trip logs one
+      structured line (`where: affiliate-gate`, `event: global-throttle`) with
+      the limit and period, so tuning data accumulates.
+- [x] Regression test: `test/integration/affiliate-global-gate.spec.js` replays
+      the evasion (20 addresses, one click each, all far under the per-IP cap)
+      and asserts the gate still throttles, that a rotation to a fresh /24 buys
+      nothing, that 3 clicks from 3 IPs never trip it, and that the 30/hour
+      per-IP behavior is untouched. Unit side:
+      `test/unit/affiliate-gate.test.js`, which also asserts the code constants
+      match the shipped `wrangler.toml` and `wrangler.dev.toml` blocks.
+
+### Known consequence (accepted)
+- The gate is global, so during an attack a real shopper can be throttled too.
+  A throttled click still 302-redirects, it only loses the associate tag and is
+  not logged, which is the same handling the per-IP cap already used. Losing a
+  possible commission beats losing the Associates account.
+
+### Open
+- [ ] MEDIUM (security): a native binding only supports a 10 s or 60 s window,
+      so it can express a rate ceiling but not "700 an hour is abnormal". A
+      slow, wide attacker under 6 a minute still passes. If the trip log shows
+      that shape, add a global hourly counter with the existing KV limiter
+      (`checkRateLimit(env.KV, 'go:global', N, 3600)`), which has no window
+      restriction.
+- [ ] LOW (data): the incident's 1,232 rows are still in `affiliate_clicks` and
+      inflate click reporting for 2026-08-14/15. Not deleted, kept as evidence.
 
 ## 2026-08-03: Research archive pagination, one definition of "listable"
 

@@ -79,6 +79,15 @@ namespace_id = "1001"
 limit = 10
 period = 60
 
+# Site-wide affiliate gate. Mirror of the production block, same reason as
+# above: ratelimits are not inherited between configs.
+[[ratelimits]]
+name = "RL_AFFILIATE_GLOBAL"
+namespace_id = "1002"
+[ratelimits.simple]
+limit = 6
+period = 60
+
 # Secrets (set via: wrangler secret put <NAME> -c wrangler.dev.toml):
 #   OPENROUTER_API_KEY — paid OpenRouter key (planner/classifier; synth is local)
 #   SERPER_API_KEY     — Serper.dev Google Search
