@@ -1,0 +1,83 @@
+{
+  "label": "minimax-m3",
+  "judgeModel": "anthropic/claude-fable-5",
+  "method": "v2: judged against the FULL production source text, not the 5,000-char clipped bundle excerpt.",
+  "complete": true,
+  "costUsd": 2.0735550000000003,
+  "avgQualityNonFail": 8.19,
+  "completionsNonFail": 8,
+  "totalProducts": 10,
+  "hardFails": 2,
+  "results": {
+    "audio": {
+      "product": "Samsung HW-Q990D Soundbar",
+      "score": 7,
+      "reasoning": "Core claims (11.1.4 channels, Dolby Atmos, wireless rears, Q-Symphony, speaker layout, Alexa built-in, Google Assistant/Chromecast) are well grounded in Q990D-specific sources, and junk like star ratings and firmware forum complaints was correctly filtered. However, claims 8–10 (eARC, Bixby, Alexa third-party control) are lifted from generic Samsung support/how-to pages not specific to the Q990D (one even references 2020 QLED TVs), which is weak grounding bordering on cross-product attribution.",
+      "claim_count": 10,
+      "source_chars": 5282
+    },
+    "tv_display": {
+      "product": "Samsung QN90D Neo QLED",
+      "score": 9,
+      "reasoning": "All claims are grounded in the source text (mostly the Samsung 75-inch product page and the Amazon QN90D listing), model sizes are correctly disambiguated (e.g., 4K 120Hz noted as applying to the 98-inch/2.47m variant), and junk like star ratings, pricing, and nav boilerplate was filtered out. Minor nitpicks: the dimension figure is copied verbatim from a garbled source line (implausible as mm) and claim 1 hardcodes the 75-inch size for a claim about the general QN90D line, but nothing is invented or contaminated.",
+      "claim_count": 12,
+      "source_chars": 20035
+    },
+    "computing": {
+      "product": "Lenovo ThinkPad X1 Carbon",
+      "score": 8.5,
+      "reasoning": "All claims are grounded in the source text with correct generation attribution (Gen 13 vs Gen 12 kept straight), and the extraction wisely skipped junk like star ratings, nav/support boilerplate, and Source 4's confused '15th-gen Core Ultra' text. Minor deductions: claims 8-10 uncritically pass through questionable retailer text (a '255U' in a Gen 12 listing and the garbled '400 nits' line from Source 7), though they are faithfully grounded as stated.",
+      "claim_count": 12,
+      "source_chars": 4390
+    },
+    "wearable_health": {
+      "product": "Fitbit Charge 6",
+      "score": 9,
+      "reasoning": "All claims are grounded in the source text and correctly attributed to the Charge 6, with the extraction properly avoiding contamination from the separate 'Fitbit Air' product (sources 4-5) and skipping forum troubleshooting noise. Minor quibbles: claims 8-9 come from the generic Google ECG app Play Store listing rather than a Charge 6-specific spec, and 'share with your doctor' slightly completes a truncated sentence.",
+      "claim_count": 11,
+      "source_chars": 5153
+    },
+    "kitchen": {
+      "product": "Presto Pressure Cooker 6qt",
+      "score": "FAIL",
+      "reasoning": "The source clearly contains real, checkable Presto 6-quart pressure cooker claims (e.g., Presto 01264 cooks 3-10x faster and weighs 5.4 lbs, includes steam basket and adjustable pressure valve; Presto 01362 induction-compatible stainless model; Presto electric model with 19 presets), yet the model returned zero claims. While model disambiguation across 01264/01362/02141 required care, an empty extraction on a claim-rich source is a hard failure.",
+      "claim_count": 0,
+      "source_chars": 4649
+    },
+    "cleaning": {
+      "product": "Samsung Bespoke Jet Vacuum",
+      "score": 9,
+      "reasoning": "All 12 claims are grounded in the source text with correct model attribution (Ultra 400AW/1300W, Lite 1.45kg/280W, base Jet 210AW), and the extraction correctly avoided contaminating with Jet Bot Combo, Jet 60, and the unrelated washer/dryer sources. Only minor quibble: accessory pricing (filter/dust bags) is borderline as product claims, though these are official first-party Bespoke Jet accessories and accurately extracted.",
+      "claim_count": 12,
+      "source_chars": 9734
+    },
+    "power_charging": {
+      "product": "Anker 737 Power Bank",
+      "score": 9,
+      "reasoning": "All claims are grounded in the source text (capacity, 140W, 3 ports, PD 3.1, bi-directional charging, display features, and iPhone/iPad charge counts from the Best Buy listing of the same A1289 product), with no cross-product contamination and no junk claims like star ratings, prices, or review boilerplate extracted. Minor nitpick: the battery cycle/health display claims are lightly inferred from an FAQ snippet and a user review rather than an explicit spec statement.",
+      "claim_count": 12,
+      "source_chars": 16184
+    },
+    "baby": {
+      "product": "Dr. Brown's Natural Flow Baby Bottles",
+      "score": 9,
+      "reasoning": "All 12 claims are grounded in the source text, junk (Amazon Live video promos, prices, star ratings) was correctly filtered out, and no cross-product contamination (e.g., Comotomo comparison) leaked in. Minor deduction: some specs (e.g., '100% silicone nipple' from the Level 2 wide-neck listing, dishwasher-safe from the 9oz SKU) are generalized to the whole product line without noting which variant they came from.",
+      "claim_count": 12,
+      "source_chars": 4541
+    },
+    "smart_home": {
+      "product": "Google Nest Hub Max",
+      "score": "FAIL",
+      "reasoning": "The extraction returned zero claims, but the source clearly contains real, checkable Nest Hub Max claims: Source 5 (Best Buy) states it is a 10-inch smart display with Google Assistant, has 2 microphones, and includes a camera and microphone, and Source 6 states Gemini for Home will work on the Nest Hub Max. An empty list on this source is a hard failure, not an honest garbage-source response.",
+      "claim_count": 0,
+      "source_chars": 4716
+    },
+    "outdoor": {
+      "product": "CamelBak Chute Mag Water Bottle",
+      "score": 5,
+      "reasoning": "The extraction correctly ignored the massive Amazon nav boilerplate (Source 1) and avoided contaminating the CamelBak with the unrelated Pure Bottle listing (Source 2). However, its single claim is derived from a third-party accessory listing's compatibility title (Source 3), which is exactly the kind of junk source that shouldn't be treated as an authoritative product spec; the honest answer here was likely zero claims.",
+      "claim_count": 1,
+      "source_chars": 3572
+    }
+  }
+}

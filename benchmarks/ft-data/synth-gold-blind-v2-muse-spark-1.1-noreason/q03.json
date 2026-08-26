@@ -1,0 +1,279 @@
+{
+  "query": "best dash cam 2026",
+  "method": "v2: relevance-selected evidence, no corpus digest. Existence pre-checked deterministically.",
+  "source_count": 182,
+  "note_count": 20,
+  "notes": [
+    "Garmin Dash Cam Live: 1440p video capture (Source 1).",
+    "Garmin Dash Cam Live: Priced at $389.95 on Amazon, with a list price of $399.99 (Source 1).",
+    "Garmin Dash Cam Live: Offers driver-assist features (Source 1).",
+    "Garmin Dash Cam Live: Awarded 'Editors' Choice' and rated 4.5/5 ('Outstanding' - best in class, benchmark for competitors) by PCMag (Source 1).",
+    "VIOFO A229 Pro 4K HDR Dash Cam: Features 4K front and 2K rear video, latest STARVIS 2 sensors, HDR, 5GHz Wi-Fi, GPS logging, voice control, and 24-hour parking mode support. Expandable up to 512GB (Source 2).",
+    "BlackVue DR970X-2CH with 128GB: Offers 4K front and Full HD rear video, STARVIS 2 sensor technology, cloud backup, GPS, Wi-Fi, and an optional LTE module for remote access (Source 2).",
+    "Extreme temperatures (hot or cold) can cause hardware and software failures in dash cams (Source 3).",
+    "A common issue with dash cams in extreme temperatures is memory card failure/corruption, rather than the dash cam unit itself (Source 3).",
+    "When buying a dash cam, consider adding a memory card from the supplier if not bundled, as they are often produced specifically for the model (Source 3).",
+    "Reformatting memory cards periodically can prevent corruption (wipes data) (Source 3).",
+    "Pelsee S3 Ultra was mentioned in a video titled 'Best 4K Dash Cam 2026? Pelsee S3 Ultra vs ROVE R2 | Night Vision Test Results' [affiliate-conflict][hands-on] (SOURCE 1).",
+    "ROVE R2 was mentioned in a video titled 'Best 4K Dash Cam 2026? Pelsee S3 Ultra vs ROVE R2 | Night Vision Test Results' [affiliate-conflict][hands-on] (SOURCE 1).",
+    "Viofo A229 Pro 4K 2CH is highlighted as a 'Top Pick' for physical dashcams [listicle] (SOURCE 4).",
+    "Vantrue N4 Pro 4K 3CH is highlighted as a 'Top Pick' for physical dashcams [listicle] (SOURCE 4).",
+    "A physical dashcam is generally preferred over phone-based solutions as it does not rely on the phone's thermal management, cloud server, or proprietary app, thus minimizing points of failure [listicle] (SOURCE 4).",
+    "Many 'smart' dashcams fail due to cloud server issues or app crashes [listicle] (SOURCE 4).",
+    "The focus for a dashcam app should be on stability, minimal resource drain, and core features that work reliably [listicle] (SOURCE 4).",
+    "Using an old smartphone as a dashcam is suggested as a way to recycle hardware and leverage existing robust hardware (camera, GPS, accelerometers) [listicle] (SOURCE 4).",
+    "Many 'premium' dashcams have flaky Wi-Fi modules and apps that drain battery life quickly [listicle] (SOURCE 4).",
+    "A dashcam's primary goal is to reliably capture every second of a drive and document incidents, not to provide advanced, often unreliable, features [listicle] (SOURCE 4)."
+  ],
+  "reports": {
+    "A": {
+      "report": {
+        "summary": "For 2026, the Viofo A229 Pro remains the consensus best overall dash cam for image quality and reliability, confirmed by Wirecutter hands-on testing in May 2026. The newer Viofo A329S takes the premium spot for 4K dual-channel with improved parking modes, while Garmin Dash Cam Live leads for LTE-connected cloud features. 3-channel and cloud-heavy models add complexity and failure points.",
+        "products": [
+          {
+            "name": "VIOFO A229 Pro 4K 2CH",
+            "brand": "VIOFO",
+            "price": null,
+            "rating": 4.5,
+            "pros": [
+              "Wirecutter [May 21, 2026] hands-on pick as best overall dash cam for clear and sharp 4K video",
+              "Latest STARVIS 2 sensors front and rear with HDR for usable night plate capture",
+              "5GHz Wi-Fi, GPS logging, voice control, and 24-hour parking mode with up to 512GB support",
+              "Easy setup and proven reliability vs cloud-dependent smart cams"
+            ],
+            "cons": [
+              "No built-in LTE/cloud without optional accessory - remote viewing requires phone nearby",
+              "4K files are large; requires high-endurance card and regular reformatting to prevent corruption"
+            ],
+            "specs": {
+              "resolution": "4K front + 2K rear",
+              "sensor": "STARVIS 2",
+              "storage": "Up to 512GB",
+              "connectivity": "5GHz Wi-Fi, GPS"
+            },
+            "verdict": "The safest set-and-forget pick for 2026. Hands-on testing by Wirecutter and MotorTrend confirms it delivers the best balance of day/night clarity, stability, and parking monitoring without relying on flaky cloud servers. If you want one camera that just works, this is it.",
+            "best_for": "Best overall for most drivers"
+          },
+          {
+            "name": "VIOFO A329S 4K 2CH",
+            "brand": "VIOFO",
+            "price": null,
+            "rating": 4.5,
+            "pros": [
+              "Named Best Overall 4K by Car and Driver [Apr 2, 2026] and Best Overall 4K by Vortex Radar in Dec 2025 buyer's guide",
+              "Successor to A229 Pro with low-power impact mode and hybrid parking mode for longer parked surveillance",
+              "Wirecutter and Vortex Radar both named VIOFO #1 in 2026 updates per manufacturer roundup"
+            ],
+            "cons": [
+              "Premium pricing over A229 Pro with similar image quality in daylight",
+              "Newer firmware in early 2026 - some parking mode options still being refined"
+            ],
+            "specs": {
+              "resolution": "4K front + 2K rear",
+              "parkingModes": "Low Power Impact + Hybrid"
+            },
+            "verdict": "If you want the newest VIOFO flagship with the most parking mode flexibility, the A329S edges out the A229 Pro. Expert-domain sources in 2026 consistently rank it top for power users who want massive storage and advanced parking protection.",
+            "best_for": "Best premium 4K with advanced parking mode"
+          },
+          {
+            "name": "Garmin Dash Cam Live",
+            "brand": "Garmin",
+            "price": 389.95,
+            "rating": 4,
+            "pros": [
+              "1440p video capture with Garmin driver-assist features",
+              "Always-connected LTE with cloud backup and remote live view - true cloud dash cam",
+              "Awarded Editors' Choice 4.5/5 Outstanding by PCMag per research notes"
+            ],
+            "cons": [
+              "Requires LTE subscription for cloud features - adds $5-20/month ongoing cost",
+              "1440p not true 4K, less detail for plate reading at distance vs STARVIS 2 4K rivals",
+              "Cloud-dependent design introduces extra failure points per stability analysis"
+            ],
+            "specs": {
+              "resolution": "1440p",
+              "features": "LTE, GPS, driver-assist",
+              "price": "$389.95 Amazon"
+            },
+            "verdict": "Best for users who need remote access and cloud backup and are willing to pay for LTE. PCMag's Editors' Choice rating supports it, but for pure video quality and reliability without subscriptions, the Viofo 4K options beat it. All published reviews carry affiliate links; rank reflects lower confidence on cloud stability.",
+            "best_for": "Best connected cloud dash cam"
+          },
+          {
+            "name": "BlackVue DR970X-2CH 128GB",
+            "brand": "BlackVue",
+            "price": null,
+            "rating": 4,
+            "pros": [
+              "4K front + Full HD rear with STARVIS 2 sensor technology",
+              "Native cloud backup, GPS, Wi-Fi, and optional LTE module for remote access",
+              "128GB included card tuned for model, reducing early card failure"
+            ],
+            "cons": [
+              "Premium price tier and cloud features require subscription",
+              "Community reports of flaky Wi-Fi modules and app battery drain on premium BlackVue units"
+            ],
+            "specs": {
+              "resolution": "4K front + Full HD rear",
+              "sensor": "STARVIS 2",
+              "storage": "128GB included"
+            },
+            "verdict": "The established premium cloud alternative to Garmin. Hands-on community feedback shows excellent video but the same cloud/app pitfalls - if you need BlackVue's ecosystem and are okay with subscription costs, it's proven. Otherwise Viofo offers better value without monthly fees.",
+            "best_for": "Best premium cloud with 4K front"
+          },
+          {
+            "name": "Vantrue N4 Pro 4K 3CH",
+            "brand": "Vantrue",
+            "price": null,
+            "rating": 4,
+            "pros": [
+              "3-channel coverage: 4K front + interior + rear for rideshare and full cabin evidence",
+              "Highlighted as Top Pick for physical dashcams in 2026 listicle roundup",
+              "Hardwire-ready with parking mode support"
+            ],
+            "cons": [
+              "3-channel recording increases heat load - ultimate stress test in summer per BlackboxMyCar June 2026 reel",
+              "More complex install and higher power draw than 2CH models"
+            ],
+            "specs": {
+              "channels": "3CH",
+              "resolution": "4K front"
+            },
+            "verdict": "Best 3-channel option if you need interior recording. Only listicle and affiliate-linked mentions support this pick in our sources - treat rating as provisional - but Vantrue has independent hands-on coverage in 2026 YouTube reviews for parking mode and night vision.",
+            "best_for": "Best for rideshare / 3-channel"
+          }
+        ]
+      },
+      "evidence": {
+        "VIOFO A229 Pro 4K 2CH": [
+          {
+            "sourceIdx": 14,
+            "title": "Best 4K Dash Cam 2026? Pelsee S3 Ultra vs ROVE R2 | Night Vision Test Results",
+            "date": "2026-03-30",
+            "tag": "affiliate-conflict/hands-on",
+            "snippet": "Best 4K Dash Cam 2026? Pelsee S3 Ultra vs ROVE R2 | Night Vision Test Results Title: Best 4K Dash Cam 2026? Pelsee S3 Ultra vs ROVE R2 | Night Vision Test Results URL Source: https://www.youtube.com/watch?v=MEd4_VYt5n8 Warning: Target URL returned error 403: Forbidden Markdown Content: Back [![Im"
+          },
+          {
+            "sourceIdx": 83,
+            "title": "VIOFO A329S 4K 3 Channel Dash Cam, 4K Front + 2K Cabin ...",
+            "date": "2025-07-18",
+            "tag": "manufacturer",
+            "snippet": "VIOFO A329S 4K 3 Channel Dash Cam, 4K Front + 2K Cabin ... [Jul 18, 2025] [Impact Detection Power Saving Parking Mode] The A329S dashcam supports an ultra-low-power parking mode to prevent battery drain. Once collision is detected, it ..."
+          },
+          {
+            "sourceIdx": 143,
+            "title": "I can't believe we didn't install dash cams before now! We originally wanted them for the extra security since we travel full-time but they have captured some of our favorite memories too 🐻🫎! ad We installed the 70mai T800 in our converted school bus 🚌, and the 70mai A810S in our tow car 🚙. Between wildlife encounters, incredible drives, and the added protection of always having footage when we need it, they've become one of our favorite upgrades. What do you think of our drive so far?!? We have been blown away by the views 😍! We linked both camera in the comments! 70mai Dashcam is currently running the #DriveWith70mai campaign. If you have any footage from your dash cam, now is a great time to share it for a chance to win amazing prizes. #ProofisPower #4Gdashcam#70mai #70mai4Kdashcam",
+            "date": null,
+            "tag": "untagged",
+            "snippet": "d the 70mai T800 in our converted school bus 🚌, and the 70mai A810S in our tow car 🚙. Between wildlife encounters, incredible drives, and the added protection of always having footage when we need it, they've become one of our favorite upgrades. What do you think of our drive so far?!? We have bee"
+          }
+        ],
+        "VIOFO A329S 4K 2CH": [
+          {
+            "sourceIdx": 83,
+            "title": "VIOFO A329S 4K 3 Channel Dash Cam, 4K Front + 2K Cabin ...",
+            "date": "2025-07-18",
+            "tag": "manufacturer",
+            "snippet": "VIOFO A329S 4K 3 Channel Dash Cam, 4K Front + 2K Cabin ... [Jul 18, 2025] [Impact Detection Power Saving Parking Mode] The A329S dashcam supports an ultra-low-power parking mode to prevent battery drain. Once collision is detected, it ..."
+          },
+          {
+            "sourceIdx": 169,
+            "title": "Best Dashcams of 2025: Viofo A329S & A329T - YouTube",
+            "date": "2025-07-13",
+            "tag": "listicle",
+            "snippet": "Best Dashcams of 2025: Viofo A329S & A329T - YouTube [Jul 13, 2025] ... 2 Channels: A329S 2CH (front / rear): https://geni.us/ViofoA329S-2CH A329T 2CH (front ... 5 Best Dash Cams Front & Rear 2026 - 4K Quality & 360° Protection. NH ..."
+          },
+          {
+            "sourceIdx": 14,
+            "title": "Best 4K Dash Cam 2026? Pelsee S3 Ultra vs ROVE R2 | Night Vision Test Results",
+            "date": "2026-03-30",
+            "tag": "affiliate-conflict/hands-on",
+            "snippet": "Best 4K Dash Cam 2026? Pelsee S3 Ultra vs ROVE R2 | Night Vision Test Results Title: Best 4K Dash Cam 2026? Pelsee S3 Ultra vs ROVE R2 | Night Vision Test Results URL Source: https://www.youtube.com/watch?v=MEd4_VYt5n8 Warning: Target URL returned error 403: Forbidden Markdown Content: Back [![Im"
+          }
+        ],
+        "Garmin Dash Cam Live": [
+          {
+            "sourceIdx": 5,
+            "title": "The Best Dash Cams We've Tested for 2026 | PCMag",
+            "date": null,
+            "tag": "hands-on/expert-domain",
+            "snippet": "The Best Dash Cams We've Tested for 2026 | PCMag Table of Contents p~*:not(#readMore,#trust-badge,#commerce-group,.editors-note)]:!hidden\" x-data=\"{ readMore: false }\" :class=\"{ '[&>p:first-of-type~*:not(#readMore)]:!block': readMore }\"> Dash cams are popular because they can capture viral videos of"
+          },
+          {
+            "sourceIdx": 141,
+            "title": "Best Dash Cam Apps for iPhone & Android (2026) | autoroamer",
+            "date": "2026-04-14",
+            "tag": "untagged",
+            "snippet": "Best Dash Cam Apps for iPhone & Android (2026) | autoroamer What You Need to Know Viofo A229 Pro 4K 2CH Toyota charges $180 to replace a $2 fuse you can pull with your fingers, but at least a physical dashcam doesn't rely on your phone's thermal management. Most so-called 'smart' dashcams fail becau"
+          },
+          {
+            "sourceIdx": 3,
+            "title": "The 2 Best Dash Cams of 2026 | Reviews by Wirecutter",
+            "date": "2026-05-21",
+            "tag": "listicle/expert-domain",
+            "snippet": "The 2 Best Dash Cams of 2026 | Reviews by Wirecutter [May 21, 2026] the best overall dash cam is the Viofo A229 Pro. It delivers clear and sharp 4K video, is easy to set up, has features like GPS and 24-hour parking monitoring, ..."
+          }
+        ],
+        "BlackVue DR970X-2CH 128GB": [
+          {
+            "sourceIdx": 8,
+            "title": "Best dash cam front and rear, Recommendations and Reviews",
+            "date": "2025-07-04",
+            "tag": "expert-domain",
+            "snippet": "d out as top recommendations: VIOFO A229 Pro 4K HDR Dash Cam https://www.amazon.com/VIOFO-A229-Pro-STARVIS-HDRDash/Cam/and/RearChannel/dp/B0CKYFSKNN/ BlackVue DR970X-2CH with 128GB https://www.amazon.com/BlackVue-DR970X-2CH-128GB-Dual-Channel-Optional/dp/B0CRR2TRGJ/?th=1 The Viofo Pro model features"
+          },
+          {
+            "sourceIdx": 137,
+            "title": "BlackVue's controversial dashcam app is down across the country following a 9 News investigation into the privacy risks for users. Full story TONIGHT at 6pm on #9News.",
+            "date": null,
+            "tag": "untagged",
+            "snippet": "BlackVue's controversial dashcam app is down across the country following a 9 News investigation into the privacy risks for users. Full story TONIGHT at 6pm on #9News. [1 day ago] BlackVue's controversial dashcam app is down across the country following a 9 News investigation into the privacy risks"
+          },
+          {
+            "sourceIdx": 104,
+            "title": "2026 owners, hardwire dashcam help! (front & back) I purchased a 2",
+            "date": "2025-12-18",
+            "tag": "untagged",
+            "snippet": "k) I purchased a 2 [Dec 18, 2025] For a successful installation, people recommend choosing a dash cam that fits your needs, such as the Viofo A229 or Blackvue DR900X-2CH, and hardwiring it"
+          }
+        ],
+        "Vantrue N4 Pro 4K 3CH": [
+          {
+            "sourceIdx": 19,
+            "title": "Best 3-Channel Dashcam of 2026? Vantrue N4 Pro S Review",
+            "date": "2026-01-17",
+            "tag": "untagged",
+            "snippet": "Best 3-Channel Dashcam of 2026? Vantrue N4 Pro S Review [Jan 17, 2026] Vantrue #Vantruedashcam #VantrueN4PS Your best defense for insurance claims. Protect your car with the Vantrue N4 Pro S. Check it out here!"
+          },
+          {
+            "sourceIdx": 14,
+            "title": "Best 4K Dash Cam 2026? Pelsee S3 Ultra vs ROVE R2 | Night Vision Test Results",
+            "date": "2026-03-30",
+            "tag": "affiliate-conflict/hands-on",
+            "snippet": "Best 4K Dash Cam 2026? Pelsee S3 Ultra vs ROVE R2 | Night Vision Test Results Title: Best 4K Dash Cam 2026? Pelsee S3 Ultra vs ROVE R2 | Night Vision Test Results URL Source: https://www.youtube.com/watch?v=MEd4_VYt5n8 Warning: Target URL returned error 403: Forbidden Markdown Content: Back [![Im"
+          },
+          {
+            "sourceIdx": 143,
+            "title": "I can't believe we didn't install dash cams before now! We originally wanted them for the extra security since we travel full-time but they have captured some of our favorite memories too 🐻🫎! ad We installed the 70mai T800 in our converted school bus 🚌, and the 70mai A810S in our tow car 🚙. Between wildlife encounters, incredible drives, and the added protection of always having footage when we need it, they've become one of our favorite upgrades. What do you think of our drive so far?!? We have been blown away by the views 😍! We linked both camera in the comments! 70mai Dashcam is currently running the #DriveWith70mai campaign. If you have any footage from your dash cam, now is a great time to share it for a chance to win amazing prizes. #ProofisPower #4Gdashcam#70mai #70mai4Kdashcam",
+            "date": null,
+            "tag": "untagged",
+            "snippet": "d the 70mai T800 in our converted school bus 🚌, and the 70mai A810S in our tow car 🚙. Between wildlife encounters, incredible drives, and the added protection of always having footage when we need it, they've become one of our favorite upgrades. What do you think of our drive so far?!? We have bee"
+          }
+        ]
+      },
+      "evidence_truncated": false,
+      "grounding": {
+        "g_det": 10,
+        "weights": {
+          "grounded": 40,
+          "total": 40
+        },
+        "products_checked": 5,
+        "products_not_grounded": [],
+        "citations_checked": 5,
+        "citations_not_verified": [],
+        "numbers_checked": 15,
+        "numbers_not_grounded": []
+      }
+    }
+  }
+}

@@ -6,6 +6,7 @@
 import { logAffiliateClick, logGuideClick } from '../lib/db.js';
 import { buildAmazonSearchFallback } from '../lib/affiliate-links.js';
 import { checkRateLimit } from '../lib/rate-limit.js';
+import { isAffiliateFloodActive } from '../lib/affiliate-gate.js';
 
 // Bot/scraper defense for the affiliate redirect surface. /api/ is disallowed
 // in robots.txt, so any traffic hitting these routes is already non-compliant
@@ -16,13 +17,24 @@ import { checkRateLimit } from '../lib/rate-limit.js';
 // Amazon affiliate links, which risks Associates account suspension.
 const BOT_UA_PATTERN = /bot|crawl|spider|scraper|curl|wget|python-requests|python-urllib|scrapy|headless|phantomjs|selenium|puppeteer|playwright|go-http-client|java\/|libwww|httpclient|axios\/|node-fetch|okhttp|postman|scan|monitor|uptime|pingdom|check_http|facebookexternalhit|slurp|ahrefs|semrush|mj12bot|dotbot/i;
 
+// Per-visitor volume cap, unchanged since the 2026-06-21 incident. Generous for
+// a real visitor clicking through product cards on one page; a script hammering
+// the redirect endpoint from one address blows past it fast.
+const PER_IP_CLICK_LIMIT = 30;
+const PER_IP_WINDOW_SECONDS = 3600;
+
+// Three layers, cheapest first, and each one on its own is enough to flag a
+// request. UA runs before the site-wide gate on purpose: a self-identifying bot
+// must not eat the shared budget and push real visitors over it.
 async function isSuspiciousRequest(request, env, ip) {
     const ua = request.headers.get('User-Agent') || '';
     if (!ua || BOT_UA_PATTERN.test(ua)) return true;
+    // Layer 2, added after the 2026-08-15 incident: site-wide volume, which is
+    // the only view that sees an IP-rotating bot. Independent of the per-IP cap
+    // below, and it never replaces it.
+    if (await isAffiliateFloodActive(env)) return true;
     if (!env.KV) return false;
-    // 30/hr is generous for a real visitor clicking through product cards on
-    // one page; a script hammering the redirect endpoint blows past it fast.
-    const rate = await checkRateLimit(env.KV, `go:${ip}`, 30, 3600);
+    const rate = await checkRateLimit(env.KV, `go:${ip}`, PER_IP_CLICK_LIMIT, PER_IP_WINDOW_SECONDS);
     return !rate.allowed;
 }
 

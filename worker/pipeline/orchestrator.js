@@ -18,13 +18,14 @@
 
 import { runEngine } from '../engine/engine.js';
 import { classifyQuery } from '../lib/classifier.js';
-import { getTierConfig } from '../lib/tiers.js';
+import { ENGINE_CONFIG } from '../lib/engine-config.js';
 import { buildAffiliateUrl, resolveAmazonTag } from '../lib/affiliate-links.js';
 import { resolveAsins } from '../lib/asin-resolver.js';
 import { resolveImages } from '../lib/image-resolver.js';
 import { getResearchById, generateId } from '../lib/db.js';
-import { sanitizeUrl, slugify } from '../lib/utils.js';
+import { sanitizeUrl, slugify, nowEpoch, parseJsonSafe } from '../lib/utils.js';
 import { submitToIndexNow } from '../lib/indexnow.js';
+import { notifySubscribersForResearch } from '../lib/notify.js';
 import { screenQuery, rejectionMessage, classifierRejectToReason } from '../lib/safety.js';
 
 // Monthly spend ceiling default; overridden by env.MONTHLY_BUDGET_USD.
@@ -47,7 +48,7 @@ export async function runResearchPipeline(env, reportId, query) {
         }
 
         const tier = row.tier || 'full';
-        const config = getTierConfig(tier) || getTierConfig('full');
+        const config = ENGINE_CONFIG;
         const cls = await ensureClassified(env, reportId, query, row, progress);
         if (cls.blocked) { await markRejected(env, reportId, cls.blockReason); return; }
         const { facets, topicalCategory, clarifications } = cls;
@@ -260,6 +261,15 @@ export async function persistEngineResult(env, reportId, query, facets, topicalC
         if (catSlug) urls.push(`https://chrisputer.tech/best/${catSlug}`);
         await submitToIndexNow(env, urls);
     }
+    // Tell the confirmed subscribers of this report that it is live. Inside the
+    // `won` latch, so at most one notify per completion even when two
+    // processors race. notifySubscribersForResearch never throws, and this
+    // try/catch is the second belt: a mail failure must not fail the run.
+    try {
+        await notifySubscribersForResearch(env, { researchId: reportId, query, slug });
+    } catch (err) {
+        console.error(JSON.stringify({ where: 'notify', error: String(err?.message || err) }));
+    }
     return { status: 'complete', products: result.products.length };
 }
 
@@ -292,18 +302,8 @@ export async function claimNextPendingJob(env) {
     const cls = await ensureClassified(env, claimed.id, claimed.query, claimed, null);
     if (cls.blocked) { await markRejected(env, claimed.id, cls.blockReason); return null; }
     const { facets, topicalCategory, clarifications } = cls;
-    const config = getTierConfig(claimed.tier || 'full') || getTierConfig('full');
+    const config = ENGINE_CONFIG;
     return { reportId: claimed.id, query: claimed.query, slug: claimed.slug, facets, topicalCategory, clarifications, config };
-}
-
-function nowEpoch() {
-    return Math.floor(Date.now() / 1000);
-}
-
-function parseJsonSafe(json, fallback) {
-    if (json == null) return fallback;
-    if (typeof json !== 'string') return json;
-    try { return JSON.parse(json); } catch { return fallback; }
 }
 
 /**

@@ -19,7 +19,8 @@
 import {
     generateId, insertResearch, findResearchByCanonicalQuery,
 } from './db.js';
-import { generateSlug, canonicalizeQuery } from './utils.js';
+import { generateSlug, canonicalizeQuery, squashQuery } from './utils.js';
+import { monthKey } from '../pipeline/orchestrator.js';
 
 const DEFAULT_DAILY_MAX = 6;
 const DEFAULT_RERESEARCH_DAILY_MAX = 2;
@@ -34,11 +35,10 @@ const DEFAULT_STALE_REFRESH_DAYS = 120;
 // 'YYYY-MM' and 'YYYY-MM-DD' from a caller-supplied epoch-ms clock. The caller
 // (scheduled handler) passes `now` explicitly so ticks are testable and the
 // budget/daily keys line up with the rest of the system's UTC month keys.
+// Delegates to the canonical monthKey() (orchestrator.js) so there is one
+// 'YYYY-MM' formatter, not two.
 function monthKeyFrom(now) {
-    const d = new Date(now);
-    const y = d.getUTCFullYear();
-    const m = String(d.getUTCMonth() + 1).padStart(2, '0');
-    return `${y}-${m}`;
+    return monthKey(new Date(now));
 }
 
 function dayKeyFrom(now) {
@@ -140,7 +140,8 @@ export async function runFlywheelTick(env, now = Date.now()) {
     // Clustering first: if a prior completed run already covers this canonical
     // query, attach the keyword to it and skip the spend entirely.
     const canonical = canonicalizeQuery(normalizedQuery);
-    const existing = await findResearchByCanonicalQuery(env.DB, canonical, 14);
+    const squashed = squashQuery(normalizedQuery);
+    const existing = await findResearchByCanonicalQuery(env.DB, canonical, 14, squashed);
     if (existing) {
         await env.DB.prepare(
             `UPDATE keyword_queue SET status = 'done', research_id = ?, done_at = ? WHERE id = ?`
@@ -157,6 +158,7 @@ export async function runFlywheelTick(env, now = Date.now()) {
         slug,
         query: normalizedQuery,
         canonicalQuery: canonical,
+        squashedQuery: squashed,
         tier: 'full',
     });
 
@@ -164,7 +166,6 @@ export async function runFlywheelTick(env, now = Date.now()) {
     await env.RESEARCH_QUEUE.send({
         reportId: id,
         query: normalizedQuery,
-        tier: 'full',
     });
 
     // Link the keyword to its run and bump the daily counter (TTL 2 days so
@@ -294,15 +295,12 @@ async function runReresearchSweep(env, now) {
             return { status: 'skipped', reason: 'claim-lost', researchId: candidate.id };
         }
 
-        // Enqueue the re-run. The orchestrator reads tier from the row, but we
-        // pass it in the message too to match the keyword path's shape.
         // DELETE-then-insert product persistence replaces products in place and
         // the completed_at refresh updates the sitemap lastmod, so the page is
         // re-indexed fresher at the SAME indexed URL (equity preserved).
         await env.RESEARCH_QUEUE.send({
             reportId: candidate.id,
             query: candidate.query,
-            tier,
         });
 
         // Bump the separate daily counter (2-day TTL so stale keys self-evict).

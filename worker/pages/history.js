@@ -31,7 +31,7 @@ export function renderHistoryPage() {
 
     return layout(
         'Your searches',
-        'Your past TrueRank searches on this device.',
+        'Your past searches on this device, from Frank.',
         body,
         '<meta name="robots" content="noindex, follow">' + HISTORY_PAGE_SCRIPT,
         { canonical: 'https://chrisputer.tech/history' },

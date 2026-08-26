@@ -60,6 +60,27 @@ CF_ANALYTICS_TOKEN = "ea97bb136135401584c3547bd0d73b66"
 # IndexNow verification key. Intentionally public — the protocol requires it to
 # be hosted at https://chrisputer.tech/<key>.txt (served by the worker route).
 INDEXNOW_KEY = "2b049a04674b366dc9b485b792ad823e"
+# Outbound email (docs/email-design.md). MAIL_ENABLED is the emergency off
+# switch AND the release gate: "false" turns every send into a logged skip, so
+# subscribe, confirm and unsubscribe keep working and nothing leaves the
+# worker.
+#
+# OFF since 2026-08-03. The SMTP transport cannot work from a deployed Worker.
+# smtp.hostinger.com resolves to 172.65.255.143 (AS13335, CLOUDFLARENET), and
+# Cloudflare blocks outbound TCP from Workers to its own IP ranges. Every
+# Hostinger mail endpoint (smtp, mx1, mx2) is behind the same network, so no
+# port and no hostname avoids it. Measured at the edge: connect() to
+# 8.8.8.8:853 succeeds, connect() to smtp.hostinger.com:465 and :587 both fail
+# in under 20 ms with "proxy request failed, cannot connect to the specified
+# address". `wrangler dev` passed only because it egresses from the LAN.
+# Turning this back on needs a transport change (docs/email-design.md s.3),
+# not a config change. See issues.md 2026-08-03.
+MAIL_ENABLED = "false"
+MAIL_FROM = "chris@chrisputer.tech"
+MAIL_FROM_NAME = "Frank"
+SMTP_HOST = "smtp.hostinger.com"
+SMTP_PORT = "465"                # implicit TLS; v1 supports 465 only
+MAIL_DAILY_CAP = "200"           # global outbound ceiling per UTC day
 # (GOOGLE_CSE_ID removed 2026-06-16: the /find Programmable Search Engine widget
 # was retired — /find now 302-redirects to a plain Google search, so the CSE id
 # is dead config. No code reads env.GOOGLE_CSE_ID.)
@@ -87,7 +108,40 @@ max_batch_size = 1
 max_retries = 2
 dead_letter_queue = "truerank-dlq"
 
+# Burst gate for the checked POST paths (research/verify/chat/auth).
+# Atomic per colo = atomic per attacking source. Layered in front of the
+# KV hourly window, which stays the volume ceiling. Free, GA, wrangler >= 4.36.
+# namespace_id is an arbitrary string unique inside this Worker; no dashboard
+# resource exists. Design: docs/rate-limit-design.md.
+# Rollback: delete this block. worker/lib/burst-gate.js fail-opens when
+# env.RL_BURST is undefined and KV keeps enforcing the hourly caps.
+[[ratelimits]]
+name = "RL_BURST"
+namespace_id = "1001"
+[ratelimits.simple]
+limit = 10
+period = 60
+
+# SITE-WIDE gate for the affiliate redirect surface (/api/go/*). Separate
+# binding from RL_BURST so the two tunings stay independent. Called with a
+# CONSTANT key, so every request on the site shares ONE counter: that is what
+# catches an IP-rotating bot, which a per-IP cap cannot see (incident
+# 2026-08-14/15: 1,232 clicks, 1,232 distinct IPs, ~1 click each).
+# 6 per 60 s = a 360/hour site ceiling, 15x the busiest hour ever recorded and
+# 2x the busiest real minute. Sizing data: worker/lib/affiliate-gate.js.
+# Rollback: delete this block. worker/lib/affiliate-gate.js fail-opens when
+# env.RL_AFFILIATE_GLOBAL is undefined and the per-IP KV cap still applies.
+[[ratelimits]]
+name = "RL_AFFILIATE_GLOBAL"
+namespace_id = "1002"
+[ratelimits.simple]
+limit = 6
+period = 60
+
 # Secrets (set via wrangler secret put):
 # OPENROUTER_API_KEY  — paid OpenRouter key (planner/synth/classifier models)
 # SERPER_API_KEY      — Serper.dev Google Search (web + news providers)
 # AMAZON_ASSOCIATE_TAG — optional; AMAZON_AFFILIATE_TAG in [vars] is the default
+# TRUERANK_SMTP_USER  — full Hostinger mailbox address (also the From address)
+# TRUERANK_SMTP_PASSWORD — mailbox password. Without BOTH, every send is a
+#                      logged no-op, so local dev and CI can never send mail.

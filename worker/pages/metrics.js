@@ -1,4 +1,4 @@
-// /metrics — pull-based metrics snapshot for the Chrisputer Labs dashboard.
+// /metrics: pull-based metrics snapshot for the Frank dashboard.
 //
 // Bearer-token auth via the METRICS_TOKEN env secret:
 //   - 503 if METRICS_TOKEN is unset (endpoint not configured)
@@ -18,7 +18,14 @@
 // try/catch and degrade to zero/empty results if the table is missing.
 
 import { monthKey } from '../pipeline/orchestrator.js';
-import { ingestGsc, getGscSummary } from '../lib/gsc.js';
+import {
+  ingestGsc,
+  getGscSummary,
+  runUrlInspectionSample,
+  listSitemaps,
+  listSites,
+  submitSitemap,
+} from '../lib/gsc.js';
 
 const DAY_SECONDS = 86400;
 const THIRTY_DAYS_SECONDS = 30 * DAY_SECONDS;
@@ -273,12 +280,38 @@ export async function handleMetrics(request, env) {
   // (the daily cron always uses the 5-day default). GSC retains ~16 months.
   // Fail-soft: returns a {skipped}/{error} marker, never breaks the snapshot.
   let gscIngest = null;
+  // Optional manual URL Inspection diagnostic (?gsc_inspect=1) — one-off run
+  // over the curated sample described in worker/lib/gsc.js. Fail-soft: never
+  // breaks the snapshot, always returns a {skipped}/{error} marker on failure.
+  let gscInspect = null;
+  // Optional read-only sitemap/property diagnostics (?gsc_sitemaps=1,
+  // ?gsc_sites=1) and a best-effort submit attempt (?gsc_submit_sitemap=1),
+  // which is expected to 403 under the webmasters.readonly scope. Fail-soft,
+  // same pattern as gsc_ingest/gsc_inspect above.
+  let gscSitemaps = null;
+  let gscSites = null;
+  let gscSubmitSitemap = null;
   try {
     const reqUrl = new URL(request.url);
     if (reqUrl.searchParams.get('gsc_ingest') === '1') {
       const daysParam = Number(reqUrl.searchParams.get('gsc_days'));
       const opts = Number.isFinite(daysParam) && daysParam > 0 ? { days: Math.min(daysParam, 480) } : undefined;
       gscIngest = await ingestGsc(env, opts).catch((e) => ({ error: e instanceof Error ? e.message : String(e) }));
+    }
+    if (reqUrl.searchParams.get('gsc_inspect') === '1') {
+      gscInspect = await runUrlInspectionSample(env, reqUrl.origin)
+        .catch((e) => ({ error: e instanceof Error ? e.message : String(e) }));
+    }
+    if (reqUrl.searchParams.get('gsc_sitemaps') === '1') {
+      gscSitemaps = await listSitemaps(env).catch((e) => ({ error: e instanceof Error ? e.message : String(e) }));
+    }
+    if (reqUrl.searchParams.get('gsc_sites') === '1') {
+      gscSites = await listSites(env).catch((e) => ({ error: e instanceof Error ? e.message : String(e) }));
+    }
+    if (reqUrl.searchParams.get('gsc_submit_sitemap') === '1') {
+      const feedpath = reqUrl.searchParams.get('gsc_feedpath') || `${reqUrl.origin}/sitemap.xml`;
+      gscSubmitSitemap = await submitSitemap(env, feedpath)
+        .catch((e) => ({ error: e instanceof Error ? e.message : String(e) }));
     }
   } catch { /* bad URL — ignore */ }
 
@@ -308,6 +341,10 @@ export async function handleMetrics(request, env) {
       unserved_demand: unservedDemand,
       gsc,
       ...(gscIngest ? { gsc_ingest: gscIngest } : {}),
+      ...(gscInspect ? { gsc_inspect: gscInspect } : {}),
+      ...(gscSitemaps ? { gsc_sitemaps: gscSitemaps } : {}),
+      ...(gscSites ? { gsc_sites: gscSites } : {}),
+      ...(gscSubmitSitemap ? { gsc_submit_sitemap: gscSubmitSitemap } : {}),
     },
     200,
   );

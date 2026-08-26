@@ -1,0 +1,83 @@
+{
+  "label": "gpt-5.4-mini",
+  "judgeModel": "anthropic/claude-fable-5",
+  "method": "v2: judged against the FULL production source text, not the 5,000-char clipped bundle excerpt.",
+  "complete": true,
+  "costUsd": 0.6713388000000001,
+  "avgQualityNonFail": 7.3,
+  "completionsNonFail": 10,
+  "totalProducts": 10,
+  "hardFails": 0,
+  "results": {
+    "audio": {
+      "product": "Samsung HW-Q990D Soundbar",
+      "score": 8,
+      "reasoning": "All claims are grounded in the sources, correctly attributed to the HW-Q990D, and the extraction properly skipped retailer star-ratings and subjective review fluff. Minor deduction: claims 10 and 11 come from generic Samsung soundbar support articles not specific to the Q990D, so treating them as product claims is borderline junk.",
+      "claim_count": 11,
+      "source_chars": 5282
+    },
+    "tv_display": {
+      "product": "Samsung QN90D Neo QLED",
+      "score": 9,
+      "reasoning": "All 12 claims are grounded in the source text, junk (star ratings, prices, nav boilerplate, unrelated support pages) was correctly filtered, and claim 12 is honestly hedged as 'the listing shows' despite the source's dubious 'mm' unit. Minor nit: the size-dependent caveat that the 98-inch (2.47 m) QN90D tops out at 4K 120Hz was not captured alongside the 144Hz claims.",
+      "claim_count": 12,
+      "source_chars": 20035
+    },
+    "computing": {
+      "product": "Lenovo ThinkPad X1 Carbon",
+      "score": 8,
+      "reasoning": "All claims are grounded and generation labels (Gen 12 vs Gen 13) are kept straight, and the extraction wisely skipped the contaminated retailer listings (e.g., the '15th-gen' confusion, star ratings). Minor deductions: claim 7 comes from a ThinkPad X1 Fold support page (different product) and claim 6 is generic Lenovo Vantage boilerplate, neither being true X1 Carbon product claims.",
+      "claim_count": 9,
+      "source_chars": 4390
+    },
+    "wearable_health": {
+      "product": "Fitbit Charge 6",
+      "score": 9,
+      "reasoning": "All nine claims are grounded in the source text (Walmart listing, Google support threads, and the Charge 6 announcement), and the extraction correctly avoided contaminating the Charge 6 with the Google Fitbit Air specs (sources 4-5) and skipped user-complaint noise. Only trivial nitpick: 'most advanced tracker yet' comes from a forum-reposted announcement, but it is fairly labeled as marketing.",
+      "claim_count": 9,
+      "source_chars": 5153
+    },
+    "kitchen": {
+      "product": "Presto Pressure Cooker 6qt",
+      "score": 6.5,
+      "reasoning": "Claims 1-8 are well grounded to the Presto 01264, correctly avoiding the 01362, 02141 electric model, and unrelated third-party cookers, and no star-ratings were extracted. However, claim 10 is cross-product contamination — the two-year warranty comes from the Fisher & Paykel wine cabinet listing (Source 11), not the Presto — and claim 9 assumes 'pounds' from a truncated '5.4 ...' snippet.",
+      "claim_count": 10,
+      "source_chars": 4649
+    },
+    "cleaning": {
+      "product": "Samsung Bespoke Jet Vacuum",
+      "score": 4,
+      "reasoning": "All claims are grounded in the source and correctly labeled with their model names, but 10 of 12 claims concern different products (Jet 60 Pet stick and Jet Bot Combo robot vacuum) rather than the target Bespoke Jet, constituting significant cross-product drift. Meanwhile it missed directly relevant Bespoke Jet claims like the 210AW HexaJet suction spec (Source 9), though it did correctly avoid junk like accessory listings and pricing boilerplate.",
+      "claim_count": 12,
+      "source_chars": 9734
+    },
+    "power_charging": {
+      "product": "Anker 737 Power Bank",
+      "score": 9.5,
+      "reasoning": "All 12 claims are directly grounded in the retailer product descriptions (24,000mAh, 140W, 3-port, PD 3.1, bi-directional charging, digital display, iPhone/iPad recharge counts), with no cross-product contamination and excellent junk filtering — none of the extensive Best Buy star ratings, review counts, or customer anecdotes were extracted as claims. Attribution of the Best Buy 'Anker Power Bank (24000mAh, 140W, 3-Port)' listing to the 737 is correct since it is the same model (A1289).",
+      "claim_count": 12,
+      "source_chars": 16184
+    },
+    "baby": {
+      "product": "Dr. Brown's Natural Flow Baby Bottles",
+      "score": 8,
+      "reasoning": "All claims are grounded in the source text with appropriate 'some' hedging given the multiple bottle variants, and prices/star-ratings were correctly excluded. Minor deductions: claims 11 and 12 are drawn from a customer review quote and a video reviewer's opinion rather than actual product claims, which slightly weakens junk-filtering, though they are at least labeled as marketing/'described as' statements.",
+      "claim_count": 12,
+      "source_chars": 4541
+    },
+    "smart_home": {
+      "product": "Google Nest Hub Max",
+      "score": 9,
+      "reasoning": "All four claims are grounded (Source 6 for Gemini support; Source 5 for the camera, 2 microphones, and 10-inch display), with no contamination from the Pixel 10a, Nest Temperature Sensor, or thermostat sources, and retailer pricing/deal boilerplate was correctly filtered out. Extraction is clean and conservative given a mostly noisy source set.",
+      "claim_count": 4,
+      "source_chars": 4716
+    },
+    "outdoor": {
+      "product": "CamelBak Chute Mag Water Bottle",
+      "score": 2,
+      "reasoning": "Claim 1 is not grounded — the source never states a magnetic closure; it's inferred from the product name. Claim 2 is junk (a reviewer video title from Amazon Live boilerplate, not a checkable product claim). The extraction also ignored the only marginal real content (insulation mention) and would have been better returning fewer/no claims from this mostly boilerplate source.",
+      "claim_count": 2,
+      "source_chars": 3572
+    }
+  }
+}

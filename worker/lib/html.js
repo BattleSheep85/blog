@@ -1,5 +1,14 @@
 import { escapeHtml } from './utils.js';
 
+// Nonce'd external script tag for the site-wide fun easter eggs (Konami
+// code, typed "frank" trigger, devtools console message). The listener JS
+// lives in public/js/frank-egg.js; a nonce-carrying <script src> tag is
+// allowed directly under the nonce-based CSP, no strict-dynamic needed.
+// public/index.html (the one static page that skips this layout()) repeats
+// this same tag. Delete both call sites plus public/js/frank-egg.js and
+// worker/pages/frank-egg.js to fully remove the feature.
+const FRANK_EGG_SCRIPT_TAG = '<script nonce="__CSP_NONCE__" src="/js/frank-egg.js" defer></script>';
+
 // Tagged template literal for safe HTML — auto-escapes interpolated values
 export function html(strings, ...values) {
   let result = '';
@@ -59,23 +68,23 @@ export function layout(title, description, body, extra_head = '', meta) {
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>${escapedTitle} | TrueRank</title>
+<title>${escapedTitle} | Frank</title>
 <meta name="description" content="${escapedDesc}">
-<meta property="og:title" content="${escapedTitle} | TrueRank">
+<meta property="og:title" content="${escapedTitle} | Frank">
 <meta property="og:description" content="${escapedDesc}">
 <meta property="og:type" content="${ogType}">${ogUrl}
-<meta property="og:site_name" content="TrueRank">
+<meta property="og:site_name" content="Frank">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="${escapeHtml(ogImage)}">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="${escapedTitle} — TrueRank">
+<meta property="og:image:alt" content="${escapedTitle}: Frank">
 <meta property="og:image:type" content="${ogImageType}">
 <meta name="twitter:card" content="${twitterCard}">
-<meta name="twitter:title" content="${escapedTitle} | TrueRank">
+<meta name="twitter:title" content="${escapedTitle} | Frank">
 <meta name="twitter:description" content="${escapedDesc}">
 <meta name="twitter:image" content="${escapeHtml(ogImage)}">
-<meta name="twitter:image:alt" content="${escapedTitle} — TrueRank">${
+<meta name="twitter:image:alt" content="${escapedTitle}: Frank">${
     meta?.canonical ? `\n<link rel="canonical" href="${escapeHtml(meta.canonical)}">` : ''
   }${
     meta?.noindex ? '\n<meta name="robots" content="noindex,follow">' : ''
@@ -95,8 +104,8 @@ export function layout(title, description, body, extra_head = '', meta) {
 <link rel="manifest" href="/manifest.webmanifest">
 <meta name="theme-color" content="#0B0C0E" media="(prefers-color-scheme: dark)">
 <meta name="theme-color" content="#FBFBF9" media="(prefers-color-scheme: light)">
-<link rel="alternate" type="application/atom+xml" title="Chrisputer Labs — Research Feed" href="/feed.xml">
-<link rel="search" type="application/opensearchdescription+xml" title="Chrisputer Labs" href="/opensearch.xml">
+<link rel="alternate" type="application/atom+xml" title="Frank: Research Feed" href="/feed.xml">
+<link rel="search" type="application/opensearchdescription+xml" title="Frank" href="/opensearch.xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -119,7 +128,7 @@ ${extra_head}
 <label for="drawer-toggle" class="drawer-overlay fixed inset-0 z-40 bg-ink/50 opacity-0 pointer-events-none peer-checked:opacity-100 peer-checked:pointer-events-auto dark:bg-black/70" aria-hidden="true"></label>
 <aside class="drawer-panel fixed inset-y-0 left-0 z-50 w-[86vw] max-w-xs -translate-x-full border-r border-line bg-surface-1 peer-checked:translate-x-0 sm:w-80" role="dialog" aria-label="Main navigation">
 <div class="flex items-center justify-between border-b border-line px-5 py-4">
-<a href="/" class="font-mono text-base font-bold tracking-tight text-ink">TRUE<span class="text-accent">RANK</span></a>
+<a href="/" class="font-mono text-base font-bold tracking-tight text-ink">FR<span class="text-accent">ANK</span></a>
 <label for="drawer-toggle" class="cursor-pointer border border-line p-1.5 text-ink-2 hover:border-line-strong hover:text-ink" aria-label="Close menu">
 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
 </label>
@@ -148,7 +157,7 @@ ${extra_head}
 <span class="block h-[1.5px] w-5 bg-ink"></span>
 <span class="block h-[1.5px] w-5 bg-ink"></span>
 </label>
-<a href="/" class="font-mono text-lg font-bold tracking-tight text-ink">TRUE<span class="text-accent">RANK</span></a>
+<a href="/" class="font-mono text-lg font-bold tracking-tight text-ink">FR<span class="text-accent">ANK</span></a>
 </div>
 <a href="/account" class="border border-line px-3 py-1.5 font-mono text-xs uppercase tracking-wide text-ink-2 hover:border-line-strong hover:text-ink" title="Your account">Account</a>
 </div>
@@ -176,7 +185,7 @@ sync(isDark);
 <div class="mx-auto max-w-5xl px-6 py-12">
 <div class="grid gap-10 font-mono text-xs sm:grid-cols-4">
 <div class="sm:col-span-2">
-<a href="/" class="text-base font-bold tracking-tight text-ink">TRUE<span class="text-accent">RANK</span></a>
+<a href="/" class="text-base font-bold tracking-tight text-ink">FR<span class="text-accent">ANK</span></a>
 <p class="mt-3 max-w-sm leading-relaxed text-ink-3">A verification console for product claims. Input the product, output the evidence.</p>
 </div>
 <div>
@@ -186,6 +195,7 @@ sync(isDark);
 <li><a href="/research" class="hover:text-ink">Browse</a></li>
 <li><a href="/reviews" class="hover:text-ink">Reviews</a></li>
 <li><a href="/about" class="hover:text-ink">About</a></li>
+<li><a href="/how-it-works" class="hover:text-ink">How it works</a></li>
 </ul>
 </div>
 <div>
@@ -202,6 +212,7 @@ sync(isDark);
 </div>
 </div>
 </footer>
+${FRANK_EGG_SCRIPT_TAG}
 </body>
 </html>`;
 }

@@ -10,14 +10,15 @@ import {
     generateId, insertResearch, findResearchByCanonicalQuery,
     getResearchById, getResearchBySlug,
 } from '../lib/db.js';
-import { generateSlug, canonicalizeQuery, parseJsonSafe } from '../lib/utils.js';
+import { generateSlug, canonicalizeQuery, squashQuery, parseJsonSafe } from '../lib/utils.js';
 import { screenQuery, rejectionMessage } from '../lib/safety.js';
-import { PUBLIC_TIERS } from '../lib/tiers.js';
 import { budgetExhausted } from '../pipeline/orchestrator.js';
 import { checkRateLimit } from '../lib/rate-limit.js';
+import { checkBurstGate } from '../lib/burst-gate.js';
 import { getSessionUser, recordUserSearch } from '../lib/auth.js';
 import { apiStatus } from '../lib/status.js';
 import { getQuota, consumeQuota, FREE_SEARCHES } from '../lib/quota.js';
+import { isWorkerAuthed } from '../lib/worker-auth.js';
 
 /**
  * Handle POST /api/research
@@ -56,11 +57,9 @@ export async function handleStartResearch(request, env) {
     // Optional 'fresh' flag bypasses clustering (re-run buttons); rate
     // limiting below still applies.
     const fresh = !!body.fresh;
-
-    // Tier: accept from body, validate against the public allowlist, default
-    // 'full'. exhaustive/unbound stay gated (Turnstile/subscription) and are
-    // not selectable here.
-    const tier = PUBLIC_TIERS.includes(body.tier) ? body.tier : 'full';
+    // Internal-only: an external benchmark harness measures run-to-run stability, so it must be able to force a genuinely fresh run. Honored ONLY for callers that present the same X-Worker-Secret used by /api/internal/*; a public caller's forceFresh is ignored.
+    const forceFresh = body.forceFresh === true && (await isWorkerAuthed(request, env));
+    if (forceFresh) console.log('[research] forceFresh honored (internal auth)');
 
     // Sanitize clarifications: map of string→string, keys snake_case <=40 chars,
     // values <=80 chars, max 5 entries. Mirrors the interstitial's extraction so
@@ -88,8 +87,9 @@ export async function handleStartResearch(request, env) {
     const sessionUser = await getSessionUser(request, env);
 
     const canonical = canonicalizeQuery(normalizedQuery, clarifications);
-    if (!fresh) {
-        const existing = await findResearchByCanonicalQuery(env.DB, canonical, 14);
+    const squashed = squashQuery(normalizedQuery, clarifications);
+    if (!fresh && !forceFresh) {
+        const existing = await findResearchByCanonicalQuery(env.DB, canonical, 14, squashed);
         if (existing) {
             if (sessionUser) {
                 await recordUserSearch(env.DB, sessionUser.id, existing.id, normalizedQuery);
@@ -113,8 +113,18 @@ export async function handleStartResearch(request, env) {
     // far above real human use (~$2/hr worst case) while stopping a single-source
     // budget drain. Deliberately leaky (KV limiter is non-atomic) — fine for a
     // volume ceiling.
+    // The KV window is non-atomic, so N concurrent requests all read the same
+    // pre-write state and all pass. The native RL_BURST binding in front of it
+    // is atomic per colo, which for a per-IP key equals atomic per attacking
+    // source. It admits at most 10/60s, which serializes traffic enough for the
+    // KV window below to count correctly. Burst-blocked requests never touch
+    // KV, so they do not consume hourly quota.
     const clientIp = request.headers.get('CF-Connecting-IP') || 'unknown';
-    const velocity = await checkRateLimit(env.KV, `research:${clientIp}`, 20, 3600);
+    const rateKey = `research:${clientIp}`;
+    const burst = await checkBurstGate(env.RL_BURST, rateKey);
+    const velocity = burst.allowed
+        ? await checkRateLimit(env.KV, rateKey, 20, 3600)
+        : burst;
     if (!velocity.allowed) {
         const retryAfter = Math.max(1, Math.ceil((velocity.resetAt - Date.now()) / 1000));
         return jsonResponse(
@@ -156,7 +166,7 @@ export async function handleStartResearch(request, env) {
         slug,
         query: normalizedQuery,
         canonicalQuery: canonical,
-        tier,
+        squashedQuery: squashed,
         clarifications: clarificationsJson,
     });
 
@@ -173,7 +183,6 @@ export async function handleStartResearch(request, env) {
         await env.RESEARCH_QUEUE.send({
             reportId: id,
             query: normalizedQuery,
-            tier,
         });
     } catch (err) {
         console.error('[research] queue send failed:', err instanceof Error ? err.message : String(err));

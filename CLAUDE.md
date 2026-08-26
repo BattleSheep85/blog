@@ -13,10 +13,10 @@ and produces honest comparison reports. Monetized via affiliate links (Amazon As
 - **AI** (bench-derived paid stack via OpenRouter, all over `fetch()`):
   - **Classifier**: `google/gemini-2.5-flash-lite` (facets + topical category + reject)
   - **Planner / agent loop**: `google/gemini-2.5-flash`
-  - **Synthesis**: `minimax/minimax-m3` (swapped 2026-07-24 per owner no-OpenAI directive; statistical co-leader of the synthesis-gold bench, composite 7.69 vs the prior incumbent `openai/gpt-5.4-mini` 7.61, 8/8 reliable — see `benchmarks/ft-data/README.md` + `worker/lib/tiers.js`. Historical note: gpt-5.4-mini itself was locked 2026-06-29 after a 50-query × 150-juror blind panel, replacing kimi-k2.6 which was slowest and timed out ~1/8 runs — see `issues.md` 2026-06-29)
-  - **Extract (verify claims)**: `anthropic/claude-haiku-4.5` (swapped 2026-07-24 per owner no-OpenAI directive; only non-OpenAI model matching the prior gpt-5.4-mini incumbent on the extract-gold bench, 7.60 quality / 10/10 reliable / 0 hard-fails — `worker/lib/tiers.js` `extractModel`, `worker/engine/verify.js`)
-  - **Stance (verify judge)**: `minimax/minimax-m3` (already OpenAI-free; won the independent-gold stance bench — `worker/lib/tiers.js` `stanceModel`)
-  - **Tiers collapsed to ONE config (2026-06-16):** one model set + ~50-search deep research for every run (no more instant/full/exhaustive). `worker/lib/tiers.js` exposes a single `ENGINE_CONFIG`; all tier keys resolve to it. Rationale + data: `benchmarks/engine-llm-bench-2026-06.md`.
+  - **Synthesis**: `minimax/minimax-m3` (swapped 2026-07-24 per owner no-OpenAI directive; statistical co-leader of the synthesis-gold bench, composite 7.69 vs the prior incumbent `openai/gpt-5.4-mini` 7.61, 8/8 reliable — see `benchmarks/ft-data/README.md` + `worker/lib/engine-config.js`. Historical note: gpt-5.4-mini itself was locked 2026-06-29 after a 50-query × 150-juror blind panel, replacing kimi-k2.6 which was slowest and timed out ~1/8 runs — see `issues.md` 2026-06-29)
+  - **Extract (verify claims)**: `anthropic/claude-haiku-4.5` (swapped 2026-07-24 per owner no-OpenAI directive; only non-OpenAI model matching the prior gpt-5.4-mini incumbent on the extract-gold bench, 7.60 quality / 10/10 reliable / 0 hard-fails — `worker/lib/engine-config.js` `extractModel`, `worker/engine/verify.js`)
+  - **Stance (verify judge)**: `minimax/minimax-m3` (already OpenAI-free; won the independent-gold stance bench — `worker/lib/engine-config.js` `stanceModel`)
+  - **One engine config for every run (2026-06-16):** one model set and about 50 searches of deep research for every run. `worker/lib/engine-config.js` exports a single `ENGINE_CONFIG`. There is no tier selector. Rationale and data: `benchmarks/engine-llm-bench-2026-06.md`.
 - **Search**: Serper.dev Google Search (web + news, primary), SearXNG (self-hosted metasearch on blackbox, free/broad — fills the dead DuckDuckGo rotation slot + leads the web fallback chain), Brave + Tavily (keyed CF-reachable fallbacks / selectable providers), HN Algolia (free), DuckDuckGo (last resort, CAPTCHA-blocked from datacenter IPs), RSS expert feeds. Provider quality benchmark: `benchmarks/bench-providers.mjs` (all four ≈ equal credibility; SearXNG free-equals paid; "use them all" = +50–65% unique-source recall).
 - **Cost governor**: `MONTHLY_BUDGET_USD` (default 60) — each run increments a
   KV `cost:YYYY-MM` counter; `POST /api/research` returns 503 once the month's
@@ -40,7 +40,7 @@ zero-dependency rule is unchanged — do NOT add a dependency that ships to the 
 - Deploy: **push to `main`** runs unit tests + `wrangler deploy` via GitHub Actions. Manual fallback: `export $(grep -v '^#' .cf-token | xargs) && npx wrangler deploy`. Repo needs `CLOUDFLARE_API_TOKEN` secret (Workers Scripts Edit).
 - DB migrations: `npx wrangler d1 execute DB --file=schema/001_initial.sql`
 - Build CSS (after changing Tailwind classes): the standalone Tailwind binary — see README "Build CSS" (`tailwindcss -c tailwind.config.cjs -i build/input.css -o public/css/tailwind.css --minify`). Not in CI; rebuild + commit public/css/tailwind.css when you add new utility classes.
-- Tests: `node scripts/run-tests.mjs` (308 assertions across 10 suites — credibility, validate quality-gate, product-search faceting, reviews render-smoke, utils, affiliate-links, lib-pure, credibility-extra, prompts, llm)
+- Tests: `node scripts/run-tests.mjs` (1305 assertions across 37 suites: credibility, validate quality gate, product search, reviews render, browse render, pager, listable, utils, research primitives, affiliate links, lib pure, credibility extra, prompts, llm, asin resolver, verdict, verify, verification render, jina, quota, constraints, burst gate, affiliate gate, llm json, pool, opening book, recall gather, email mime, smtp, email templates, subscribe flow, dead urls, research canonical, worker auth, grounding check, no anthropic on openrouter, claude code judge)
 - Coverage gate: `bash scripts/coverage.sh` (Node built-in V8 coverage, zero npm; ~99.9% line on the 14-module pure-logic layer)
 - Integration tests (I/O modules, real D1/KV via Miniflare): `npx vitest run` (or `--coverage`). Specs in `test/integration/*.spec.js`, config in `vitest.config.js`. Needs `npm install` first (dev deps only).
 - Output eval: `node scripts/run-eval.mjs` (golden-query honesty audit against the live site; `--spend` enqueues missing runs, ~$0.10 each)
@@ -52,10 +52,12 @@ zero-dependency rule is unchanged — do NOT add a dependency that ships to the 
 - `/worker/engine/` — Ported research engine: `engine.js` (agent loop + synthesis
   orchestration), `llm.js` (OpenRouter streaming/non-streaming + context pruning),
   `tools.js` (web_search/read_page/note; Serper + HN + DDG + RSS providers),
-  `prompts.js` (agent + synthesis prompts), `validate.js` (result sanitization)
-- `/worker/lib/` — Shared utilities (`db.js`, `tiers.js`, `classifier.js`,
+  `prompts.js` (agent + synthesis prompts), `validate.js` (result sanitization),
+  `opening-book.js` (deterministic template searches), `recall-gather.js` (post-planner
+  recall searches for unevidenced category leaders)
+- `/worker/lib/` — Shared utilities (`db.js`, `engine-config.js`, `classifier.js`,
   `affiliate-links.js`, `credibility.js`, `duckduckgo.js`, `rss.js`, `jina.js`,
-  `rate-limit.js`, `utils.js`). NOTE: the old `lib/llm.js` and `lib/search.js`
+  `rate-limit.js`, `utils.js`, `worker-auth.js`). NOTE: the old `lib/llm.js` and `lib/search.js`
   were removed — the engine owns its LLM + Serper layers now.
 - `/worker/pipeline/` — `orchestrator.js` only: classify → runEngine → validate →
   persist. The old `search.js`/`analyze.js`/`synthesize.js`/`affiliate.js`
@@ -63,9 +65,23 @@ zero-dependency rule is unchanged — do NOT add a dependency that ships to the 
 - `/worker/handlers/` — HTTP route handlers (research, report, affiliate)
 - `/schema/` — D1 database migrations
 
+## Query clustering
+Queries hit a 14-day cluster cache via `findResearchByCanonicalQuery` before starting a new run.
+`worker/lib/utils.js` provides two canonical forms:
+- `canonicalizeQuery`: strips stopwords and filler (prices, years), singularizes tokens via `singularizeToken` (handles "ies" to "y", strips "es" after ses/xes/zes/ches/shes, strips trailing "s" while preserving no-touch non-plurals: series, lens, glass, chess, gps, nas, ups, class, plus), then sorts and de-duplicates tokens.
+- `squashQuery`: applies the same token normalization but preserves original token order without delimiters (for example, "light bulb" becomes "lightbulb").
+Research rows store both `canonical_query` and `squashed_query` columns (added by `schema/014_squashed_query.sql`). `findResearchByCanonicalQuery` matches on either form, allowing variations like "lightbulb", "lightbulbs", and "light bulb" to hit the same 14-day cache instead of starting separate runs.
+
+## Gather shape
+Research runs operate with a 50-search budget (`ENGINE_CONFIG.maxSearches = 50`):
+- **Opening book (`worker/engine/opening-book.js`)**: before the planner's first turn, every run executes a fixed template search set built from the classified topical category and facets: "best <subject>", "<subject> review", "best <subject> reddit", "<subject> site:reddit.com". The subject is the topical category, or the raw query for comparative queries. These searches count against `maxSearches`, their results enter the normal source pool, and a system message tells the planner they already ran. This ensures repeat runs of the same query share an overlapping corpus so top ranks stay stable.
+- **Planner loop**: the agent loop executes up to 42 searches, reading sources and taking notes.
+- **Reserved search recall (`worker/engine/recall-gather.js`)**: 8 of the 50 searches are reserved for a recall phase after the planner loop ends. The engine asks the recall model which category leaders the harvest missed, drops proposals already evidenced in gathered sources, and runs direct "<name> review" and "<name> reddit" searches for up to 4 unevidenced names, appending results before synthesis. It respects subrequest and time budgets and skips silently when either is spent, logging `[recall-gather] proposed N, searched M, recovered K`. The post-hoc recall supplement inside `synthesizeHonest` continues to run during synthesis.
+
 ## Secrets (set via wrangler secret put)
 - OPENROUTER_API_KEY — paid OpenRouter key (classifier/planner/synth models)
 - SERPER_API_KEY — Serper.dev Google Search (web + news search providers)
+- WORKER_SECRET: authentication secret gating /api/internal/* and internal worker requests
 - BRAVE_API_KEY — optional; Brave Search fallback when Serper is unavailable
 - TAVILY_API_KEY — optional; Tavily LLM-tuned web search (selectable provider + fallback)
 - SEARXNG_URL — optional; self-hosted SearXNG metasearch (blackbox `http://192.168.5.10:8095`).
@@ -73,3 +89,6 @@ zero-dependency rule is unchanged — do NOT add a dependency that ships to the 
   reach it, so the `searxng` provider returns null there and degrades gracefully).
 - JINA_API_KEY — optional; lifts Jina Reader's free rate cap for `read_page`
 - AMAZON_ASSOCIATE_TAG — optional; `AMAZON_AFFILIATE_TAG` ([vars]) is the default tag
+
+## Internal endpoints and forceFresh
+`POST /api/research` accepts `forceFresh: true` to bypass the canonical-query cache and start a genuinely new run. It is honored ONLY when the request carries the `X-Worker-Secret` header matching `WORKER_SECRET` (the same auth as `/api/internal/*`, verified via constant-time comparison in `worker/lib/worker-auth.js`). A public caller's `forceFresh` is ignored. It exists for an external benchmark harness that measures run-to-run stability. The public `fresh` flag (re-run button) is unchanged.

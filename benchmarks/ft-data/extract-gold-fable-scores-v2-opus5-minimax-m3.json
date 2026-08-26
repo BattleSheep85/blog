@@ -1,0 +1,83 @@
+{
+  "label": "minimax-m3",
+  "judgeModel": "claude-opus-5 (via Claude Code CLI, first-party, owner subscription)",
+  "method": "v2: judged against the FULL production source text, not the 5,000-char clipped bundle excerpt. Judge is Opus 5 via the Claude Code CLI, billed to the owner subscription, not OpenRouter.",
+  "complete": true,
+  "costUsd": 6.302532500000001,
+  "avgQualityNonFail": 8.33,
+  "completionsNonFail": 9,
+  "totalProducts": 10,
+  "hardFails": 1,
+  "results": {
+    "audio": {
+      "product": "Samsung HW-Q990D Soundbar",
+      "score": 8,
+      "reasoning": "All ten claims trace to the source text (11.1.4 channels, Q-Symphony, rear speakers, 11 front-facing/1 sub/4 up-firing, HDMI-eARC, Alexa/Bixby/Google Assistant with Chromecast) with no cross-product contamination and no retailer star-rating junk. Minor weaknesses: claims 6/10 are near-duplicates, the Bixby and Alexa items come from a generic multi-device support page rather than Q990D-specific text, and the extraction ignored the well-documented firmware audio-dropout reports that were real checkable claims in the source.",
+      "claim_count": 10,
+      "source_chars": 5282
+    },
+    "tv_display": {
+      "product": "Samsung QN90D Neo QLED",
+      "score": 9,
+      "reasoning": "All 12 claims trace to the source text, mostly Source 8's spec/feature block, with correct model disambiguation (the 4K 120Hz note is properly scoped to the 2.47 m variant, though the '98-inch' gloss is inferred rather than stated). It correctly skipped the 4.7 star rating, price/template junk, and unrelated Alexa/wall-mount support pages; the only soft issue is the dimension figures, which are truncated page data that reads oddly for a 75-inch panel.",
+      "claim_count": 12,
+      "source_chars": 20035
+    },
+    "computing": {
+      "product": "Lenovo ThinkPad X1 Carbon",
+      "score": 8.5,
+      "reasoning": "Every claim traces to the source text with correct generation attribution (Gen 13 Ultra 7 265U and camera from Source 1; Gen 12 specs kept separate across Sources 5, 6, 7), and it correctly skipped junk such as the 4.7-star rating, Vantage/TrackPoint support pages, and the empty Best Buy spec headings. Small deductions for the redundant 'Gen 12 G12' labeling and for merging Source 7's Gen 12 display and webcam details without noting they come from a different configuration than the other Gen 12 listings.",
+      "claim_count": 12,
+      "source_chars": 4390
+    },
+    "wearable_health": {
+      "product": "Fitbit Charge 6",
+      "score": 8.5,
+      "reasoning": "All 11 claims trace to the source text (Walmart listing, Source 9 announcement, ECG sources 6/7), with no contamination from the Fitbit Air specs in Sources 4/5 and no retailer junk. Minor issues: claim 7 says 'on a Fitbit tracker' where the source says 'on a tracker', and claim 9 adds 'to share with your doctor' where the source is truncated at 'share with a ...'.",
+      "claim_count": 11,
+      "source_chars": 5153
+    },
+    "kitchen": {
+      "product": "Presto Pressure Cooker 6qt",
+      "score": "FAIL",
+      "reasoning": "The source contains multiple real, checkable Presto 6qt claims (01264: cooks 3-10x faster than ordinary methods, weighs 5.4 lb, steam basket, easy-open lid, locking system, adjustable pressure valve; 01362: stainless steel, tri-clad base, induction compatible; 02141 electric: 19 programmed settings including 12 pressure presets), so an empty claim list is a hard failure, not honest abstention.",
+      "claim_count": 0,
+      "source_chars": 4649
+    },
+    "cleaning": {
+      "product": "Samsung Bespoke Jet Vacuum",
+      "score": 8.5,
+      "reasoning": "All 12 claims trace to the source text with correct model-line attribution (Ultra 400AW, Lite 1.45kg/280W, HexaJet 210AW kept distinct), and it correctly avoided the robot-vacuum, washer-dryer, and Galaxy-phone sources. Minor weaknesses: claim 2 attributes the 1300W Clean Station to the Ultra when Source 5 labels it an accessory spec, and claims 10-11 are accessory retail prices rather than product claims.",
+      "claim_count": 12,
+      "source_chars": 9734
+    },
+    "power_charging": {
+      "product": "Anker 737 Power Bank",
+      "score": 8.5,
+      "reasoning": "All claims trace to the source text, with correct 140W/24,000mAh/3-port specs, no contamination from the Anker Prime 250W comparison source, and no retailer star-ratings or boilerplate extracted as claims. Claims 9 and 10 (display shows Battery Cycle and Battery Health) are a mild inference from a troubleshooting FAQ snippet rather than a direct display-feature statement, though a customer review does corroborate the display showing cycles.",
+      "claim_count": 12,
+      "source_chars": 16184
+    },
+    "baby": {
+      "product": "Dr. Brown's Natural Flow Baby Bottles",
+      "score": 8,
+      "reasoning": "All 12 claims trace to the source text and no rival product's specs (Comotomo) leaked in, with junk like star counts and prices correctly skipped. Two minor issues: claim 7 (100% silicone) and claim 11 (premature/breastfed) come from a Level 2 wide-neck nipple listing, and claim 8 aggregates sizes across separate narrow/wide SKUs, so both blur model-level boundaries.",
+      "claim_count": 12,
+      "source_chars": 4541
+    },
+    "smart_home": {
+      "product": "Google Nest Hub Max",
+      "score": 9,
+      "reasoning": "The sources are retailer listings, support-thread boilerplate, store category pages, and unrelated products (Pixel 10a, Nest Temperature Sensor, Nest Cams), with no checkable Nest Hub Max spec claims beyond a stray '10\"' and mic count buried in Best Buy facet text. An empty list is the honest answer here and correctly avoids cross-product contamination; only minor credit lost for skipping the borderline display-size/microphone facts.",
+      "claim_count": 0,
+      "source_chars": 4716
+    },
+    "outdoor": {
+      "product": "CamelBak Chute Mag Water Bottle",
+      "score": 7,
+      "reasoning": "The single claim is grounded in Source 3's title, which lists Chute Mag 20/25/32/40 oz, and the model correctly rejected the Amazon boilerplate and the unrelated Pure Bottle leak complaint. Minor weakness: the size list comes from a third-party accessory listing rather than CamelBak itself, and the insulation mention in Source 1 was left out.",
+      "claim_count": 1,
+      "source_chars": 3572
+    }
+  }
+}

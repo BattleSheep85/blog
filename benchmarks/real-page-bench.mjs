@@ -11,7 +11,7 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { runParallelEngine } from '../worker/engine/parallel-engine.js';
 import { synthesizeExtractive } from '../worker/engine/extract/index.js';
-import { getTierConfig } from '../worker/lib/tiers.js';
+import { ENGINE_CONFIG } from '../worker/lib/engine-config.js';
 
 const e = {}; for (const l of readFileSync(new URL('../.dev.vars', import.meta.url), 'utf8').split('\n')) { const m = l.match(/^([A-Z_]+)=(.*)$/); if (m) e[m[1]] = m[2].trim(); }
 const KEY = e.OPENROUTER_API_KEY, SERPER = e.SERPER_API_KEY;
@@ -39,7 +39,7 @@ const rows = []; const dump = [];
 for (const { q, facets, cat } of QUERIES) {
   process.stderr.write(`\n### gathering: ${q}\n`);
   let r;
-  try { r = await runParallelEngine(q, { ...getTierConfig('full'), maxConcurrency: 6 }, KEY, { SERPER_API_KEY: SERPER }, async () => {}, facets, cat, {}); }
+  try { r = await runParallelEngine(q, { ...ENGINE_CONFIG, maxConcurrency: 6 }, KEY, { SERPER_API_KEY: SERPER }, async () => {}, facets, cat, {}); }
   catch (err) { process.stderr.write(`  gather FAILED: ${err.message}\n`); rows.push({ query: q.slice(0, 28), error: err.message }); continue; }
 
   const srcNums = numbersIn((r.sources || []).map((s) => s.content || '').join(' '));

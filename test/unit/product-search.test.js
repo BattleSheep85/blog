@@ -113,7 +113,7 @@ export function runProductSearchTests() {
   ok('narrowed: brand narrows', isNarrowed(parseProductFilters(getOf({ brand: 'Sony' }))));
   ok('narrowed: keyword narrows', isNarrowed(parseProductFilters(getOf({ q: 'x' }))));
   ok('narrowed: non-default sort narrows', isNarrowed(parseProductFilters(getOf({ sort: 'rating' }))));
-  ok('narrowed: page>1 narrows', isNarrowed(parseProductFilters(getOf({ page: '2' }))));
+  ok('narrowed: page>1 alone does not narrow', !isNarrowed(parseProductFilters(getOf({ page: '2' }))));
 
   // ── reviewsHref: serialize, clear-with-'', reset page, omit default sort ───
   {

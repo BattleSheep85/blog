@@ -23,7 +23,7 @@ import { createHash } from 'node:crypto';
 import { buildSynthesisPrompt } from '../worker/engine/prompts.js';
 import { callLLMStreaming, callLLM } from '../worker/engine/llm.js';
 import { validateResearchResult } from '../worker/engine/validate.js';
-import { getTierConfig } from '../worker/lib/tiers.js';
+import { ENGINE_CONFIG } from '../worker/lib/engine-config.js';
 import { CLASSIFIER_SYSTEM_PROMPT } from '../worker/lib/classifier.js';
 
 // ── ENV ──────────────────────────────────────────────────────────────────────
@@ -96,7 +96,7 @@ function checkSpendCap() {
 }
 
 // ── SYNTH probe (openai/gpt-5.4-mini via callLLMStreaming) ─────────────────────
-const cfg = getTierConfig('full');
+const cfg = ENGINE_CONFIG;
 async function runSynthOnce(extraOpts) {
   checkSpendCap();
   const prompt = buildSynthesisPrompt(corpus.query, corpus.notes, corpus.sources, cfg, corpus.facets, corpus.cat, {});

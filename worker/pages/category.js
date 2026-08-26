@@ -16,6 +16,7 @@ import { layout, jsonLdScript } from '../lib/html.js';
 import {
     timeAgo, escapeHtml, displayQuery, slugify, publicResearchFilter,
 } from '../lib/utils.js';
+import { listableRowsSql, PRODUCT_COUNT_SELECT } from '../lib/listable.js';
 
 const SITE = 'https://chrisputer.tech';
 
@@ -40,16 +41,10 @@ export async function renderCategoryHub(category, env) {
     // slugify rules live in one place (utils.js) and we avoid reimplementing
     // them in SQL. The candidate set is small (categories, not the full table).
     const stmt = env.DB.prepare(
-        `WITH ranked AS (
-           SELECT r.*, ROW_NUMBER() OVER (
-               PARTITION BY COALESCE(r.canonical_query, r.slug) ORDER BY r.created_at DESC
-           ) AS rn
-           FROM research r
-           WHERE ${publicResearchFilter('r')} AND r.category IS NOT NULL AND r.category <> ''
-         )
-         SELECT *, (SELECT COUNT(*) FROM products WHERE products.research_id = ranked.id) AS product_count
-         FROM ranked WHERE rn = 1
-         ORDER BY created_at DESC`
+        listableRowsSql({
+            select: `*, ${PRODUCT_COUNT_SELECT}`,
+            extraWhere: `r.category IS NOT NULL AND r.category <> ''`,
+        })
     );
     const allRows = (await stmt.all()).results ?? [];
     const rows = allRows.filter((r) => slugify(r.category) === wantSlug);
@@ -102,7 +97,7 @@ ${r.summary ? `<p class="mt-2 line-clamp-2 text-body-sm text-ink-2">${escapeHtml
         '@type': 'CollectionPage',
         '@id': canonicalUrl,
         url: canonicalUrl,
-        name: `Best ${categoryName} | Chrisputer Labs`,
+        name: `Best ${categoryName} | Frank`,
         description: `Source-backed ${categoryName.toLowerCase()} research and buying guides.`,
         inLanguage: 'en-US',
         isPartOf: { '@id': `${SITE}/#website` },
@@ -128,7 +123,7 @@ ${r.summary ? `<p class="mt-2 line-clamp-2 text-body-sm text-ink-2">${escapeHtml
 
     return layout(
         `Best ${categoryName}`,
-        `Honest, source-backed ${categoryName.toLowerCase()} research and buying guides from Chrisputer Labs.`,
+        `Honest, source-backed ${categoryName.toLowerCase()} research and buying guides from Frank.`,
         body,
         robots + canonical + structuredData,
         { ogUrl: canonicalUrl },

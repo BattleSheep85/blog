@@ -1,0 +1,98 @@
+{
+  "judgeModel": "claude-opus-5 (via Claude Code CLI, first-party, owner subscription)",
+  "method": "v2: existence pre-checked deterministically, judge scores usefulness + evidence_discipline only. Judge is Opus 5 via the Claude Code CLI, billed to the owner subscription, not OpenRouter.",
+  "notComparableTo": "synth-gold-fable-scores.json and synth-gold-quality-v2-*.json (different judge model).",
+  "bundleDir": "benchmarks/ft-data/synth-gold-blind-v2-muse-spark-1.1-noreason",
+  "complete": true,
+  "costUsd": 2.0103745,
+  "results": {
+    "best soundbar 2026": {
+      "A": {
+        "usefulness": 6,
+        "evidence_discipline": 5,
+        "reasoning": "Clear tiering by budget, room size, and setup complexity with real tradeoffs and useful hedges on KEF XIO and Arc Ultra, but several picks lack prices and specifics beyond generic buying-guide boilerplate. Evidence discipline is uneven: the notes state plainly that the corpus has no measured results, prices, pros, or cons for 2026 soundbars, yet the report repeatedly asserts 'RTINGS hands-on testing names it best for dialogue' and cites PCMag/ExpertReviews/What HiFi rankings that the notes do not support, presenting listing as measurement.",
+        "costUsd": 0.270474,
+        "durationMs": 6840,
+        "failed": false,
+        "unparseable": false
+      }
+    },
+    "best microwave 2026": {
+      "A": {
+        "usefulness": 6,
+        "evidence_discipline": 3,
+        "reasoning": "The four picks cover distinct use cases with real tradeoffs and clear best-for labels, but three of four have no price, which limits an actual purchase decision. Evidence discipline is weak: the report layers confident attributions the notes never support (Wirecutter Jan 2026 lab pick, RTINGS even-heating tests, a Reddit ~$130 'crown', Consumer Reports scoring the GE JES1109RRSS on defrosting and noise, an EasyBear reliability analysis), states them as settled fact, and never flags that the substantive evidence traces to a single hands-on source with no hedging about what is unknown.",
+        "costUsd": 0.24282650000000003,
+        "durationMs": 11883,
+        "failed": false,
+        "unparseable": false
+      }
+    },
+    "best graphics card 2026": {
+      "A": {
+        "usefulness": 4,
+        "evidence_discipline": 5,
+        "reasoning": "Two solid 1080p picks with price, VRAM, and a clear best-for split, but the third pick is an AI dev box padding a gaming-GPU query, and there is no perfomance data, no mid/high-end coverage, and no differentiation beyond DLSS vs 16GB. Sourcing is attributed and the supply caveats are honest, but several claims (FSR 4 vs DLSS 4.5 driver maturity, 90% DLSS game support per TechSpot, Surface Dev Box sustained-workload design) are stated flatly with no support in the notes, and the Spark verdict calls it the 'only credible forward-looking platform' on roadmap coverage alone.",
+        "costUsd": 0.22173150000000003,
+        "durationMs": 9991,
+        "failed": false,
+        "unparseable": false
+      }
+    },
+    "best dash cam 2026": {
+      "A": {
+        "usefulness": 7,
+        "evidence_discipline": 5,
+        "reasoning": "Clear picks with distinct roles (best overall, premium parking, LTE cloud, cloud 4K, 3-channel) and useful tradeoffs like subscription cost and card corruption, though most prices are null and differences between the two VIOFOs stay vague. Evidence discipline is weaker: several confident attributions (Car and Driver Apr 2, 2026, Vortex Radar Dec 2025, MotorTrend hands-on, BlackboxMyCar June 2026 heat reel, $5-20/month LTE) are stated as settled fact but have no support in the notes or shown evidence, and the report only flags thin sourcing on the Vantrue pick.",
+        "costUsd": 0.2435365,
+        "durationMs": 6420,
+        "failed": false,
+        "unparseable": false
+      }
+    },
+    "best vacuum for pet hair": {
+      "A": {
+        "usefulness": 8,
+        "evidence_discipline": 7,
+        "reasoning": "Strong shopper value: six distinct picks covering canister, robot, stick, handheld, and mop-combo niches, with real prices, clear best_for labels, and honest cross-references (Q7 M5+ vs Narwal, Ryobi vs SEBO/Dyson), plus a rare self-flagged caution that Ryobi appeared on a worst-tested list. Evidence discipline is good but not clean: several claims lean past the notes, including S-Class filtration and 'sealed bag contains dander better' for the SEBO, the Dyson laser/dustbin/premium-price details and its 4.5 rating with a null price, and 'similar vacuuming performance' between Narwal and Q7 M5+, none of which the evidence establishes; the uniform 4.0-4.5 ratings also read as invented precision.",
+        "costUsd": 0.25876150000000003,
+        "durationMs": 8397,
+        "failed": false,
+        "unparseable": false
+      }
+    },
+    "best printer for home": {
+      "A": {
+        "usefulness": 8,
+        "evidence_discipline": 6,
+        "reasoning": "Strong shopper utility: six distinct picks with clear role separation (color laser, mono laser, ink tank, budget tank, cheap print-only, photo), real tradeoffs, and verdicts that tell you when not to buy. Evidence discipline is weaker: it cites Wirecutter and RTINGS comparisons that appear nowhere in the notes, asserts '~80% less than cartridges' and connectivity/feature specs as settled fact without visible support, and never flags what it does not know.",
+        "costUsd": 0.2623665,
+        "durationMs": 5591,
+        "failed": false,
+        "unparseable": false
+      }
+    },
+    "best portable charger for iphone": {
+      "A": {
+        "usefulness": 6.5,
+        "evidence_discipline": 7,
+        "reasoning": "Picks are concrete with prices, measured numbers, and honest cons, but five of six are Anker and the MagGo 10K vs MagGo 10K Slim entries look like near-duplicates presented as distinct choices, which thins the real decision space. Evidence handling is mostly disciplined (it flags the PowerCore as brand-recommendation-only and labels hands-on vs manufacturer claims), though it slips into mild sales voice ('clear winners', 'the one we'd buy') and adds unsupported detail like USB-C PD fast charging on the integrated-cable model and the phone sliding on the Satechi.",
+        "costUsd": 0.2732515,
+        "durationMs": 14453,
+        "failed": false,
+        "unparseable": false
+      }
+    },
+    "best hair dryer 2026": {
+      "A": {
+        "usefulness": 8,
+        "evidence_discipline": 5,
+        "reasoning": "Six well-differentiated picks with clear tiers, price context, and real tradeoffs make this genuinely decision-useful for a shopper, though most prices are null. Evidence discipline is weak: the corpus snippets support little beyond the Wirecutter pick, the T3 fine-hair award, the InStyle 18-minute result, and the Laifen 115,000 RPM spec, yet the report asserts Consumer Reports lab tests, Byrdie/Allure editor testing, Reddit reports with specific dates, '90% as fast', 'dries as fast as dryers 5x the price', and 'cuts drying time in half' as settled findings, with marketing-flavored verdicts and no hedging or statement of what is unknown.",
+        "costUsd": 0.2374265,
+        "durationMs": 7260,
+        "failed": false,
+        "unparseable": false
+      }
+    }
+  }
+}

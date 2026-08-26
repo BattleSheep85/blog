@@ -10,8 +10,9 @@
 
 import { runVerification } from '../engine/verify.js';
 import { callLLM } from '../engine/llm.js';
-import { getTierConfig } from '../lib/tiers.js';
+import { ENGINE_CONFIG } from '../lib/engine-config.js';
 import { getResearchById, generateId } from '../lib/db.js';
+import { nowEpoch } from '../lib/utils.js';
 import { incrementMonthlyCost } from './orchestrator.js';
 
 /**
@@ -29,10 +30,10 @@ import { incrementMonthlyCost } from './orchestrator.js';
 // worker/engine/verify.js's STANCE_SYSTEM), which means actually reading the
 // pages that contain the specific numbers (RTINGS/teardown/measured-spec
 // pages), not just a search snippet. Ranking only needs a broad opinion
-// sample, so it stays on the shared ENGINE_CONFIG (tiers.js) untouched — this
-// override applies ONLY to the verification pipeline.
+// sample, so it stays on the shared ENGINE_CONFIG (engine-config.js)
+// untouched — this override applies ONLY to the verification pipeline.
 const VERIFICATION_CONFIG = Object.freeze({
-    ...getTierConfig('full'),
+    ...ENGINE_CONFIG,
     maxFetches: 40,
     maxSearches: 60,
     maxToolCalls: 90,
@@ -119,7 +120,7 @@ async function persistVerificationResult(env, reportId, result) {
         subjectUrl, result.overall?.label ?? null, result.overall?.score ?? null,
         summary, result.product || null, JSON.stringify(result), JSON.stringify(evidenceUrls),
         Number.isFinite(result.costUsd) && result.costUsd > 0 ? result.costUsd : null,
-        getTierConfig('full').synthModel, nowEpoch(), reportId,
+        ENGINE_CONFIG.synthModel, nowEpoch(), reportId,
     );
 
     const deleteStale = env.DB.prepare('DELETE FROM claims WHERE research_id = ?1').bind(reportId);
@@ -168,8 +169,4 @@ function collectEvidenceUrls(claims) {
         }
     }
     return [...urls];
-}
-
-function nowEpoch() {
-    return Math.floor(Date.now() / 1000);
 }

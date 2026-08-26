@@ -4,10 +4,11 @@
 
 name: Deploy
 
+# Cutover 2026-08-03: deploys moved to GitLab CI (.gitlab-ci.yml). This
+# workflow no longer triggers on push, so it cannot double-deploy alongside
+# GitLab. It stays available as a manual fallback (workflow_dispatch) until
+# GitLab CI has proven itself, at which point it can be removed.
 on:
-  push:
-    branches:
-      - main
   workflow_dispatch:
 
 concurrency:

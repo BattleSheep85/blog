@@ -1,0 +1,96 @@
+{
+  "judgeModel": "claude-opus-5 (via Claude Code CLI, first-party, owner subscription)",
+  "method": "v2: existence pre-checked deterministically, judge scores usefulness + evidence_discipline only. Judge is Opus 5 via the Claude Code CLI, billed to the owner subscription, not OpenRouter.",
+  "notComparableTo": "synth-gold-fable-scores.json and synth-gold-quality-v2-*.json (different judge model).",
+  "bundleDir": "benchmarks/ft-data/synth-gold-blind-v2-muse-spark-1.1",
+  "complete": true,
+  "costUsd": 1.833987,
+  "results": {
+    "best soundbar 2026": {
+      "A": {
+        "usefulness": 6,
+        "evidence_discipline": 4,
+        "reasoning": "Picks are distinct and the tradeoffs (size, ecosystem lock-in, no rears, budget tier) are real and decision-useful, but prices are null on 5 of 6 products, which cripples a purchase decision, and several pros restate generic buying-guide platitudes rather than model-specific findings. Evidence discipline is weak: the notes explicitly say the corpus has no measured results, prices, pros, or cons for 2026 soundbars, yet the report asserts specific claims as settled (Q990F 'best for dialogue' RTINGS 2026-03-24, Arc Ultra missing DTS, PCMag Australia and ExpertReviews rankings) and invents numeric ratings out of listing-level evidence, with only the Hisense entry properly flagged as provisional.",
+        "costUsd": 0.29434400000000005,
+        "durationMs": 9858,
+        "failed": false,
+        "unparseable": false
+      }
+    },
+    "best microwave 2026": {
+      "A": {
+        "usefulness": 8,
+        "evidence_discipline": 6,
+        "reasoning": "Strong shopper utility: six distinct picks with clear role separation (value, premium combo, capacity, budget combo, OTR, budget large), real tradeoffs, and price anchors on the two main picks. Evidence discipline is weaker: several pros/cons are plausible-sounding inference not traceable to the notes (fingerprint smudging, learning curve, 'heavier and bulkier despite compact claim'), the Consumer Reports 3%/6% control-button stats are attached to specific models as 'known failure point' when they are brand-agnostic category data, and the summary asserts Wirecutter/Reddit consensus and a 4.5 rating with no visible hedging about missing price data on four of six products.",
+        "costUsd": 0.2586405,
+        "durationMs": 7040,
+        "failed": false,
+        "unparseable": false
+      }
+    },
+    "best graphics card 2026": {
+      "A": {
+        "usefulness": 7,
+        "evidence_discipline": 8,
+        "reasoning": "Clear tiering from a $449.99 1080p value pick up to a 4K halo card, with real tradeoffs (16GB vs 8GB, supply and price risk) and an explicit confidence gap between the PCMag-tested RX 9060 XT and the listicle-only RX 9070. Weaker points: several picks have no price and thin specs, ratings of 4 are asserted for SKUs with no hands-on source, and a few pros lean on low-grade sources (Facebook post, NeoGAF, retailer guide) that the report labels but still lists as selling points.",
+        "costUsd": 0.24403550000000002,
+        "durationMs": 7018,
+        "failed": false,
+        "unparseable": false
+      }
+    },
+    "best dash cam 2026": {
+      "A": {
+        "usefulness": 8,
+        "evidence_discipline": 5,
+        "reasoning": "Genuinely useful shopping structure: six distinct picks mapped to clear use cases (overall 4K, all-rounder, 3-channel rideshare, hot climate, value, budget) with real tradeoffs and install caveats, though the missing prices weaken purchase decisions. Evidence discipline is weaker: it asserts confident specifics the corpus does not carry (ratings like 4.6/4.5, 'proven heat tolerance over cheap clones', 'less long-term repair history', E1 Pro resolution class, Miofive supercapacitor variants) and never states what it does not know, with no hedging on thin single-source claims.",
+        "costUsd": 0.24864049999999996,
+        "durationMs": 6184,
+        "failed": false,
+        "unparseable": false
+      }
+    },
+    "best vacuum for pet hair": {
+      "A": {
+        "usefulness": 8,
+        "evidence_discipline": 7,
+        "reasoning": "Strong shopper value: six picks covering distinct use cases (canister, cordless stick, robot, handheld, mop-combo), real prices, and honest cons that tell you when not to buy, plus useful cross-references like pairing the robot with a full-size vacuum. Evidence discipline is mostly good (it names sources and dates, flags the Ryobi worst-list caveat, and admits no confirmed Dyson price), but it invents unsupported specifics: the SEBO 'S-Class filtration' spec, the Dyson laser-detection and '$700+' claims, and a 'Reddit' recommendation and 'Feb 2026 community chatter' that appear nowhere in the notes.",
+        "costUsd": 0.25897050000000005,
+        "durationMs": 7269,
+        "failed": false,
+        "unparseable": false
+      }
+    },
+    "best printer for home": {
+      "A": {
+        "usefulness": 8,
+        "evidence_discipline": 6,
+        "reasoning": "Strong shopper value: six distinct picks with clear role separation (mono laser default, color laser, budget tank, ultra-budget single-function, high-volume tank, photo), real prices, and cons that actually steer away from the wrong buy. Evidence discipline is weaker: several confident attributions have no support in the shown notes or snippets (Wirecutter naming the DCP-L2640DW best for home, RTINGS speed comparison vs the Canon MF665Cdw, TechRadar's 80% ink figure, the EcoTank maintenance-box lock), and one pro miscredits a CNET Brother HL-series finding to the HP M209d; the report also states ratings and picks flatly with no hedging where the underlying corpus is thin.",
+        "costUsd": 0.26984549999999996,
+        "durationMs": 8910,
+        "failed": false,
+        "unparseable": false
+      }
+    },
+    "best portable charger for iphone": {
+      "A": {
+        "usefulness": 8,
+        "evidence_discipline": 7,
+        "reasoning": "Clear picks with distinct use cases (Qi2 speed, slim carry, budget wired, desk dual-charge), real tradeoffs, and measured charge counts a shopper can act on. Attribution is mostly careful, but it overstates in places: the Slim's 15W and 1.8-charge figures get labeled TechRadar hands-on when the note base is thinner, the PowerCore 10K was explicitly not reviewed yet is rated 3.8 with confident cons, and the numeric ratings are invented rather than sourced.",
+        "costUsd": 0.25951050000000003,
+        "durationMs": 6586,
+        "failed": false,
+        "unparseable": false
+      }
+    },
+    "best hair dryer 2026": {
+      "A": {
+        "usefulness": 0,
+        "evidence_discipline": 0,
+        "reasoning": "generation failed: json-parse-fail",
+        "costUsd": 0,
+        "failed": true
+      }
+    }
+  }
+}

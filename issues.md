@@ -1,6 +1,565 @@
 # Issues
 
-Last updated: 2026-07-24
+Last updated: 2026-08-26
+
+## 2026-08-26: gather stability + query clustering work
+
+Improvements to query canonicalization, search gathering stability, and research run controls.
+
+- [x] MEDIUM: query canonicalization missed plural and compound variants, so "lightbulb"/"lightbulbs"/"light bulb" each forced a fresh paid run (worker/lib/utils.js `singularizeToken` + `squashQuery`, schema/014_squashed_query.sql, worker/lib/db.js `findResearchByCanonicalQuery` now matches either form).
+- [x] MEDIUM: the recall supplement ran only after gathering, so its grounding gate dropped every leader it was meant to recover (worker/engine/recall-gather.js, 8 reserved searches in worker/engine/engine.js `runEngine`).
+- [x] LOW: repeat runs of the same query gathered disjoint corpora, so top ranks moved between runs (worker/engine/opening-book.js deterministic template searches).
+- [x] LOW: no way for a benchmark harness to force a fresh run (internal-only `forceFresh` on POST /api/research, gated by X-Worker-Secret, worker/lib/worker-auth.js).
+- [ ] LOW: the public `fresh` flag on POST /api/research still bypasses the 14-day cluster cache with no authentication (worker/handlers/research.js). It is behind the burst gate, the 20 per hour per IP velocity cap, the free-tier quota, and the monthly budget governor, so it is a spend-amplifier rather than an open drain, but a public caller can still force paid runs for queries that already have a cached report. Decide whether to keep it for the re-run button or restrict it.
+
+## 2026-08-15: IP-rotating affiliate click fraud, site-wide gate added
+
+Second incident on the affiliate redirect surface, and the first one the
+existing defenses could not see.
+
+### Incident (production D1, measured)
+
+- 2026-08-14 21:00 to 2026-08-15 01:00 UTC: **1,232 logged affiliate clicks**
+  across 213 report pages (owner's count over the wider window: 1,256).
+- **1,232 distinct `ip_hash` values for 1,232 clicks**, so about one click per
+  address, spread over the whole site instead of a few pages.
+- Spread over 183 distinct minutes, peaks of 17 to 23 clicks a minute.
+- Baseline before it (5 weeks, 2026-07-08 to 2026-08-13): median 4 clicks a
+  day, busiest multi-visitor hour 9, busiest hour of any kind 24, busiest
+  multi-visitor minute 3.
+
+### Why the existing defense missed it
+
+The 2026-06-21 incident was 6 hot IPs, so the fix was a PER-IP cap
+(`checkRateLimit(env.KV, 'go:' + ip, 30, 3600)`). This attacker never put more
+than one click on an address, so it never got within 29 of that cap. A per-IP
+cap cannot see an IP-rotating source by construction. Nothing on the endpoint
+looked at total volume.
+
+### Fixed
+- [x] HIGH (security/revenue): no SITE-WIDE volume limit on `/api/go/*`, so an
+      IP-rotating bot could send unlimited tagged clicks through the Amazon
+      Associates link and risk account suspension for invalid traffic. Added
+      `worker/lib/affiliate-gate.js`: `checkBurstGate` called with the CONSTANT
+      key `affiliate:global` on a NEW native binding, `RL_AFFILIATE_GLOBAL`
+      (namespace_id 1002, 6 per 60 s). A constant key means one counter for the
+      whole site, which is what makes it global instead of per-visitor. It is a
+      second layer, checked after UA screening and before the per-IP cap. The
+      per-IP cap is unchanged. Rollback = delete the `[[ratelimits]]` block, the
+      gate fail-opens the same way `RL_BURST` does.
+- [x] Limit sizing: 6 per 60 s is 2x the busiest real minute on record and its
+      360/hour ceiling is 15x the busiest hour of any kind, so real traffic at
+      today's scale cannot reach it. The worst incident hour on record (1,475
+      clicks, 2026-06-21) would have been held to 360. Every trip logs one
+      structured line (`where: affiliate-gate`, `event: global-throttle`) with
+      the limit and period, so tuning data accumulates.
+- [x] Regression test: `test/integration/affiliate-global-gate.spec.js` replays
+      the evasion (20 addresses, one click each, all far under the per-IP cap)
+      and asserts the gate still throttles, that a rotation to a fresh /24 buys
+      nothing, that 3 clicks from 3 IPs never trip it, and that the 30/hour
+      per-IP behavior is untouched. Unit side:
+      `test/unit/affiliate-gate.test.js`, which also asserts the code constants
+      match the shipped `wrangler.toml` and `wrangler.dev.toml` blocks.
+
+### Known consequence (accepted)
+- The gate is global, so during an attack a real shopper can be throttled too.
+  A throttled click still 302-redirects, it only loses the associate tag and is
+  not logged, which is the same handling the per-IP cap already used. Losing a
+  possible commission beats losing the Associates account.
+
+### Open
+- [ ] MEDIUM (security): a native binding only supports a 10 s or 60 s window,
+      so it can express a rate ceiling but not "700 an hour is abnormal". A
+      slow, wide attacker under 6 a minute still passes. If the trip log shows
+      that shape, add a global hourly counter with the existing KV limiter
+      (`checkRateLimit(env.KV, 'go:global', N, 3600)`), which has no window
+      restriction.
+- [ ] LOW (data): the incident's 1,232 rows are still in `affiliate_clicks` and
+      inflate click reporting for 2026-08-14/15. Not deleted, kept as evidence.
+
+## 2026-08-03: Research archive pagination, one definition of "listable"
+
+Follow-up to the 2026-08-02 pagination fix. The report was "roughly a third of
+the reports are unreachable" and "three numbers disagree" (687 / 541 / 441).
+
+### Diagnosis (production D1, measured)
+
+- `status='complete'` = **687**.
+- `status='complete'` + canonical dedupe = **541**.
+- `publicResearchFilter` (complete + thin-page gate) = **570**, and with the
+  canonical dedupe = **441**.
+- The listing served 441, `totalPages` rendered 10 = `ceil(441/48)`, and the
+  sitemap held 441 research URLs. So the count query, the listing and the
+  sitemap already agreed. The 541 came from running the dedupe count with
+  `status='complete'` in place of the full filter, so that number never
+  described a listable set. 687 - 441 = 246 rows are excluded on purpose: 117
+  fail the thin-page gate (they render noindex) and 129 are older members of a
+  canonical cluster whose winner is listed.
+
+### Real defects found
+
+- [x] HIGH (SEO, Data Integrity): no tiebreak in the dedupe window
+      (`ORDER BY r.created_at DESC`) or in the listing (`ORDER BY created_at
+      DESC`). `created_at` has one-second resolution and does tie, so SQLite
+      was free to promote a different cluster member per execution and to order
+      tied rows differently per page. Proven live: a crawl walk of /research
+      linked `best-mesh-wifi-4c83a2dd` while the same query with an `id`
+      tiebreak named `best-mesh-wifi-3f5b47bc` for that cluster. Tied rows that
+      straddle a LIMIT/OFFSET boundary can be served on no page at all. Fixed
+      by making both orderings total (`..., r.id DESC`).
+- [x] HIGH (SEO): `/research?page=N` past the last page answered 200 with an
+      empty grid, for every N up to 1000. That is a crawl trap. It now 404s,
+      the contract /reviews already used.
+- [x] MEDIUM (Consistency): autocomplete partitioned clusters by
+      `view_count DESC` while every other surface used `created_at DESC`, so it
+      could suggest a slug the listing and sitemap never link. It now shares
+      the one winner rule and keeps only its own result ordering.
+- [x] MEDIUM (Maintainability): the dedupe CTE was copy-pasted into seven
+      places. All of them now build SQL from `worker/lib/listable.js`.
+
+### Open
+
+- [ ] MEDIUM (SEO): the 129 non-winning cluster members each render a full
+      self-canonical report page that nothing links to (duplicate content plus
+      orphan). Pointing their canonical at the cluster winner is the obvious
+      move but it would deindex 129 live URLs, so it needs an owner decision
+      rather than a silent change.
+
+## 2026-08-03: Outbound mail dead in production (SMTP host is behind Cloudflare)
+
+Incident. Two live `POST /api/subscribe` calls returned `{"ok":true}` and logged
+`{"where":"mailer","ok":false,"error":"Stream was cancelled."}`. No mail left the
+worker. The same code delivered real mail through `npx wrangler dev`.
+
+### Root cause
+
+- [x] HIGH (Email, Production): a deployed Worker cannot reach
+      `smtp.hostinger.com` at all. The host resolves to `172.65.255.143`, inside
+      `172.65.240.0/20`, AS13335 CLOUDFLARENET, and Cloudflare blocks outbound
+      TCP from Workers to its own IP ranges. `mx1`/`mx2.hostinger.com` share the
+      same network, so no hostname and no port avoids it. Measured at the edge
+      with a gated, now-removed diagnostic route: `connect()` to `8.8.8.8:853`
+      with implicit TLS opened normally, `connect()` to `smtp.hostinger.com:465`
+      and `:587` both rejected in under 20 ms with "proxy request failed, cannot
+      connect to the specified address", before any TLS handshake. `wrangler dev`
+      passed only because it egresses from the developer LAN. "Stream was
+      cancelled." was the downstream symptom: the code read the socket without
+      awaiting `socket.opened`, so the real reason was discarded.
+- [x] Not a request-lifecycle bug. Every send site awaits the mailer before the
+      Response or inside its own handler context: `worker/handlers/subscribe.js`,
+      `worker/handlers/unsubscribe.js`, and `notifySubscribersForResearch` from
+      `persistEngineResult` (queue consumer, and `ctx.waitUntil` on the cron
+      path in `worker/jobs.js`). No `waitUntil` was missing.
+
+### Actions taken
+
+- [x] `MAIL_ENABLED = "false"` in `wrangler.toml`. A known-off feature beats a
+      feature that lies to visitors. Every send is now a logged skip.
+- [x] `docs/email-design.md` section 2 corrected. Option A (hand-written SMTP to
+      Hostinger) is NOT implementable on Cloudflare.
+- [ ] HIGH (Email, Product): pick a new transport. Option B (provider API over
+      `fetch`, for example Resend or Postmark) or option C2 (Cloudflare Email
+      Service, beta) in `docs/email-design.md` section 3. Owner decision. The
+      `worker/lib/mailer.js` transport seam is the only file that changes.
+- [x] Re-checked option C2 (Cloudflare Email Service) against current docs,
+      2026-08-03: still disqualified. Onboarding a domain for outbound sending
+      is dashboard-only ("Compute > Email Service > Email Sending > Onboard
+      Domain"), no REST API path exists for that step, so it cannot be
+      finished with the Cloudflare API token alone. See
+      `docs/email-design.md` section 2a. Option B (a provider API over
+      `fetch`) remains the path that this session could finish unattended, if
+      the owner authorizes creating an account with such a provider (Resend,
+      Postmark, Brevo, or MailerSend). No such signup was authorized in this
+      session, so no transport was built.
+- [ ] MEDIUM (UX): while mail is off, the signup form still tells the visitor to
+      check an inbox. Consider softening that copy until a transport works.
+
+### Related defect, fixed
+
+- [x] MEDIUM (Email, Observability): a confirmation that never left produced no
+      log tying it to the signup, and a disabled mailer produced no log at all.
+      `POST /api/subscribe` must keep returning the same generic `{"ok":true}` in
+      every state (no email-enumeration surface), so the log is the only signal.
+      `worker/lib/mailer.js` now logs the `disabled` skip, and
+      `worker/handlers/subscribe.js` logs one
+      `{"where":"subscribe","step":"confirm-send","ok":false,"rowId":N,
+      "retryable":true,...}` line per lost confirmation, at `error` level for a
+      real failure and `log` level for a configured skip. No address is logged.
+- [x] Verified in production that a failed send spends nothing: after two live
+      submits, `confirm_sent_at` is NULL and `confirm_send_count` is 0, so the
+      24 h cooldown and the lifetime cap are intact and the next submit retries.
+
+## 2026-07-28: Benchmark validity fix + synthesis re-score (no production change)
+
+Audit: `docs/benchmark-validity-audit.md`. Re-score and corrected leaderboard:
+`benchmarks/synth-rescore-2026-07.md`. No production model changed.
+`worker/lib/engine-config.js` and `worker/lib/tiers.js` untouched. Spend $9.2339
+of a $14 cap. No stored benchmark result was edited or deleted, verified by diff.
+
+### Root cause
+
+- [x] HIGH (Benchmark/Testing, Data Integrity): every LLM-judged grounding,
+      honesty or fabrication number this repo recorded against a large corpus
+      came from a judge that could not see the corpus. `synth-gold-blind.mjs`
+      built a 6,000 character digest in raw list order; measured coverage across
+      the 8 stored bundles was 8/185, 4/147, 10/200, 13/182, 6/171, **0/181**,
+      **0/138**, 19/165 sources. The judge was then asked whether products and
+      citations were invented. FIXED by moving every existence question into
+      exact tested code over the FULL corpus
+      (`benchmarks/lib/grounding-check.mjs`, `citation-scan.mjs`,
+      `outlet-lexicon.mjs`), with the LLM judge kept only for usefulness and
+      evidence discipline. 53 assertions in
+      `benchmarks/tests/grounding-check.test.mjs`, gated in
+      `scripts/run-tests.mjs` and `scripts/coverage.sh`.
+- [x] Three real things were called fabrications by three separate checking
+      layers, and all three are in the corpus: "Seasonic PRIME TX-850" and the
+      "12-year warranty" figure (June juror panel), and the "Epson EcoTank
+      ET-3950" (the muse-spark rerun's own manual audit). All three are now
+      permanent regression fixtures built from verbatim real corpus records
+      (`benchmarks/tests/fixtures/audit-regression-corpus.json`).
+- [x] The new checker was itself wrong twice before it was right, both found by
+      running it, both now pinned by named assertions: (a) the space-stripped
+      haystack glued "ET-3950 $399.99" into `et395039999`, which contains `9999`,
+      so a fabricated "ET-9999" passed; (b) the first full re-score produced 59
+      citation flags, most of them false (a bare year "2026" read as an outlet,
+      "Bon Appétit" captured as "Bon App", "via MagSafe" read as a publication,
+      one date handed to every outlet in its window). After the fixes, 64 reports
+      produce 2 flags, both hand-verified as real.
+
+### Verdicts overturned or annotated (history kept, nothing deleted)
+
+- [x] OVERTURNED: the 2026-07-28 muse-spark synthesis finding below ("fabricated
+      citations ... an entire invented top-pick product not present in the source
+      corpus"). Deterministic re-check against the full corpus: ZERO invented
+      products in the xhigh run, and 1 of 112 checkable citations unverified, that
+      one a date mismatch on the real outlet Reddit. The minimal run has one
+      flagged item, an unsupported model number ("BMO870") on a real product
+      (Breville Combi Wave 3-in-1, 9 corpus mentions). There is no invented top
+      pick in either run. muse-spark's citations verify at 99.1 percent.
+- [x] OVERTURNED: `benchmarks/muse-spark-bench-2026-07.md` named the "Epson
+      ET-3950" a confirmed genuine fabrication with "zero mentions anywhere in the
+      181-source corpus". It appears in at least 6 places in that corpus,
+      including PCMag's "Best All-in-One Printer for Home Offices: Epson EcoTank
+      ET-3950". A correction note is appended to that report; its history is
+      unchanged.
+- [x] MEASURED ON A BROKEN METHOD: the 2026-07-24 synthesis-gold verdict
+      "gpt-5.4-mini DEFENDS the synth seat (most honest 8.6/10)". The 8.6 honesty
+      figure came from the invalid judge axis. The deterministic claims in that
+      entry (0 fabricated numbers, completion counts, deepseek's 22) stand.
+- [x] NO LONGER CITABLE: the 2026-06-29 50-query x 150-juror panel's fabrication
+      and grounding numbers, including "grok-4.20 DQ'd on honesty (3.15
+      fabs/report)". Jurors saw 1,268 of 6,768 sources (18.7 percent), and the
+      very first juror record contains a confirmed false fabrication verdict
+      (TX-850, 12-year warranty). Both affected models are out of production, so
+      no re-run is required. No future decision may cite those numbers. The
+      panel's usefulness axis is not affected the same way.
+- [x] RESOLVED: the 2026-07-24 open item "short SKU-style names (<3 chars, e.g.
+      'V3') silently skip the name-grounding check". Closed in the v2 checker: a
+      token counts as significant at length 3 or more, OR at length 2 with a
+      digit, and every digit-bearing token must be present. Regression assertion
+      added. `benchmarks/lib/synth-score.mjs` deliberately keeps its old behaviour,
+      because changing it would silently alter the stored deterministic numbers it
+      produced.
+
+### Synthesis seat on corrected measurement
+
+- [x] finding 2026-07-28: **synthesis stays on `minimax/minimax-m3`. No change
+      requested.** The audit's tentative lean toward `anthropic/claude-haiku-4.5`
+      (0 vs 1 ungrounded numbers, 50 vs 49 products) is OVERTURNED. In ratio form
+      those are G_det 10.00 vs 9.98, a gap of 0.02 on a 10 point scale. On the
+      corrected judged axes minimax-m3 leads haiku by +0.51 composite_v2, winning
+      5 of 8 queries paired (SEM 0.31, t=1.63, p about 0.15, so directional and
+      inside noise at n=8). haiku is LAST of the six 8/8 completers on both judged
+      axes (evidence discipline 4.63, usefulness 6.63). composite_v2:
+      muse-spark-1.1 8.38, gpt-5.4-mini 8.19, minimax-m3 8.06, deepseek 7.77,
+      muse-spark-noreason 7.72, haiku 7.54, gemma 7.42, gpt-5-nano 7.13.
+      composite_v2 is NOT comparable to the stored composite.
+- [x] finding 2026-07-28: the three earlier disqualifications ALL STAND, each on
+      deterministic ground: gemma-4-26b 3/8 completions, gpt-5-nano 6/8
+      completions, deepseek-v4-flash 22 of 175 numbers ungrounded (unchanged under
+      the corrected checker, every other model has 0 or 1).
+- [x] finding 2026-07-28: `meta/muse-spark-1.1` tops the corrected board (8.38)
+      and its reports are NOT less grounded than the incumbents. "Do not adopt"
+      still stands, but only on the grounds that were always deterministic: 1 of 8
+      generations failed, and generation cost is $0.08 per report against
+      minimax-m3's $0.01, about 8x.
+
+### Extract seat re-verified on full text
+
+- [x] finding 2026-07-28: extract stays on `anthropic/claude-haiku-4.5`, and the
+      case is STRONGER than before. The stored scores were judged from bundles
+      that clipped source text at 5,000 characters, hiding up to 75 percent of the
+      source on 5 of 10 products. Re-judged on full text
+      (`benchmarks/extract-gold-rejudge.mjs`, 30 calls, $2.07): haiku 8.00 (10/10,
+      0 fails), gpt-5.4-mini 7.30 (10/10, 0 fails), minimax-m3 8.19 (8/10, 2 hard
+      fails). Under the clip haiku and gpt were tied at 7.60. On full text haiku
+      wins outright. minimax-m3 still returns empty output on the same 2 rich
+      sources, which is deterministic and still disqualifying for a
+      pipeline-gating step.
+
+### Still sound, checked and unchanged
+
+- [x] The stance gold bench (self-contained 800-char pairs, same input production
+      sees), the ad-resistance canary eval, BaitBench, the provider bench, the
+      engine shootout, the local gate suite, and the real-world benchmark. All are
+      deterministic or self-contained. No re-score needed.
+
+## 2026-07-28: Muse Spark 1.1 candidate benchmark (no production change)
+
+Evaluation only. No production model changed. Full report:
+`benchmarks/muse-spark-bench-2026-07.md`.
+
+- [x] finding 2026-07-28: benchmarked `meta/muse-spark-1.1` at
+      `reasoning_effort: xhigh` (OpenRouter accepted this value on the first
+      call, no retry needed) against all three gold benches. Verdict: do not
+      adopt for stance, extract, or synthesis.
+- [x] finding 2026-07-28, stance: 83.0% accuracy vs the production
+      minimax/minimax-m3's 87.5%, 75% action-precision (n=4, a very small
+      sample because the candidate almost always predicts `neutral`). Costs
+      more per call than the incumbent.
+- [x] finding 2026-07-28, extract: fails hard under production conditions.
+      `extractClaims` uses a fixed 2000-token completion budget. At `xhigh`
+      this model spends nearly all of it on hidden reasoning and returns
+      zero claims on 9 of 10 products (confirmed via `finish_reason:
+      "length"`, 1997 of 2000 completion tokens spent on reasoning). A
+      diagnostic replay at 8000 tokens produced valid claims, so this is a
+      budget collision, not a raw capability gap. The current production
+      extract model, anthropic/claude-haiku-4.5, has zero hard fails at the
+      same budget.
+- [x] finding 2026-07-28, synthesis: composite quality 3.3-3.8 (candidate,
+      reconstructed judge rubric) vs 6.6-7.7 for every viable incumbent. The
+      deterministic grounding gate alone shows 0 fabricated numbers, but a
+      blind judge pass found fabricated citations (fake publication names
+      and dates) and, in two of eight reports, an entire invented top-pick
+      product not present in the source corpus. The deterministic gate
+      cannot catch this failure mode, since it only checks product-name
+      token overlap and numeric closeness, not citation or product
+      existence.
+      **CORRECTED 2026-07-28 (same day, see the section at the top of this
+      file): this finding is OVERTURNED. It was measured on a method now known
+      to be broken. The judge saw 0 to 13 percent of the corpus, so it scored
+      real citations as invented. Exact re-check against the FULL corpus:
+      ZERO invented products in either run, and 1 of 112 checkable citations
+      unverified in the xhigh run (a date mismatch on the real outlet Reddit).
+      The corrected composite puts muse-spark-1.1 FIRST of 8 candidates at
+      8.38, not last. "Do not adopt" still holds on completion reliability
+      (7/8) and cost (8x minimax-m3 per report), which were always
+      deterministic. Full detail: `benchmarks/synth-rescore-2026-07.md`.**
+- [x] finding 2026-07-28, cost: Muse Spark 1.1 is priced at $1.25/M input,
+      $4.25/M output, 4.2x/3.5x the production synth model
+      (minimax/minimax-m3, $0.30/$1.20) and 1.25x/0.85x the production
+      extract model (anthropic/claude-haiku-4.5, $1.00/$5.00). `xhigh`
+      reasoning adds further hidden-token overhead on top of nominal
+      pricing. In the extract role, that overhead is what caused the
+      role to fail outright.
+- Total spend for this evaluation: $3.31, against a $25 cap.
+- Note on methodology: the original judging scripts for the extract and
+  synth gold benches (`benchmarks/extract-gold-blind.mjs` and an equivalent
+  synth judge script) were never committed to this repo, only their bundle
+  inputs and score outputs. This benchmark reconstructed the judging step
+  from the documented rubric in `benchmarks/ft-data/README.md`, using the
+  same judge model (`anthropic/claude-fable-5`, "Fable"). Treat the
+  candidate's judge scores as directionally informative, not strictly
+  apples-to-apples with the stored incumbent numbers. Full caveats in the
+  report.
+
+## 2026-07-28: Muse Spark 1.1 zero-reasoning rerun (still no production change)
+
+Follow-up to the entry above. Reran the same three gold benches at the
+lowest reasoning setting this model accepts. Full report:
+`benchmarks/muse-spark-bench-2026-07.md`, section "Rerun:
+reasoning_effort=minimal (2026-07-28, same day)".
+
+- [x] finding 2026-07-28: `reasoning_effort: "none"` and
+      `reasoning: {enabled: false}` are both rejected by the API (HTTP 400,
+      "Reasoning is mandatory for this endpoint and cannot be disabled").
+      `reasoning: {exclude: true}` is accepted but does not lower the
+      reasoning-token count (384 vs a 406-token no-parameter default), so it
+      only hides reasoning from the response, it does not stop the model
+      thinking or lower the bill. `reasoning_effort: "minimal"` gave the
+      lowest reasoning-token count found (186), so all three benches below
+      used it. No setting fully disables reasoning for this model.
+- [x] finding 2026-07-28, extract: the truncation failure is gone. 10/10
+      products completed, 0 hard fails (was 8 hard fails at xhigh),
+      `finish_reason: stop` on every call. Quality is now a real,
+      comparable 7.25 against production's 7.60, close but still behind.
+      One confirmed hallucination (Google Nest Hub Max: invented camera
+      spec and "Ambient EQ" feature, absent from the source text) still
+      happened. Cost per call is about 32% above the current production
+      extract model. Verdict unchanged, do not adopt, but for a close
+      quality-and-cost trade-off now, not a broken budget collision.
+- [x] finding 2026-07-28, stance: accuracy rose to 88.4% (production
+      87.5%, xhigh 83.0%), but its 95% CI [82.1%, 93.8%] overlaps
+      production's number, so this sample cannot call a confident winner.
+      The xhigh failure (extreme conservatism: 15.8% support recall, 0%
+      contradict recall) is gone (52.6% / 100% at minimal). Cost per call
+      fell 54% versus xhigh but is still likely above production's list
+      price. Verdict: not a confirmed win, no longer a confirmed loss
+      either.
+- [x] finding 2026-07-28, synthesis: composite essentially unchanged (3.74
+      vs xhigh's 3.76 for completed reports), still far below every
+      incumbent (6.6-7.7). Investigating this found a real methodology
+      flaw in the reconstructed synth judge: its corpus digest
+      (`synth-gold-blind.mjs`, `CORPUS_DIGEST_CHAR_CAP`, capped at 6000
+      characters) covers only about the first 15-20 sources of each
+      138-200 source corpus, in list order, not by relevance, while the
+      synthesis model itself reads every source. The xhigh report's two
+      named "invented products" (a Dyson V15 Detect top pick, an LG/Sharp
+      microwave pair) are both real, correctly dated, exact-match
+      citations in the full corpus. This is confirmed directly against
+      `benchmarks/results/google-top50-corpus.json`, not inferred. A
+      broader spot check (outlet name plus date, checked against the full
+      corpus) found 29/32 (90.6%) of xhigh's extractable citations and
+      7/7 (100%) of minimal's were genuinely grounded. A smaller number of
+      real fabrications remain (an "Epson ET-3950" and an "80% cheaper
+      ink" figure, both confirmed absent from the full 181-source printer
+      corpus). This digest cap predates this rerun (the original incumbent
+      judge bundles carry the same cap), so it is a pre-existing
+      benchmark-wide limitation, not specific to muse-spark. It does not
+      affect the extract-gold judge, which reads the full source text
+      directly.
+- [x] finding 2026-07-28, cost: this rerun spent $2.03 of a $12 cap.
+      Combined with the earlier xhigh run's $3.31, total spend across both
+      muse-spark evaluations is $5.34.
+- Revised verdict: stance and extract stay at "do not adopt," but the
+  reasons changed from disqualifying failures to close, unfavorable
+  trade-offs. Synthesis stays at "do not adopt" on the composite score,
+  but the true size of the honesty gap versus incumbents is now uncertain,
+  because the judge behind that score cannot see most of the source
+  material for any model it scores, not only muse-spark.
+- Suggested follow-up, not done in this session: raise
+  `CORPUS_DIGEST_CHAR_CAP` in `synth-gold-blind.mjs`, or switch it to a
+  relevance-selected digest instead of a list-order truncation, before
+  trusting synth-gold judge composites at face value for any future
+  candidate.
+
+## 2026-07-28: Quality, security, and documentation pass (session summary)
+
+This section summarizes today's whole pass. The two 2026-07-28 sections below
+(rate limit and de-duplication work) were added earlier today by other agents.
+They stay as they are. This section does not repeat their detail.
+
+### Closed this session
+- Tier removal: worker/lib/tiers.js is now worker/lib/engine-config.js. It
+  exports ENGINE_CONFIG directly. The dead TIER_CONFIGS, PUBLIC_TIERS,
+  getTierConfig, and isValidTier code is gone. A repo-wide search found zero
+  remaining matches under worker/.
+- File-size splits: research-page.js (was 1304 lines) split into
+  research-primitives.js (275 lines), research-cards.js (298 lines),
+  research-scripts.js (337 lines), and research-jsonld.js (203 lines).
+  research-page.js is now 390 lines. worker/index.js (was 944 lines) split
+  into lib/http-response.js, lib/flags.js, jobs.js, and routes/pages.js.
+  worker/index.js is now 389 lines. extract/engine.js (was 828 lines) split
+  into text.js, candidates.js, and scoring.js. extract/engine.js is now 167
+  lines. No file under worker/ now exceeds 746 lines, so the 800-line cap
+  holds. An equivalence harness checked renderer output, old code against
+  new code, byte for byte.
+- Helper de-duplication: eight copies of the fenced-JSON parser and three
+  copies of the concurrency pool are now one shared module each,
+  worker/lib/llm-json.js and worker/lib/pool.js.
+- Price-cap enforcement: worker/lib/constraints.js reads a price cap or
+  floor from the query text and from the clarification answers.
+  validate.js drops out-of-range products before the quality gate. A
+  product with no known price is never dropped. The filter stands down
+  when it would leave fewer than 2 products.
+- Privacy disclosure: public/privacy.html now names the search providers
+  and the page reader. Correction along the way: Tavily and SearXNG are
+  left out on purpose, because neither key is set on the deployed worker,
+  so no query data reaches them. DuckDuckGo and Hacker News (through
+  Algolia) are now named, because both are keyless and always wired in.
+- Freshness badge: research-primitives.js adds freshnessLabel(). A "Prices
+  checked ..." badge now sits above the Our-pick button. It shows green at
+  30 days old or less, red after that. Past 60 days it shows the month and
+  year instead of a day count.
+
+### Confirmed stale (checked with grep this session, not from memory alone)
+- The mobile-nav fix from the Forensic redesign is real. worker/lib/html.js
+  and public/index.html both carry a checkbox-driven left drawer
+  (drawer-toggle), a labelled open control, a labelled close control, and a
+  panel marked role="dialog".
+- The facets-threading gap is closed for the ranking path only. Live
+  ranking runs worker/engine/engine.js. Its runEngine passes facets into
+  buildAgentPrompt and on into facetFocusBlocks. The blackbox external
+  worker that used to run this path is retired
+  (EXTERNAL_WORKER_ENABLED = "false", since 2026-07-22). The verify path,
+  worker/engine/parallel-engine.js decompose(), still does not receive
+  facets. See the new LOW item below.
+
+### New findings this session
+- [ ] LOW (architecture): monthKey lives in worker/pipeline/orchestrator.js,
+      but worker/lib/keywords.js now imports it. This points a lib module at
+      a pipeline module. It is not a cycle (orchestrator.js does not import
+      keywords.js). monthKey belongs in worker/lib/utils.js. Move it when
+      convenient.
+- [ ] LOW (observability): worker/engine/extract/recall-supplement.js no
+      longer logs its "skipped" diagnostic when the model returns JSON it
+      cannot parse. The shared parser now returns null instead of throwing,
+      so the catch block that used to log the message never runs. The value
+      returned to the caller is unchanged.
+- [ ] LOW (docs): the trailing "Secrets" comment block in wrangler.toml
+      lists 3 of the 7 secrets set on the deployed worker. Missing from the
+      comment: BRAVE_API_KEY, JINA_API_KEY, GSC_SA_KEY, METRICS_TOKEN,
+      WORKER_SECRET.
+- [ ] LOW (cleanup): worker/routes/pages.js still carries a comment above
+      the clarifying-questions interstitial that predates the tier removal
+      ("Tier: default 'full'. Only 'full' submissions get the
+      clarifying-questions grill below; instant (if ever wired) skips it
+      for speed."). The code line it once described is gone. worker/index.js
+      carries no such comment. Its split already removed it.
+- [ ] LOW (quality): worker/engine/parallel-engine.js decompose() still does
+      not receive classifier facets. This path now only runs for /verify
+      claim extraction, not for ranking (the ranking path moved to
+      worker/engine/engine.js when the blackbox worker retired 2026-07-22,
+      and that path does thread facets through). A location/service/
+      experience VERIFY run could still get a product-shaped plan.
+- [ ] MEDIUM (unvalidated, carried forward): the planner role
+      (google/gemini-2.5-flash) is still the one model role never measured
+      on an in-house gold bench. It was deferred as the hardest to
+      gold-label. A bench run costs real money, so it needs an owner
+      go-ahead first.
+
+## 2026-07-28: worker/lib duplication consolidated (llm-json.js, pool.js)
+
+- [ ] LOW (infra): new shared modules `worker/lib/llm-json.js` (`parseFencedJson`) and
+      `worker/lib/pool.js` (`runPool`) replace eight duplicated fenced-JSON parsers and
+      three duplicated concurrency-pool copies across the engine. The homelab rollback
+      copy (`research-worker.mjs`, stopped, `EXTERNAL_WORKER_ENABLED=false`) imports
+      `worker/engine/parallel-engine.js`, so it now needs both new files synced before
+      it could be re-enabled.
+
+## 2026-07-28: rate-limit atomicity closed (burst gate + consumer budget backstop)
+
+Design: `docs/rate-limit-design.md` (Option A: native Cloudflare rate-limiting
+binding, NO Durable Objects). Rollback = delete the `[[ratelimits]]` block;
+`checkBurstGate` fail-opens and KV keeps enforcing the hourly caps.
+
+### Fixed
+- [x] MED (security): rate-limit.js atomicity. Closed WITHOUT Durable Objects. A native
+      `[[ratelimits]]` binding (RL_BURST, 10/60s) now caps per-IP concurrency in front of the
+      non-atomic KV window on research/verify/chat/auth. The binding is atomic per colo, which
+      for a per-IP key equals atomic per attacking source. `worker/lib/rate-limit.js` is
+      unchanged; `go:`/`find:` stay on plain KV (cheap dampers). New: `worker/lib/burst-gate.js`.
+- [x] HIGH (cost): the queue consumer never re-checked the budget, so a burst admitted before
+      any spend landed drained the whole month. `processResearchMessage` +
+      `processVerificationMessage` now call `budgetExhausted()` after the pending->processing
+      claim and fail the row with a user-facing message instead of running the pipeline. This
+      is what bounds the blast radius to "budget plus in-flight". (worker/index.js)
+- [x] MED (cost/test): `npx vitest run` fired a REAL queue delivery from research.spec.js, which
+      claimed the row and ran the full pipeline against the live keys vitest loads from
+      `.dev.vars` (real spend), and raced the isolated-storage teardown ("Failed to pop isolated
+      storage stack frame"). Stubbed RESEARCH_QUEUE in that spec, like verify-route.spec.js. The
+      whole vitest run is now green and exits 0.
+
+### Known consequence (accepted)
+- The burst gate is 10 per 60 s per IP on research/verify/chat/auth, so more than 10 paid
+  submissions from ONE IP inside a minute now get 429 + `Retry-After: 60` even for signed-in
+  users (who are exempt from the lifetime quota, not from abuse damping).
+  `test/integration/quota.spec.js` therefore runs without the binding (the supported fail-open
+  configuration) so it can still prove the 10-verify LIFETIME quota.
+
+### Not done (deliberate)
+- [ ] LOW (cleanup): `RATE_LIMIT_MAX` / `RATE_LIMIT_WINDOW_SECONDS` in `[vars]` are dead config
+      (no code reads them, verified again 2026-07-28). Left in place to keep this diff scoped.
 
 ## 2026-07-24 — Stance judge swap validated + model-benchmark findings
 
@@ -31,21 +590,36 @@ Last updated: 2026-07-24
       runtime openai/ reference remains in worker/ or research-worker.mjs.
 
 ### Open
-- [ ] MEDIUM: Synthesis + extract + classifier + planner roles still on unvalidated model
-      choices; synthesis gold bench in progress (blinded 6-model × 8-query run). Grader
-      false-negative: short SKU-style names (<3 chars, e.g. 'V3') silently skip the
-      name-grounding check in synth-score.mjs — needs a scoped fix.
+- [x] RESOLVED 2026-07-28: Synthesis + extract + classifier + planner roles still on
+      unvalidated model choices; synthesis gold bench in progress (blinded 6-model × 8-query
+      run). Grader false-negative: short SKU-style names (<3 chars, e.g. 'V3') silently skip
+      the name-grounding check in synth-score.mjs: needs a scoped fix.
+      **The short-SKU gap is CLOSED in `benchmarks/lib/grounding-check.mjs` (length 2 with a
+      digit now counts as significant, and every digit-bearing token must be present), with a
+      regression assertion. synth-score.mjs keeps the old behaviour on purpose: changing it
+      would silently alter the stored numbers it produced.**
 - [x] Synthesis gold bench complete: gpt-5.4-mini DEFENDS the synth seat (most honest
       8.6/10, 0 fabricated numbers; minimax-m3 statistically tied on composite but looser).
       deepseek-v4-flash DQ'd for synth — 22 fabricated spec numbers across 8 reports (won
       stance, fails synth: role-fitness cuts both ways). gemma-4-26b:free (3/8) + gpt-5-nano
       (6/8) DQ'd on completion reliability. Remaining unvalidated roles: extract, planner.
+      **MEASURED ON A METHOD NOW KNOWN TO BE BROKEN (2026-07-28): the "most honest 8.6/10"
+      figure came from a judge that saw 0 to 13 percent of the corpus. Do not cite it. The
+      deterministic parts of this entry (0 fabricated numbers, the completion counts, and
+      deepseek's 22) were re-verified against the FULL corpus and stand unchanged, so all
+      three DQs stand. Corrected leaderboard: `benchmarks/synth-rescore-2026-07.md`.**
 - [x] Extract gold bench complete: gpt-5.4-mini KEEPS extractClaims (7.60 quality, 0
       hard-fails, 10/10). minimax-m3 higher quality-when-working but 2/10 empty outputs;
       deepseek 3 hard-fails; granite contaminates across products. Role assignments now
       validated for 4/5 roles: stance=minimax-m3, synth=gpt-5.4-mini, extract=gpt-5.4-mini,
       classifier=gemini-flash-lite (deterministic-verified). Planner remains unbenchmarked
       (hardest to gold-label; deferred).
+      **CLIPPED-INPUT CAVEAT (2026-07-28): these quality scores were judged against source
+      text clipped at 5,000 characters, hiding up to 75 percent of the source on 5 of 10
+      products. Re-judged on FULL text: claude-haiku-4.5 8.00 (10/10, 0 fails), gpt-5.4-mini
+      7.30 (10/10, 0 fails), minimax-m3 8.19 (8/10, 2 fails). The tie at 7.60 was an artefact
+      of the clip; on full text haiku wins outright. The reliability numbers, which drove the
+      verdict, are deterministic and unchanged.**
 
 ## 2026-07-22 — Serverless migration complete (blackbox retired)
 
@@ -259,8 +833,11 @@ valid 19KB single-line prebuilt file.)
 ### Low (quality / enables UI work)
 - [x] LOW (quality): static homepage footer vs SSR layout footer have drifted (different nav links + disclosure
       text). (public/index.html:405-428, worker/lib/html.js:159-179) — FIXED (4-pass UI/UX sprint 2026-07-08): disclosure text unified; nav-column differences left.
-- [ ] LOW (quality): research-page.js is 1304 lines (>800 cap) with pervasive inline style= duplicating app.css
-      classes; extract inline scripts (~270 lines) + card family (~210) into modules.
+- [x] LOW (quality): research-page.js is 1304 lines (>800 cap) with pervasive inline style= duplicating app.css
+      classes; extract inline scripts (~270 lines) + card family (~210) into modules. RESOLVED 2026-07-28:
+      split into research-primitives.js (275 lines), research-cards.js (298 lines), research-scripts.js
+      (337 lines), and research-jsonld.js (203 lines). research-page.js is now 390 lines. An equivalence
+      harness verified the renderers are byte-identical, old code against new code.
 - [x] LOW (quality): JSON-encode slug/id into inline <script> instead of escapeHtml (wrong escaper for JS-string
       context; latent breakout if slug generation loosens). (worker/pages/research-page.js:1047,1123,1161) — FIXED 2026-07-08
 - [x] LOW (docs): Tailwind rebuild command undocumented + not in CI — new utility classes silently uncompiled. — FIXED 2026-07-08
@@ -269,7 +846,9 @@ valid 19KB single-line prebuilt file.)
 - [x] navigator.share button on the report share bar (progressive enhancement) — SHIPPED 2026-07-08
 - [x] example-query chips are one-tap (start the classify→clarify flow) — SHIPPED 2026-07-08
 - [x] "Searching → Reading → Ranking → Writing" step-progress indicator on the processing page — SHIPPED 2026-07-08
-- [ ] freshness badge at the Our-pick CTA — not yet done
+- [x] freshness badge at the Our-pick CTA — not yet done. SHIPPED 2026-07-28: freshnessLabel() in
+      research-primitives.js plus a "Prices checked ..." badge above the Our-pick button. Green at 30
+      days old or less, red after that, absolute month and year shown after 60 days.
 
 Note: the AdSense-no-consent-banner finding was already logged (see the docs/adsense-consent-plan.md item) — do not duplicate it.
 
@@ -339,12 +918,20 @@ blackbox redeploy needed this pass.
 ### Deferred (with rationale — logged, not done)
 - [ ] MED (perf): getRelatedResearch read amplification — REASSESSED as already mitigated: the research
       page is KV-cached, so the OR-of-8 LIKE runs only on cache MISS, not per view. No change made.
-- [ ] MED (quality): dead "tiers" concept still threaded through handlers/queue/metrics/DB — pervasive,
+- [x] MED (quality): dead "tiers" concept still threaded through handlers/queue/metrics/DB — pervasive,
       cosmetic, real regression risk (queue message shape, metrics by_tier, DB inserts). Deferred.
-- [ ] MED (quality): file-size splits (research-page.js 1298, extract/engine.js 828) — large refactors,
+      RESOLVED 2026-07-28: worker/lib/tiers.js is now worker/lib/engine-config.js, exporting ENGINE_CONFIG
+      directly. TIER_CONFIGS, PUBLIC_TIERS, getTierConfig, and isValidTier are deleted, along with the
+      queue message field and the clarify-page thread. The D1 column, the keywords.js re-research
+      predicate, and the metrics by_tier field were kept on purpose (an external dashboard reads by_tier).
+- [x] MED (quality): file-size splits (research-page.js 1298, extract/engine.js 828) — large refactors,
       one blackbox + honesty-critical; deferred per the "no big refactors late in context" rule.
-- [ ] MED (security): rate-limit.js atomicity — a true fix needs Durable Objects (architectural), not a
-      patch. Left as a documented known limitation; the new research velocity cap is a volume ceiling anyway.
+      RESOLVED 2026-07-28: research-page.js split into research-primitives.js, research-cards.js,
+      research-scripts.js, and research-jsonld.js (390 lines left). extract/engine.js split into text.js,
+      candidates.js, and scoring.js (167 lines left), gated by a golden-output equivalence check.
+- [x] MED (security): rate-limit.js atomicity. RESOLVED 2026-07-28, and Durable Objects were NOT
+      needed. Native `[[ratelimits]]` burst gate in front of the KV window; see the 2026-07-28
+      section at the top and `docs/rate-limit-design.md`.
 - [ ] LOW (cleanup, blackbox-side): DEBUG_FUNNEL scaffolding, buildAgentTools(facets) ignored arg, and the
       parseFencedJson (×5) + runPool (×2) dedups — batched for a future engine-cleanup pass + blackbox
       redeploy (avoid cosmetic drift). NOTE: "sanitizeUrl dead export" was a FALSE POSITIVE (used in orchestrator.js).
@@ -389,48 +976,84 @@ consent gaps, and stale docs — NOT in core logic.
       Steps in docs/adsense-consent-plan.md Step 1 + Verification.
 
 ### Open, logged (not fixed this pass) — MED
-- [ ] MED (security): prompt-injection via the raw user QUERY — it's interpolated into planner/synth
+- [x] MED (security): prompt-injection via the raw user QUERY — it's interpolated into planner/synth
       prompts; the injection defense we shipped covers page CONTENT, not the query. Only the fail-open LLM
-      classifier guards it.
-- [ ] MED (legal): email capture (subscribe.js / 005_subscribers.sql) stores addresses with no consent
+      classifier guards it. STALE, closed 2026-07-08: INJECTION_PATTERNS in safety.js now screens the raw
+      query itself (see the 2026-07-08 "Review-board backlog cleared" section, Fixed list).
+- [x] MED (legal): email capture (subscribe.js / 005_subscribers.sql) stores addresses with no consent
       flag/timestamp and no self-serve unsubscribe / one-click list-unsubscribe (GDPR/CAN-SPAM thin).
-- [ ] MED (security): lib/rate-limit.js sliding window is non-atomic (read-then-write) — soft-defeatable
-      under a concurrent burst (auth/chat/affiliate + the new research cap). Volume ceiling still holds.
-- [ ] MED (quality/CLAUDE.md): file-size limits blown — research-page.js 1298 lines, extract/engine.js
+      STALE, closed 2026-07-08: schema 009 plus the unsubscribe route shipped consent timestamps and
+      one-click unsubscribe (see the 2026-07-08 "Review-board backlog cleared" section, Fixed list).
+- [x] MED (security): lib/rate-limit.js sliding window is non-atomic (read-then-write). RESOLVED
+      2026-07-28 for the four paid/CPU paths (research/verify/chat/auth) by the RL_BURST burst gate
+      layered in front of it. `go:`/`find:` stay soft on purpose (click damper + analytics throttle,
+      both ~$0). See the 2026-07-28 section at the top.
+- [x] MED (quality/CLAUDE.md): file-size limits blown — research-page.js 1298 lines, extract/engine.js
       828 (limit 800); functions far over 50 lines (renderResearchResult ~725, analyzeProduct ~162).
-- [ ] MED (quality): duplication — two runPool impls; ~5 copies of the fenced-JSON parser; duplicated
+      RESOLVED 2026-07-28: research-page.js and extract/engine.js both split (see the file-size items
+      above). worker/index.js (944 lines) also split, into lib/http-response.js, lib/flags.js, jobs.js,
+      and routes/pages.js (389 lines left). No file under worker/ now exceeds 746 lines.
+- [x] MED (quality): duplication — two runPool impls; ~5 copies of the fenced-JSON parser; duplicated
       stream→parse→retry synth orchestration (engine.js ↔ parallel-engine.js); DEFAULT_AFFILIATE_TAG
       hardcoded in research-page.js + reviews.js with DIVERGENT env-key fallbacks (tags can silently differ
-      between /reviews and /research).
-- [ ] MED (quality): "tiers" concept is collapsed to one config but still threaded through handlers/queue/
+      between /reviews and /research). RESOLVED 2026-07-28 for the pool and parser duplication: consolidated
+      into worker/lib/pool.js and worker/lib/llm-json.js. The real count was 8 parser copies and 3 pools,
+      not 5 and 2. The affiliate-tag fallback was already unified earlier (2026-07-08, see that section).
+- [x] MED (quality): "tiers" concept is collapsed to one config but still threaded through handlers/queue/
       metrics (index.js tier='full'|'exhaustive', by_tier). Architecturally dead, pervasively wired.
-- [ ] MED (security): affiliate.js final redirect else-branch 302s to any https product_url (open-redirect
-      if a row is written outside the pipeline). Add a host allowlist on the fallback.
+      RESOLVED 2026-07-28, same fix as the near-duplicate item above (worker/lib/tiers.js to
+      worker/lib/engine-config.js): TIER_CONFIGS, PUBLIC_TIERS, getTierConfig, and isValidTier deleted;
+      the D1 column, keywords.js predicate, and metrics by_tier field kept on purpose.
+- [x] MED (security): affiliate.js final redirect else-branch 302s to any https product_url (open-redirect
+      if a row is written outside the pipeline). Add a host allowlist on the fallback. STALE, closed
+      2026-07-08: the isKnownRetailerUrl gate now guards this redirect (see the 2026-07-08 "Review-board
+      backlog cleared" section, Fixed list).
 - [ ] MED (perf): every page view runs getRelatedResearch (OR-of-8 LIKE, LIMIT 50) + a view_count UPDATE
       = 3+ D1 statements/view — read amplification that scales with traffic.
-- [ ] MED (bug): CACHE_VERSION (tr9) ≠ sitemap XML_CACHE_VERSION (tr1) despite a comment claiming they
-      match — the shared-lastmod invariant is broken.
-- [ ] MED (legal): privacy policy names OpenRouter but not Serper/Brave/Tavily/SearXNG/Jina, which receive
-      the raw search query (GDPR Art.13 transparency).
-- [ ] MED (UX): failure pages show a generic message and hide the real stored result.error ("No reliable
-      products found…"), leaving users without the reason/next step.
+- [x] MED (bug): CACHE_VERSION (tr9) ≠ sitemap XML_CACHE_VERSION (tr1) despite a comment claiming they
+      match — the shared-lastmod invariant is broken. STALE, closed 2026-07-08: the comment was corrected
+      to state the two versions are independent by design (see the 2026-07-08 "Review-board backlog
+      cleared" section, Fixed list, sitemap comment item).
+- [x] MED (legal): privacy policy names OpenRouter but not Serper/Brave/Tavily/SearXNG/Jina, which receive
+      the raw search query (GDPR Art.13 transparency). RESOLVED 2026-07-28: public/privacy.html now
+      discloses the search providers and the page reader. Correction: Tavily and SearXNG are NOT listed,
+      because neither key is set on the deployed worker, so no query data reaches them. DuckDuckGo and
+      Hacker News search (through Algolia) WERE added, because both are keyless and unconditionally wired.
+- [x] MED (UX): failure pages show a generic message and hide the real stored result.error ("No reliable
+      products found…"), leaving users without the reason/next step. STALE, closed 2026-07-08: failure
+      pages now surface the real stored result.error (see the 2026-07-08 "Review-board backlog cleared"
+      section, Fixed list).
 - [ ] MED (correctness, mitigated): incrementMonthlyCost KV read-add-put is non-atomic; concurrent
       completions lose updates. Mitigated by the D1 SUM MAX-gate in budgetExhausted — make KV advisory.
 
 ### Open, logged — LOW
-- [ ] LOW (a11y): no skip-to-content link / no `<main id>` target (WCAG 2.4.1); primary header `<nav>` has
-      no aria-label.
-- [ ] LOW (security): PBKDF2-SHA256 at 100k iterations < OWASP 600k (versioned hash format already supports
+- [x] LOW (a11y): no skip-to-content link / no `<main id>` target (WCAG 2.4.1); primary header `<nav>` has
+      no aria-label. STALE, closed 2026-07-08: skip-to-content link, `<main id>` target, and primary-nav
+      aria-label shipped (see the 2026-07-08 "Review-board backlog cleared" section, Fixed list).
+- [x] LOW (security): PBKDF2-SHA256 at 100k iterations < OWASP 600k (versioned hash format already supports
       raising it); /api/internal/* has no rate limit if WORKER_SECRET leaks; image proxy streams unbounded
-      bodies when no Content-Length; auth rate-limit keys use raw (unhashed) IP in KV.
-- [ ] LOW (robustness): emoji-only query (raw length ≥3) passes the length + safety gates and creates a junk
+      bodies when no Content-Length; auth rate-limit keys use raw (unhashed) IP in KV. STALE for the PBKDF2
+      clause only, closed 2026-07-08: iterations raised 100k to 600k, old hashes still verify via the stored
+      iteration count (see the 2026-07-08 "Review-board backlog cleared" section, Fixed list). The other
+      three clauses in this bundled item (internal rate limit, unbounded image-proxy body, unhashed IP in
+      KV) were not checked this pass and may still be open.
+- [x] LOW (robustness): emoji-only query (raw length ≥3) passes the length + safety gates and creates a junk
       row/sitemap entry — add a "≥3 alphanumerics" gate; SSE stream start() has no try/catch (D1 throw → hung
-      connection); `?src=`/`?from=` query variants bust the page cache (crawler amplification).
-- [ ] LOW (quality/cleanup): sanitizeUrl is a dead export; process.env DEBUG_FUNNEL scaffolding shipped in
+      connection); `?src=`/`?from=` query variants bust the page cache (crawler amplification). STALE for
+      the first two clauses, closed 2026-07-08: emoji/punctuation-only queries are now rejected (≥3
+      alphanumerics gate) and SSE start() is wrapped in try/catch (see the 2026-07-08 "Review-board
+      backlog cleared" section, Fixed list). The `?src=`/`?from=` cache-busting clause was not checked this
+      pass and may still be open.
+- [x] LOW (quality/cleanup): sanitizeUrl is a dead export; process.env DEBUG_FUNNEL scaffolding shipped in
       the extract path (dead in Workers); buildAgentTools(facets) ignores its arg; runParallelEngine synth
       path is dead in prod (bench-only); status vocab inconsistent (DB 'complete' vs API 'completed');
       subscribe.js returns raw machine error codes with no human message; docs/ml-engine-design.md +
-      local-synth-roadmap.md are unbuilt proposals with no status banner.
+      local-synth-roadmap.md are unbuilt proposals with no status banner. FALSE POSITIVE on the first
+      clause only: "sanitizeUrl is a dead export" is not a defect, already recorded as such on 2026-07-08
+      (see the 2026-07-08 "Review-board backlog cleared" section, Deferred list: "sanitizeUrl dead
+      export" was a FALSE POSITIVE, used in orchestrator.js). The other six clauses bundled in this item
+      (DEBUG_FUNNEL scaffolding, buildAgentTools ignored arg, runParallelEngine dead path, status vocab,
+      subscribe.js raw error codes, docs status banners) were not checked this pass and may still be open.
 
 ## 2026-07-08 — Code-review pass on the injection-defense diff (before deploy)
 
@@ -682,6 +1305,14 @@ underfed/undercapped growth flywheel. Fixed everything in my control; 3 items ne
 
 ### Synth model — benchmarked & locked
 - [x] HIGH — Synth was kimi-k2.6: slowest candidate (~40s), timed out ~1/8 runs. Ran a 50-query × 150-juror blind judge panel on real Google searches; **locked synth to openai/gpt-5.4-mini** (best grounding 7.18 + usefulness 7.31, #1 in 53% of head-to-heads). grok-4.20 DQ'd on honesty (3.15 fabs/report), gemini-flash honest-but-thin, flash-lite last. (worker/lib/tiers.js, research-worker.mjs — A/B rotation retired)
+      **NOT CITABLE ON GROUNDING OR FABRICATION (annotated 2026-07-28): `build-judge-bundles.mjs`
+      capped the corpus digest at 11,000 characters, so across all 50 stored bundles the jurors
+      saw 1,268 of 6,768 sources (18.7 percent). The very FIRST juror record contains a confirmed
+      false fabrication verdict: it called the "Seasonic PRIME TX-850" and the "12-year warranty"
+      invented, and both are in the full corpus. The grounding and fabs/report numbers here,
+      including grok-4.20's honesty DQ, rest on that blindness. Both affected models are out of
+      production, so no re-run was done. Do not cite these numbers in a future decision. The
+      usefulness axis is not affected the same way. See `docs/benchmark-validity-audit.md`.**
 - [x] MEDIUM — synthProvider was the kimi throughput/quantization routing object; gpt-5.4-mini is single-provider so that 404s — set synthProvider:null. (worker/lib/tiers.js)
 - Bench suite added: harvest-google + select-top50 (Google autocomplete → real product queries), bench-synth-v2 (corpus-cached 4-model), build-judge-bundles + aggregate-judges (blinded panel). (benchmarks/)
 
@@ -725,17 +1356,32 @@ revenue leak. The "funnel freeze until real traffic data" is now satisfied.
       grid is JS-rendered as plain /research/ links with no Buy button and no
       affiliate_url in the embedded data. The whole review catalog (primary nav,
       sitemap 0.8) monetizes nothing. SSR the cards w/ Buy + fixes empty-for-crawlers. **FIXED 2026-07-07 — see the 2026-07-07 section above (SSR renderReviewCard grid).**
-- [ ] HIGH (CONVERSION/UX): mobile nav is broken site-wide — every header link is
+- [x] HIGH (CONVERSION/UX): mobile nav is broken site-wide — every header link is
       `hidden sm:inline` with no hamburger (worker/lib/html.js + public/index.html).
       On phones only "Account" + theme toggle are reachable. Add a disclosure menu.
-- [ ] CRITICAL (QUALITY): location/service/experience queries get a product-shaped
+      RESOLVED by the Forensic redesign (commit 0c4c1f3). Verified by grep 2026-07-28:
+      worker/lib/html.js and public/index.html both now carry a CSS-only left drawer driven by a
+      `drawer-toggle` checkbox, with a labelled open control (aria-label="Open menu"), a labelled close
+      control (aria-label="Close menu"), and a panel marked role="dialog" aria-label="Main navigation".
+- [x] CRITICAL (QUALITY): location/service/experience queries get a product-shaped
       plan — parallel-engine.js decompose() never receives classifier facets, so
       facetFocusBlocks never reach the LIVE plan ("best pho in Wichita" → a Seattle
       Our-Pick). Thread facets into decompose (reuse the clarifications path); needs
       blackbox redeploy (worker/ AND research-worker.mjs) + a backfill of affected pages.
-- [ ] HIGH (QUALITY): in-query budget/spec caps not enforced — a $600 product ranked
+      STALE for the ranking path as of 2026-07-22: the blackbox external worker was retired
+      (EXTERNAL_WORKER_ENABLED = "false"), so live ranking runs worker/engine/engine.js `runEngine`,
+      which DOES thread facets into `buildAgentPrompt` and on into `facetFocusBlocks` (verified by grep
+      2026-07-28: engine.js line 80 passes facets to buildAgentPrompt; prompts.js calls
+      facetFocusBlocks(effectiveFacets)). The verify path, worker/engine/parallel-engine.js
+      `decompose()`, still does not receive facets (verified by grep: its signature has no facets
+      parameter). See the new LOW item logged 2026-07-28 for that residual gap.
+- [x] HIGH (QUALITY): in-query budget/spec caps not enforced — a $600 product ranked
       #1 for "under $500". Extract the cap (classifier.js:154 hasBudget) into
       constraints + a deterministic price guard in validate.js applyQualityGate.
+      RESOLVED 2026-07-28: new worker/lib/constraints.js parses a price cap or floor from the query
+      and the clarification answers. worker/engine/validate.js drops out-of-range products before the
+      quality gate. Products with no known price are never dropped, and the filter stands down when
+      fewer than 2 products would survive.
 - [ ] MED (CONVERSION): ~40% of CTAs degrade to "Search Amazon" (keyword fallback)
       vs exact /dp/ "Buy on Amazon" — lift exact-ASIN coverage (asin-resolver.js).
 - [ ] MED (SEO): SSR the /reviews + /research browse grids (today JS-hydrated, empty
@@ -1716,7 +2362,7 @@ verified live. One real instant-tier run executed (cost $0.0102, correctly recor
 
 ### Deferred (tracked, not bugs)
 - [x] LOW: Status-vocabulary translation (complete/completed, failed/error) — consolidated into worker/lib/status.js (apiStatus); research.js + report.js import it (2026-06-16).
-- [ ] LOW: Canonical-dedup ROW_NUMBER CTE repeated across suggest/browse/sitemap — extract SQL-fragment helper. (Still deferred — the four call sites differ in table alias, ORDER BY, and selected columns, so a clean shared fragment isn't safely factorable without a dev server to verify; low value vs. regression risk.)
+- [x] LOW: Canonical-dedup ROW_NUMBER CTE repeated across suggest/browse/sitemap. Extracted into `worker/lib/listable.js` (2026-08-03). Every caller (browse listing, browse count, sitemap, Atom feed, home, category hub, autocomplete) now builds its SQL from one filter + one cluster-winner rule. See the 2026-08-03 pagination section above.
 - [x] LOW: maybe304() duplicated between index.js and sitemap.js — unified via isNotModified() in worker/lib/utils.js; both call sites import it (2026-06-16).
 - [x] LOW: Static guide URLs hardcoded in sitemap.js + GUIDES_LASTMOD in index.js — derived from worker/lib/guides.js manifest (STATIC_GUIDES/STATIC_GUIDE_SLUGS/GUIDES_LASTMOD); add a guide in one place (2026-06-16).
 - [ ] LOW: research.result JSON shape is an implicit contract across orchestrator/report.js/research-page.js — Phase 2 engine swap defines the canonical shape.

@@ -5,6 +5,7 @@ import { env } from 'cloudflare:test';
 import { beforeAll, describe, it, expect } from 'vitest';
 import { applySchema } from './_schema.js';
 import { runVerificationPipeline } from '../../worker/pipeline/verify-orchestrator.js';
+import { monthKey } from '../../worker/pipeline/orchestrator.js';
 import { generateId, insertResearch, updateResearchStatus } from '../../worker/lib/db.js';
 
 beforeAll(async () => {
@@ -148,9 +149,3 @@ describe('runVerificationPipeline — needs_url path', () => {
     expect(claims.length).toBe(0);
   });
 });
-
-function monthKey(d = new Date()) {
-  const y = d.getUTCFullYear();
-  const m = String(d.getUTCMonth() + 1).padStart(2, '0');
-  return `${y}-${m}`;
-}

@@ -6,3 +6,5 @@ Disallow: /research/new
 Disallow: /find
 
 Sitemap: https://chrisputer.tech/sitemap.xml
+
+# If you read this far, hi. Frank says thanks.

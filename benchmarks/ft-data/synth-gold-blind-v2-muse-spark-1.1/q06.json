@@ -1,0 +1,361 @@
+{
+  "query": "best portable charger for iphone",
+  "method": "v2: relevance-selected evidence, no corpus digest. Existence pre-checked deterministically.",
+  "source_count": 138,
+  "note_count": 40,
+  "notes": [
+    "Anker 633 Magnetic Battery (A1641): Can charge most phones up to three times with a combined output of 18W (MagSafe wireless charging, USB-C PD, USB-A port). Features strong internal magnets and a fold-out stand. Kickstand is a bit flimsy. Prices observed at $40 (Amazon) and $42 (Walmart). [hands-on][expert-domain] (Source 1)",
+    "Satechi Duo Wireless Charger Power Stand: Can output up to 20W and fully charge most phones up to three times. Can wirelessly charge two devices simultaneously. It's hefty and lacks magnets, but has a super sturdy phone stand. Prices observed at $100, $60 (Satechi with code CPTS14), $70 (Amazon), and $100 (Walmart). [hands-on][expert-domain] (Source 1)",
+    "Anker MagGo Power Bank (10K, Slim): Has a 10,000 mAh capacity, 15W total wattage, 1 USB-C port (input and output). Weighs 7oz (200g). Measured to provide 1.8 charges for a 5,000 mAh device. Features fast charging in a slim design and strong magnetic grip. It is heavier than expected and on the pricey side. [hands-on][expert-domain] (Source 2)",
+    "Anker 10,000mAh Portable Charger (with integrated cable): Has a 10,000 mAh battery capacity. Features an integrated woven USB-C cable, an additional USB-C port, a USB-A port, and a front-facing display for remaining charge. Described as relatively compact and pocketable. Observed sale price of $22.99, down from $29.99. [hands-on][expert-domain] (Source 3)",
+    "Anker PowerCore 10K: Has a 10,000mAh capacity. Features one micro USB port for input, one USB-C port (input and output), and one USB-A port (output). Can charge two devices at once. Anker claims it can charge an iPhone 15 twice, a Galaxy S23 up to 1.93 times, and an iPad mini 6 up to 1.23 times. Not explicitly reviewed by TechRadar, but the brand is recommended. Observed sale price of $19.99, down from $25.99. [expert-domain] (Source 4)",
+    "Wireless portable chargers can be 'finicky' and most won’t charge an iPhone or other fast-charging device at top speed. [hands-on][expert-domain] (Source 1)",
+    "The kickstand on the Anker 633 Magnetic Battery is a bit flimsy. [hands-on][expert-domain] (Source 1)",
+    "The Satechi Duo Wireless Charger Power Stand is hefty and lacks magnets. [hands-on][expert-domain] (Source 1)",
+    "The Anker MagGo Power Bank (10K, Slim) is heavier than expected and on the pricey side. [hands-on][expert-domain] (Source 2)",
+    "The Anker 633 Magnetic Battery is recommended as the best wireless power bank. It is the best choice for charging an iPhone or other compatible device wirelessly when in transit. [hands-on][expert-domain] (Source 1)",
+    "The Satechi Duo Wireless Charger Power Stand is recommended as the best for charging two devices at once. [hands-on][expert-domain] (Source 1)",
+    "The Anker MagGo Power Bank (10K, Slim) is TechRadar's top pick for an all-around power bank. [hands-on][expert-domain] (Source 2)",
+    "Anker 633 Magnetic Battery: $40 from Amazon, $42 from Walmart. [hands-on][expert-domain] (Source 1)",
+    "Satechi Duo Wireless Charger Power Stand: $100; $60 from Satechi (using promo code CPTS14); $70 from Amazon; $100 from Walmart. [hands-on][expert-domain] (Source 1)",
+    "Anker 10,000mAh Portable Charger (with integrated cable): On sale for $22.99, down from $29.99. [hands-on][expert-domain] (Source 3)",
+    "Anker PowerCore 10K: On sale for $19.99, down from $25.99, at Amazon. [expert-domain] (Source 4)",
+    "Anker PowerCore 10K [expert-domain]",
+    "Anker PowerCore 10K: 10,000mAh capacity [expert-domain]",
+    "Anker PowerCore 10K: Ports include 1x micro USB (input for power bank charging), 1x USB-C (input and output), 1x USB-A (output) [expert-domain]",
+    "Anker PowerCore 10K: Can charge two devices at once [expert-domain]",
+    "Anker PowerCore 10K: Considered one of the slimmest and lightest 10,000mAh portable chargers on the market (on paper) [expert-domain]",
+    "Anker PowerCore 10K: $19.99 (deal price, originally $25.99) at Amazon [expert-domain]",
+    "TechRadar has not reviewed the Anker PowerCore 10K model specifically [expert-domain]",
+    "TechRadar recommends Anker MagGo Power Bank (10K Slim), Anker 737 Power Bank (PowerCore 24K), or Anker 20,000mAh 87W Power Bank based on their in-depth reviews [expert-domain]",
+    "Consumer Reports measures how fast portable chargers charge devices and how quickly they recharge from an outlet, also assessing portability [expert-domain]",
+    "Consumer Reports tests power banks from manufacturers like Anker, Belkin, and RAVPower [expert-domain]",
+    "Anker MagGo Power Bank (10K) [hands-on][expert-domain]",
+    "Anker MagGo Power Bank (10K) is described as the most well-rounded MagSafe battery tested by Engadget [hands-on][expert-domain]",
+    "Anker MagGo Power Bank (10K): 10,000mAh capacity [hands-on][expert-domain]",
+    "Anker MagGo Power Bank (10K): Maximum wireless output of 15W [hands-on][expert-domain]",
+    "Anker MagGo Power Bank (10K): One USB-C port for both input and output [hands-on][expert-domain]",
+    "Anker MagGo Power Bank (10K): Includes a USB-C to USB-C cable [hands-on][expert-domain]",
+    "Anker MagGo Power Bank (10K): Weighs 8.82 oz [hands-on][expert-domain]",
+    "Anker MagGo Power Bank (10K): Dimensions are 4.22 x 2.71 x 0.78 inches [hands-on][expert-domain]",
+    "Anker MagGo Power Bank (10K): Charges an iPhone 15 from near-dead to half-full in approximately 45 minutes [hands-on][expert-domain]",
+    "Anker MagGo Power Bank (10K): Provided 1.64 full charges for an iPhone 15 [hands-on][expert-domain]",
+    "Anker MagGo Power Bank (10K): After an initial half-charge, it had enough power remaining to charge the iPhone up to 70% in a subsequent charge [hands-on][expert-domain]",
+    "Anker MagGo Power Bank (10K): Charges its own battery (4% to 100%) in 2 hours 26 minutes, and (0% to 70%) in 1 hour 8 minutes [hands-on][expert-domain]",
+    "Anker MagGo Power Bank (10K) was one of the first Qi2-certified products, making it faster than previous generations like the Anker 633 [hands-on][expert-domain]",
+    "Anker MagGo Power Bank (10K): Features an LCD display to show remaining battery percentage and approximate time to full/empty [hands-on][expert-domain]"
+  ],
+  "reports": {
+    "A": {
+      "report": {
+        "summary": "For iPhone users in 2026, Qi2-certified MagSafe banks are the clear winners for convenience, while wired 10K banks remain best value. Hands-on testing from Wirecutter, Engadget, and TechRadar shows Anker's MagGo 10K line leads on speed, magnet strength, and real-world charges. Budget wired options with integrated cables deliver similar capacity for under $25 but lack magnetic convenience.",
+        "products": [
+          {
+            "name": "Anker MagGo Power Bank (10K) - Qi2 Certified",
+            "brand": "Anker",
+            "price": null,
+            "rating": 4.5,
+            "pros": [
+              "Qi2-certified 15W wireless charging faster than previous-gen Anker 633 per Engadget hands-on",
+              "LCD display shows remaining battery percentage and approximate time to full/empty",
+              "Measured 1.64 full iPhone 15 charges and 45-min half-charge in hands-on testing",
+              "Includes USB-C to USB-C cable and strong magnetic grip"
+            ],
+            "cons": [
+              "Weighs 8.82 oz, heavier than Slim variant at 7oz",
+              "Single USB-C port limits simultaneous wired charging",
+              "Pricier than wired-only 10K banks with no wireless"
+            ],
+            "specs": {
+              "capacity": "10,000mAh",
+              "wirelessOutput": "15W",
+              "weight": "8.82 oz",
+              "dimensions": "4.22 x 2.71 x 0.78 inches",
+              "ports": "1x USB-C input/output"
+            },
+            "verdict": "Hands-on testing by Engadget confirms this is the most well-rounded MagSafe battery, with Qi2 speed beating the older Anker 633 and a useful LCD. If you want one magnetic bank for iPhone 15/16/17 that actually hits 15W, this is the top pick despite extra weight.",
+            "best_for": "Best overall MagSafe charger for iPhone"
+          },
+          {
+            "name": "Anker MagGo Power Bank (10K, Slim)",
+            "brand": "Anker",
+            "price": null,
+            "rating": 4.4,
+            "pros": [
+              "TechRadar top pick for all-around power bank in hands-on testing",
+              "Slim design at 7oz (200g) with strong magnetic grip",
+              "Measured 1.8 charges for a 5,000mAh device",
+              "15W total wattage with USB-C PD in pocketable form"
+            ],
+            "cons": [
+              "Heavier than expected for slim label per hands-on",
+              "On the pricey side compared to wired 10K options",
+              "Only one USB-C port, no extra USB-A"
+            ],
+            "specs": {
+              "capacity": "10,000mAh",
+              "weight": "7oz (200g)",
+              "wattage": "15W",
+              "ports": "1x USB-C input/output"
+            },
+            "verdict": "TechRadar's hands-on top pick balances size and speed. The Slim is genuinely pocketable with strong magnets, but expert-domain notes flag it as heavier than expected and pricey. Choose it if you prioritize thinness over the LCD and extra features of the regular 10K.",
+            "best_for": "Best slim MagSafe for pocket carry"
+          },
+          {
+            "name": "Anker 633 Magnetic Battery (A1641)",
+            "brand": "Anker",
+            "price": 40,
+            "rating": 4.2,
+            "pros": [
+              "Wirecutter hands-on best wireless power bank recommendation",
+              "Strong internal magnets plus fold-out stand for video calls",
+              "Combined 18W output via MagSafe wireless, USB-C PD, and USB-A",
+              "Can charge most phones up to three times per hands-on notes"
+            ],
+            "cons": [
+              "Kickstand is a bit flimsy per hands-on testing",
+              "Previous-gen, slower than Qi2-certified MagGo models per Engadget",
+              "Bulkier than newer slim MagGo options"
+            ],
+            "specs": {
+              "modelNumber": "A1641",
+              "combinedOutput": "18W",
+              "ports": "MagSafe wireless + USB-C PD + USB-A",
+              "features": "fold-out stand, strong magnets"
+            },
+            "verdict": "Wirecutter's hands-on testing still rates the 633 as the best wireless option for transit due to strong magnets and versatile ports. However Engadget notes Qi2 MagGo is faster, and the flimsy kickstand is a real annoyance. Good value at $40 if you don't need Qi2 speed.",
+            "best_for": "Best budget magnetic with kickstand"
+          },
+          {
+            "name": "Anker 10,000mAh Portable Charger with Integrated Cable",
+            "brand": "Anker",
+            "price": 22.99,
+            "rating": 4,
+            "pros": [
+              "Integrated woven USB-C cable eliminates extra cable to carry",
+              "Front-facing display for remaining charge",
+              "Additional USB-C port and USB-A port for two-device charging",
+              "Relatively compact and pocketable per hands-on expert-domain"
+            ],
+            "cons": [
+              "No MagSafe or Qi2 wireless charging",
+              "No magnetic attachment for iPhone",
+              "Slightly larger than ultra-compact 5K banks"
+            ],
+            "specs": {
+              "capacity": "10,000mAh",
+              "ports": "integrated USB-C cable + USB-C + USB-A",
+              "display": "front-facing charge display",
+              "formFactor": "compact pocketable"
+            },
+            "verdict": "Hands-on testing by TechRadar highlights this as the practical wired pick: built-in cable, display, and dual ports for under $23 on sale. You lose MagSafe convenience, but for pure value and no-fuss iPhone charging via cable, it's hard to beat.",
+            "best_for": "Best wired budget with built-in cable"
+          },
+          {
+            "name": "Anker PowerCore 10K",
+            "brand": "Anker",
+            "price": 19.99,
+            "rating": 3.8,
+            "pros": [
+              "Can charge two devices at once via USB-C and USB-A",
+              "Considered slimmest and lightest 10,000mAh on paper per expert-domain",
+              "Cheapest at $19.99 sale, Anker claims 2x iPhone 15 charges",
+              "Wide availability and reliable Anker brand"
+            ],
+            "cons": [
+              "Micro USB port for input is outdated and requires extra cable",
+              "No wireless or MagSafe support",
+              "No display or integrated cable for convenience"
+            ],
+            "specs": {
+              "capacity": "10,000mAh",
+              "ports": "1x micro USB input, 1x USB-C input/output, 1x USB-A output",
+              "claimedCharges": "iPhone 15 2x, Galaxy S23 1.93x, iPad mini 6 1.23x"
+            },
+            "verdict": "Expert-domain coverage notes this as the slimmest/lightest 10K on paper and cheapest at $19.99, with dual-device charging. The micro-USB input is a real drawback in 2026, and lack of MagSafe makes it less ideal for iPhone, but it's a solid no-frills backup.",
+            "best_for": "Cheapest 10K for wired charging"
+          },
+          {
+            "name": "Satechi Duo Wireless Charger Power Stand",
+            "brand": "Satechi",
+            "price": 70,
+            "rating": 3.5,
+            "pros": [
+              "Can wirelessly charge two devices simultaneously",
+              "Super sturdy phone stand per hands-on expert-domain",
+              "Up to 20W output and up to three full phone charges",
+              "Doubles as desk stand and power bank"
+            ],
+            "cons": [
+              "Hefty and lacks magnets per hands-on testing, poor for iPhone MagSafe",
+              "Bulky for pocket carry, not ideal for transit",
+              "Expensive at $100 list price"
+            ],
+            "specs": {
+              "output": "up to 20W",
+              "capacityClaim": "up to 3 full charges",
+              "charging": "dual wireless simultaneous",
+              "stand": "super sturdy"
+            },
+            "verdict": "Wirecutter hands-on recommends this as best for charging two devices at once thanks to its sturdy stand and 20W output. For iPhone specifically, the lack of magnets and hefty weight are dealbreakers for pocket use. Only pick it if you need a dual wireless stand, not a daily MagSafe carry.",
+            "best_for": "Best for charging two devices at once on a desk"
+          }
+        ]
+      },
+      "evidence": {
+        "Anker MagGo Power Bank (10K) - Qi2 Certified": [
+          {
+            "sourceIdx": 65,
+            "title": "The Best Qi2 and MagSafe Power Banks for Your Phone - WIRED",
+            "date": "2026-02-12",
+            "tag": "untagged",
+            "snippet": "The Best Qi2 and MagSafe Power Banks for Your Phone - WIRED [Feb 12, 2026] Apple's MagSafe Battery for iPhone Air for $99 · Statik State Power Bank for $60 · Ecoflow Rapid Qi2 Power Bank for $90 · Anker Nano Power Bank for $55 · Mous ..."
+          },
+          {
+            "sourceIdx": 7,
+            "title": "Best Power Bank for iPhone in 2026 -- Qi2 and USB-C",
+            "date": "2026-03-05",
+            "tag": "listicle",
+            "snippet": "Best Power Bank for iPhone in 2026 -- Qi2 and USB-C [Mar 5, 2026] The BMX SolidSafe Air 5K ($59.99) is the best power bank for iPhone in 2026. It snaps magnetically to any MagSafe-compatible iPhone via Qi2 at 15W, ..."
+          },
+          {
+            "sourceIdx": 20,
+            "title": "10K USB-C Power Bank with Integrated Cables - Belkin",
+            "date": "2025-10-17",
+            "tag": "untagged",
+            "snippet": "10K USB-C Power Bank with Integrated Cables - Belkin [Oct 17, 2025] This 10K power bank with integrated USB-C and Lightning cables allows you to charge an iPhone 15/14/13/12 series"
+          }
+        ],
+        "Anker MagGo Power Bank (10K, Slim)": [
+          {
+            "sourceIdx": 20,
+            "title": "10K USB-C Power Bank with Integrated Cables - Belkin",
+            "date": "2025-10-17",
+            "tag": "untagged",
+            "snippet": "10K USB-C Power Bank with Integrated Cables - Belkin [Oct 17, 2025] This 10K power bank with integrated USB-C and Lightning cables allows you to charge an iPhone 15/14/13/12 series"
+          },
+          {
+            "sourceIdx": 37,
+            "title": "We Tested Ridge's New 10k mAh Power Bank (Here's What ...",
+            "date": "2026-04-23",
+            "tag": "untagged",
+            "snippet": "We Tested Ridge's New 10k mAh Power Bank (Here's What ... [Apr 23, 2026] Check out the The Ridge Power Bank (10k mAh) on Pack Hacker: https://www.packhacker.com/travel-gear/the-ridge/power-bank-10k-mah/ 0:00 Intro ..."
+          },
+          {
+            "sourceIdx": 101,
+            "title": "Anker is one of my favorite power bank brands — and its PowerCore ...",
+            "date": "2026-02-23",
+            "tag": "expert-domain",
+            "snippet": "Anker is one of my favorite power bank brands — and its PowerCore ... (Image credit: Future) Copy link Facebook X Whatsapp Reddit Pinterest Flipboard Threads Email Share this article 0 Join the conversation Follow us Add us as a preferred source on Google Newsletter Subscribe to our newsletter The b"
+          }
+        ],
+        "Anker 633 Magnetic Battery (A1641)": [
+          {
+            "sourceIdx": 99,
+            "title": "This Anker battery pack solved my battery anxiety — and it's on sale ...",
+            "date": "2026-02-16",
+            "tag": "hands-on/expert-domain",
+            "snippet": "This Anker battery pack solved my battery anxiety — and it's on sale ... (Image credit: Future/Jacob Krol) Copy link Facebook X Whatsapp Reddit Pinterest Flipboard Threads Email Share this article 0 Join the conversation Follow us Add us as a preferred source on Google Newsletter Subscribe to our ne"
+          },
+          {
+            "sourceIdx": 127,
+            "title": "Anker Charger For Iphone 12 Mini Anker PowerCore Magnetic 5K ...",
+            "date": "2026-06-10",
+            "tag": "untagged",
+            "snippet": "Anker Charger For Iphone 12 Mini Anker PowerCore Magnetic 5K ... [Jun 10, 2026] Anker Charger For Iphone 12 Mini Anker PowerCore Magnetic ..."
+          },
+          {
+            "sourceIdx": 69,
+            "title": "The Best Wireless Portable Chargers and Power Banks",
+            "date": "2026-03-23",
+            "tag": "hands-on/expert-domain",
+            "snippet": "Banks Wireless power banks can be finicky to use while on the go, and most won’t charge an iPhone or other fast-charging device at top speed. But the Anker 633 Magnetic Battery (A1641) comes closest to nailing both tasks, offering plenty of power and capacity to keep your phone charged throughout th"
+          }
+        ],
+        "Anker 10,000mAh Portable Charger with Integrated Cable": [
+          {
+            "sourceIdx": 20,
+            "title": "10K USB-C Power Bank with Integrated Cables - Belkin",
+            "date": "2025-10-17",
+            "tag": "untagged",
+            "snippet": "10K USB-C Power Bank with Integrated Cables - Belkin [Oct 17, 2025] This 10K power bank with integrated USB-C and Lightning cables allows you to charge an iPhone 15/14/13/12 series"
+          },
+          {
+            "sourceIdx": 132,
+            "title": "Ugreen Uno Magnetic Wireless Power Bank 10000mAh ...",
+            "date": "2025-02-28",
+            "tag": "untagged",
+            "snippet": "Ugreen Uno Magnetic Wireless Power Bank 10000mAh ... [Feb 28, 2025] Comments · UGREEN Uno 10000mAh Magsafe Power Bank Unboxing! · The $4 Amish Fix for a Deadly Hot House (Save $3000 This Summer) · My Mother-in-Law ..."
+          },
+          {
+            "sourceIdx": 123,
+            "title": "The best power banks and portable chargers for every device in 2026",
+            "date": "2026-02-13",
+            "tag": "hands-on/expert-domain",
+            "snippet": "The best power banks and portable chargers for every device in 2026 Accessories The best power banks and portable chargers for every device in 2026 Never run out of juice again, no matter where you are with these best portable battery chargers. By Amy Skorheim Updated: Feb. 13, 2026 12:00 pm EST Amy"
+          }
+        ],
+        "Anker PowerCore 10K": [
+          {
+            "sourceIdx": 101,
+            "title": "Anker is one of my favorite power bank brands — and its PowerCore ...",
+            "date": "2026-02-23",
+            "tag": "expert-domain",
+            "snippet": "Anker is one of my favorite power bank brands — and its PowerCore ... (Image credit: Future) Copy link Facebook X Whatsapp Reddit Pinterest Flipboard Threads Email Share this article 0 Join the conversation Follow us Add us as a preferred source on Google Newsletter Subscribe to our newsletter The b"
+          },
+          {
+            "sourceIdx": 20,
+            "title": "10K USB-C Power Bank with Integrated Cables - Belkin",
+            "date": "2025-10-17",
+            "tag": "untagged",
+            "snippet": "10K USB-C Power Bank with Integrated Cables - Belkin [Oct 17, 2025] This 10K power bank with integrated USB-C and Lightning cables allows you to charge an iPhone 15/14/13/12 series"
+          },
+          {
+            "sourceIdx": 37,
+            "title": "We Tested Ridge's New 10k mAh Power Bank (Here's What ...",
+            "date": "2026-04-23",
+            "tag": "untagged",
+            "snippet": "We Tested Ridge's New 10k mAh Power Bank (Here's What ... [Apr 23, 2026] Check out the The Ridge Power Bank (10k mAh) on Pack Hacker: https://www.packhacker.com/travel-gear/the-ridge/power-bank-10k-mah/ 0:00 Intro ..."
+          }
+        ],
+        "Satechi Duo Wireless Charger Power Stand": [
+          {
+            "sourceIdx": 69,
+            "title": "The Best Wireless Portable Chargers and Power Banks",
+            "date": "2026-03-23",
+            "tag": "hands-on/expert-domain",
+            "snippet": "The Best Wireless Portable Chargers and Power Banks Wireless power banks can be finicky to use while on the go, and most won’t charge an iPhone or other fast-charging device at top speed. But the Anker 633 Magnetic Battery (A1641) comes closest to nailing both tasks, offering plenty of power and cap"
+          },
+          {
+            "sourceIdx": 6,
+            "title": "The Best Portable Chargers and Power Banks for Phones and Tablets",
+            "date": "2026-05-14",
+            "tag": "hands-on/expert-domain",
+            "snippet": "The Best Portable Chargers and Power Banks for Phones and Tablets Whether you’re a glued-to-your-screen smartphone owner who can never make it through a day on a full charge, or you just need an occasional battery boost, USB power banks are a panacea for low-battery anxiety. After putting in hundred"
+          },
+          {
+            "sourceIdx": 60,
+            "title": "Best Solar Charger Power Banks - Outdoor Gear Lab",
+            "date": "2025-07-10",
+            "tag": "hands-on",
+            "snippet": "Best Solar Charger Power Banks - Outdoor Gear Lab By Sam Schild &sdot; Review Editor &sdot; Updated July 10, 2025 Contributions From: James Lucas A dead device is deadweight when an electrical outlet is nowhere in sight, which is when a portable solar power bank comes in handy. A solar charger can k"
+          }
+        ]
+      },
+      "evidence_truncated": false,
+      "grounding": {
+        "g_det": 10,
+        "weights": {
+          "grounded": 59,
+          "total": 59
+        },
+        "products_checked": 6,
+        "products_not_grounded": [],
+        "citations_checked": 5,
+        "citations_not_verified": [],
+        "numbers_checked": 31,
+        "numbers_not_grounded": []
+      }
+    }
+  }
+}

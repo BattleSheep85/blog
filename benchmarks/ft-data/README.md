@@ -340,3 +340,47 @@ the CamelBak boilerplate page were judged favorably for honesty rather than
 penalized for an empty result.
 
 Total cost: **$0.10** (50 generations + blind judging, all via OpenRouter).
+
+## Validity note (2026-07-28)
+
+Read this before you cite any judged grounding, honesty or fabrication number
+from the two sections above.
+
+An audit (`docs/benchmark-validity-audit.md`) measured what the blind judge
+could actually see. The answer was: almost none of the corpus.
+
+- **`synth-gold-fable-scores.json` is INVALID on its `g` (grounding) and `h`
+  (honesty) axes.** The judge bundles carried a 6,000 character corpus digest
+  built in raw list order. Measured coverage per stored bundle
+  (`synth-gold-blind/q00..q07.json`) was 8/185, 4/147, 10/200, 13/182, 6/171,
+  **0/181**, **0/138**, 19/165 sources. Two of the eight queries gave the
+  judge zero sources, only notes. The judge was then asked whether products
+  and citations were invented. It could not answer that question, for any
+  model, in any pass that used those bundles. The `u` (usefulness) axis is not
+  affected the same way, since usefulness does not need the corpus.
+- **`extract-gold-fable-scores.json` is SUSPECT.** Its stored bundles
+  (`extract-gold-blind/p00..p09.json`) cap `source_excerpt` at 5,000
+  characters. Five of the ten products were clipped, worst case 75 percent of
+  the source hidden (Samsung QN90D: 20,035 characters in, 5,000 shown). A
+  deblinded strata check found no per-model bias and no ordering change, and
+  every hard FAIL landed on an unclipped product, so the decision is low risk.
+  The method is still not strictly comparable to candidate rows judged on full
+  text.
+
+Both files stay on disk unchanged, as the historical record. Nothing was
+edited or deleted.
+
+**The `*-v2` files supersede them:**
+
+| v2 file | Replaces | How it is measured |
+| --- | --- | --- |
+| `synth-gold-grounding-v2.json` | the `g` axis of `synth-gold-fable-scores.json` | exact code over the FULL corpus, no LLM (`benchmarks/lib/grounding-check.mjs`) |
+| `synth-gold-quality-v2-*.json` | the `u` and `h` axes | judge sees a relevance-selected per-product evidence table, not an order-truncated digest, and is told existence is already settled |
+| `synth-gold-blind-v2/`, `synth-gold-blinding-v2*.json` | `synth-gold-blind/`, `synth-gold-blinding.json` | same blinding mechanics, no corpus digest |
+| `synth-gold-leaderboard-v2.json` | the composite table above | `0.45*gDet + 0.30*evidence_discipline + 0.25*usefulness` |
+| `extract-gold-fable-scores-v2-*.json` | `extract-gold-fable-scores.json` | judged against the FULL production source text, unclipped |
+
+**composite_v2 is NOT comparable to the stored composite.** The grounding axis
+changed source and the judge axes changed meaning. Full method, corrected
+leaderboard and the re-decided synthesis seat:
+`benchmarks/synth-rescore-2026-07.md`.

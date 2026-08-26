@@ -25,7 +25,7 @@ import { readPageInto } from '../worker/engine/tools.js';
 import { callLLM } from '../worker/engine/llm.js';
 import { scoreSource, isManufacturerDomain } from '../worker/lib/credibility.js';
 import { verdictForClaim, overallVerdict, verificationWeight } from '../worker/lib/verdict.js';
-import { getTierConfig } from '../worker/lib/tiers.js';
+import { ENGINE_CONFIG } from '../worker/lib/engine-config.js';
 import {
   topEvidenceForClaim,
   buildClaimEvidence,
@@ -73,7 +73,7 @@ const replayInput = REPLAY_PATH ? loadReplayInput(REPLAY_PATH) : null;
 const PRODUCT = process.env.PRODUCT || process.argv[2] || replayInput?.product || 'Anker Soundcore Space A40';
 const PRODUCT_URL = process.env.PRODUCT_URL || replayInput?.productUrl || null;
 
-const cfg = getTierConfig('full');
+const cfg = ENGINE_CONFIG;
 const synthModel = cfg.synthModel;
 
 let totalCostUsd = 0;

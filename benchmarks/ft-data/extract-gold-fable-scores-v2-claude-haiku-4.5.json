@@ -1,0 +1,83 @@
+{
+  "label": "claude-haiku-4.5",
+  "judgeModel": "anthropic/claude-fable-5",
+  "method": "v2: judged against the FULL production source text, not the 5,000-char clipped bundle excerpt.",
+  "complete": true,
+  "costUsd": 1.3408461,
+  "avgQualityNonFail": 8,
+  "completionsNonFail": 10,
+  "totalProducts": 10,
+  "hardFails": 0,
+  "results": {
+    "audio": {
+      "product": "Samsung HW-Q990D Soundbar",
+      "score": 9,
+      "reasoning": "All claims are grounded: 11.1.4 channels, Dolby Atmos, wireless rears, subwoofer, 11 front-facing speakers, 4 up-firing channels, Q-Symphony, Alexa built-in, and Google Assistant via Chromecast all appear in the Q990D-specific sources (1, 4, 5, 12, 15), and junk like star ratings, review prose, and community firmware complaints was properly filtered. The only minor weakness is the HDMI ARC/eARC claim, which is drawn from generic Samsung soundbar support pages (sources 2-3) rather than a Q990D-specific source.",
+      "claim_count": 10,
+      "source_chars": 5282
+    },
+    "tv_display": {
+      "product": "Samsung QN90D Neo QLED",
+      "score": 8,
+      "reasoning": "Claims 1-11 are well grounded in the QN90D-specific sources, with good disambiguation (e.g., noting 4K 120Hz applies to the 98-inch/2.47m variant) and good filtering of the massive nav/pricing boilerplate in Source 8. The main flaw is claim 12: Bixby/Alexa support is drawn from generic Samsung TV support pages (Sources 10-13) that never mention the QN90D, so it is an unsupported attribution to this specific product.",
+      "claim_count": 12,
+      "source_chars": 20035
+    },
+    "computing": {
+      "product": "Lenovo ThinkPad X1 Carbon",
+      "score": 4,
+      "reasoning": "Most claims are grounded, and the extractor correctly ignored the X1 Fold and Lenovo Vantage boilerplate, but claim 1 flips the source's 'Gen 12' statement to 'Gen 13' (a clear generation-disambiguation error), the remaining specs mix Gen 12 and Gen 13 configurations with no model labels, and claims 7-8 are pulled from garbled retailer listing text adjacent to star-rating junk.",
+      "claim_count": 12,
+      "source_chars": 4390
+    },
+    "wearable_health": {
+      "product": "Fitbit Charge 6",
+      "score": 9,
+      "reasoning": "All claims are grounded in the sources (Walmart listing, ECG threads, official announcement) and the extraction correctly avoided contaminating Charge 6 with 'Google Fitbit Air' specs from Sources 4-5, and filtered out troubleshooting/nav junk. Minor quibble: sleep/step tracking claims are inferred from a user complaint thread rather than an official spec source, but they are still textually supported.",
+      "claim_count": 8,
+      "source_chars": 5153
+    },
+    "kitchen": {
+      "product": "Presto Pressure Cooker 6qt",
+      "score": 6,
+      "reasoning": "Model disambiguation is good (01264 vs 01362 vs 02141 correctly labeled) and star-rating junk was filtered, but claim 11 is clear cross-product contamination — the two-year warranty comes from a Fisher & Paykel wine cabinet listing, not the Presto cooker. Claim 3 also invents the unit 'pounds' from truncated text ('5.4 ...'), and claim 10 lacks the model tag it should have (01264).",
+      "claim_count": 11,
+      "source_chars": 4649
+    },
+    "cleaning": {
+      "product": "Samsung Bespoke Jet Vacuum",
+      "score": 7,
+      "reasoning": "All claims are grounded in the sources and correctly labeled by model (Jet 60, Jet Bot Combo, AI Jet Ultra, AI Jet Lite), avoiding cross-model contamination and junk like accessory prices, star ratings, and the unrelated washer/dryer and SmartThings sources. However, it missed the most on-target claim for the actual Bespoke Jet stick vacuum itself (210AW HexaJet suction from Source 9) and includes several claims about adjacent product lines (Jet 60, robot Jet Bot Combo) that are only loosely relevant to the named product.",
+      "claim_count": 12,
+      "source_chars": 9734
+    },
+    "power_charging": {
+      "product": "Anker 737 Power Bank",
+      "score": 9,
+      "reasoning": "All nine claims are directly grounded in the retailer product descriptions (Sources 1, 3, 4, 5), with no invented specs, no cross-product contamination from the Prime 250W comparison, and excellent filtering of the extensive review/star-rating boilerplate. Only minor quibble is a few extractable details (e.g., price, model number A1289011) were skipped, but the core claim set is clean and accurate.",
+      "claim_count": 9,
+      "source_chars": 16184
+    },
+    "baby": {
+      "product": "Dr. Brown's Natural Flow Baby Bottles",
+      "score": 9,
+      "reasoning": "Every claim is grounded in the source text, and the extraction cleanly avoided junk (prices, review videos, customer testimonials). Minor deduction because size and nipple-flow claims blend wide-neck and narrow-neck variants without distinguishing which sub-model each spec applies to, though all belong to the same Natural Flow/Options+ line.",
+      "claim_count": 12,
+      "source_chars": 4541
+    },
+    "smart_home": {
+      "product": "Google Nest Hub Max",
+      "score": 9,
+      "reasoning": "All six claims are grounded in the sources (10\" display, 2 mics, and camera from Best Buy listing; video calls from Sources 5/10; Gemini support from Source 6), and the extraction correctly avoided contamination from the Pixel 10a, Nest Temperature Sensor, Nest Hub 2nd Gen, and retailer pricing/deal boilerplate. Only minor issue is that claims 5 and 6 are redundant duplicates of the same fact.",
+      "claim_count": 6,
+      "source_chars": 4716
+    },
+    "outdoor": {
+      "product": "CamelBak Chute Mag Water Bottle",
+      "score": 10,
+      "reasoning": "The source contains no checkable claims about the CamelBak Chute Mag itself: Source 1 is a video teaser plus Amazon nav/footer boilerplate, Source 2 is an entirely different product (a 2.2L Pure Bottle), and Source 3 is a third-party replacement-lid accessory listing. Returning zero claims is the correct, honest answer, avoiding contamination and junk extraction.",
+      "claim_count": 0,
+      "source_chars": 3572
+    }
+  }
+}

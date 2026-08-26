@@ -69,6 +69,25 @@ max_batch_size = 1
 max_retries = 2
 dead_letter_queue = "truerank-dev-dlq"
 
+# Burst gate for the checked POST paths. Mirror of the production block.
+# ratelimits are NOT inherited between configs/environments, so dev needs its
+# own copy or env.RL_BURST would be undefined here (fail-open, KV only).
+[[ratelimits]]
+name = "RL_BURST"
+namespace_id = "1001"
+[ratelimits.simple]
+limit = 10
+period = 60
+
+# Site-wide affiliate gate. Mirror of the production block, same reason as
+# above: ratelimits are not inherited between configs.
+[[ratelimits]]
+name = "RL_AFFILIATE_GLOBAL"
+namespace_id = "1002"
+[ratelimits.simple]
+limit = 6
+period = 60
+
 # Secrets (set via: wrangler secret put <NAME> -c wrangler.dev.toml):
 #   OPENROUTER_API_KEY — paid OpenRouter key (planner/classifier; synth is local)
 #   SERPER_API_KEY     — Serper.dev Google Search

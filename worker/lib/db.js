@@ -4,6 +4,9 @@
  * tables are unix epoch SECONDS (INTEGER), not TEXT datetimes.
  */
 
+import { nowEpoch, publicResearchFilter } from './utils.js';
+import { CLUSTER_WINNER_ORDER } from './listable.js';
+
 /**
  * Generate a short random ID (URL-safe, [a-z0-9]{16}).
  */
@@ -13,31 +16,28 @@ export function generateId() {
     return Array.from(bytes, b => b.toString(36).padStart(2, '0')).join('').slice(0, 16);
 }
 
-function nowEpoch() {
-    return Math.floor(Date.now() / 1000);
-}
-
 // -- Research (permanent rows, server-rendered at /research/:slug) --
 
-export async function insertResearch(db, { id, slug, query, canonicalQuery, tier, clarifications }) {
+export async function insertResearch(db, { id, slug, query, canonicalQuery, squashedQuery, tier, clarifications }) {
     await db.prepare(
-        `INSERT INTO research (id, slug, query, status, tier, canonical_query, clarifications, created_at)
-         VALUES (?, ?, ?, 'pending', ?, ?, ?, ?)`
-    ).bind(id, slug, query, tier || 'full', canonicalQuery || null, clarifications || null, nowEpoch()).run();
+        `INSERT INTO research (id, slug, query, status, tier, canonical_query, squashed_query, clarifications, created_at)
+         VALUES (?, ?, ?, 'pending', ?, ?, ?, ?, ?)`
+    ).bind(id, slug, query, tier || 'full', canonicalQuery || null, squashedQuery || null, clarifications || null, nowEpoch()).run();
     return id;
 }
 
-export async function findResearchByCanonicalQuery(db, canonicalQuery, maxAgeDays = 14) {
+export async function findResearchByCanonicalQuery(db, canonicalQuery, maxAgeDays = 14, squashedQuery = null) {
     if (!canonicalQuery) return null;
     const cutoff = nowEpoch() - maxAgeDays * 86400;
     // Require at least one product: a 'complete' row with zero products is a
     // degenerate run and must never absorb new queries into its cluster.
     return db.prepare(
         `SELECT * FROM research
-         WHERE canonical_query = ? AND status = 'complete' AND created_at > ?
+         WHERE (canonical_query = ?1 OR (?2 IS NOT NULL AND ?2 != '' AND squashed_query = ?2))
+           AND status = 'complete' AND created_at > ?3
            AND EXISTS (SELECT 1 FROM products p WHERE p.research_id = research.id)
          ORDER BY created_at DESC LIMIT 1`
-    ).bind(canonicalQuery, cutoff).first();
+    ).bind(canonicalQuery, squashedQuery || null, cutoff).first();
 }
 
 export async function getResearchBySlug(db, slug) {
@@ -46,6 +46,32 @@ export async function getResearchBySlug(db, slug) {
 
 export async function getResearchById(db, id) {
     return db.prepare('SELECT * FROM research WHERE id = ?').bind(id).first();
+}
+
+// The slug of the report that wins this row's canonical-query cluster, per
+// the single winner rule in worker/lib/listable.js (CLUSTER_WINNER_ORDER +
+// publicResearchFilter). Used by the report page to point a non-winning
+// cluster member's canonical link at the winner instead of at itself.
+//
+// A null canonicalQuery means the row is its own cluster of one (listable.js
+// falls back to COALESCE(canonical_query, slug), and slug is unique) — the
+// caller can skip the query and treat the row as its own winner.
+//
+// Cost: a single indexed lookup. idx_research_canonical (canonical_query,
+// status, created_at) — schema/003_research_v2.sql — covers the leading
+// `canonical_query = ?1` predicate and the `created_at` tiebreak scan; the
+// remaining publicResearchFilter checks touch only the handful of rows in
+// that one cluster, not the whole table.
+export async function getClusterWinnerSlug(db, canonicalQuery) {
+    if (!canonicalQuery) return null;
+    const row = await db.prepare(
+        `SELECT r.slug FROM research r
+         WHERE r.canonical_query = ?1
+           AND ${publicResearchFilter('r')}
+         ORDER BY ${CLUSTER_WINNER_ORDER}
+         LIMIT 1`
+    ).bind(canonicalQuery).first();
+    return row ? row.slug : null;
 }
 
 export async function updateResearchStatus(db, id, status) {

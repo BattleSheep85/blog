@@ -10,7 +10,7 @@
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { runEngine } from '../worker/engine/engine.js';
 import { callLLM } from '../worker/engine/llm.js';
-import { getTierConfig } from '../worker/lib/tiers.js';
+import { ENGINE_CONFIG } from '../worker/lib/engine-config.js';
 
 const e = {}; for (const l of readFileSync(new URL('../.dev.vars', import.meta.url), 'utf8').split('\n')) { const m = l.match(/^([A-Z_]+)=(.*)$/); if (m) e[m[1]] = m[2].trim(); }
 const KEY = e.OPENROUTER_API_KEY, SERPER = e.SERPER_API_KEY;
@@ -48,7 +48,7 @@ for (const p of PLANNERS) { const c = await canToolCall(p); process.stderr.write
 for (const p of ok) {
   for (const { q, facets, cat } of QUERIES) {
     process.stderr.write(`\n### ${p.label} :: ${q}\n`);
-    const cfg = { ...getTierConfig('full'), plannerModel: p.model, plannerReasoning: p.reasoning, plannerProvider: null };
+    const cfg = { ...ENGINE_CONFIG, plannerModel: p.model, plannerReasoning: p.reasoning, plannerProvider: null };
     const t0 = Date.now();
     try {
       const r = await runEngine(q, cfg, KEY, { SERPER_API_KEY: SERPER }, async () => {}, facets, cat, {});

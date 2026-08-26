@@ -30,6 +30,11 @@ const req = (path, headers = {}) => new Request('https://chrisputer.tech' + path
 let rid;
 beforeAll(async () => {
   await applySchema(env.DB);
+  // These cases exercise the redirect decision tree, not volume defense, and
+  // together they fire far more clicks a minute than the real site ever sees.
+  // Pin the SITE-WIDE gate open so it cannot flag them. The gate itself is
+  // covered in test/integration/affiliate-global-gate.spec.js.
+  env.RL_AFFILIATE_GLOBAL = { async limit() { return { success: true }; } };
   rid = generateId();
   await insertResearch(env.DB, { id: rid, slug: 'best-nas-z', query: 'best nas', canonicalQuery: 'nas' });
 });

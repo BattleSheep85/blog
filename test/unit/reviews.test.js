@@ -7,7 +7,7 @@
 // signal. Cheap insurance against shipping another render 500.
 
 import { renderReviewsPage } from '../../worker/pages/reviews.js';
-import { starMarkup } from '../../worker/pages/research-page.js';
+import { starMarkup } from '../../worker/pages/research-primitives.js';
 
 const PRODUCT = {
   id: 'abcd1234', name: 'Synology DS224+', brand: 'Synology', price: 499, rating: 4.5,
@@ -28,6 +28,12 @@ const WEB_ONLY = {
   facets: '{"sold_on_amazon":false,"is_service":true}', completed_at: 1700000000, view_count: 1,
 };
 
+// A 42-row synthetic product list (matches the mocked COUNT = 42, PAGE_SIZE =
+// 24 → 2 pages) so offset/limit-driven pagination behaves like the real query.
+const PRODUCT_ROWS = Array.from({ length: 42 }, (_, i) => ({
+  ...PRODUCT, id: `p${i}`, slug: `best-nas-${i}`,
+}));
+
 // Mock D1: route each statement by its SQL (the 6 queries run concurrently via
 // Promise.all, so call-order can't distinguish them) — list → product rows,
 // each facet GROUP BY → {key,n} rows, count/rating-sum → .first shapes.
@@ -37,12 +43,17 @@ function mockEnv() {
     DB: {
       prepare(sql) {
         const stmt = {
-          bind() { return stmt; },
+          bind(...args) { stmt._args = args; return stmt; },
           async all() {
             if (sql.includes('GROUP BY r.category')) return { results: [{ key: 'NAS', n: 5 }, { key: 'Audio', n: 3 }] };
             if (sql.includes('GROUP BY p.brand')) return { results: [{ key: 'Synology', n: 3 }, { key: 'Sony', n: 2 }] };
             if (sql.includes('GROUP BY key')) return { results: [{ key: 'u25', n: 2 }, { key: '250-500', n: 1 }] };
-            return { results: [PRODUCT, WEB_ONLY] }; // the list query (Amazon + web-only CTAs)
+            if (sql.includes('r.slug, r.query, r.category, r.facets')) {
+              // The main list query: last two binds are LIMIT, OFFSET.
+              const [limit, offset] = stmt._args.slice(-2);
+              return { results: [...PRODUCT_ROWS, WEB_ONLY].slice(offset, offset + limit) };
+            }
+            return { results: [PRODUCT, WEB_ONLY] };
           },
           async first() {
             if (sql.includes('SUM(CASE WHEN p.rating')) return { r45: 10, r4: 20, r35: 30 };
@@ -73,12 +84,26 @@ export async function runReviewsRenderTests() {
     { url: '/reviews?category=NAS', wantNoindex: false },
     { url: '/reviews?brand=Synology&price=250-500&rating=4&sort=rating&q=nas', wantNoindex: true },
     { url: '/reviews?pmin=50&pmax=300', wantNoindex: true },
+    // Pagination bounds: page 1 baseline, a middle page, the last page (with
+    // the mocked count=42 / PAGE_SIZE=24 that's totalPages=2, so "last" here
+    // is page 2), a page number past the end, and a non-numeric page value —
+    // none of these should throw or produce a 500-shaped result.
+    { url: '/reviews?page=1', wantNoindex: false },
+    { url: '/reviews?page=2', wantNoindex: false },
+    { url: '/reviews?page=999', wantNoindex: false, expectNull: true },
+    { url: '/reviews?page=not-a-number', wantNoindex: false },
+    // A search query on a paginated page must stay noindex regardless of page.
+    { url: '/reviews?q=nas&page=2', wantNoindex: true },
   ];
   for (const c of cases) {
     let html = null, threw = null;
     try { html = await renderReviewsPage(new URL('https://chrisputer.tech' + c.url), mockEnv()); }
     catch (e) { threw = e; }
     ok(`render ${c.url}: no throw`, !threw);
+    if (c.expectNull) {
+      ok(`render ${c.url}: out-of-range page returns null (→ 404, not 500)`, html === null);
+      continue;
+    }
     if (html) {
       ok(`render ${c.url}: has filter sidebar`, html.includes('aria-label="Filters"'));
       ok(`render ${c.url}: has all four facets`, html.includes('>Category<') && html.includes('>Brand<') && html.includes('>Price<') && html.includes('>Rating<'));

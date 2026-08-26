@@ -17,7 +17,7 @@ import { readFileSync } from 'node:fs';
 import { buildSynthesisPrompt } from '../worker/engine/prompts.js';
 import { callLLMStreaming } from '../worker/engine/llm.js';
 import { validateResearchResult } from '../worker/engine/validate.js';
-import { getTierConfig } from '../worker/lib/tiers.js';
+import { ENGINE_CONFIG } from '../worker/lib/engine-config.js';
 
 // ── ENV ──────────────────────────────────────────────────────────────────────
 const e = {};
@@ -27,7 +27,7 @@ for (const l of readFileSync(new URL('../.dev.vars', import.meta.url), 'utf8').s
 const KEY = e.OPENROUTER_API_KEY;
 if (!KEY) { console.error('need OPENROUTER_API_KEY in .dev.vars'); process.exit(1); }
 
-const cfg = getTierConfig('full');
+const cfg = ENGINE_CONFIG;
 const MODEL = cfg.synthModel; // openai/gpt-5.4-mini
 const MAX_Q = Number(process.env.MAX_Q) || 5;
 

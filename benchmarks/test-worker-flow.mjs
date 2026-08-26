@@ -4,12 +4,12 @@
 import { readFileSync } from 'node:fs';
 import { gatherParallel } from '../worker/engine/parallel-engine.js';
 import { synthesizeHonest } from '../worker/engine/extract/index.js';
-import { getTierConfig } from '../worker/lib/tiers.js';
+import { ENGINE_CONFIG } from '../worker/lib/engine-config.js';
 const e = {}; for (const l of readFileSync(new URL('../.dev.vars', import.meta.url), 'utf8').split('\n')) { const m = l.match(/^([A-Z_]+)=(.*)$/); if (m) e[m[1]] = m[2].trim(); }
 const F = { sold_on_amazon: true, is_buyable: true, recency_sensitive: true };
 const query = 'full sized 100% keyboard with hotswapable switches';
 const cat = 'mechanical keyboards';
-const config = { ...getTierConfig('full'), maxConcurrency: 8 };
+const config = { ...ENGINE_CONFIG, maxConcurrency: 8 };
 const t0 = Date.now();
 const g = await gatherParallel(query, config, e.OPENROUTER_API_KEY, { SERPER_API_KEY: e.SERPER_API_KEY }, async (_t, m) => process.stderr.write(`  · ${m}\n`), F, cat, {});
 const tg = Date.now();

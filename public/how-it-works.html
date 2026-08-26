@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Frank Works | Frank by Chrisputer Labs</title>
+    <meta name="description" content="Frank's reports are written by AI, not a human editor. This page explains which models we use, how many sources they read, how we score and filter those sources, and when Frank refuses to answer.">
+    <link rel="canonical" href="https://chrisputer.tech/how-it-works">
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph / Twitter -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Frank">
+    <meta property="og:title" content="How Frank Works">
+    <meta property="og:description" content="Frank's reports are written by AI, not a human editor. Here is exactly which models we use, how sources are scored, and when we refuse to answer.">
+    <meta property="og:url" content="https://chrisputer.tech/how-it-works">
+    <meta property="og:image" content="https://chrisputer.tech/og.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="How Frank Works">
+    <meta name="twitter:description" content="Frank's reports are written by AI, not a human editor. Here is exactly which models we use, how sources are scored, and when we refuse to answer.">
+    <meta name="twitter:image" content="https://chrisputer.tech/og.png">
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="apple-touch-icon" href="/favicon.svg">
+    <link rel="manifest" href="/manifest.webmanifest">
+    <meta name="theme-color" content="#2563eb">
+
+    <!-- FOUC-free theme bootstrap (runs before paint; matches app.js key 'theme') -->
+    <script nonce="__CSP_NONCE__">
+        (function () {
+            var t = localStorage.getItem('theme');
+            if (t === 'light') { document.documentElement.classList.remove('dark'); }
+            else if (t === 'dark') { document.documentElement.classList.add('dark'); }
+            else if (window.matchMedia('(prefers-color-scheme: light)').matches) { document.documentElement.classList.remove('dark'); }
+        })();
+    </script>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Tailwind: prebuilt stylesheet (see tailwind.config.cjs / README) -->
+    <link rel="stylesheet" href="/css/tailwind.css">
+    <link rel="stylesheet" href="/css/app.css">
+
+    <!-- Structured data -->
+    <script nonce="__CSP_NONCE__" type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "AboutPage",
+      "@id": "https://chrisputer.tech/how-it-works",
+      "name": "How Frank Works",
+      "url": "https://chrisputer.tech/how-it-works",
+      "description": "Frank's reports are written by AI, not a human editor. This page explains which models we use, how many sources they read, how we score and filter those sources, and when Frank refuses to answer."
+    }
+    </script>
+    <script nonce="__CSP_NONCE__" type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://chrisputer.tech/" },
+        { "@type": "ListItem", "position": 2, "name": "How it works", "item": "https://chrisputer.tech/how-it-works" }
+      ]
+    }
+    </script>
+</head>
+<body class="bg-bg text-ink-2 font-sans antialiased min-h-screen">
+<style>.skip-link{position:absolute;left:-9999px;top:0;z-index:100;background:var(--accent,#111);color:#fff;padding:.5rem 1rem;border-radius:.5rem}.skip-link:focus{left:1rem;top:1rem}</style>
+<a href="#main" class="skip-link">Skip to content</a>
+
+    <!-- Header -->
+    <input type="checkbox" id="drawer-toggle" class="peer sr-only" aria-label="Open menu">
+    <label for="drawer-toggle" class="drawer-overlay fixed inset-0 z-40 bg-ink/50 opacity-0 pointer-events-none peer-checked:opacity-100 peer-checked:pointer-events-auto dark:bg-black/70" aria-hidden="true"></label>
+    <aside class="drawer-panel fixed inset-y-0 left-0 z-50 w-[86vw] max-w-xs -translate-x-full border-r border-line bg-surface-1 peer-checked:translate-x-0 sm:w-80" role="dialog" aria-label="Main navigation">
+    <div class="flex items-center justify-between border-b border-line px-5 py-4">
+    <a href="/" class="font-mono text-base font-bold tracking-tight text-ink">FRAN<span class="text-accent">K</span></a>
+    <label for="drawer-toggle" class="cursor-pointer border border-line p-1.5 text-ink-2 hover:border-line-strong hover:text-ink" aria-label="Close menu">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </label>
+    </div>
+    <nav class="flex flex-col font-mono text-sm" aria-label="Primary">
+    <a href="/verify" class="flex items-center justify-between border-b border-line px-5 py-3.5 text-ink-2 hover:bg-surface-2 hover:text-ink"><span>01 &middot; Verify</span><span class="text-ink-3">&rarr;</span></a>
+    <a href="/research" class="flex items-center justify-between border-b border-line px-5 py-3.5 text-ink-2 hover:bg-surface-2 hover:text-ink"><span>02 &middot; Browse</span><span class="text-ink-3">&rarr;</span></a>
+    <a href="/reviews" class="flex items-center justify-between border-b border-line px-5 py-3.5 text-ink-2 hover:bg-surface-2 hover:text-ink"><span>03 &middot; Reviews</span><span class="text-ink-3">&rarr;</span></a>
+    <a href="/best/" class="flex items-center justify-between border-b border-line px-5 py-3.5 text-ink-2 hover:bg-surface-2 hover:text-ink"><span>04 &middot; Guides</span><span class="text-ink-3">&rarr;</span></a>
+    <a href="/about" class="flex items-center justify-between border-b border-line px-5 py-3.5 text-ink-2 hover:bg-surface-2 hover:text-ink"><span>05 &middot; About</span><span class="text-ink-3">&rarr;</span></a>
+    <a href="/account" class="flex items-center justify-between px-5 py-3.5 text-ink-2 hover:bg-surface-2 hover:text-ink"><span>06 &middot; Account</span><span class="text-ink-3">&rarr;</span></a>
+    </nav>
+    <div class="flex items-center justify-between border-t border-line p-5">
+    <span class="font-mono text-xs uppercase tracking-wide text-ink-3">Display mode</span>
+    <button id="theme-toggle" type="button" class="flex items-center gap-2 border border-line px-2.5 py-1.5 font-mono text-xs text-ink-2 hover:text-ink hover:border-line-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60" aria-label="Toggle light and dark theme">
+    <svg id="icon-moon" class="h-[13px] w-[13px]" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+    <svg id="icon-sun" class="hidden h-[13px] w-[13px]" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+    </button>
+    </div>
+    </aside>
+    <header class="sticky top-0 z-40 border-b border-line bg-bg/95 backdrop-blur-md print:hidden">
+    <div class="mx-auto flex h-16 max-w-5xl items-center justify-between px-6">
+    <div class="flex items-center gap-3">
+    <label for="drawer-toggle" class="flex cursor-pointer flex-col gap-1.5 border border-line p-2 hover:border-line-strong peer-focus-visible:outline-none peer-focus-visible:ring-2 peer-focus-visible:ring-accent/60 peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-bg" aria-hidden="true">
+    <span class="block h-[1.5px] w-5 bg-ink"></span>
+    <span class="block h-[1.5px] w-5 bg-ink"></span>
+    <span class="block h-[1.5px] w-5 bg-ink"></span>
+    </label>
+    <a href="/" class="font-mono text-lg font-bold tracking-tight text-ink">FRAN<span class="text-accent">K</span></a>
+    </div>
+    <a href="/account" class="border border-line px-3 py-1.5 font-mono text-xs uppercase tracking-wide text-ink-2 hover:border-line-strong hover:text-ink" title="Your account">Account</a>
+    </div>
+    </header>
+
+    <main id="main" class="mx-auto max-w-3xl px-6 py-16 md:py-24">
+
+        <nav aria-label="Breadcrumb" class="mb-6 text-caption text-ink-3">
+            <a href="/" class="hover:text-ink">Home</a>
+            <span aria-hidden="true" class="mx-1.5">/</span>
+            <span class="text-ink-2">How it works</span>
+        </nav>
+
+        <h1 class="font-serif text-h1 font-semibold text-ink">How Frank works</h1>
+
+        <div class="mt-8 flex flex-col gap-5 text-body text-ink-2">
+            <p class="text-lead">Every report on this site is written by an AI system, not a human editor. This page states which models do the work, how many sources they read, how we score those sources, what gets filtered out, and when Frank refuses to give an answer.</p>
+
+            <h2 class="mt-6 font-serif text-h2 font-semibold text-ink">The short version</h2>
+            <p>You ask a question. A planning model breaks it into search queries and reads real pages: reviews, forum threads, and manufacturer specs. A scoring step marks each source as hands-on testing, an expert outlet, a community post, or marketing, and downgrades or drops the marketing. A writing model turns the surviving evidence into a ranked comparison, citing sources, and it is instructed to leave a product out rather than invent facts about it. A separate check step then re-reads a product's own claims against independent sources before publishing.</p>
+
+            <h2 class="mt-6 font-serif text-h2 font-semibold text-ink">The models, by step</h2>
+            <ul class="flex flex-col gap-3">
+                <li class="flex gap-2"><span class="mt-0.5 shrink-0 text-trust-high">+</span><span><strong class="text-ink">Planning and search (Gemini 2.5 Flash).</strong> Decides what to search for and which pages to open, up to 50 searches and 20 page reads per report.</span></li>
+                <li class="flex gap-2"><span class="mt-0.5 shrink-0 text-trust-high">+</span><span><strong class="text-ink">Writing the report (MiniMax M3).</strong> Turns the gathered notes and sources into the summary, product list, pros and cons, and buyer's guide you read.</span></li>
+                <li class="flex gap-2"><span class="mt-0.5 shrink-0 text-trust-high">+</span><span><strong class="text-ink">Claim checking (Claude Haiku 4.5).</strong> Pulls specific, checkable claims (battery life, warranty length, a spec figure) from a product's own pages.</span></li>
+                <li class="flex gap-2"><span class="mt-0.5 shrink-0 text-trust-high">+</span><span><strong class="text-ink">Claim verdicts (MiniMax M3).</strong> Checks each claim against independent sources and marks it confirmed, disputed, or unaddressed. A source restating the manufacturer's own words does not count as confirmation, only a source's own testing or measurement does.</span></li>
+            </ul>
+            <p>All four models run through OpenRouter. We do not train on your queries, and no OpenAI model is used anywhere in this pipeline.</p>
+
+            <h2 class="mt-6 font-serif text-h2 font-semibold text-ink">Where the sources come from</h2>
+            <p>Search runs across several providers so no single index limits what we see: Google results and news through Serper, a self-hosted metasearch engine, Brave and Tavily as fallbacks, Hacker News discussions, and review-site RSS feeds. Page content is fetched and converted to plain text for the models to read. A report typically draws on several dozen sources; the exact count is shown at the end of the search phase in the report's activity log.</p>
+
+            <h2 class="mt-6 font-serif text-h2 font-semibold text-ink">How we score and filter sources</h2>
+            <p>Every source gets tagged, not just read. Hands-on testing and established review outlets are weighted up. Listicles, manufacturer pages, sponsored posts, and pages carrying affiliate tracking links are weighted down, and none of them can be the sole basis for a recommendation, so a single affiliate-laden "top 10" post can never anchor a pick on its own. We also flag reviewer independence on a spectrum: buying the product yourself is a positive signal, an honest disclosed loaner is neutral, and a free product given in exchange for a review is treated as a real conflict.</p>
+            <p>Pages that contain hidden text addressed to AI tools, telling an automated reader what to recommend, are treated as an attempted manipulation. That text is read as data, never followed as an instruction, and its presence marks the page as untrustworthy.</p>
+            <p>We are also skeptical of the product itself, separately from the source. A no-name brand that exists only as a marketplace listing, with no independent review coverage and no real brand presence, is never ranked above an established, independently reviewed brand, and is only included at all when there is genuinely no credible alternative, with that caveat stated plainly in its verdict.</p>
+
+            <h2 class="mt-6 font-serif text-h2 font-semibold text-ink">What Frank will not do</h2>
+            <ul class="flex flex-col gap-3">
+                <li class="flex gap-2"><span class="mt-0.5 shrink-0 text-trust-high">+</span><span><strong class="text-ink">It will not invent a price.</strong> A price appears only when a source states one. If no source gives a price, the report shows no price, rather than a guess.</span></li>
+                <li class="flex gap-2"><span class="mt-0.5 shrink-0 text-trust-high">+</span><span><strong class="text-ink">It will not fabricate a product URL.</strong> Product links come from URLs found in the actual sources, never a guessed or invented address.</span></li>
+                <li class="flex gap-2"><span class="mt-0.5 shrink-0 text-trust-high">+</span><span><strong class="text-ink">It will not attribute a claim to a source that did not make it.</strong> Citing a trusted name for something it never said is treated as the worst kind of error the system can make.</span></li>
+                <li class="flex gap-2"><span class="mt-0.5 shrink-0 text-trust-high">+</span><span><strong class="text-ink">It will not fake precision.</strong> Our editorial rating is a 0-5 score built from the balance of evidence, not a lab measurement. When the evidence is too thin to judge fairly, the rating is left blank rather than filled in with a guess.</span></li>
+                <li class="flex gap-2"><span class="mt-0.5 shrink-0 text-trust-high">+</span><span><strong class="text-ink">It will drop a product rather than misrepresent it.</strong> A product without at least one real, sourced pro or con does not make the list. If a whole category turns up too little credible evidence, the report says so instead of filling space with weak picks.</span></li>
+                <li class="flex gap-2"><span class="mt-0.5 shrink-0 text-trust-high">+</span><span><strong class="text-ink">It will honor a stated budget.</strong> If you ask for something "under $500," products priced above that are filtered out of the ranking, not just noted as expensive.</span></li>
+            </ul>
+
+            <h2 class="mt-6 font-serif text-h2 font-semibold text-ink">Where AI can still be wrong</h2>
+            <p>None of this makes the system infallible. A language model can still misread a source, miss a newer review, or misjudge which pros and cons matter most to you. The filtering above reduces fabrication and marketing noise; it does not guarantee the ranking matches your own priorities. If a report looks off, the "Re-run fresh" button on that page starts a new search from scratch.</p>
+
+            <h2 class="mt-6 font-serif text-h2 font-semibold text-ink">Affiliate links do not affect ranking</h2>
+            <p>Frank carries Amazon Associates and other affiliate links, and we earn a commission on qualifying purchases at no extra cost to you. That income does not reach the models that write the report: the pipeline described above ranks products by the evidence it finds, then a separate step attaches an affiliate link to whichever retailer page matched. The order of products is decided before any affiliate link is chosen.</p>
+        </div>
+
+        <div class="mt-12 border-t border-line pt-8">
+            <a href="/research" class="inline-flex items-center gap-2 rounded-lg bg-accent-strong px-4 py-2 font-sans text-body-sm font-semibold text-white transition-colors hover:bg-accent-hover">Browse research</a>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-line print:hidden">
+    <div class="mx-auto max-w-5xl px-6 py-12">
+    <div class="grid gap-10 font-mono text-xs sm:grid-cols-4">
+    <div class="sm:col-span-2">
+    <a href="/" class="text-base font-bold tracking-tight text-ink">FRAN<span class="text-accent">K</span></a>
+    <p class="mt-3 max-w-sm leading-relaxed text-ink-3">A verification console for product claims. Input the product, output the evidence.</p>
+    </div>
+    <div>
+    <p class="uppercase tracking-widest text-ink-3">Explore</p>
+    <ul class="mt-3 space-y-2 text-ink-2">
+    <li><a href="/best/" class="hover:text-ink">Guides</a></li>
+    <li><a href="/research" class="hover:text-ink">Browse</a></li>
+    <li><a href="/reviews" class="hover:text-ink">Reviews</a></li>
+    <li><a href="/about" class="hover:text-ink">About</a></li>
+    <li><a href="/how-it-works" class="hover:text-ink">How it works</a></li>
+    </ul>
+    </div>
+    <div>
+    <p class="uppercase tracking-widest text-ink-3">More</p>
+    <ul class="mt-3 space-y-2 text-ink-2">
+    <li><a href="/feed.xml" rel="alternate" type="application/atom+xml" class="hover:text-ink">Atom feed</a></li>
+    <li><a href="/sitemap.xml" class="hover:text-ink">Sitemap</a></li>
+    </ul>
+    </div>
+    </div>
+    <div class="mt-10 border-t border-line pt-6">
+    <p class="mb-3 flex flex-wrap gap-x-5 gap-y-1 font-mono text-[11px] uppercase tracking-wide text-ink-3"><a href="/privacy" class="hover:text-ink">Privacy Policy</a><a href="/terms" class="hover:text-ink">Terms of Use</a><a href="/contact" class="hover:text-ink">Contact</a><a href="https://ko-fi.com/chrisputer" target="_blank" rel="noopener nofollow" class="hover:text-ink">Support&nbsp;♥</a></p>
+    <p class="max-w-[80ch] font-mono text-[10.5px] leading-relaxed text-ink-3">AFFILIATE_DISCLOSURE :: As an Amazon Associate, Chrisputer Labs earns from qualifying purchases. Product data is compiled from public sources, and our rankings are never influenced by affiliate relationships.</p>
+    </div>
+    </div>
+    </footer>
+
+    <script nonce="__CSP_NONCE__">
+        (function () {
+            var btn = document.getElementById('theme-toggle');
+            if (!btn) return;
+            function sync(isDark) {
+                var moon = document.getElementById('icon-moon'), sun = document.getElementById('icon-sun');
+                if (moon && sun) { moon.classList.toggle('hidden', !isDark); sun.classList.toggle('hidden', isDark); }
+            }
+            sync(document.documentElement.classList.contains('dark'));
+            btn.addEventListener('click', function () {
+                var isDark = document.documentElement.classList.toggle('dark');
+                localStorage.setItem('theme', isDark ? 'dark' : 'light');
+                sync(isDark);
+            });
+        })();
+    </script>
+<script nonce="__CSP_NONCE__" src="/js/frank-egg.js" defer></script>
+</body>
+</html>
