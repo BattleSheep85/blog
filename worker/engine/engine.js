@@ -9,6 +9,8 @@ import { validateResearchResult } from './validate.js';
 import { synthesizeHonest } from './extract/index.js';
 import { parseFencedJson } from '../lib/llm-json.js';
 import { runPool } from '../lib/pool.js';
+import { runRecallGather } from './recall-gather.js';
+import { runOpeningBook, OPENING_BOOK_TEMPLATES } from './opening-book.js';
 
 // ─── Event emission ────────────────────────────────────────────────────────
 //
@@ -43,6 +45,9 @@ async function emitEvent(onEvent, state, eventType, message, detail) {
 // Event writes via onEvent don't count as subrequests (KV is a binding, not fetch).
 const SUBREQUEST_BUDGET = 950; // paid plan = 1000, leave headroom for synthesis + retries
 const SUBREQUEST_RESERVE_FOR_SYNTHESIS = 5; // synthesis LLM + possible retries
+// Searches reserved for the post-planner recall gather phase so recall-driven
+// searches can still run after the planner loop ends.
+export const RECALL_RESERVE_SEARCHES = 8;
 
 export async function runEngine(
   query,
@@ -54,6 +59,7 @@ export async function runEngine(
   topicalCategory,
   clarifications,
 ) {
+  const loopSearchCap = Math.max(1, config.maxSearches - RECALL_RESERVE_SEARCHES);
   const agentTools = buildAgentTools(facets);
   // Default recency_sensitive to true when facets are missing (legacy rows in
   // the queue). Matches the classifier's default — tech-heavy traffic wants
@@ -80,6 +86,44 @@ export async function runEngine(
     { role: 'system', content: buildAgentPrompt(query, config, facets) },
     { role: 'user', content: `Research this thoroughly: "${query}"` },
   ];
+
+  // ── Opening book: deterministic template searches before planner loop ───
+  const openingCap = Math.min(OPENING_BOOK_TEMPLATES.length, loopSearchCap);
+  if (
+    openingCap >= 1 &&
+    subrequestsUsed + openingCap * 6 < SUBREQUEST_BUDGET - SUBREQUEST_RESERVE_FOR_SYNTHESIS
+  ) {
+    try {
+      const ob = await runOpeningBook({
+        query,
+        topicalCategory,
+        facets,
+        env,
+        recencySensitive,
+        maxSearches: openingCap,
+      });
+      if (ob) {
+        state.searchCount += ob.searched;
+        subrequestsUsed += ob.searched * 6;
+        if (ob.sources && ob.sources.length > 0) {
+          const knownUrls = new Set(state.sources.map((s) => s?.url).filter(Boolean));
+          const newSources = ob.sources.filter((s) => s?.url && !knownUrls.has(s.url));
+          state.sources = [...state.sources, ...newSources];
+        }
+        console.log(`[opening-book] searched ${ob.searched}, sources +${ob.sources.length}`);
+        if (ob.searched > 0) {
+          await emitEvent(onEvent, state, 'search', `Ran ${ob.searched} opening searches...`);
+          const queryList = ob.queries.map((q) => `- ${q}`).join('\n');
+          messages.splice(1, 0, {
+            role: 'system',
+            content: `These searches have ALREADY been run and their results are in the corpus. Do NOT repeat them:\n${queryList}`,
+          });
+        }
+      }
+    } catch {
+      /* failure must never abort research */
+    }
+  }
 
   let turnsWithoutTools = 0;
   const MAX_TURNS = 30; // safety valve
@@ -156,7 +200,7 @@ export async function runEngine(
       });
       messages.push({
         role: 'user',
-        content: `You still have ${config.maxToolCalls - state.toolCallCount} tool calls and ${config.maxSearches - state.searchCount} searches remaining. Continue researching or stop if satisfied.`,
+        content: `You still have ${config.maxToolCalls - state.toolCallCount} tool calls and ${loopSearchCap - state.searchCount} searches remaining. Continue researching or stop if satisfied.`,
       });
       continue;
     }
@@ -188,7 +232,7 @@ export async function runEngine(
       if (subrequestsUsed + projSubs >= SUBREQUEST_BUDGET - SUBREQUEST_RESERVE_FOR_SYNTHESIS) {
         outcome.set(tc.id, 'Platform subrequest limit reached. Synthesize from what you have.'); continue;
       }
-      if (nm === 'web_search' && state.searchCount + projSearch >= config.maxSearches) {
+      if (nm === 'web_search' && state.searchCount + projSearch >= loopSearchCap) {
         outcome.set(tc.id, 'Search budget exhausted. Use note() to record findings or stop.'); continue;
       }
       if (nm === 'read_page' && state.fetchCount + projFetch >= config.maxFetches) {
@@ -237,6 +281,45 @@ export async function runEngine(
   }
 
   console.log(`[engine] agent loop done: ${state.toolCallCount} calls, ${state.sources.length} sources, ${state.notes.length} notes`);
+
+  // ── Reserve-spend: recall gather for unevidenced leaders ─────────────────
+  const reserveLeft = Math.max(0, config.maxSearches - state.searchCount);
+  if (
+    reserveLeft >= 1 &&
+    Date.now() - startTime <= config.agentLoopBudgetMs - 15_000 &&
+    subrequestsUsed + 6 < SUBREQUEST_BUDGET - SUBREQUEST_RESERVE_FOR_SYNTHESIS
+  ) {
+    const affordable = Math.floor((SUBREQUEST_BUDGET - SUBREQUEST_RESERVE_FOR_SYNTHESIS - subrequestsUsed) / 6);
+    const searchCap = Math.min(reserveLeft, affordable, RECALL_RESERVE_SEARCHES);
+    if (searchCap >= 1) {
+      try {
+        const r = await runRecallGather({
+          query,
+          topicalCategory,
+          sources: state.sources,
+          notes: state.notes,
+          openrouterKey,
+          recallModel: config.recallModel,
+          env,
+          recencySensitive,
+          maxNames: 4,
+          maxSearches: searchCap,
+        });
+        if (r) {
+          state.searchCount += r.searched;
+          subrequestsUsed += r.searched * 6;
+          state.sources = [...state.sources, ...r.sources];
+          console.log(`[recall-gather] proposed ${r.proposed}, searched ${r.searched}, recovered ${r.recovered}`);
+          if (r.searched > 0) {
+            await emitEvent(onEvent, state, 'status', `Ran ${r.searched} recall searches for missing leaders...`);
+          }
+        }
+      } catch {
+        /* failure must never abort research */
+      }
+    }
+  }
+
   await emitEvent(onEvent, state, 'status', `Gathered ${state.sources.length} sources with ${state.notes.length} findings. Synthesizing report...`);
 
   // ── Phase 2: Synthesis ──────────────────────────────────────────────────

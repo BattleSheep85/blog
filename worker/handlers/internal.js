@@ -13,28 +13,7 @@
 
 import { claimNextPendingJob, persistEngineResult, incrementMonthlyCost } from '../pipeline/orchestrator.js';
 import { validateResearchResult } from '../engine/validate.js';
-
-// Constant-time string comparison. Hash both sides to fixed-length SHA-256
-// digests so the byte-compare loop runs the full length regardless of where
-// (or whether) the inputs first differ — no early-out timing side-channel.
-async function timingSafeEqual(a, b) {
-  const enc = new TextEncoder();
-  const [da, db] = await Promise.all([
-    crypto.subtle.digest('SHA-256', enc.encode(a)),
-    crypto.subtle.digest('SHA-256', enc.encode(b)),
-  ]);
-  const va = new Uint8Array(da);
-  const vb = new Uint8Array(db);
-  let diff = 0;
-  for (let i = 0; i < va.length; i++) diff |= va[i] ^ vb[i];
-  return diff === 0;
-}
-
-async function authed(request, env) {
-  const secret = request.headers.get('X-Worker-Secret');
-  if (!env.WORKER_SECRET || !secret) return false;
-  return timingSafeEqual(secret, env.WORKER_SECRET);
-}
+import { isWorkerAuthed } from '../lib/worker-auth.js';
 
 const json = (obj, status = 200) =>
   new Response(JSON.stringify(obj), { status, headers: { 'Content-Type': 'application/json' } });
@@ -42,7 +21,7 @@ const json = (obj, status = 200) =>
 // GET/POST /api/internal/next-job → { job: {reportId, query, slug, facets,
 // topicalCategory, clarifications, config} | null }
 export async function handleNextJob(request, env) {
-  if (!(await authed(request, env))) return json({ error: 'unauthorized' }, 401);
+  if (!(await isWorkerAuthed(request, env))) return json({ error: 'unauthorized' }, 401);
   // When the off-CF worker is DISABLED, refuse to hand out jobs — otherwise the blackbox
   // poller keeps claiming pending rows and processing them with the FABRICATING LLM synth,
   // racing ahead of the CF-side queue consumer that runs the honest extraction engine.
@@ -69,7 +48,7 @@ export async function handleNextJob(request, env) {
 // surfaces off-CF worker beats live on the processing page. Best-effort: the
 // worker fires these without blocking the engine, so a failure here is harmless.
 export async function handleProgress(request, env) {
-  if (!(await authed(request, env))) return json({ error: 'unauthorized' }, 401);
+  if (!(await isWorkerAuthed(request, env))) return json({ error: 'unauthorized' }, 401);
   let body;
   try { body = await request.json(); } catch { return json({ error: 'invalid json' }, 400); }
   const { reportId, step, message } = body || {};
@@ -99,7 +78,7 @@ export async function handleProgress(request, env) {
 //   { reportId, query, slug?, facets?, topicalCategory?, result, sources,
 //     totalCostUsd?, synthModel? }   — OR { reportId, query, error } to fail it.
 export async function handleComplete(request, env) {
-  if (!(await authed(request, env))) return json({ error: 'unauthorized' }, 401);
+  if (!(await isWorkerAuthed(request, env))) return json({ error: 'unauthorized' }, 401);
   let body;
   try { body = await request.json(); } catch { return json({ error: 'invalid json' }, 400); }
   const { reportId, query, slug, facets, topicalCategory } = body || {};

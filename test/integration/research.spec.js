@@ -7,14 +7,21 @@ import { beforeAll, describe, it, expect } from 'vitest';
 import { applySchema } from './_schema.js';
 import { handleStartResearch } from '../../worker/handlers/research.js';
 import { checkRateLimit } from '../../worker/lib/rate-limit.js';
+import { generateId, insertResearch } from '../../worker/lib/db.js';
+import { canonicalizeQuery } from '../../worker/lib/utils.js';
+import { completeResearch, insertProductV2 } from './_helpers.js';
+
+const SECRET = 'test-worker-secret-123';
 
 beforeAll(async () => {
   await applySchema(env.DB);
+  env.WORKER_SECRET = SECRET; // per-test isolated env; safe to set
+  testEnv.WORKER_SECRET = SECRET;
 });
 
-const post = (query, ip, extra = {}) => new Request('https://chrisputer.tech/api/research', {
+const post = (query, ip, extra = {}, headers = {}) => new Request('https://chrisputer.tech/api/research', {
   method: 'POST',
-  headers: { 'Content-Type': 'application/json', 'CF-Connecting-IP': ip },
+  headers: { 'Content-Type': 'application/json', 'CF-Connecting-IP': ip, ...headers },
   body: JSON.stringify({ query, ...extra }),
 });
 
@@ -96,3 +103,66 @@ describe('handleStartResearch: concurrent burst gate', () => {
     expect(body.error).toMatch(/too many/i);
   });
 });
+
+describe('handleStartResearch: forceFresh (internal benchmark bypass)', () => {
+  it('bypasses canonical-query clustering only when X-Worker-Secret is valid', async () => {
+    const seedId = generateId();
+    const query = 'best wireless earbuds for running';
+    const canonical = canonicalizeQuery(query);
+    await insertResearch(env.DB, {
+      id: seedId,
+      slug: 's-' + seedId,
+      query,
+      canonicalQuery: canonical,
+    });
+    await completeResearch(env.DB, {
+      id: seedId,
+      status: 'complete',
+      summary: 'Earbuds compared.',
+      category: 'Audio',
+      result: '{}',
+      sources: '[]',
+    });
+    await insertProductV2(env.DB, { researchId: seedId, name: 'Runner Buds Pro', rank: 1 });
+
+    // 1. Normal public POST returns cached/clustered result
+    const resPublic = await handleStartResearch(
+      post(query, '203.0.113.101'),
+      testEnv,
+    );
+    expect(resPublic.status).toBe(200);
+    const bodyPublic = await resPublic.json();
+    expect(bodyPublic.cached).toBe(true);
+    expect(bodyPublic.clustered).toBe(true);
+    expect(bodyPublic.id).toBe(seedId);
+
+    // 2. forceFresh: true with NO X-Worker-Secret header still returns clustered (flag ignored)
+    const resNoAuth = await handleStartResearch(
+      post(query, '203.0.113.102', { forceFresh: true }),
+      testEnv,
+    );
+    expect(resNoAuth.status).toBe(200);
+    const bodyNoAuth = await resNoAuth.json();
+    expect(bodyNoAuth.cached).toBe(true);
+    expect(bodyNoAuth.clustered).toBe(true);
+    expect(bodyNoAuth.id).toBe(seedId);
+
+    // 3. forceFresh: true with valid X-Worker-Secret starts a new run (not clustered)
+    const resAuthed = await handleStartResearch(
+      post(query, '203.0.113.103', { forceFresh: true }, { 'X-Worker-Secret': SECRET }),
+      testEnv,
+    );
+    expect(resAuthed.status).toBe(200);
+    const bodyAuthed = await resAuthed.json();
+    expect(bodyAuthed.clustered).toBeFalsy();
+    expect(bodyAuthed.status).toBe('pending');
+    expect(bodyAuthed.id).not.toBe(seedId);
+
+    // Assert a new research row exists in the database
+    const newRow = await env.DB.prepare('SELECT * FROM research WHERE id = ?').bind(bodyAuthed.id).first();
+    expect(newRow).toBeTruthy();
+    expect(newRow.id).toBe(bodyAuthed.id);
+    expect(newRow.status).toBe('pending');
+  });
+});
+

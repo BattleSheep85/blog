@@ -18,25 +18,26 @@ export function generateId() {
 
 // -- Research (permanent rows, server-rendered at /research/:slug) --
 
-export async function insertResearch(db, { id, slug, query, canonicalQuery, tier, clarifications }) {
+export async function insertResearch(db, { id, slug, query, canonicalQuery, squashedQuery, tier, clarifications }) {
     await db.prepare(
-        `INSERT INTO research (id, slug, query, status, tier, canonical_query, clarifications, created_at)
-         VALUES (?, ?, ?, 'pending', ?, ?, ?, ?)`
-    ).bind(id, slug, query, tier || 'full', canonicalQuery || null, clarifications || null, nowEpoch()).run();
+        `INSERT INTO research (id, slug, query, status, tier, canonical_query, squashed_query, clarifications, created_at)
+         VALUES (?, ?, ?, 'pending', ?, ?, ?, ?, ?)`
+    ).bind(id, slug, query, tier || 'full', canonicalQuery || null, squashedQuery || null, clarifications || null, nowEpoch()).run();
     return id;
 }
 
-export async function findResearchByCanonicalQuery(db, canonicalQuery, maxAgeDays = 14) {
+export async function findResearchByCanonicalQuery(db, canonicalQuery, maxAgeDays = 14, squashedQuery = null) {
     if (!canonicalQuery) return null;
     const cutoff = nowEpoch() - maxAgeDays * 86400;
     // Require at least one product: a 'complete' row with zero products is a
     // degenerate run and must never absorb new queries into its cluster.
     return db.prepare(
         `SELECT * FROM research
-         WHERE canonical_query = ? AND status = 'complete' AND created_at > ?
+         WHERE (canonical_query = ?1 OR (?2 IS NOT NULL AND ?2 != '' AND squashed_query = ?2))
+           AND status = 'complete' AND created_at > ?3
            AND EXISTS (SELECT 1 FROM products p WHERE p.research_id = research.id)
          ORDER BY created_at DESC LIMIT 1`
-    ).bind(canonicalQuery, cutoff).first();
+    ).bind(canonicalQuery, squashedQuery || null, cutoff).first();
 }
 
 export async function getResearchBySlug(db, slug) {

@@ -20,9 +20,11 @@ Honest product research. We search real reviews across the web (expert review si
 | Database | Cloudflare D1 (SQLite) | Free tier |
 | Cache | Cloudflare KV | Free tier |
 | Background jobs | Cloudflare Queues (+ off-CF research worker) | Free tier |
-| AI — classifier | `google/gemini-2.5-flash-lite` via OpenRouter | paid |
-| AI — planner/agent | `google/gemini-2.5-flash` via OpenRouter | paid |
-| AI — synthesis | `openai/gpt-5.4-mini` via OpenRouter | paid |
+| AI - classifier | `google/gemini-2.5-flash-lite` via OpenRouter | paid |
+| AI - planner/agent | `google/gemini-2.5-flash` via OpenRouter | paid |
+| AI - synthesis | `minimax/minimax-m3` via OpenRouter | paid |
+| AI - extract (claims) | `anthropic/claude-haiku-4.5` via OpenRouter | paid |
+| AI - stance judge | `minimax/minimax-m3` via OpenRouter | paid |
 | Search | Serper.dev (primary) + SearXNG + Brave/Tavily (fallback) + HN Algolia + RSS | mostly free |
 
 AI cost is governed by `MONTHLY_BUDGET_USD` (default $60): each run increments a KV cost counter and `/api/research` returns 503 once the month's spend hits the cap.
@@ -145,21 +147,37 @@ schema/              D1 database migrations
 ```
 User query
   → Classifier: facets, rejection, clarifying questions, Amazon-viability
+  → Opening book: runs fixed template searches ("best <subject>", "<subject> review",
+    "best <subject> reddit", "<subject> site:reddit.com") based on topical category
+    or raw query to seed an overlapping corpus for run-to-run stability
   → Agent loop: planner fans out searches (Serper/HN/DDG/RSS/video),
     reads pages, takes notes
+  → Reserve search recall: reserves 8 of 50 searches after the planner loop
+    to query for missing category leaders unevidenced in gathered sources
   → Deterministic credibility scoring on every source (twice: URL+title at
     snippet time, full text after fetch): +25 hands-on / +15 expert-domain /
-    +5 community / −15 manufacturer / −30 listicle / −45 affiliate-conflict.
-    Discounts, not exclusions — conflicted sources need corroboration and
+    +5 community / -15 manufacturer / -30 listicle / -45 affiliate-conflict.
+    Discounts, not exclusions: conflicted sources need corroboration and
     the conflict is disclosed in the verdict. Marketplace star reviews are
     never ingested at all.
-    (NOTE: this is source-GENRE credibility, not per-review fake detection —
+    (NOTE: this is source-GENRE credibility, not per-review fake detection:
     see PRD §3b. No surface should claim "fake review detection".)
-  → Synthesis (tiered: haiku-4.5 / sonnet-4.6 / opus-4.8) ranks products,
-    subordinating LLM sentiment to the deterministic credibility tags
+  → Synthesis: deterministic extraction synthesis (SYNTH_ENGINE=extract,
+    worker/engine/extract/) builds every field from a real source span with gated,
+    timeout-bounded LLM helpers (name cleanup, con selector, recall supplement).
+    Generative fallback path uses minimax/minimax-m3 via OpenRouter.
   → ASIN resolver attaches exact Amazon /dp/ links; affiliate tagging
   → Permanent SSR page at /research/:slug with sources + JSON-LD
 ```
+
+### Query clustering and cache
+
+To avoid redundant runs, `worker/lib/utils.js` canonicalizes incoming queries before running research:
+- `canonicalizeQuery`: strips stopwords and filler (prices, years), singularizes each token with a small hand-rolled rule set (`singularizeToken`: "ies" to "y", strips "es" after ses/xes/zes/ches/shes, strips a plain trailing "s", with a no-touch list for non-plurals: series, lens, glass, chess, gps, nas, ups, class, plus), then sorts and de-duplicates the tokens.
+- `squashQuery`: runs the same token pipeline but preserves original token order and joins with no separator (for example, "light bulb" becomes "lightbulb").
+
+Each research row stores both forms (`research.canonical_query` and `research.squashed_query`, added and backfilled by `schema/014_squashed_query.sql`).
+`findResearchByCanonicalQuery` matches on either form within a 14-day window. Queries like "lightbulb", "lightbulbs", and "light bulb" hit the same cached research instead of starting separate runs.
 
 ## Buying guides (SEO + affiliate)
 
@@ -179,14 +197,19 @@ no open-redirect surface.
 ## Configuration
 
 Secrets (set via `wrangler secret put`):
-- `OPENROUTER_API_KEY` — free tier, no credit card needed
-- `SERPER_API_KEY` — optional, 2500 free Google searches
-- `AMAZON_ASSOCIATE_TAG` — your Amazon Associates tracking tag
+- `OPENROUTER_API_KEY`: paid OpenRouter key (classifier, planner, synthesis, extract, stance)
+- `SERPER_API_KEY`: primary web and news search (optional, 2500 free Google searches)
+- `WORKER_SECRET`: authentication secret for internal endpoints (`/api/internal/*`) and authorized internal requests
+- `AMAZON_ASSOCIATE_TAG`: your Amazon Associates tracking tag
 
 Environment variables (in `wrangler.toml`):
-- `RATE_LIMIT_MAX` — max research jobs per IP per window (default: 5)
-- `RATE_LIMIT_WINDOW_SECONDS` — rate limit window (default: 3600)
-- `CACHE_TTL_SECONDS` — how long to cache reports (default: 86400)
+- `RATE_LIMIT_MAX`: max research jobs per IP per window (default: 5)
+- `RATE_LIMIT_WINDOW_SECONDS`: rate limit window (default: 3600)
+- `CACHE_TTL_SECONDS`: how long to cache reports (default: 86400)
+
+### Internal requests and forceFresh
+
+`POST /api/research` supports an internal `forceFresh: true` parameter that bypasses the 14-day canonical query cache and starts a genuinely new research run. This flag is honored only when the request carries an `X-Worker-Secret` header matching `WORKER_SECRET` (the same authentication as `/api/internal/*`). Any `forceFresh` parameter sent by a public caller is ignored. It exists for an external benchmark harness that measures run-to-run stability. The public `fresh` flag (for user re-runs) remains separate.
 
 ## License
 

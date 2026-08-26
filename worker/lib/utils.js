@@ -111,11 +111,42 @@ const CANONICAL_STOPWORDS = new Set([
   'my','your','our','i','you','me',
 ]);
 
+// Tokens that end in "s" but are not plurals.
+const NO_SINGULARIZE = new Set(['series', 'lens', 'glass', 'chess', 'gps', 'nas', 'ups', 'class', 'plus']);
+
+export function singularizeToken(token) {
+  if (!token || token.length <= 3) return token;
+  if (NO_SINGULARIZE.has(token)) return token;
+  if (token.endsWith('ies') && token.length > 4) return token.slice(0, -3) + 'y';
+  if (['ses', 'xes', 'zes', 'ches', 'shes'].some((end) => token.endsWith(end))) return token.slice(0, -2);
+  if (token.endsWith('s') && !token.endsWith('ss') && !token.endsWith('us')) return token.slice(0, -1);
+  return token;
+}
+
 function stripFiller(token) {
   // Strip trailing price/year tokens: "$100", "under-100", "2025", "2026"
   if (/^\$?\d{2,4}$/.test(token)) return '';
   if (/^\d{4}s?$/.test(token)) return '';
   return token;
+}
+
+function canonicalTokens(query) {
+  return String(query ?? '')
+    .toLowerCase()
+    .replace(/[^a-z0-9$\- ]+/g, ' ')
+    .split(/\s+/)
+    .map(stripFiller)
+    .filter((t) => t.length > 1 && !CANONICAL_STOPWORDS.has(t))
+    .map(singularizeToken);
+}
+
+function clarificationSuffix(clarifications) {
+  if (!clarifications || Object.keys(clarifications).length === 0) return '';
+  const suffix = Object.entries(clarifications)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([k, v]) => `${k}:${String(v ?? '').toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9:$.-]/g, '')}`)
+    .join(' ');
+  return suffix ? ` ${suffix}` : '';
 }
 
 // Shared WHERE clause for rows that may be exposed to crawlers, sitemaps, or
@@ -146,22 +177,23 @@ export function publicResearchFilter(alias) {
 }
 
 export function canonicalizeQuery(query, clarifications) {
-  const tokens = query
-    .toLowerCase()
-    .replace(/[^a-z0-9$\- ]+/g, ' ')
-    .split(/\s+/)
-    .map(stripFiller)
-    .filter((t) => t.length > 1 && !CANONICAL_STOPWORDS.has(t));
+  const tokens = canonicalTokens(query);
   // Sort for order-insensitivity. "best keyboard budget" == "budget keyboard best".
   const unique = Array.from(new Set(tokens)).sort();
   const base = unique.join(' ');
-  if (!clarifications || Object.keys(clarifications).length === 0) return base;
-  // Clarifications shift intent enough that "best mesh wifi $200" and
-  // "best mesh wifi $500" must cluster separately. Append sorted key:value
-  // pairs (slugified) to the canonical form.
-  const suffix = Object.entries(clarifications)
-    .sort(([a], [b]) => a.localeCompare(b))
-    .map(([k, v]) => `${k}:${v.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9:$.-]/g, '')}`)
-    .join(' ');
-  return suffix ? `${base} ${suffix}` : base;
+  const suffix = clarificationSuffix(clarifications);
+  return suffix ? `${base}${suffix}` : base;
+}
+
+/**
+ * Squashed query form for compound-word research cache matching (e.g. "light bulb" -> "lightbulb").
+ * Tokens are kept in ORIGINAL order with no separator because sorted order would
+ * make "light bulb" squash to "bulblight" and never match "lightbulb".
+ */
+export function squashQuery(query, clarifications) {
+  const tokens = canonicalTokens(query);
+  if (tokens.length === 0) return '';
+  const base = tokens.join('');
+  const suffix = clarificationSuffix(clarifications);
+  return suffix ? `${base}${suffix}` : base;
 }

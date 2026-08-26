@@ -1,6 +1,16 @@
 # Issues
 
-Last updated: 2026-08-15
+Last updated: 2026-08-26
+
+## 2026-08-26: gather stability + query clustering work
+
+Improvements to query canonicalization, search gathering stability, and research run controls.
+
+- [x] MEDIUM: query canonicalization missed plural and compound variants, so "lightbulb"/"lightbulbs"/"light bulb" each forced a fresh paid run (worker/lib/utils.js `singularizeToken` + `squashQuery`, schema/014_squashed_query.sql, worker/lib/db.js `findResearchByCanonicalQuery` now matches either form).
+- [x] MEDIUM: the recall supplement ran only after gathering, so its grounding gate dropped every leader it was meant to recover (worker/engine/recall-gather.js, 8 reserved searches in worker/engine/engine.js `runEngine`).
+- [x] LOW: repeat runs of the same query gathered disjoint corpora, so top ranks moved between runs (worker/engine/opening-book.js deterministic template searches).
+- [x] LOW: no way for a benchmark harness to force a fresh run (internal-only `forceFresh` on POST /api/research, gated by X-Worker-Secret, worker/lib/worker-auth.js).
+- [ ] LOW: the public `fresh` flag on POST /api/research still bypasses the 14-day cluster cache with no authentication (worker/handlers/research.js). It is behind the burst gate, the 20 per hour per IP velocity cap, the free-tier quota, and the monthly budget governor, so it is a spend-amplifier rather than an open drain, but a public caller can still force paid runs for queries that already have a cached report. Decide whether to keep it for the re-run button or restrict it.
 
 ## 2026-08-15: IP-rotating affiliate click fraud, site-wide gate added
 

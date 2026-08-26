@@ -19,7 +19,7 @@
 import {
     generateId, insertResearch, findResearchByCanonicalQuery,
 } from './db.js';
-import { generateSlug, canonicalizeQuery } from './utils.js';
+import { generateSlug, canonicalizeQuery, squashQuery } from './utils.js';
 import { monthKey } from '../pipeline/orchestrator.js';
 
 const DEFAULT_DAILY_MAX = 6;
@@ -140,7 +140,8 @@ export async function runFlywheelTick(env, now = Date.now()) {
     // Clustering first: if a prior completed run already covers this canonical
     // query, attach the keyword to it and skip the spend entirely.
     const canonical = canonicalizeQuery(normalizedQuery);
-    const existing = await findResearchByCanonicalQuery(env.DB, canonical, 14);
+    const squashed = squashQuery(normalizedQuery);
+    const existing = await findResearchByCanonicalQuery(env.DB, canonical, 14, squashed);
     if (existing) {
         await env.DB.prepare(
             `UPDATE keyword_queue SET status = 'done', research_id = ?, done_at = ? WHERE id = ?`
@@ -157,6 +158,7 @@ export async function runFlywheelTick(env, now = Date.now()) {
         slug,
         query: normalizedQuery,
         canonicalQuery: canonical,
+        squashedQuery: squashed,
         tier: 'full',
     });
 

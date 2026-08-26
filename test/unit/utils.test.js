@@ -2,7 +2,7 @@
 import {
   slugify, generateSlug, isValidHttpsUrl, sanitizeUrl, escapeLikeWildcards,
   escapeHtml, escapeXml, displayQuery, isNotModified, timeAgo, parseJsonSafe,
-  publicResearchFilter, canonicalizeQuery,
+  publicResearchFilter, canonicalizeQuery, singularizeToken, squashQuery,
 } from '../../worker/lib/utils.js';
 
 export function runUtilsTests() {
@@ -65,13 +65,64 @@ export function runUtilsTests() {
   ok('publicFilter uses alias', publicResearchFilter('r').includes("r.status = 'complete'"));
   ok('publicFilter thin-page gate', publicResearchFilter('research').includes('research_id = research.id'));
 
-  // canonicalizeQuery: stopwords + filler stripped, sorted/unique
+  // singularizeToken: table-driven tests for exceptions and plural rules
+  const singularizeCases = [
+    ['glass', 'glass'],
+    ['lens', 'lens'],
+    ['series', 'series'],
+    ['chess', 'chess'],
+    ['gps', 'gps'],
+    ['nas', 'nas'],
+    ['ups', 'ups'],
+    ['class', 'class'],
+    ['plus', 'plus'],
+    ['batteries', 'battery'],
+    ['boxes', 'box'],
+    ['watches', 'watch'],
+    ['dishes', 'dish'],
+    ['glasses', 'glass'],
+    ['keyboards', 'keyboard'],
+    ['lenses', 'lens'],
+  ];
+  for (const [input, expected] of singularizeCases) {
+    eq(`singularizeToken: ${input} -> ${expected}`, singularizeToken(input), expected);
+  }
+
+  // squashQuery: basic and empty cases
+  eq('squashQuery light bulb', squashQuery('light bulb'), 'lightbulb');
+  eq('squashQuery empty', squashQuery(''), '');
+
+  // canonicalizeQuery: stopwords + filler stripped, singularized, sorted/unique
   eq('canonical strips stopwords+filler+sorts', canonicalizeQuery('Best Wireless Keyboard under $100 2026', {}), 'keyboard wireless');
   eq('canonical order-insensitive', canonicalizeQuery('budget keyboard best', {}), canonicalizeQuery('best keyboard budget', {}));
   eq('canonical no clarifications', canonicalizeQuery('mesh wifi system', null), 'mesh system wifi');
   eq('canonical with clarifications', canonicalizeQuery('mesh wifi', { budget: '$200' }), 'mesh wifi budget:$200');
   // clarification value that slugifies to empty still yields base + key:
   eq('canonical clarification empty value', canonicalizeQuery('mesh wifi', { x: '!!!' }), 'mesh wifi x:');
+
+  // canonicalizeQuery + squashQuery: compound-word and plural clustering
+  const canonicalClusterCases = [
+    ['lightbulb', 'lightbulb'],
+    ['lightbulbs', 'lightbulb'],
+    ['light bulb', 'bulb light'],
+    ['best light bulbs', 'bulb light'],
+  ];
+  for (const [input, expected] of canonicalClusterCases) {
+    eq(`canonicalizeQuery: ${input} -> ${expected}`, canonicalizeQuery(input), expected);
+  }
+
+  // Two queries collide when canonicalizeQuery matches OR squashQuery matches
+  const queriesCollide = (q1, q2) => {
+    return canonicalizeQuery(q1) === canonicalizeQuery(q2) ||
+           squashQuery(q1) === squashQuery(q2);
+  };
+
+  const trio = ['lightbulb', 'lightbulbs', 'light bulb'];
+  for (let i = 0; i < trio.length; i++) {
+    for (let j = i + 1; j < trio.length; j++) {
+      ok(`collision pair: "${trio[i]}" vs "${trio[j]}"`, queriesCollide(trio[i], trio[j]));
+    }
+  }
 
   return report;
 }
