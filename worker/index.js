@@ -409,6 +409,11 @@ export default {
                 }), null);
             }
 
+            // Serve public/favicon.svg for /favicon.ico requests from crawlers and legacy clients.
+            if (path === '/favicon.ico' && isGetLike) {
+                return serveAsset(request, env, new URL('/favicon.svg', url.origin));
+            }
+
             // Static assets (home, guides, css/js). HTML gets a fresh
             // per-request CSP nonce injected.
             return serveAsset(request, env, null);
