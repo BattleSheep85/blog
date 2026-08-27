@@ -15,7 +15,7 @@ import { generateId, getResearchById } from '../lib/db.js';
 import { generateSlug } from '../lib/utils.js';
 import { screenQuery, rejectionMessage } from '../lib/safety.js';
 import { budgetExhausted } from '../pipeline/orchestrator.js';
-import { checkRateLimit } from '../lib/rate-limit.js';
+import { checkRateLimit, ipRateKey } from '../lib/rate-limit.js';
 import { checkBurstGate } from '../lib/burst-gate.js';
 import { getSessionUser } from '../lib/auth.js';
 import { getQuota, consumeQuota, FREE_VERIFIES } from '../lib/quota.js';
@@ -49,9 +49,9 @@ export async function handleStartVerify(request, env) {
         return jsonResponse({ error: 'Product must contain at least 3 letters or numbers' }, 400);
     }
 
-    // CONTENT SAFETY: same deterministic, fail-closed screen as /api/research —
+    // CONTENT SAFETY: deterministic, fail-closed screen allowing product URLs —
     // never create a row, enqueue, or research a blocked query.
-    const screen = screenQuery(product);
+    const screen = screenQuery(product, { allowUrl: true });
     if (screen.blocked) {
         return jsonResponse({ error: rejectionMessage(screen.reason), rejected: true, reason: screen.reason }, 422);
     }
@@ -71,7 +71,7 @@ export async function handleStartVerify(request, env) {
     // (10/60s) in front of the non-atomic KV hourly window.
     // Applies to both new submissions and resubmits (both enqueue paid work).
     const clientIp = request.headers.get('CF-Connecting-IP') || 'unknown';
-    const rateKey = `verify:${clientIp}`;
+    const rateKey = await ipRateKey('verify', clientIp, env);
     const burst = await checkBurstGate(env.RL_BURST, rateKey);
     const velocity = burst.allowed
         ? await checkRateLimit(env.KV, rateKey, 20, 3600)
@@ -102,7 +102,7 @@ async function handleNewSubmission(env, product, productUrl, sessionUser, client
     // quota — a needs_input resubmit is a continuation of a run already
     // paid for, so it goes through handleResubmit below untouched.
     if (!sessionUser) {
-        const quota = await getQuota(env.KV, 'verify', clientIp);
+        const quota = await getQuota(env.KV, 'verify', clientIp, env);
         if (quota.remaining <= 0) {
             return jsonResponse({
                 error: 'Free limit reached — create a free account to keep verifying products.',
@@ -132,7 +132,7 @@ async function handleNewSubmission(env, product, productUrl, sessionUser, client
     }
 
     if (!sessionUser) {
-        await consumeQuota(env.KV, 'verify', clientIp);
+        await consumeQuota(env.KV, 'verify', clientIp, env);
     }
 
     return jsonResponse({ id, slug, status: 'pending' });
@@ -148,11 +148,11 @@ async function handleResubmit(env, reportId, product, productUrl) {
         return jsonResponse({ error: 'Report not found' }, 404);
     }
 
-    // Guard: only allow the needs_input/failed → pending transition. A row in
-    // pending/processing/complete must not be clobbered by a stray resubmit.
+    // Guard: only allow the needs_input/failed → pending transition on verification rows.
+    // A row in pending/processing/complete or a ranking row must not be clobbered by a stray resubmit.
     const update = await env.DB.prepare(
         `UPDATE research SET subject_url = ?1, status = 'pending'
-           WHERE id = ?2 AND status IN ('needs_input', 'failed')`
+           WHERE id = ?2 AND status IN ('needs_input', 'failed') AND kind = 'verification'`
     ).bind(productUrl, reportId).run();
 
     if ((update.meta?.changes ?? 0) === 0) {

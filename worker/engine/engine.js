@@ -40,11 +40,22 @@ async function emitEvent(onEvent, state, eventType, message, detail) {
 //   - synthModel: the synth model the engine actually ran.
 
 // CF Workers paid plan: 1000 subrequests per invocation.
-// Reserve some for synthesis + event writes. Each search = 1 subrequest.
-// Each LLM call = 1 subrequest. Each Jina fetch = 1 subrequest.
-// Event writes via onEvent don't count as subrequests (KV is a binding, not fetch).
-const SUBREQUEST_BUDGET = 950; // paid plan = 1000, leave headroom for synthesis + retries
-const SUBREQUEST_RESERVE_FOR_SYNTHESIS = 5; // synthesis LLM + possible retries
+// Post-engine persistEngineResult() requires headroom for:
+//   - ASIN resolution: up to 8 products * ~5 provider queries max = 40
+//   - Image resolution: up to 8 products * 1 query max = 8
+//   - IndexNow ping & cache purge = 5
+//   - Subscriber notifications: capped per-invocation batch = 25
+//   - Safety margin / retries: 22
+//   --------------------------------------------------------------
+//   Total POST_ENGINE_RESERVE = 100 subrequests.
+// Synthesis reserve (LLM call + retries) = 5 subrequests.
+// Engine budget = PLATFORM_SUBREQUEST_LIMIT - POST_ENGINE_RESERVE = 900.
+// Maximum subrequests usable in agent loop = SUBREQUEST_BUDGET - SUBREQUEST_RESERVE_FOR_SYNTHESIS = 895.
+// Total worst-case invocation subrequests: 895 (loop) + 5 (synth) + 100 (post-engine) = 1000 <= 1000.
+export const PLATFORM_SUBREQUEST_LIMIT = 1000;
+export const POST_ENGINE_RESERVE = 100;
+export const SUBREQUEST_RESERVE_FOR_SYNTHESIS = 5;
+export const SUBREQUEST_BUDGET = PLATFORM_SUBREQUEST_LIMIT - POST_ENGINE_RESERVE;
 // Searches reserved for the post-planner recall gather phase so recall-driven
 // searches can still run after the planner loop ends.
 export const RECALL_RESERVE_SEARCHES = 8;

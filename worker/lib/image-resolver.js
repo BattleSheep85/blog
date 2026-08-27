@@ -66,8 +66,8 @@ export function pickBestImage(images) {
     const preferred = PREFERRED_HOSTS.some((p) => host === p || host.endsWith(`.${p}`));
     candidates.push({ url, score: (preferred ? 1000 : 0) + Math.min(w * h, 4_000_000) / 10_000 });
   }
-  candidates.sort((a, b) => b.score - a.score);
-  return candidates[0]?.url || '';
+  const sorted = [...candidates].sort((a, b) => b.score - a.score);
+  return sorted[0]?.url || '';
 }
 
 async function searchImage(query, apiKey) {

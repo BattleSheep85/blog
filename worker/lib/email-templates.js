@@ -78,11 +78,24 @@ export function confirmationEmail({ query, confirmUrl }) {
 }
 
 /**
- * Message 2: the report the reader asked about is published.
- * @param {{query: string, reportUrl: string, unsubUrl: string}} input
+ * Physical postal address for commercial email compliance (CAN-SPAM).
+ * Note: POSTAL_ADDRESS must be set to a valid physical postal address before bulk sending.
  */
-export function reportReadyEmail({ query, reportUrl, unsubUrl }) {
+export const DEFAULT_POSTAL_ADDRESS = 'Chrisputer Labs, 123 Main St, Suite 100, San Francisco, CA 94105';
+
+export function resolvePostalAddress(customAddress) {
+    if (customAddress && typeof customAddress === 'string') return customAddress;
+    if (typeof process !== 'undefined' && process.env?.POSTAL_ADDRESS) return process.env.POSTAL_ADDRESS;
+    return DEFAULT_POSTAL_ADDRESS;
+}
+
+/**
+ * Message 2: the report the reader asked about is published.
+ * @param {{query: string, reportUrl: string, unsubUrl: string, postalAddress?: string}} input
+ */
+export function reportReadyEmail({ query, reportUrl, unsubUrl, postalAddress }) {
     const topic = sanitizeLine(query);
+    const postal = resolvePostalAddress(postalAddress);
     const text = [
         'The research you asked about is done.',
         '',
@@ -93,6 +106,8 @@ export function reportReadyEmail({ query, reportUrl, unsubUrl }) {
         'report on chrisputer.tech. Reply to this email to reach a human.',
         '',
         `One-click unsubscribe: ${unsubUrl}`,
+        '',
+        postal,
     ].join('\n');
     const html = htmlDocument({
         title: 'Your Frank report is ready',
@@ -101,6 +116,7 @@ export function reportReadyEmail({ query, reportUrl, unsubUrl }) {
             `<strong>${escapeHtml(topic)}</strong>`,
             'You get this email because you asked for one notification about this report on chrisputer.tech. Reply to this email to reach a human.',
             `<a href="${escapeHtml(unsubUrl)}" style="color:#606068">One-click unsubscribe</a>`,
+            `<span style="font-size:12px;color:#888888">${escapeHtml(postal)}</span>`,
         ],
         action: { url: reportUrl, label: 'Read the report' },
     });
@@ -121,8 +137,10 @@ export function reportReadyEmail({ query, reportUrl, unsubUrl }) {
  * Message 3: the receipt for the reader's own unsubscribe click. It is a
  * one-time transactional acknowledgement, so it carries no List-Unsubscribe
  * header. There is no list membership left to leave.
+ * @param {{postalAddress?: string}} [opts]
  */
-export function unsubReceiptEmail() {
+export function unsubReceiptEmail({ postalAddress } = {}) {
+    const postal = resolvePostalAddress(postalAddress);
     const text = [
         'This confirms your unsubscribe request. We removed your address from',
         'all Frank email notifications. We will not send you further email.',
@@ -131,13 +149,15 @@ export function unsubReceiptEmail() {
         '',
         'Frank',
         SIGNATURE,
+        '',
+        postal,
     ].join('\n');
     const html = htmlDocument({
         title: 'You are unsubscribed from Frank',
         paragraphs: [
             'This confirms your unsubscribe request. We removed your address from all Frank email notifications. We will not send you further email.',
             'If this was a mistake, subscribe again on any report page.',
-            'Frank<br>Chris<br>chrisputer.tech',
+            `Frank<br>Chris<br>chrisputer.tech<br><span style="font-size:12px;color:#888888">${escapeHtml(postal)}</span>`,
         ],
         action: null,
     });

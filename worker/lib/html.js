@@ -37,12 +37,19 @@ export function raw(s) {
   return { __html: s };
 }
 
-// JSON-LD <script> block builder. Escapes '<' so untrusted strings inside the
-// object (queries, summaries, product names) can never break out of the
-// script element with a literal '</script>' — JSON.stringify alone does NOT
-// protect against that.
+// JSON-LD <script> block builder and inline script stringifier. Escapes '<', '>',
+// and '&' so untrusted strings inside the value (queries, summaries, product
+// names) can never break out of the script element with a literal '</script>' —
+// JSON.stringify alone does NOT protect against that.
+export function jsonForScript(value) {
+  return JSON.stringify(value)
+    .replace(/</g, '\\u003c')
+    .replace(/>/g, '\\u003e')
+    .replace(/&/g, '\\u0026');
+}
+
 export function jsonLdScript(obj) {
-  return '<script type="application/ld+json" nonce="__CSP_NONCE__">' + JSON.stringify(obj).replace(/</g, '\\u003c') + '</script>';
+  return '<script type="application/ld+json" nonce="__CSP_NONCE__">' + jsonForScript(obj) + '</script>';
 }
 
 // Google truncates meta descriptions at ~160 chars. Cap at 155 to leave room for ellipsis.
@@ -119,14 +126,20 @@ else if (window.matchMedia('(prefers-color-scheme: light)').matches) { document.
 </script>
 <link rel="stylesheet" href="/css/tailwind.css">
 <link rel="stylesheet" href="/css/app.css">
+<style>
+#drawer-toggle:not(:checked) ~ .drawer-panel { visibility: hidden; pointer-events: none; }
+#drawer-toggle:checked ~ .drawer-panel { visibility: visible; pointer-events: auto; }
+</style>
 ${extra_head}
 </head>
 <body class="bg-bg text-ink-2 font-sans antialiased min-h-screen flex flex-col">
 <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-50 focus:rounded-lg focus:bg-accent-strong focus:px-4 focus:py-2 focus:font-semibold focus:text-white">Skip to main content</a>
 
-<input type="checkbox" id="drawer-toggle" class="peer sr-only" aria-label="Open menu">
+<input type="checkbox" id="drawer-toggle" class="peer sr-only" aria-label="Open menu" aria-controls="drawer-panel" aria-expanded="false">
 <label for="drawer-toggle" class="drawer-overlay fixed inset-0 z-40 bg-ink/50 opacity-0 pointer-events-none peer-checked:opacity-100 peer-checked:pointer-events-auto dark:bg-black/70" aria-hidden="true"></label>
-<aside class="drawer-panel fixed inset-y-0 left-0 z-50 w-[86vw] max-w-xs -translate-x-full border-r border-line bg-surface-1 peer-checked:translate-x-0 sm:w-80" role="dialog" aria-label="Main navigation">
+<!-- Nav drawer: hidden state uses visibility:hidden so keyboard focus and screen readers skip off-screen links when closed.
+     role="dialog" is dropped because the closed drawer is not an active modal dialog. -->
+<aside id="drawer-panel" class="drawer-panel fixed inset-y-0 left-0 z-50 w-[86vw] max-w-xs -translate-x-full border-r border-line bg-surface-1 peer-checked:translate-x-0 sm:w-80" aria-label="Main navigation">
 <div class="flex items-center justify-between border-b border-line px-5 py-4">
 <a href="/" class="font-mono text-base font-bold tracking-tight text-ink">FR<span class="text-accent">ANK</span></a>
 <label for="drawer-toggle" class="cursor-pointer border border-line p-1.5 text-ink-2 hover:border-line-strong hover:text-ink" aria-label="Close menu">
@@ -152,7 +165,7 @@ ${extra_head}
 <header class="sticky top-0 z-40 border-b border-line bg-bg/95 backdrop-blur-md print:hidden">
 <div class="mx-auto flex h-16 max-w-5xl items-center justify-between px-6">
 <div class="flex items-center gap-3">
-<label for="drawer-toggle" class="flex cursor-pointer flex-col gap-1.5 border border-line p-2 hover:border-line-strong peer-focus-visible:outline-none peer-focus-visible:ring-2 peer-focus-visible:ring-accent/60 peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-bg" aria-hidden="true">
+<label for="drawer-toggle" class="flex cursor-pointer flex-col gap-1.5 border border-line p-2 hover:border-line-strong peer-focus-visible:outline-none peer-focus-visible:ring-2 peer-focus-visible:ring-accent/60 peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-bg" aria-label="Open menu">
 <span class="block h-[1.5px] w-5 bg-ink"></span>
 <span class="block h-[1.5px] w-5 bg-ink"></span>
 <span class="block h-[1.5px] w-5 bg-ink"></span>
@@ -167,17 +180,25 @@ ${extra_head}
 // Theme toggle. The pre-paint bootstrap above sets the initial class; here we
 // only wire the button and keep the moon/sun icons in sync.
 var btn=document.getElementById('theme-toggle');
-if(!btn)return;
-function sync(isDark){
-var moon=document.getElementById('icon-moon'),sun=document.getElementById('icon-sun');
-if(moon&&sun){moon.classList.toggle('hidden',!isDark);sun.classList.toggle('hidden',isDark)}
+if(btn){
+  function sync(isDark){
+    var moon=document.getElementById('icon-moon'),sun=document.getElementById('icon-sun');
+    if(moon&&sun){moon.classList.toggle('hidden',!isDark);sun.classList.toggle('hidden',isDark)}
+  }
+  sync(document.documentElement.classList.contains('dark'));
+  btn.addEventListener('click',function(){
+    var isDark=document.documentElement.classList.toggle('dark');
+    localStorage.setItem('theme',isDark?'dark':'light');
+    sync(isDark);
+  });
 }
-sync(document.documentElement.classList.contains('dark'));
-btn.addEventListener('click',function(){
-var isDark=document.documentElement.classList.toggle('dark');
-localStorage.setItem('theme',isDark?'dark':'light');
-sync(isDark);
-});
+// Drawer toggle: keep aria-expanded in sync with the checkbox state
+var dt=document.getElementById('drawer-toggle');
+if(dt){
+  dt.addEventListener('change',function(){
+    dt.setAttribute('aria-expanded',dt.checked?'true':'false');
+  });
+}
 })();
 </script>
 <main id="main" class="flex-1">${body}</main>

@@ -5,6 +5,7 @@ import { env, SELF } from 'cloudflare:test';
 import { beforeAll, describe, it, expect } from 'vitest';
 import { applySchema } from './_schema.js';
 import { generateId, insertResearch } from '../../worker/lib/db.js';
+import { checkRateLimit } from '../../worker/lib/rate-limit.js';
 import { completeResearch, insertProductV2 } from './_helpers.js';
 
 const BASE = 'https://chrisputer.tech';
@@ -118,5 +119,33 @@ describe('index.js routing', () => {
   it('GET /api/research/:id → completed status JSON', async () => {
     const res = await SELF.fetch(`${BASE}/api/research/${completeId}`);
     expect((await res.json()).status).toBe('completed');
+  });
+
+  it('POST /api/classify → 200 with fail-open / classified response', async () => {
+    const res = await SELF.fetch(`${BASE}/api/classify`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'CF-Connecting-IP': '203.0.113.85' },
+      body: JSON.stringify({ query: 'best mechanical keyboard' }),
+    });
+    expect(res.status).toBe(200);
+    const data = await res.json();
+    expect(data.accept).toBe(true);
+    expect(Array.isArray(data.clarifying_questions)).toBe(true);
+  });
+
+  it('POST /api/classify when throttled (>60/hr) → fail-open 200 (not 429)', async () => {
+    const ip = '203.0.113.86';
+    for (let i = 0; i < 60; i++) {
+      await checkRateLimit(env.KV, `classify:${ip}`, 60, 3600);
+    }
+    const res = await SELF.fetch(`${BASE}/api/classify`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'CF-Connecting-IP': ip },
+      body: JSON.stringify({ query: 'best budget camera' }),
+    });
+    expect(res.status).toBe(200);
+    const data = await res.json();
+    expect(data.accept).toBe(true);
+    expect(Array.isArray(data.clarifying_questions)).toBe(true);
   });
 });

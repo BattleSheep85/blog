@@ -3,6 +3,7 @@ import { rssSearch } from '../lib/rss.js';
 import { fetchPageContent } from '../lib/jina.js';
 import { scoreSource, extractAmazonProductUrls } from '../lib/credibility.js';
 import { fetchYoutubeDescription, isYouTube } from '../lib/youtube.js';
+import { isFetchableUrl } from '../lib/url-guard.js';
 
 // ─── Provider primitives (Serper + HN Algolia) ───────────────────────────────
 // NOTE: Do NOT evaluate `new Date()` at module load. Cloudflare Workers freeze
@@ -18,8 +19,8 @@ const TIMEOUT_MS = 8000;
 // ─────────────────────────────────────────────────────────────────────────────
 
 async function serperSearch(query, apiKey, opts = {}) {
-  // No key configured → signal unavailability so the caller can fall back to a
-  // free provider (DuckDuckGo). This is the key-less environment path: Serper
+  // No key configured: signal unavailability so the caller can fall back to
+  // the fallback chain. This is the key-less environment path: Serper
   // would 403 anyway, so we skip the wasted subrequest. Returning [] here would
   // be indistinguishable from "0 hits" and would strand the agent.
   if (!apiKey) return null;
@@ -46,7 +47,7 @@ async function serperSearch(query, apiKey, opts = {}) {
       const text = await response.text().catch(() => '');
       console.log(`[serper] HTTP ${response.status} q="${query}" body=${text.slice(0, 200)}`);
       // Auth/quota failures (401/403/429) mean the provider is unusable for this
-      // run → signal unavailability so the caller falls back to DuckDuckGo. Other
+      // run: signal unavailability so the caller falls back through the fallback chain. Other
       // non-ok statuses are treated as a genuine empty result.
       if (response.status === 401 || response.status === 403 || response.status === 429) return null;
       return [];
@@ -507,14 +508,11 @@ async function executeSearch(
   // recency-sensitive (tech, apps, current media). Evergreen subjects
   // (restaurants, hiking, classical works) drop the filter so we don't lose
   // still-valid older coverage. News always filters by year regardless.
-  const tr = recencySensitive ? 'y' : undefined;
   // serperSearch returns null when the provider is unavailable (no key, or
   // auth/quota rejection). The fallback chain is SearXNG (self-hosted, free, no quota,
-  // reachable on the blackbox engine host) → Brave (CF-reachable) → Tavily (LLM-tuned,
-  // keyed) → DuckDuckGo (HTML scrape, usually blocked — last resort). SearXNG leads the
-  // fallback because it's free and rate-limit-free; on the CF edge it's unreachable
-  // (LAN host) so it returns null and the chain degrades. Each link returns null only
-  // when genuinely unavailable, so we keep descending until a real provider answers.
+  // reachable on the blackbox engine host) -> Brave (CF-reachable) -> Tavily (LLM-tuned,
+  // keyed). DuckDuckGo is CAPTCHA-blocked from datacenter IPs and returns empty results,
+  // so it is removed from active fallbacks.
   const webFallback = async (q) => {
     const sx = searxngUrl ? await searxngSearch(q, searxngUrl, { timeRange: tr }) : null;
     if (sx !== null) return sx;
@@ -522,7 +520,7 @@ async function executeSearch(
     if (brave !== null) return brave;
     const tavily = tavilyApiKey ? await tavilySearch(q, tavilyApiKey, { timeRange: tr }) : null;
     if (tavily !== null) return tavily;
-    return await duckduckgoSearch(q);
+    return [];
   };
   switch (provider) {
     case 'web': {
@@ -539,7 +537,7 @@ async function executeSearch(
     }
     case 'video': {
       // Serper /videos surfaces YouTube review videos. If unavailable, fall back to a
-      // youtube-scoped web search (Brave → DDG) so the agent still gets video-adjacent results.
+      // youtube-scoped web search (SearXNG/Brave/Tavily) so the agent still gets video-adjacent results.
       const vids = await serperVideos(query, serperApiKey);
       results = vids === null ? await webFallback(`${query} review youtube`) : vids;
       subs = 1;
@@ -555,7 +553,7 @@ async function executeSearch(
       break;
     case 'tavily': {
       // Tavily as an explicitly-selectable provider (LLM-optimized snippets). Falls back
-      // through the standard web chain (SearXNG → Brave → DDG) when Tavily is unavailable.
+      // through the standard web chain (SearXNG / Brave) when Tavily is unavailable.
       const tav = tavilyApiKey ? await tavilySearch(query, tavilyApiKey, { timeRange: tr }) : null;
       results = tav === null ? await webFallback(query) : tav;
       subs = 1;
@@ -563,7 +561,7 @@ async function executeSearch(
     }
     case 'searxng': {
       // Self-hosted metasearch (free, broad). Falls back through the web chain
-      // (Brave → Tavily → DDG) when the SearXNG instance is unreachable.
+      // (Brave / Tavily) when the SearXNG instance is unreachable.
       const sx = searxngUrl ? await searxngSearch(query, searxngUrl, { sourceLabel: 'web', timeRange: tr }) : null;
       if (sx !== null) { results = sx; subs = 1; break; }
       const serp = await serperSearch(query, serperApiKey, { sourceLabel: 'web', timeRange: tr });
@@ -651,7 +649,7 @@ async function executeReadPage(
   }
 
   const url = typeof args.url === 'string' ? args.url : '';
-  if (!url || !url.startsWith('http')) return ['Error: valid URL is required', 0];
+  if (!url || !isFetchableUrl(url)) return ['Error: valid public HTTPS URL is required', 0];
 
   state.fetchCount++;
   const content = await fetchPageContent(url, env?.JINA_API_KEY);

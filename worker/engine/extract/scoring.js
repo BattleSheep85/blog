@@ -228,7 +228,7 @@ export function analyzeProduct(c, sources, otherMatchers = [], seen = new Set())
 }
 
 // rank/dedup the scored clauses into the final text list
-export const pick = (arr, sign) => arr.sort((a, b) => sign * (b.score - a.score) || b.cred - a.cred)
+export const pick = (arr, sign) => (arr ? [...arr] : []).sort((a, b) => sign * (b.score - a.score) || b.cred - a.cred)
   .filter((x, i, a) => a.findIndex((y) => y.text === x.text) === i).slice(0, 4).map((x) => x.text);
 
 // ── rating (deterministic, auditable) ──────────────────────────────────────────

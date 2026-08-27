@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/">
   <ShortName>Frank</ShortName>
-  <Description>Honest product research that filters out fake reviews and affiliate bait.</Description>
+  <Description>Honest product research that filters out affiliate bait and marketing-only sources.</Description>
   <InputEncoding>UTF-8</InputEncoding>
   <Image width="64" height="64" type="image/svg+xml">https://chrisputer.tech/favicon.svg</Image>
   <Url type="text/html" method="get" template="https://chrisputer.tech/research/new?q={searchTerms}"/>

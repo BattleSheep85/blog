@@ -14,7 +14,7 @@
  * research runs (503 when the month is spent).
  */
 
-import { checkRateLimit } from '../lib/rate-limit.js';
+import { checkRateLimit, ipRateKey } from '../lib/rate-limit.js';
 import { checkBurstGate } from '../lib/burst-gate.js';
 import { getResearchBySlug, getProductsByResearchId } from '../lib/db.js';
 import { parseJsonSafe, displayQuery } from '../lib/utils.js';
@@ -148,7 +148,7 @@ export async function handleChat(request, env) {
     // Atomic burst gate (10/60s per IP) in front of the non-atomic KV hourly
     // window, so a concurrent flood cannot slip past the 20/hr ceiling.
     const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
-    const rateKey = `chat:${ip}`;
+    const rateKey = await ipRateKey('chat', ip, env);
     const burst = await checkBurstGate(env.RL_BURST, rateKey);
     const rate = burst.allowed
         ? await checkRateLimit(env.KV, rateKey, 20, 3600)

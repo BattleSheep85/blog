@@ -26,10 +26,8 @@ export const ENGINE_CONFIG = {
   synthModel: 'minimax/minimax-m3',
   plannerModel: 'google/gemini-2.5-flash',
   synthReasoning: undefined,
-  stanceModel: 'minimax/minimax-m3', // verify stance judge — won the independent-gold stance bench (87.5% acc / 71% action-precision vs the former gpt-5.4-mini incumbent 58%/30%; benchmarks/stance-gold-bench.mjs). extractClaims now has its own model below (extractModel); synth uses synthModel.
-  stanceReasoning: undefined,
-  extractModel: 'anthropic/claude-haiku-4.5', // extractClaims — no-OpenAI pick; only non-OpenAI model matching the incumbent on the extract-gold bench (7.60 quality, 10/10, 0 hard-fails). minimax ruled out here (2/10 empty outputs).
-  extractReasoning: undefined,
+  stanceModel: 'minimax/minimax-m3', // verify stance judge: won the independent-gold stance bench. extractClaims now has its own model below (extractModel); synth uses synthModel.
+  extractModel: 'anthropic/claude-haiku-4.5', // extractClaims: no-OpenAI pick; only non-OpenAI model matching the incumbent on the extract-gold bench.
   synthMaxTokens: 16000,
   // ── speed knobs (OpenRouter platform levers) ──────────────────────────────
   // The agent loop is tool-ROUTING, not deep reasoning — cap thinking tokens per
@@ -63,11 +61,9 @@ export const ENGINE_CONFIG = {
   plannerHardMs: 45_000,
   maxConcurrency: 6, // parallel sub-researchers on the CF queue consumer (6 = validated memory-safe; bumping to 12 gave no latency gain — bottleneck is the agent loop + synth, not gather)
   reportSections: ['summary', 'products', 'comparison', 'categories', 'pitfalls', 'buyerGuide', 'methodology'],
-  requireTurnstile: false,
-  requireSubscription: false,
 };
 
 // Single source of truth for the user-facing research wait-time estimate.
 // Any copy that quotes how long a run takes should import this constant
 // rather than hard-coding a duration (keeps the estimate consistent site-wide).
-export const RESEARCH_ETA = '1–2 minutes';
+export const RESEARCH_ETA = '1-2 minutes';

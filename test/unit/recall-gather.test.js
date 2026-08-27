@@ -24,7 +24,17 @@ export async function runRecallGatherTests() {
     ok('match in content', nameEvidenced('Immich', sources));
     ok('case-insensitive match in title', nameEvidenced('photoprism', sources));
     ok('case-insensitive match in content', nameEvidenced('iMMiCh', sources));
-    ok('not evidenced returns false', !nameEvidenced('Nextcloud Memories', sources));
+    // word boundary checks (prevent substring false positives like "Arc" in "March")
+    const marchSources = [{ title: 'Top Photo Apps of March 2026', content: 'Updated in March for spring.' }];
+    ok('"Arc" inside "March" does NOT match', !nameEvidenced('Arc', marchSources));
+    const arcSources = [{ title: 'Top Photo Apps with Arc Browser', content: 'Arc is a great browser.' }];
+    ok('"Arc" as standalone word DOES match', nameEvidenced('Arc', arcSources));
+
+    // multi-word phrase boundary checks
+    const multiSources = [{ title: 'Sony Review', content: 'We compared Beta Max and VHS.' }];
+    ok('multi-word phrase "Beta Max" matches', nameEvidenced('Beta Max', multiSources));
+    const subPhraseSources = [{ title: 'Sony Review', content: 'Beta Maximum throughput tested.' }];
+    ok('multi-word phrase "Beta Max" does NOT match "Beta Maximum"', !nameEvidenced('Beta Max', subPhraseSources));
 
     // null-safety and edge cases
     ok('null name returns false', !nameEvidenced(null, sources));

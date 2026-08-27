@@ -49,20 +49,20 @@ describe('jina.js fetchPageContent', () => {
   it('returns Jina markdown when long enough', async () => {
     const md = '# Title\n' + 'content '.repeat(50);
     vi.stubGlobal('fetch', route(() => new Response(md, { status: 200 }), () => new Response('', { status: 500 })));
-    expect(await fetchPageContent('https://x/p')).toContain('content');
+    expect(await fetchPageContent('https://example.com/p')).toContain('content');
   });
 
   it('falls back to direct extraction when Jina is non-OK', async () => {
     const html = '<html><body><nav>menu</nav><article><h1>Hi</h1><p>Real body text here.</p></article><footer>f</footer></body></html>';
     vi.stubGlobal('fetch', route(() => new Response('', { status: 429 }), () => new Response(html, { status: 200 })));
-    const text = await fetchPageContent('https://x/p');
+    const text = await fetchPageContent('https://example.com/p');
     expect(text).toContain('Real body text here');
     expect(text).not.toContain('menu'); // nav stripped
   });
 
   it('returns "" when both Jina and direct fail', async () => {
     vi.stubGlobal('fetch', vi.fn(async () => { throw new Error('down'); }));
-    expect(await fetchPageContent('https://x/p')).toBe('');
+    expect(await fetchPageContent('https://example.com/p')).toBe('');
   });
 });
 

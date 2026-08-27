@@ -89,6 +89,28 @@ ${questions.map(renderQuestion).join('')}
       });
     });
   });
+
+  // Double-submit guard: disable submit buttons and show busy state on first submit.
+  var form = document.getElementById('clarify-form');
+  if (form) {
+    var submitted = false;
+    form.addEventListener('submit', function(e){
+      if (submitted) {
+        e.preventDefault();
+        return;
+      }
+      submitted = true;
+      setTimeout(function(){
+        form.querySelectorAll('button[type="submit"]').forEach(function(btn){
+          btn.disabled = true;
+          btn.classList.add('opacity-75', 'cursor-not-allowed');
+          if (!btn.value) {
+            btn.textContent = 'Starting research...';
+          }
+        });
+      }, 0);
+    });
+  }
 })();
 </script>`;
 

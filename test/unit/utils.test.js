@@ -3,6 +3,7 @@ import {
   slugify, generateSlug, isValidHttpsUrl, sanitizeUrl, escapeLikeWildcards,
   escapeHtml, escapeXml, displayQuery, isNotModified, timeAgo, parseJsonSafe,
   publicResearchFilter, canonicalizeQuery, singularizeToken, squashQuery,
+  safeUserFacingError,
 } from '../../worker/lib/utils.js';
 
 export function runUtilsTests() {
@@ -60,6 +61,22 @@ export function runUtilsTests() {
   eq('json falsy → fallback', parseJsonSafe('', 'fb'), 'fb');
   eq('json valid', parseJsonSafe('{"a":1}', null), { a: 1 });
   eq('json invalid → fallback', parseJsonSafe('{bad', 'fb'), 'fb');
+
+  // safeUserFacingError
+  eq('safeUserFacingError clean passes through', safeUserFacingError('No reliable products found for this query.'), 'No reliable products found for this query.');
+  eq('safeUserFacingError trims whitespace', safeUserFacingError('  Clean error message  '), 'Clean error message');
+  eq('safeUserFacingError default fallback on empty', safeUserFacingError(''), 'Research failed');
+  eq('safeUserFacingError custom fallback on empty', safeUserFacingError(null, 'Custom fallback'), 'Custom fallback');
+  eq('safeUserFacingError custom fallback on undefined', safeUserFacingError(undefined, 'Custom fallback'), 'Custom fallback');
+  eq('safeUserFacingError over-long replaced', safeUserFacingError('a'.repeat(161)), 'Research failed');
+  eq('safeUserFacingError URL replaced', safeUserFacingError('Failed at https://api.openrouter.ai/v1'), 'Research failed');
+  eq('safeUserFacingError http URL replaced', safeUserFacingError('Failed at http://example.com/err'), 'Research failed');
+  eq('safeUserFacingError braces replaced', safeUserFacingError('{"error":"bad"}'), 'Research failed');
+  eq('safeUserFacingError api key replaced', safeUserFacingError('Invalid API key provided'), 'Research failed');
+  eq('safeUserFacingError 4xx status replaced', safeUserFacingError('Upstream returned 403 Forbidden'), 'Research failed');
+  eq('safeUserFacingError 5xx status replaced', safeUserFacingError('Server returned 500 internal error'), 'Research failed');
+  eq('safeUserFacingError openrouter token timeout replaced', safeUserFacingError('openrouter timeout token stack trace'), 'Research failed');
+  eq('safeUserFacingError prompt injection replaced', safeUserFacingError('Detected prompt injection attempt'), 'Research failed');
 
   // publicResearchFilter (string builder; just verify alias substitution)
   ok('publicFilter uses alias', publicResearchFilter('r').includes("r.status = 'complete'"));

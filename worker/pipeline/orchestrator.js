@@ -27,6 +27,7 @@ import { sanitizeUrl, slugify, nowEpoch, parseJsonSafe } from '../lib/utils.js';
 import { submitToIndexNow } from '../lib/indexnow.js';
 import { notifySubscribersForResearch } from '../lib/notify.js';
 import { screenQuery, rejectionMessage, classifierRejectToReason } from '../lib/safety.js';
+import { purgePageCache } from '../routes/pages.js';
 
 // Monthly spend ceiling default; overridden by env.MONTHLY_BUDGET_USD.
 const DEFAULT_MONTHLY_BUDGET_USD = 60;
@@ -252,6 +253,7 @@ export async function persistEngineResult(env, reportId, query, facets, topicalC
     await setFinalReport(env.KV, reportId, resultJson);
     await report(`Research complete: ${result.products.length} products ranked.`);
     if (slug) {
+        await purgePageCache(env, slug);
         const urls = [`https://chrisputer.tech/research/${slug}`];
         // Also ping the category hub so a new/changed guide gets its /best/ hub
         // recrawled (where topical authority + internal links live). slugify
@@ -289,14 +291,14 @@ export async function claimNextPendingJob(env) {
     // are claimed/processed exclusively by the queue consumer's
     // processVerificationMessage → runVerificationPipeline path.
     const claimed = await env.DB.prepare(
-        `UPDATE research SET status = 'processing'
+        `UPDATE research SET status = 'processing', processing_started_at = ?1
          WHERE id = (
              SELECT id FROM research
              WHERE status = 'pending' AND (kind IS NULL OR kind != 'verification')
              ORDER BY created_at ASC LIMIT 1
          )
          RETURNING id, query, slug, tier, facets, topical_category, canonical_query, clarifications`
-    ).first();
+    ).bind(nowEpoch()).first();
     if (!claimed) return null;
 
     const cls = await ensureClassified(env, claimed.id, claimed.query, claimed, null);

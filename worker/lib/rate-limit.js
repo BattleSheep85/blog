@@ -1,20 +1,35 @@
 /**
  * KV-based sliding window rate limiter.
- * Tracks request timestamps per IP, enforces max requests per window.
+ * Tracks request timestamps per key (e.g. salted IP hash), enforces max requests per window.
  */
+
+import { hashIp } from './ip-hash.js';
+
+/**
+ * Builds a rate-limit key with a salted IP hash, avoiding raw IP storage.
+ */
+export async function ipRateKey(prefix, ip, env) {
+    try {
+        const hashed = await hashIp(ip, env);
+        return `${prefix}:${hashed}`;
+    } catch (err) {
+        console.log('[rate-limit] IP hashing failed (missing IP_HASH_SALT / WORKER_SECRET), falling back to raw IP');
+        return `${prefix}:${ip}`;
+    }
+}
 
 /**
  * Check if a request is rate-limited.
  * Returns { allowed: boolean, remaining: number, resetAt: number }
  */
-export async function checkRateLimit(kv, ip, maxRequests, windowSeconds) {
-    const key = `ratelimit:${ip}`;
+export async function checkRateLimit(kv, key, maxRequests, windowSeconds) {
+    const storageKey = `ratelimit:${key}`;
     const now = Date.now();
     const windowMs = windowSeconds * 1000;
     const windowStart = now - windowMs;
 
     // Get existing timestamps
-    const stored = await kv.get(key, 'json');
+    const stored = await kv.get(storageKey, 'json');
     const timestamps = (stored || []).filter(ts => ts > windowStart);
 
     if (timestamps.length >= maxRequests) {
@@ -29,7 +44,7 @@ export async function checkRateLimit(kv, ip, maxRequests, windowSeconds) {
 
     // Add current timestamp and store
     const updated = [...timestamps, now];
-    await kv.put(key, JSON.stringify(updated), { expirationTtl: windowSeconds + 60 });
+    await kv.put(storageKey, JSON.stringify(updated), { expirationTtl: windowSeconds + 60 });
 
     return {
         allowed: true,

@@ -98,6 +98,19 @@ export function parseJsonSafe(json, fallback) {
   }
 }
 
+const UNSAFE_ERROR_PATTERN = /[{}]|https?:|\b[45]\d\d\b|openrouter|api key|token|timeout|stack|undefined|null|prompt injection/i;
+
+/**
+ * Filter out raw provider/HTTP/stack/JSON error messages from user-facing surfaces.
+ * Returns the raw string if it is short and clean; otherwise returns the fallback.
+ */
+export function safeUserFacingError(raw, fallback = 'Research failed') {
+  const e = String(raw ?? '').trim();
+  if (!e || e.length > 160) return fallback;
+  if (UNSAFE_ERROR_PATTERN.test(e)) return fallback;
+  return e;
+}
+
 // Canonical query form for clustering. Two queries that normalize to the same
 // string are treated as equivalent — we serve prior research instead of running
 // a fresh pipeline. Conservative on purpose: false positives (clustering different

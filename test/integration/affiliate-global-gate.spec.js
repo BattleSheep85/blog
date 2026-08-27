@@ -18,7 +18,7 @@ import { beforeAll, beforeEach, describe, it, expect } from 'vitest';
 import { applySchema } from './_schema.js';
 import { handleAffiliateClick } from '../../worker/handlers/affiliate.js';
 import { generateId, insertResearch } from '../../worker/lib/db.js';
-import { checkRateLimit } from '../../worker/lib/rate-limit.js';
+import { checkRateLimit, ipRateKey } from '../../worker/lib/rate-limit.js';
 import { AFFILIATE_GLOBAL_LIMIT, AFFILIATE_GLOBAL_KEY } from '../../worker/lib/affiliate-gate.js';
 
 const PER_IP_CLICK_LIMIT = 30; // mirrors worker/handlers/affiliate.js
@@ -106,7 +106,7 @@ describe('rotating-IP evasion (incident 2026-08-14/15)', () => {
     // And no single address came anywhere near its own 30/hour cap: each one
     // sent exactly one click, so all 20 stay allowed per-IP.
     for (const ip of ips) {
-      const perIp = await checkRateLimit(env.KV, `go:${ip}`, PER_IP_CLICK_LIMIT, 3600);
+      const perIp = await checkRateLimit(env.KV, await ipRateKey('go', ip, env), PER_IP_CLICK_LIMIT, 3600);
       expect(perIp.allowed).toBe(true);
       expect(perIp.remaining).toBeGreaterThanOrEqual(PER_IP_CLICK_LIMIT - 3);
     }

@@ -181,8 +181,8 @@ export function buildResearchSeo({
   entry, products, affiliateIds, pageUrl, displayTitle, lastModifiedTs, hasBuyersGuide, buyersGuide, isService,
 }) {
   const isoDate = new Date(entry.created_at * 1000).toISOString();
-  // priceValidUntil: 30 days from page's last completion (Google Product rich-snippet requirement)
-  const priceValidUntil = new Date((lastModifiedTs + 30 * 86400) * 1000).toISOString().split('T')[0];
+  // priceValidUntil: rolling 30 days from render time (Google Product rich-snippet requirement)
+  const priceValidUntil = new Date(Date.now() + 30 * 86400 * 1000).toISOString().split('T')[0];
   const productNodes = buildProductNodes(products, affiliateIds, priceValidUntil, isoDate);
   const isoModified = new Date(lastModifiedTs * 1000).toISOString();
   const keywordTerms = entry.query.split(/\s+/).filter((w) => w.length > 2 && !/^(the|and|for|with|from|best|top|good|great)$/i.test(w)).slice(0, 8);

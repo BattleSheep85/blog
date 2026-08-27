@@ -32,6 +32,19 @@ describe('classifyQuery', () => {
     expect(spy).toHaveBeenCalledTimes(1); // 2nd call hit the cache
   });
 
+  it('serves from KV cache when canonicalizeQuery produces identical keys for equivalent queries', async () => {
+    const spy = vi.fn(async () => orResponse({ accept: true, facets: { is_buyable: true }, clarifying_questions: [{ key: 'budget', question: 'Budget?', suggested_answers: ['<$100'] }] }));
+    vi.stubGlobal('fetch', spy);
+    const q1 = 'best wireless earbuds';
+    const q2 = 'wireless earbuds best';
+    const { canonicalizeQuery } = await import('../../worker/lib/utils.js');
+    const r1 = await classifyQuery(env, q1, canonicalizeQuery(q1));
+    const r2 = await classifyQuery(env, q2, canonicalizeQuery(q2));
+    expect(spy).toHaveBeenCalledTimes(1); // 2nd query hit cache
+    expect(r1.accept).toBe(true);
+    expect(r2.accept).toBe(true);
+  });
+
   it('fail-opens (accept) on a non-OK response', async () => {
     vi.stubGlobal('fetch', vi.fn(async () => new Response('err', { status: 500 })));
     const r = await classifyQuery(env, 'x', 'canon-500');

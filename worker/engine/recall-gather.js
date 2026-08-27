@@ -3,13 +3,18 @@ import { proposeMissingLeaders } from './extract/recall-supplement.js';
 import { runSearch } from './tools.js';
 import { harvestCandidates } from './extract/candidates.js';
 
+function escapeRegex(s) {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
 export function nameEvidenced(name, sources) {
-  const target = String(name || '').toLowerCase().trim();
+  const target = String(name || '').trim();
   if (!target || !Array.isArray(sources)) return false;
+  const pattern = new RegExp(`(^|[^a-z0-9])${escapeRegex(target)}([^a-z0-9]|$)`, 'i');
   return sources.some((s) => {
-    const title = String(s?.title || '').toLowerCase();
-    const content = String(s?.content || '').toLowerCase();
-    return title.includes(target) || content.includes(target);
+    const title = String(s?.title || '');
+    const content = String(s?.content || '');
+    return pattern.test(title) || pattern.test(content);
   });
 }
 

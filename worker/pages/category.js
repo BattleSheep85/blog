@@ -14,7 +14,7 @@
 
 import { layout, jsonLdScript } from '../lib/html.js';
 import {
-    timeAgo, escapeHtml, displayQuery, slugify, publicResearchFilter,
+    timeAgo, escapeHtml, displayQuery, slugify, publicResearchFilter, escapeLikeWildcards,
 } from '../lib/utils.js';
 import { listableRowsSql, PRODUCT_COUNT_SELECT } from '../lib/listable.js';
 
@@ -36,16 +36,16 @@ export async function renderCategoryHub(category, env) {
     const wantSlug = slugify(String(category || ''));
     if (!wantSlug) return null;
 
-    // Pull one row per canonical cluster (newest), only public/complete rows
-    // with a non-null category, then filter to the requested slug in JS — the
-    // slugify rules live in one place (utils.js) and we avoid reimplementing
-    // them in SQL. The candidate set is small (categories, not the full table).
+    // Filter by category in SQL with a parameterized query and LIMIT, then
+    // refine with JS slugify so slug normalization matches exactly.
+    const searchPattern = `%${escapeLikeWildcards(wantSlug.replace(/-/g, ' ').slice(0, 40))}%`;
     const stmt = env.DB.prepare(
         listableRowsSql({
             select: `*, ${PRODUCT_COUNT_SELECT}`,
-            extraWhere: `r.category IS NOT NULL AND r.category <> ''`,
+            extraWhere: `r.category IS NOT NULL AND r.category <> '' AND (LOWER(r.category) = ?1 OR LOWER(REPLACE(r.category, ' ', '-')) = ?1 OR r.category LIKE ?2 ESCAPE '\\')`,
+            tail: 'LIMIT ?3',
         })
-    );
+    ).bind(wantSlug, searchPattern, 100);
     const allRows = (await stmt.all()).results ?? [];
     const rows = allRows.filter((r) => slugify(r.category) === wantSlug);
 

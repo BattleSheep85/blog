@@ -5,7 +5,8 @@
 
 import { logAffiliateClick, logGuideClick } from '../lib/db.js';
 import { buildAmazonSearchFallback } from '../lib/affiliate-links.js';
-import { checkRateLimit } from '../lib/rate-limit.js';
+import { checkRateLimit, ipRateKey } from '../lib/rate-limit.js';
+import { hashIp } from '../lib/ip-hash.js';
 import { isAffiliateFloodActive } from '../lib/affiliate-gate.js';
 
 // Bot/scraper defense for the affiliate redirect surface. /api/ is disallowed
@@ -34,8 +35,13 @@ async function isSuspiciousRequest(request, env, ip) {
     // below, and it never replaces it.
     if (await isAffiliateFloodActive(env)) return true;
     if (!env.KV) return false;
-    const rate = await checkRateLimit(env.KV, `go:${ip}`, PER_IP_CLICK_LIMIT, PER_IP_WINDOW_SECONDS);
-    return !rate.allowed;
+    try {
+        const rateKey = await ipRateKey('go', ip, env);
+        const rate = await checkRateLimit(env.KV, rateKey, PER_IP_CLICK_LIMIT, PER_IP_WINDOW_SECONDS);
+        return !rate.allowed;
+    } catch {
+        return false;
+    }
 }
 
 // Strip Amazon's tag/ascsubtag query params so a flagged request still reaches
@@ -94,18 +100,23 @@ function isKnownRetailerUrl(url) {
     } catch { return false; }
 }
 
-export async function handleAffiliateClick(productId, request, env) {
+export async function handleAffiliateClick(productId, request, env, ctx) {
     const reportId = (new URL(request.url).searchParams.get('ref') || '').slice(0, 64);
     const network = (new URL(request.url).searchParams.get('network') || 'amazon').slice(0, 32);
     const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
 
-    // Hash the IP for privacy (don't store raw IPs)
-    const ipHash = await hashString(ip, env);
+    // Hash the IP for privacy (don't store raw IPs). Failures to hash must never block redirect.
+    let ipHash = null;
+    try {
+        ipHash = await hashString(ip, env);
+    } catch (err) {
+        console.error('Click IP hashing failed:', err instanceof Error ? err.message : String(err));
+    }
     const suspicious = await isSuspiciousRequest(request, env, ip);
 
     // Log the click asynchronously (don't block the redirect). Bot/rate-limited
-    // hits are excluded so affiliate_clicks reflects real visitors.
-    const logPromise = suspicious
+    // hits or unhashed requests are excluded so affiliate_clicks reflects real visitors.
+    const logPromise = (suspicious || !ipHash)
         ? Promise.resolve()
         : logAffiliateClick(env.DB, {
             productId,
@@ -113,6 +124,12 @@ export async function handleAffiliateClick(productId, request, env) {
             network,
             ipHash,
         }).catch(err => console.error('Click logging failed:', err));
+
+    if (ctx && typeof ctx.waitUntil === 'function') {
+        ctx.waitUntil(logPromise);
+    } else {
+        await logPromise;
+    }
 
     // Look up the product's affiliate link (v2 schema: single affiliate_url,
     // with product_url as the untagged fallback). name/brand let us rebuild a
@@ -124,34 +141,35 @@ export async function handleAffiliateClick(productId, request, env) {
     ).bind(productId).first();
 
     const amazonTag = env.AMAZON_ASSOCIATE_TAG || env.AMAZON_AFFILIATE_TAG || '';
-    // Default: tagged Amazon homepage. Still earns commission on anything bought
-    // in the next 24h, and is never an open redirect (host is hard-coded).
-    let redirectUrl = amazonTag
-        ? `https://www.amazon.com/?tag=${encodeURIComponent(amazonTag)}`
-        : 'https://www.amazon.com/';
-
     const affiliateUrl = product?.affiliate_url || '';
+
+    let redirectUrl;
     if (isAmazonProductUrl(affiliateUrl)) {
         // (a) Real tagged Amazon /dp/ link from Phase 2 — use it directly.
         redirectUrl = affiliateUrl;
     } else if (isKnownRetailerUrl(affiliateUrl) && !/^https?:\/\/(www\.)?amazon\.com\//i.test(affiliateUrl)) {
-        // A valid non-Amazon retailer affiliate link (Walmart, Best Buy, ...).
+        // (b) A valid non-Amazon retailer affiliate link (Walmart, Best Buy, ...).
         // Honor it rather than fabricating an Amazon search for that product.
         redirectUrl = affiliateUrl;
+    } else if (product?.name && product.name.trim().length >= 3) {
+        // (c) No usable affiliate URL: redirect to an Amazon SEARCH for the product name
+        // so the user lands directly on results for the product they clicked.
+        const brand = (product.brand || '').trim();
+        const name = product.name.trim();
+        const query = brand && !name.toLowerCase().startsWith(brand.toLowerCase())
+            ? `${brand} ${name}`
+            : name;
+        const tagSuffix = amazonTag ? `&tag=${encodeURIComponent(amazonTag)}` : '';
+        redirectUrl = `https://www.amazon.com/s?k=${encodeURIComponent(query)}${tagSuffix}`;
+    } else if (product?.product_url && isKnownRetailerUrl(product.product_url)) {
+        // (d) Last resort for short-name products: a known retailer product_url
+        // beats dumping the user on the Amazon homepage. Gated by retailer allowlist.
+        redirectUrl = product.product_url;
     } else {
-        // (b) No usable affiliate URL (or only an Amazon search-results URL) —
-        // rebuild a tagged Amazon search from the product name. Reuse the shared
-        // builder; never duplicate it.
-        const fallback = buildAmazonSearchFallback(product?.name, product?.brand || '', amazonTag);
-        if (fallback) {
-            redirectUrl = fallback;
-        } else if (product?.product_url && isKnownRetailerUrl(product.product_url)) {
-            // Last resort: an untagged but valid KNOWN-RETAILER product page beats
-            // dumping the user on the Amazon homepage. Gated by the retailer host
-            // allowlist so a row written outside the pipeline can't turn this into
-            // an open redirect to an arbitrary https host.
-            redirectUrl = product.product_url;
-        }
+        // (e) Fallback for unknown product or missing name: tagged Amazon homepage
+        redirectUrl = amazonTag
+            ? `https://www.amazon.com/?tag=${encodeURIComponent(amazonTag)}`
+            : 'https://www.amazon.com/';
     }
 
     if (suspicious) {
@@ -163,9 +181,6 @@ export async function handleAffiliateClick(productId, request, env) {
         // just which gets clicks). No-op for non-Amazon redirects.
         redirectUrl = withAmazonSubtag(redirectUrl, product?.research_slug ? `tr-${product.research_slug}` : 'tr-direct');
     }
-
-    // Wait for logging before redirecting
-    await logPromise;
 
     return new Response(null, {
         status: 302,
@@ -199,7 +214,7 @@ function withAmazonSubtag(url, subtag) {
  * link with the associate tag server-side, so the tag stays out of static
  * files, and records a best-effort guide click.
  */
-export async function handleAffiliateSearch(request, env) {
+export async function handleAffiliateSearch(request, env, ctx) {
     const url = new URL(request.url);
     const q = (url.searchParams.get('q') || '').trim().slice(0, 200);
     const ref = (url.searchParams.get('ref') || '').slice(0, 64);
@@ -224,11 +239,18 @@ export async function handleAffiliateSearch(request, env) {
     // Best-effort analytics. Never let logging break the redirect. Skipped for
     // flagged requests so guide_clicks reflects real visitors.
     if (!suspicious) {
-        try {
-            const ipHash = await hashString(ip, env);
-            await logGuideClick(env.DB, { guideSlug: ref, productQuery: q, network, ipHash });
-        } catch (err) {
-            console.error('Guide click logging failed:', err);
+        const guidePromise = (async () => {
+            try {
+                const ipHash = await hashString(ip, env);
+                await logGuideClick(env.DB, { guideSlug: ref, productQuery: q, network, ipHash });
+            } catch (err) {
+                console.error('Guide click logging failed:', err);
+            }
+        })();
+        if (ctx && typeof ctx.waitUntil === 'function') {
+            ctx.waitUntil(guidePromise);
+        } else {
+            await guidePromise;
         }
     }
 
@@ -241,16 +263,9 @@ export async function handleAffiliateSearch(request, env) {
     });
 }
 
-// Salted, truncated one-way hash used for rate limiting + click analytics.
-// The salt is REQUIRED for the "cannot be reversed" property: an unsalted
-// SHA-256 of an IP is trivially brute-forced (the IPv4 space is only ~4B
-// values), so without a secret salt the digest is effectively reversible.
-// Salt precedence: IP_HASH_SALT, else the already-set WORKER_SECRET, else
-// empty (degrades to the old unsalted behavior only if neither is configured).
+// Salted, truncated one-way hash used for click analytics.
+// Uses shared hashIp which fails closed if neither IP_HASH_SALT nor WORKER_SECRET is set.
 async function hashString(str, env) {
-    const salt = (env && (env.IP_HASH_SALT || env.WORKER_SECRET)) || '';
-    const data = new TextEncoder().encode(`${salt}:${str}`);
-    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('').slice(0, 16);
+    const full = await hashIp(str, env);
+    return full.slice(0, 16);
 }

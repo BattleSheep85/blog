@@ -13,13 +13,19 @@
 
 import { sendMail, mailConfigured } from './mailer.js';
 import { reportReadyEmail, SITE_URL } from './email-templates.js';
+import { runPool } from './pool.js';
 
 // One notice per subscriber row per hour. A re-research inside the hour is
 // almost always the same content, so it stays quiet.
 export const NOTIFY_DEDUPE_S = 3600;
-// Hard ceiling per completion. Far above the real list size, and it bounds a
-// single run's outbound volume no matter what the table holds.
+// Hard ceiling on eligible rows queried from D1.
 export const NOTIFY_MAX_RECIPIENTS = 100;
+// Cap on how many emails are dispatched per invocation so notify never blows subrequests.
+export const NOTIFY_BATCH_SIZE = 25;
+// Concurrency for parallel SMTP dialogues.
+export const NOTIFY_CONCURRENCY = 5;
+// Overall time ceiling for the notification phase so a slow mail host never stalls the run.
+export const NOTIFY_TIME_CEILING_MS = 15_000;
 
 const RECIPIENT_SQL = `SELECT id, email, unsub_token FROM subscribers
  WHERE research_id = ?1
@@ -61,11 +67,11 @@ async function notifyOne(env, row, { query, reportUrl, now }) {
 }
 
 /**
- * Notify every confirmed, active subscriber of one research row.
+ * Notify confirmed, active subscribers of one research row in bounded concurrent batches.
  *
  * @param {object} env Worker env.
  * @param {{researchId: string, query: string, slug: string}} input
- * @returns {Promise<{sent: number, failed: number, skipped: number, reason: string|null}>}
+ * @returns {Promise<{sent: number, failed: number, skipped: number, deferred?: number, reason: string|null}>}
  */
 export async function notifySubscribersForResearch(env, { researchId, query, slug }) {
     if (!researchId || !slug) return tally('no-target');
@@ -75,24 +81,40 @@ export async function notifySubscribersForResearch(env, { researchId, query, slu
         const now = Math.floor(Date.now() / 1000);
         const { results } = await env.DB.prepare(RECIPIENT_SQL)
             .bind(researchId, now - NOTIFY_DEDUPE_S, NOTIFY_MAX_RECIPIENTS).all();
-        const rows = results || [];
-        if (rows.length === 0) return tally('no-recipients');
+        const eligible = results || [];
+        if (eligible.length === 0) return tally('no-recipients');
+
+        const rows = eligible.slice(0, NOTIFY_BATCH_SIZE);
+        const unbatchedDeferred = eligible.length - rows.length;
 
         const reportUrl = `${SITE_URL}/research/${slug}`;
-        // Sequential on purpose: one RCPT per message, and a small list must
-        // never open a burst of sockets against the shared mail host.
-        const outcomes = [];
-        for (const row of rows) {
-            outcomes.push(await notifyOne(env, row, { query, reportUrl, now })
+        const startTime = Date.now();
+
+        const thunks = rows.map((row) => async () => {
+            if (Date.now() - startTime >= NOTIFY_TIME_CEILING_MS) {
+                return 'deferred';
+            }
+            return notifyOne(env, row, { query, reportUrl, now })
                 .catch((err) => {
                     console.error(JSON.stringify({ where: 'notify', researchId, error: String(err?.message || err) }));
                     return 'failed';
-                }));
-        }
+                });
+        });
+
+        const outcomes = await runPool(thunks, NOTIFY_CONCURRENCY, (err) => {
+            console.error(JSON.stringify({ where: 'notify', researchId, error: String(err?.message || err) }));
+            return 'failed';
+        });
+
         const count = (name) => outcomes.filter((outcome) => outcome === name).length;
+        const totalDeferred = unbatchedDeferred + count('deferred');
         const counts = { sent: count('sent'), failed: count('failed'), skipped: count('skipped') };
-        console.log(JSON.stringify({ where: 'notify', researchId, ...counts }));
-        return { ...counts, reason: null };
+        if (totalDeferred > 0) {
+            console.log(JSON.stringify({ where: 'notify', researchId, ...counts, deferred: totalDeferred }));
+        } else {
+            console.log(JSON.stringify({ where: 'notify', researchId, ...counts }));
+        }
+        return { ...counts, ...(totalDeferred > 0 ? { deferred: totalDeferred } : {}), reason: null };
     } catch (err) {
         console.error(JSON.stringify({ where: 'notify', researchId, error: String(err?.message || err) }));
         return tally('error');

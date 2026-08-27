@@ -10,6 +10,7 @@ import { runVerificationPipeline } from './pipeline/verify-orchestrator.js';
 import { runFlywheelTick } from './lib/keywords.js';
 import { ingestGsc } from './lib/gsc.js';
 import { externalWorkerEnabled } from './lib/flags.js';
+import { purgeExpiredSessions } from './lib/auth.js';
 
 // How long an unconfirmed signup may sit in the table before the cron deletes
 // it. The confirmation link itself dies after 7 days, so this is generous.
@@ -26,12 +27,23 @@ export async function runScheduledTick(event, env, ctx) {
     const cutoff = Math.floor(now / 1000) - 20 * 60;
     try {
         const result = await env.DB.prepare(
-            "UPDATE research SET status = 'failed' WHERE status = 'processing' AND created_at < ?1"
+            "UPDATE research SET status = 'failed' WHERE status = 'processing' AND COALESCE(processing_started_at, created_at) < ?1"
         ).bind(cutoff).run();
         const reaped = result.meta?.changes ?? 0;
         if (reaped > 0) console.log(JSON.stringify({ where: 'scheduled-reap', reaped, cutoff }));
     } catch (err) {
         console.error(JSON.stringify({ where: 'scheduled-reap', error: err instanceof Error ? err.message : String(err) }));
+    }
+
+    // Purge expired sessions (periodic delete keeps the sessions table tidy).
+    // Own try/catch so it can never break the reaper above.
+    try {
+        const purgedSessions = await purgeExpiredSessions(env.DB, now);
+        if (purgedSessions > 0) {
+            console.log(JSON.stringify({ where: 'scheduled-purge-sessions', purged: purgedSessions }));
+        }
+    } catch (err) {
+        console.error(JSON.stringify({ where: 'scheduled-purge-sessions', error: err instanceof Error ? err.message : String(err) }));
     }
 
     // Data minimization (GDPR): delete addresses that never confirmed. An
@@ -98,7 +110,7 @@ export async function runScheduledTick(event, env, ctx) {
                 // rows are processed only by the queue consumer's
                 // processVerificationMessage → runVerificationPipeline path.
                 const claimed = await env.DB.prepare(
-                    `UPDATE research SET status = 'processing'
+                    `UPDATE research SET status = 'processing', processing_started_at = ?2
                      WHERE id = (
                          SELECT id FROM research
                          WHERE status = 'pending' AND created_at < ?1
@@ -106,7 +118,7 @@ export async function runScheduledTick(event, env, ctx) {
                          ORDER BY created_at ASC LIMIT 1
                      )
                      RETURNING id, query`
-                ).bind(staleCut).first();
+                ).bind(staleCut, Math.floor(now / 1000)).first();
                 if (claimed) {
                     console.log(JSON.stringify({ where: 'scheduled-fallback', reportId: claimed.id }));
                     const cap = new Promise((_, rej) => setTimeout(() => rej(new Error('fallback-cap')), 6 * 60_000));
@@ -165,8 +177,8 @@ export async function processResearchMessage(message, env) {
         // complete/failed — a queue redelivery after success. Skip it so
         // we never double-insert products or re-spend the LLM budget.
         const claim = await env.DB.prepare(
-            "UPDATE research SET status = 'processing' WHERE id = ?1 AND status = 'pending'"
-        ).bind(reportId).run();
+            "UPDATE research SET status = 'processing', processing_started_at = ?2 WHERE id = ?1 AND status = 'pending'"
+        ).bind(reportId, Math.floor(Date.now() / 1000)).run();
         if ((claim.meta?.changes ?? 0) === 0) {
             console.log(`[queue] skip ${reportId} — not in pending state (redelivery)`);
             message.ack();
@@ -213,8 +225,8 @@ export async function processVerificationMessage(message, env) {
     const { reportId, product, productUrl } = message.body;
     try {
         const claim = await env.DB.prepare(
-            "UPDATE research SET status = 'processing' WHERE id = ?1 AND status = 'pending'"
-        ).bind(reportId).run();
+            "UPDATE research SET status = 'processing', processing_started_at = ?2 WHERE id = ?1 AND status = 'pending'"
+        ).bind(reportId, Math.floor(Date.now() / 1000)).run();
         if ((claim.meta?.changes ?? 0) === 0) {
             console.log(`[queue] skip verification ${reportId} — not in pending state (redelivery)`);
             message.ack();

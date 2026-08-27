@@ -129,6 +129,18 @@ export async function destroySession(db, tokenHash) {
     await db.prepare('DELETE FROM sessions WHERE token_hash = ?1').bind(tokenHash).run();
 }
 
+/**
+ * Delete session rows whose expires_at has passed.
+ * Returns the number of rows deleted.
+ */
+export async function purgeExpiredSessions(db, now) {
+    const cutoff = typeof now === 'number'
+        ? (now > 1e11 ? Math.floor(now / 1000) : now)
+        : nowEpoch();
+    const result = await db.prepare('DELETE FROM sessions WHERE expires_at <= ?1').bind(cutoff).run();
+    return result.meta?.changes ?? 0;
+}
+
 // --- Users -------------------------------------------------------------------
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
@@ -152,6 +164,17 @@ export async function createUser(db, email, password) {
 
 export async function findUserByEmail(db, email) {
     return db.prepare('SELECT * FROM users WHERE email = ?1').bind(String(email || '').toLowerCase()).first();
+}
+
+/**
+ * Delete a user and all their associated data (search history, sessions, user record).
+ */
+export async function deleteUser(db, userId) {
+    await db.batch([
+        db.prepare('DELETE FROM user_searches WHERE user_id = ?1').bind(userId),
+        db.prepare('DELETE FROM sessions WHERE user_id = ?1').bind(userId),
+        db.prepare('DELETE FROM users WHERE id = ?1').bind(userId),
+    ]);
 }
 
 // --- Search history ----------------------------------------------------------

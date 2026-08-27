@@ -20,7 +20,8 @@ import {
     generateId, insertResearch, findResearchByCanonicalQuery,
 } from './db.js';
 import { generateSlug, canonicalizeQuery, squashQuery } from './utils.js';
-import { monthKey } from '../pipeline/orchestrator.js';
+import { monthKey, budgetExhausted } from '../pipeline/orchestrator.js';
+import { purgePageCache } from '../routes/pages.js';
 
 const DEFAULT_DAILY_MAX = 6;
 const DEFAULT_RERESEARCH_DAILY_MAX = 2;
@@ -98,10 +99,8 @@ export async function runFlywheelTick(env, now = Date.now()) {
     await sweepOutcomes(env, now);
 
     // Gate 2: monthly budget governor.
-    const month = monthKeyFrom(now);
-    const spent = Number(await env.KV.get(`cost:${month}`)) || 0;
-    if (spent >= monthlyBudget(env)) {
-        return { status: 'skipped', reason: 'budget-exhausted', spent };
+    if (await budgetExhausted(env)) {
+        return { status: 'skipped', reason: 'budget-exhausted' };
     }
 
     // Gate 3: daily cap.
@@ -239,7 +238,7 @@ async function runReresearchSweep(env, now) {
         // which the queue consumer routes to the RANKING pipeline
         // (processResearchMessage → runResearchPipeline).
         const row = await env.DB.prepare(
-            `SELECT r.id AS id, r.query AS query, r.view_count AS view_count
+            `SELECT r.id AS id, r.slug AS slug, r.query AS query, r.view_count AS view_count
              FROM research r
              LEFT JOIN products p ON p.research_id = r.id
              LEFT JOIN affiliate_clicks ac
@@ -266,7 +265,7 @@ async function runReresearchSweep(env, now) {
             const staleDays = Number(env.STALE_REFRESH_DAYS || DEFAULT_STALE_REFRESH_DAYS);
             const staleCutoff = Math.floor(now / 1000) - staleDays * 86400;
             candidate = await env.DB.prepare(
-                `SELECT id, query, view_count FROM research
+                `SELECT id, slug, query, view_count FROM research
                  WHERE status = 'complete' AND (kind IS NULL OR kind != 'verification')
                    AND completed_at IS NOT NULL
                    AND completed_at < ?1
@@ -293,6 +292,10 @@ async function runReresearchSweep(env, now) {
 
         if (!claim.meta || claim.meta.changes !== 1) {
             return { status: 'skipped', reason: 'claim-lost', researchId: candidate.id };
+        }
+
+        if (candidate.slug) {
+            await purgePageCache(env, candidate.slug);
         }
 
         // DELETE-then-insert product persistence replaces products in place and
@@ -331,18 +334,3 @@ function toSqliteDatetime(ms) {
     return new Date(ms).toISOString().slice(0, 19).replace('T', ' ');
 }
 
-/**
- * Mark a keyword's outcome by research id. Not wired into the orchestrator —
- * runFlywheelTick reconciles via sweepOutcomes — but exported for callers that
- * want to settle a single keyword eagerly (e.g. an admin tool or future hook).
- * @param {object} env Worker env bindings.
- * @param {string} researchId The research row id.
- * @param {boolean} ok True → 'done', false → 'failed'.
- */
-export async function markKeywordOutcome(env, researchId, ok) {
-    if (!researchId) return;
-    await env.DB.prepare(
-        `UPDATE keyword_queue SET status = ?, done_at = ?
-         WHERE research_id = ? AND status = 'queued'`
-    ).bind(ok ? 'done' : 'failed', Math.floor(Date.now() / 1000), researchId).run();
-}

@@ -1,19 +1,24 @@
 /**
  * Report API handlers.
- * GET /api/report/:id — serve cached report
- * POST /api/feedback — store user feedback
+ * GET /api/report/:id: serve cached report
+ * POST /api/feedback: store user feedback
  */
 
-import { getResearchById, getProductsByResearchId, insertFeedback } from '../lib/db.js';
-import { parseJsonSafe } from '../lib/utils.js';
+import { getResearchById, getResearchBySlug, getProductsByResearchId, insertFeedback } from '../lib/db.js';
+import { parseJsonSafe, safeUserFacingError } from '../lib/utils.js';
 import { apiStatus } from '../lib/status.js';
+import { checkRateLimit } from '../lib/rate-limit.js';
+import { checkBurstGate } from '../lib/burst-gate.js';
 
 /**
  * Handle GET /api/report/:id
  * Returns the full report with sources and products (v2 research tables).
  */
 export async function handleGetReport(reportId, env) {
-    const row = await getResearchById(env.DB, reportId);
+    let row = await getResearchById(env.DB, reportId);
+    if (!row) {
+        row = await getResearchBySlug(env.DB, reportId);
+    }
     if (!row) {
         return jsonResponse({ error: 'Report not found' }, 404);
     }
@@ -23,7 +28,7 @@ export async function handleGetReport(reportId, env) {
             id: row.id,
             slug: row.slug,
             status: apiStatus(row.status),
-            error: parseJsonSafe(row.result, {}).error || 'Research failed',
+            error: safeUserFacingError(parseJsonSafe(row.result, {}).error),
         }, 200);
     }
 
@@ -36,7 +41,7 @@ export async function handleGetReport(reportId, env) {
         }, 202);
     }
 
-    const productsResult = await getProductsByResearchId(env.DB, reportId);
+    const productsResult = await getProductsByResearchId(env.DB, row.id);
     const report = parseJsonSafe(row.result, null);
 
     return jsonResponse({
@@ -58,6 +63,21 @@ export async function handleGetReport(reportId, env) {
  * Stores user feedback on a report.
  */
 export async function handleFeedback(request, env) {
+    const clientIp = request.headers.get('CF-Connecting-IP') || 'unknown';
+    const rateKey = `feedback:${clientIp}`;
+    const burst = await checkBurstGate(env.RL_BURST, rateKey);
+    const velocity = burst.allowed
+        ? await checkRateLimit(env.KV, rateKey, 20, 3600)
+        : burst;
+    if (!velocity.allowed) {
+        const retryAfter = Math.max(1, Math.ceil((velocity.resetAt - Date.now()) / 1000));
+        return jsonResponse(
+            { error: 'Too many feedback submissions from your connection in the last hour. Please try again shortly.' },
+            429,
+            { 'Retry-After': String(retryAfter) },
+        );
+    }
+
     let body;
     try {
         body = await request.json();
@@ -91,12 +111,13 @@ export async function handleFeedback(request, env) {
     return jsonResponse({ success: true });
 }
 
-function jsonResponse(data, status = 200) {
+function jsonResponse(data, status = 200, extraHeaders = {}) {
     return new Response(JSON.stringify(data), {
         status,
         headers: {
             'Content-Type': 'application/json',
             'Access-Control-Allow-Origin': '*',
+            ...extraHeaders,
         },
     });
 }

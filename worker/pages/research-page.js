@@ -1,5 +1,5 @@
 import { layout } from '../lib/html.js';
-import { parseJsonSafe, isValidHttpsUrl, escapeHtml, timeAgo, displayQuery } from '../lib/utils.js';
+import { parseJsonSafe, isValidHttpsUrl, escapeHtml, timeAgo, displayQuery, safeUserFacingError } from '../lib/utils.js';
 import { resolveAmazonTag } from '../lib/affiliate-links.js';
 import { adSlot } from '../lib/ads.js';
 import { getResearchBySlug, getProductsByResearchId, getClusterWinnerSlug } from '../lib/db.js';
@@ -96,19 +96,17 @@ export async function renderResearchResult(slug, env, fromQuery = null, cleanLin
     metadata: parseJsonSafe(p.metadata, {}),
   }));
 
+  const hasProducts = products.length > 0;
   const isProcessing = entry.status === 'pending' || entry.status === 'processing';
+  const isLiveReport = entry.status === 'complete' || (isProcessing && hasProducts);
+  const showProcessingHero = isProcessing && !hasProducts;
   const isFailed = entry.status === 'failed';
 
   const resultData = parseJsonSafe(entry.result, {});
   // Only surface a stored failure reason if it's a clean, short, user-facing
   // message (e.g. "No reliable products found for this query."). Raw provider /
   // HTTP / JSON errors (e.g. an OpenRouter 403) must never leak to users.
-  const failReason = (() => {
-    const e = String(resultData.error || '').trim();
-    if (!e || e.length > 160) return '';
-    if (/[{}]|https?:|\b[45]\d\d\b|openrouter|api key|token|timeout|stack|undefined|null|prompt injection/i.test(e)) return '';
-    return e;
-  })();
+  const failReason = safeUserFacingError(resultData.error, '');
   const buyersGuide = resultData.buyersGuide;
   const hasBuyersGuide = !!(buyersGuide && (buyersGuide.howToChoose || (buyersGuide.pitfalls?.length ?? 0) > 0 || (buyersGuide.marketingToIgnore?.length ?? 0) > 0));
   // Classifier verdict: this category isn't sold on Amazon (lumber, vehicles,
@@ -214,7 +212,7 @@ ${entry.completed_at && entry.completed_at !== entry.created_at ? `<span>Last up
 <span>${entry.view_count} views</span>
 <span>${products.length === 0 ? 'No products found' : `${products.length} product${products.length === 1 ? '' : 's'} compared`}</span>
 </div>
-${entry.status === 'complete' ? `<div class="share-bar mt-4 flex flex-wrap items-center gap-2">
+${isLiveReport ? `<div class="share-bar mt-4 flex flex-wrap items-center gap-2">
 <span class="font-mono text-xs uppercase tracking-wide text-ink-3">Share:</span>
 <a href="https://twitter.com/intent/tweet?text=${shareText}&url=${shareUrl}" target="_blank" rel="noopener noreferrer" class="share-btn"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>Post</a>
 <a href="https://reddit.com/submit?url=${shareUrl}&title=${shareText}" target="_blank" rel="noopener noreferrer" class="share-btn"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0A12 12 0 000 12a12 12 0 0012 12 12 12 0 0012-12A12 12 0 0012 0zm5.01 4.744c.688 0 1.25.561 1.25 1.249a1.25 1.25 0 01-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 01.042.52c0 2.694-3.13 4.87-7.004 4.87-3.874 0-7.004-2.176-7.004-4.87 0-.183.015-.366.043-.534A1.748 1.748 0 014.028 12c0-.968.786-1.754 1.754-1.754.463 0 .898.196 1.207.49 1.207-.883 2.878-1.43 4.744-1.487l.885-4.182a.342.342 0 01.14-.197.35.35 0 01.238-.042l2.906.617a1.214 1.214 0 011.108-.701zM9.25 12C8.561 12 8 12.562 8 13.25c0 .687.561 1.248 1.25 1.248.687 0 1.248-.561 1.248-1.249 0-.688-.561-1.249-1.249-1.249zm5.5 0c-.687 0-1.248.561-1.248 1.25 0 .687.561 1.248 1.249 1.248.688 0 1.249-.561 1.249-1.249 0-.687-.562-1.249-1.25-1.249zm-5.466 3.99a.327.327 0 00-.231.094.33.33 0 000 .463c.842.842 2.484.913 2.961.913.477 0 2.105-.056 2.961-.913a.361.361 0 000-.463.327.327 0 00-.464 0c-.547.533-1.684.73-2.512.73-.828 0-1.979-.196-2.512-.73a.326.326 0 00-.232-.095z"/></svg>Reddit</a>
@@ -227,6 +225,8 @@ ${entry.status === 'complete' ? `<div class="share-bar mt-4 flex flex-wrap items
 </div>
 
 <div class="container mx-auto max-w-4xl px-6 py-8">
+${isProcessing && hasProducts ? `<div class="refreshing-note mb-5 flex items-center gap-2.5 border border-accent/30 bg-surface-1 px-4 py-3 font-mono text-xs text-ink-2"><div class="spinner" style="width:0.875rem;height:0.875rem;border-width:1.5px;margin:0;flex-shrink:0"></div><span>Refreshing this research in the background with latest data…</span></div>` : ''}
+
 ${fromQuery && fromQuery !== entry.query ? `<div class="cluster-banner mt-0 mb-5 flex flex-wrap items-center justify-between gap-3 border border-accent/30 bg-accent-quiet p-4">
 <div class="min-w-0 flex-1 text-body-sm text-ink-2">
 <strong class="text-ink">Matched to existing research.</strong> You asked &ldquo;${escapeHtml(fromQuery)}&rdquo; — we already researched a very similar question (${date}).
@@ -241,7 +241,7 @@ ${Object.entries(clarifications).map(([k, v]) => `<span class="card-badge"><stro
 </div>
 </div>` : ''}
 
-${isProcessing ? `<div id="processing" class="my-8 border border-accent/30 bg-surface-1 p-6">
+${showProcessingHero ? `<div id="processing" class="my-8 border border-accent/30 bg-surface-1 p-6">
 <div class="mb-4 flex items-center gap-3">
 <div class="spinner" style="width:1.5rem;height:1.5rem;border-width:2px;margin:0;flex-shrink:0"></div>
 <div>
@@ -276,7 +276,7 @@ ${isFailed ? `<div class="my-8 border border-trust-low/40 bg-trust-low-bg p-6">
 <form method="POST" action="/research/new" class="mt-4"><input type="hidden" name="q" value="${escapeHtml(entry.query)}"><input type="hidden" name="fresh" value="1"><button type="submit" class="${BTN_PRIMARY}">Try again</button></form>
 </div>` : ''}
 
-${entry.status === 'complete' ? (() => {
+${isLiveReport ? (() => {
   const tocItems = [];
   if (entry.summary) tocItems.push({ id: 'summary', label: 'Summary' });
   if (products.length > 1) tocItems.push({ id: 'compare', label: 'Compare' });
@@ -295,21 +295,23 @@ ${entry.status === 'complete' ? (() => {
 
 ${entry.summary ? `<div class="summary-box border border-line bg-surface-1 p-5"><h2 id="summary" class="font-serif text-h3 font-semibold text-ink">Summary</h2><p class="mt-2 text-body leading-relaxed text-ink-2">${escapeHtml(entry.summary)}</p></div>` : ''}
 
-${entry.status === 'complete' && products.length === 0 ? `<div class="my-8 border border-line bg-surface-1 p-6">
+${isLiveReport && products.length === 0 ? `<div class="my-8 border border-line bg-surface-1 p-6">
 <h2 class="font-sans text-xl font-bold text-ink">No clear picks this time</h2>
 <p class="mt-2 text-body-sm text-ink-2">We couldn't find enough trustworthy sources to confidently rank products for this query.</p>
 <form method="POST" action="/research/new" class="mt-4"><input type="hidden" name="q" value="${escapeHtml(entry.query)}"><input type="hidden" name="fresh" value="1"><button type="submit" class="${BTN_PRIMARY}">Try again</button></form>
 </div>` : ''}
 
-${entry.status === 'complete' && products.length > 0 ? renderOurPick(products.find((p) => p.rank === 1) || products[0], affiliateIds, isService, slug, cleanLinks, webOnly, lastModifiedTs) : ''}
+${isLiveReport && products.length > 0 ? `<p class="affiliate-disclosure my-4 font-mono text-[11px] text-ink-3">We may earn an affiliate commission on qualifying purchases made through links on this page. Rankings remain independent and objective.</p>` : ''}
 
-${entry.status === 'complete' ? renderComparisonTable(products, affiliateIds, isService, slug, cleanLinks, webOnly) : ''}
+${isLiveReport && products.length > 0 ? renderOurPick(products.find((p) => p.rank === 1) || products[0], affiliateIds, isService, slug, cleanLinks, webOnly, lastModifiedTs) : ''}
 
-${entry.status === 'complete' ? chatSection : ''}
+${isLiveReport ? renderComparisonTable(products, affiliateIds, isService, slug, cleanLinks, webOnly) : ''}
 
-${entry.status === 'complete' ? renderTrustPanel(entry.sources, entry.completed_at) : ''}
+${isLiveReport ? chatSection : ''}
 
-${entry.status === 'complete' ? adSlot(env, 'top', 'Advertisement') : ''}
+${isLiveReport ? renderTrustPanel(entry.sources, entry.completed_at) : ''}
+
+${isLiveReport ? adSlot(env, 'top', 'Advertisement') : ''}
 
 ${hasBuyersGuide && buyersGuide ? `<section class="buyers-guide mb-8 border border-line bg-surface-1 p-6">
 <h2 id="buyers-guide" class="font-mono text-[11px] uppercase tracking-widest text-ink-3">Buyer's guide</h2>
@@ -349,7 +351,7 @@ ${r.category ? `<div class="card-top"><span class="card-badge">${escapeHtml(r.ca
 <h2 class="font-mono text-[11px] uppercase tracking-widest text-ink-3">Research something else</h2>
 <div class="mt-4">${searchBar('compact')}</div>
 </div>
-${entry.status === 'complete' ? `<div class="notify-footer mt-8 border-t border-line pt-6">
+${isLiveReport ? `<div class="notify-footer mt-8 border-t border-line pt-6">
 <form id="notify-form" class="m-0 flex flex-wrap items-center gap-2">
 <label for="notify-email" class="min-w-[14rem] flex-1 text-body-sm text-ink-2">Get notified when we re-research this category</label>
 <input id="notify-email" type="email" name="email" required placeholder="you@example.com" autocomplete="email" maxlength="254" class="min-w-[12rem] flex-1 border border-line bg-bg px-3 py-2 font-mono text-sm text-ink placeholder:text-ink-3">
@@ -379,7 +381,7 @@ ${entry.status === 'complete' ? `<div class="notify-footer mt-8 border-t border-
   const activityFeedHtml = activityFeedScript(slug);
   const subscribeHtml = subscribeScript(entry.id);
   const chatHtml = chatScript(slug);
-  const extra = pageBehaviorHtml + subscribeHtml + (entry.status === 'complete' ? chatHtml : '') + (isProcessing ? activityFeedHtml : '') + (products.length > 0 ? productLayoutBoot() : '');
+  const extra = pageBehaviorHtml + subscribeHtml + (isLiveReport ? chatHtml : '') + (showProcessingHero ? activityFeedHtml : '') + (hasProducts ? productLayoutBoot() : '');
   // Canonical is emitted by layout() from layoutMeta.canonical — don't add a
   // second hand-built <link rel="canonical"> here.
   // Keep thin and failed pages out of the index (mirrors publicResearchFilter:
@@ -387,8 +389,8 @@ ${entry.status === 'complete' ? `<div class="notify-footer mt-8 border-t border-
   // still work — only crawlers are turned away.
   const isComparative = rowFacets.is_comparative === true || /\bvs\.?\b|versus/i.test(entry.query);
   const minIndexableProducts = isComparative ? 2 : 3;
-  const isThin = entry.status === 'complete' && products.length < minIndexableProducts;
-  const noindex = (isThin || isFailed || isProcessing) ? '<meta name="robots" content="noindex, follow">' : '';
+  const isThin = isLiveReport && products.length < minIndexableProducts;
+  const noindex = (isThin || isFailed || showProcessingHero) ? '<meta name="robots" content="noindex, follow">' : '';
   // Amazon-viable pages carry Amazon buy-links on every card. dns-prefetch is
   // cheap (DNS-only, no TLS handshake) and shaves ~50-200ms off the first
   // affiliate click. Web-only/service pages have no Amazon links to warm.
@@ -398,9 +400,9 @@ ${entry.status === 'complete' ? `<div class="notify-footer mt-8 border-t border-
   // the page's last-completion year (honest: reflects actual freshness) and only
   // when the title doesn't already carry a 4-digit year.
   const titleYear = new Date(lastModifiedTs * 1000).getUTCFullYear();
-  const seoTitle = (entry.status === 'complete' && !/\b20\d{2}\b/.test(displayTitle))
+  const seoTitle = (isLiveReport && !/\b20\d{2}\b/.test(displayTitle))
     ? `${displayTitle} (${titleYear})`
     : displayTitle;
   const htmlOut = layout(seoTitle, entry.summary ?? 'AI-powered product research', body, amazonHint + noindex + structuredData + turnstileScript + extra, layoutMeta);
-  return { html: htmlOut, lastModified: lastModifiedTs };
+  return { html: htmlOut, lastModified: lastModifiedTs, status: entry.status };
 }

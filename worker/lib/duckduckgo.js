@@ -1,3 +1,8 @@
+// Note: DuckDuckGo HTML scraping is permanently CAPTCHA-blocked from datacenter
+// and Cloudflare IPs and returns empty results. It has been removed from the
+// active fallback chain in worker/engine/tools.js, but this module is preserved
+// for tests and fail-safe handling.
+//
 // ScrapedSource is a runtime-erased type: { url, title, content, source, publishedAt? }
 
 const DDG_TIMEOUT_MS = 8000;
