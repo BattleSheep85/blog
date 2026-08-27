@@ -1,8 +1,9 @@
-// Deterministic content-safety screen. FAIL-CLOSED: clear adult/illegal queries are blocked
-// here BEFORE any research happens, independent of (and ahead of) the LLM classifier — which
-// is fail-open and jailbreakable. This protects brand safety (AdSense + Amazon Associates
-// ToS), SEO/reputation, and legal exposure. The LLM classifier remains a second layer for
-// subtler/obfuscated cases.
+// Deterministic content-safety screen. FAIL-CLOSED: clear adult/illegal queries
+// and scanner/probe payloads are blocked here BEFORE any research happens, independent
+// of (and ahead of) the LLM classifier — which is fail-open and jailbreakable.
+// This protects brand safety (AdSense + Amazon Associates ToS), SEO/reputation,
+// spend protection, and legal exposure. The LLM classifier remains a second layer
+// for subtler/obfuscated cases.
 //
 // CURATION RULE: prefer PHRASES and \b word-boundaries over bare substrings, so legitimate
 // product research is never blocked. Bare anatomy/ambiguous words (nude, breast, gun, drug,
@@ -52,25 +53,114 @@ const ILLEGAL_PATTERNS = [
   /\bhuman\s+trafficking\b/, /\bbuy\s+a\s+(?:human|kidney|organ)\b/,
 ];
 
+const SQL_PROBE_PATTERNS = [
+  /\bunion\s+(?:all\s+)?select\b/i,
+  /\bwaitfor\s+delay\b/i,
+  /\bsleep\s*\(/i,
+  /\bbenchmark\s*\(/i,
+  /\butl_inaddr\b/i,
+  /\bdbms_pipe\b/i,
+  /\bxp_cmdshell\b/i,
+  /\binformation_schema\b/i,
+];
+
+const CODE_SCHEME_PATTERN = /\b(?:javascript|data)\s*:/i;
+const HTML_TAG_PATTERN = /<\s*\/?\s*[a-z][a-z0-9_-]*(?:\s+[^>]*)?>/i;
+const FULL_URL_PATTERN = /^\s*https?:\/\/\S+\s*$/i;
+const SPECIAL_CHARS_PATTERN = /[(){}[\];|<>]/g;
+const LONG_RUN_PATTERN = /[^\s]{25,}/;
+const WORD_TOKEN_PATTERN = /[a-zA-Z0-9]{3,}/g;
+
+/**
+ * Check if a query looks like code, a URL, a scanner probe, or an attack payload
+ * rather than a genuine shopping question.
+ *
+ * Signals:
+ * 1. SQL keywords in a suspicious shape (UNION SELECT, WAITFOR DELAY, SLEEP(, BENCHMARK(,
+ *    UTL_INADDR, DBMS_PIPE, CHR( with concatenation, xp_cmdshell, information_schema)
+ * 2. script/HTML tags
+ * 3. javascript: or data: schemes
+ * 4. an http(s):// URL as the whole query (unless allowUrl: true)
+ * 5. more than 3 of these characters `(){}[];|<>` combined
+ * 6. a run of 25+ characters with no space
+ * 7. nonsense ratio (fewer than 2 dictionary-shaped word tokens of 3+ letters)
+ *
+ * @param {string} query
+ * @param {{ allowUrl?: boolean }} [options]
+ * @returns {boolean}
+ */
+export function isProbeQuery(query, options = {}) {
+  if (typeof query !== 'string') return false;
+  const raw = query.trim();
+  if (!raw) return false;
+
+  const isFullUrl = FULL_URL_PATTERN.test(raw);
+
+  // 1. Whole URL
+  if (isFullUrl && !options.allowUrl) return true;
+
+  // 2. javascript: or data: schemes
+  if (CODE_SCHEME_PATTERN.test(raw)) return true;
+
+  // 3. HTML / script tags
+  if (HTML_TAG_PATTERN.test(raw)) return true;
+
+  // 4. SQL keywords in suspicious shapes
+  for (const pat of SQL_PROBE_PATTERNS) {
+    if (pat.test(raw)) return true;
+  }
+  // CHR( with concatenation (e.g. CHR(...) || or || CHR(...))
+  if (
+    /\bchr\s*\([^)]*\)\s*\|\|/i.test(raw) ||
+    /\|\|\s*chr\s*\(/i.test(raw) ||
+    (/\bchr\s*\(/i.test(raw) && /\|\||\+/.test(raw))
+  ) {
+    return true;
+  }
+
+  // 5. More than 3 of (){}[];|<> combined
+  const specialMatches = raw.match(SPECIAL_CHARS_PATTERN);
+  if (specialMatches && specialMatches.length > 3) return true;
+
+  // When a full http(s) URL is explicitly allowed, skip the unbroken run
+  // and token count checks that would otherwise flag standard URLs.
+  if (isFullUrl && options.allowUrl) {
+    return false;
+  }
+
+  // 6. Run of 25+ characters with no space
+  if (LONG_RUN_PATTERN.test(raw)) return true;
+
+  // 7. Nonsense ratio: fewer than 2 dictionary-shaped word tokens of 3+ letters/digits
+  const words = raw.match(WORD_TOKEN_PATTERN) || [];
+  if (words.length < 2) return true;
+
+  return false;
+}
+
 function normalize(query) {
   return ' ' + String(query || '').toLowerCase().replace(/[^a-z0-9\s]+/g, ' ').replace(/\s+/g, ' ').trim() + ' ';
 }
 
 /**
- * Screen a query. Returns { blocked, reason } where reason is 'adult' | 'illegal' | null.
+ * Screen a query. Returns { blocked, reason } where reason is 'adult' | 'illegal' | 'probe' | null.
  * Deterministic, fail-closed, no network. Run this BEFORE the LLM classifier and research.
+ *
+ * @param {string} query
+ * @param {{ allowUrl?: boolean }} [options]
  */
-export function screenQuery(query) {
-  const q = normalize(query);
-  if (q.trim().length === 0) return { blocked: false, reason: null };
+export function screenQuery(query, options = {}) {
+  const raw = typeof query === 'string' ? query.trim() : '';
+  if (raw.length === 0) return { blocked: false, reason: null };
+
+  if (isProbeQuery(raw, options)) {
+    return { blocked: true, reason: 'probe' };
+  }
+
+  const q = normalize(raw);
   for (const re of ADULT_PATTERNS) if (re.test(q)) return { blocked: true, reason: 'adult' };
   for (const re of ILLEGAL_PATTERNS) if (re.test(q)) return { blocked: true, reason: 'illegal' };
-  // NOTE: deterministic query prompt-injection screening was removed 2026-07-08
-  // — it false-positived on legitimate product searches and made the site
-  // unusable. Real jailbreak/injection queries are still caught by the LLM
-  // classifier's reject path (fail-open), and fetched page CONTENT is still
-  // guarded by the [ai-injection] credibility detector. Do not re-add a
-  // deterministic QUERY screen without a large real-query false-positive corpus.
+
   return { blocked: false, reason: null };
 }
 
@@ -78,6 +168,7 @@ export function screenQuery(query) {
 export function rejectionMessage(reason) {
   if (reason === 'adult') return "We don't research adult or sexually explicit content. Try a different product or topic.";
   if (reason === 'illegal') return "We can't research illegal products or activities. Try a different product or topic.";
+  if (reason === 'probe') return "We can't research queries formatted as code, scripts, or scanner payloads. Try a shopping question instead.";
   return "We can't research that query. Try a different product or topic.";
 }
 
@@ -85,5 +176,6 @@ export function rejectionMessage(reason) {
 export function classifierRejectToReason(rejectReason) {
   if (rejectReason === 'adult') return 'adult';
   if (rejectReason === 'illegal' || rejectReason === 'self-harm' || rejectReason === 'harassment') return 'illegal';
+  if (rejectReason === 'probe') return 'probe';
   return 'policy';
 }

@@ -5,7 +5,7 @@ import { env } from 'cloudflare:test';
 import { beforeAll, describe, it, expect } from 'vitest';
 import { applySchema } from './_schema.js';
 import { handleStartVerify, handleVerifyStatus } from '../../worker/handlers/verify.js';
-import { getResearchById } from '../../worker/lib/db.js';
+import { generateId, getResearchById } from '../../worker/lib/db.js';
 
 beforeAll(async () => {
   await applySchema(env.DB);
@@ -117,6 +117,26 @@ describe('handleStartVerify — needs_input resubmit', () => {
     }, '203.0.113.58'), testEnv);
 
     expect(res.status).toBe(409);
+  });
+
+  it('rejects a resubmit for a failed ranking row (kind is null)', async () => {
+    const id = generateId();
+    await env.DB.prepare(
+      "INSERT INTO research (id, slug, query, status, kind, created_at) VALUES (?, ?, ?, 'failed', NULL, ?)"
+    ).bind(id, 'ranking-' + id, 'best headphones', Math.floor(Date.now() / 1000)).run();
+
+    const res = await handleStartVerify(post({
+      reportId: id,
+      product: 'best headphones',
+      productUrl: 'https://maker.example/headphones',
+    }, '203.0.113.65'), testEnv);
+
+    expect(res.status).toBe(409);
+    const body = await res.json();
+    expect(body.error).toBe('Report is not awaiting a product URL');
+
+    const row = await getResearchById(env.DB, id);
+    expect(row.status).toBe('failed');
   });
 
   it('requires a productUrl when resubmitting with a reportId', async () => {

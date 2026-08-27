@@ -15,6 +15,9 @@ import { handleAffiliateClick, handleAffiliateSearch } from './handlers/affiliat
 import { handleProductImage } from './handlers/image.js';
 import { classifyQuery, userFacingRejection, defaultQuestionsForQuery } from './lib/classifier.js';
 import { screenQuery, rejectionMessage } from './lib/safety.js';
+import { checkRateLimit } from './lib/rate-limit.js';
+import { checkBurstGate } from './lib/burst-gate.js';
+import { canonicalizeQuery } from './lib/utils.js';
 import { renderBrowse } from './pages/browse.js';
 import { renderHome, renderBestIndex } from './pages/home.js';
 import { renderHistoryPage } from './pages/history.js';
@@ -23,7 +26,7 @@ import { handleUnsubscribe } from './handlers/unsubscribe.js';
 import { handleConfirm } from './handlers/confirm.js';
 import { handleChat } from './handlers/chat.js';
 import { handleNextJob, handleProgress, handleComplete } from './handlers/internal.js';
-import { handleSignup, handleLogin, handleLogout, renderLoginPage, renderAccountPage } from './handlers/auth.js';
+import { handleSignup, handleLogin, handleLogout, handleDeleteAccount, handleExportAccount, renderLoginPage, renderAccountPage } from './handlers/auth.js';
 import { getSessionUser, getUserSearches } from './lib/auth.js';
 import { handleFind } from './pages/find.js';
 import { renderReviewsPage } from './pages/reviews.js';
@@ -111,8 +114,8 @@ export default {
             // Pre-research classify: powers the inquisitive UX. The home search box
             // calls this first; if the query has need-questions the client shows them
             // (with a one-tap "Just search for it" skip) before starting research.
-            // Fail-OPEN — any error returns accept:true with no questions so research
-            // is never blocked. KV-cached classify, so this is cheap/fast.
+            // Fail-OPEN — any error returns accept:true with default questions so research
+            // is never blocked. KV-cached classify via canonicalizeQuery.
             if (path === '/api/classify' && method === 'POST') {
                 let cbody;
                 try { cbody = await request.json(); } catch { cbody = {}; }
@@ -122,8 +125,23 @@ export default {
                 // Deterministic safety screen first (fail-closed, can't be jailbroken/fail-opened).
                 const s = screenQuery(cq);
                 if (s.blocked) return jres({ accept: false, reject_message: rejectionMessage(s.reason), clarifying_questions: [] });
+
+                // Spend throttle: two-stage burst gate + hourly rate limit on classify calls.
+                // Refusal fails open (HTTP 200 with default questions) rather than 429ing so
+                // the search box UX is never blocked — the throttle protects spend while the
+                // fail-open shape protects UX.
+                const clientIp = request.headers.get('CF-Connecting-IP') || 'unknown';
+                const rateKey = `classify:${clientIp}`;
+                const burst = await checkBurstGate(env.RL_BURST, rateKey);
+                const velocity = burst.allowed
+                    ? await checkRateLimit(env.KV, rateKey, 60, 3600)
+                    : burst;
+                if (!velocity.allowed) {
+                    return jres({ accept: true, clarifying_questions: defaultQuestionsForQuery(cq) });
+                }
+
                 try {
-                    const c = await classifyQuery(env, cq, null);
+                    const c = await classifyQuery(env, cq, canonicalizeQuery(cq));
                     if (!c.accept) return jres({ accept: false, reject_message: userFacingRejection(c.reject_reason), clarifying_questions: [] });
                     return jres({ accept: true, clarifying_questions: c.clarifying_questions || [], suggested_refinement: c.suggested_refinement || null });
                 } catch {
@@ -206,6 +224,8 @@ export default {
             if (path === '/api/auth/signup' && method === 'POST') return handleSignup(request, env);
             if (path === '/api/auth/login' && method === 'POST') return handleLogin(request, env);
             if (path === '/api/auth/logout' && method === 'POST') return handleLogout(request, env);
+            if (path === '/api/account/delete' && method === 'POST') return handleDeleteAccount(request, env);
+            if (path === '/api/account/export' && method === 'GET') return handleExportAccount(request, env);
 
             // Pull-based metrics snapshot (Bearer-token auth via METRICS_TOKEN).
             if (path === '/metrics' && method === 'GET') {
@@ -221,12 +241,12 @@ export default {
             // Search-based affiliate redirect for static guide pages.
             // Must be checked before the generic /api/go/:id route below.
             if (path === '/api/go/search' && method === 'GET') {
-                return handleAffiliateSearch(request, env);
+                return handleAffiliateSearch(request, env, ctx);
             }
 
             const affiliateMatch = path.match(/^\/api\/go\/([a-z0-9-]+)$/);
             if (affiliateMatch && method === 'GET') {
-                return handleAffiliateClick(affiliateMatch[1], request, env);
+                return handleAffiliateClick(affiliateMatch[1], request, env, ctx);
             }
 
             // Product image proxy (defeats hotlink/Referer blocks; edge-cached).
@@ -274,24 +294,24 @@ export default {
                         ? await renderLoginPage(request, env)
                         : await renderAccountPage(request, env);
                     if (page instanceof Response) return page; // auth redirect
-                    return htmlPageResponse(page, env, { cacheControl: 'no-store' });
+                    return htmlPageResponse(page, env, { cacheControl: 'no-store', request });
                 }
 
                 if (path === '/history' || path === '/history/') {
-                    return htmlPageResponse(renderHistoryPage(), env, { cacheControl: 'no-store' });
+                    return htmlPageResponse(renderHistoryPage(), env, { cacheControl: 'no-store', request });
                 }
 
                 // Hidden, unlinked easter-egg page. Never referenced from nav,
                 // footer, or the sitemap — see worker/pages/frank-egg.js.
                 if (path === '/frank') {
-                    return htmlPageResponse(renderFrankPage(), env, { cacheControl: 'no-store' });
+                    return htmlPageResponse(renderFrankPage(), env, { cacheControl: 'no-store', request });
                 }
 
                 // Monetized Google hand-off for not-sold-on-Amazon categories.
                 if (path === '/find') {
                     const page = await handleFind(request, url, env);
                     if (page instanceof Response) return withSecurityHeaders(page, null);
-                    return htmlPageResponse(page, env, { cacheControl: 'no-store' });
+                    return htmlPageResponse(page, env, { cacheControl: 'no-store', request });
                 }
 
                 const ogMatch = path.match(/^\/research\/([a-z0-9-]+)\/og\.svg$/);
@@ -305,6 +325,7 @@ export default {
                     if (!html) return notFound();
                     return htmlPageResponse(html, env, {
                         cacheControl: 'public, max-age=300, s-maxage=300, stale-while-revalidate=3600',
+                        request,
                     });
                 }
 
@@ -320,7 +341,7 @@ export default {
                     const listingCc = 'public, max-age=60, s-maxage=60, stale-while-revalidate=3600';
                     const notModified = maybe304(request.headers.get('If-Modified-Since'), latestLm, listingCc);
                     if (notModified) return notModified;
-                    return htmlPageResponse(html, env, { lastModifiedSec: latestLm, cacheControl: listingCc });
+                    return htmlPageResponse(html, env, { lastModifiedSec: latestLm, cacheControl: listingCc, request });
                 }
 
                 const slugMatch = path.match(/^\/research\/([a-z0-9-]+)$/);
@@ -335,13 +356,13 @@ export default {
                 // that a page cache isn't worth the complexity yet).
                 if (path === '/verify' || path === '/verify/') {
                     const prefillProduct = url.searchParams.get('product') || '';
-                    return htmlPageResponse(renderVerifyEntryPage(prefillProduct), env, { cacheControl: 'no-store' });
+                    return htmlPageResponse(renderVerifyEntryPage(prefillProduct), env, { cacheControl: 'no-store', request });
                 }
                 const verifySlugMatch = path.match(/^\/verify\/([a-z0-9-]+)$/);
                 if (verifySlugMatch) {
                     const result = await renderVerifyResultPage(verifySlugMatch[1], env);
                     if (!result) return notFound();
-                    return htmlPageResponse(result.html, env, { cacheControl: 'no-store' });
+                    return htmlPageResponse(result.html, env, { cacheControl: 'no-store', request });
                 }
 
                 // Legacy permalinks. Old ids were 16-char [a-z0-9]; the old

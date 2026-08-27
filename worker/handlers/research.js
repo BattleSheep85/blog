@@ -10,10 +10,10 @@ import {
     generateId, insertResearch, findResearchByCanonicalQuery,
     getResearchById, getResearchBySlug,
 } from '../lib/db.js';
-import { generateSlug, canonicalizeQuery, squashQuery, parseJsonSafe } from '../lib/utils.js';
+import { generateSlug, canonicalizeQuery, squashQuery, parseJsonSafe, safeUserFacingError } from '../lib/utils.js';
 import { screenQuery, rejectionMessage } from '../lib/safety.js';
 import { budgetExhausted } from '../pipeline/orchestrator.js';
-import { checkRateLimit } from '../lib/rate-limit.js';
+import { checkRateLimit, ipRateKey } from '../lib/rate-limit.js';
 import { checkBurstGate } from '../lib/burst-gate.js';
 import { getSessionUser, recordUserSearch } from '../lib/auth.js';
 import { apiStatus } from '../lib/status.js';
@@ -120,7 +120,7 @@ export async function handleStartResearch(request, env) {
     // KV window below to count correctly. Burst-blocked requests never touch
     // KV, so they do not consume hourly quota.
     const clientIp = request.headers.get('CF-Connecting-IP') || 'unknown';
-    const rateKey = `research:${clientIp}`;
+    const rateKey = await ipRateKey('research', clientIp, env);
     const burst = await checkBurstGate(env.RL_BURST, rateKey);
     const velocity = burst.allowed
         ? await checkRateLimit(env.KV, rateKey, 20, 3600)
@@ -146,7 +146,7 @@ export async function handleStartResearch(request, env) {
     // already returned above and never reach this check. Signed-in users are
     // exempt entirely.
     if (!sessionUser) {
-        const quota = await getQuota(env.KV, 'search', clientIp);
+        const quota = await getQuota(env.KV, 'search', clientIp, env);
         if (quota.remaining <= 0) {
             return jsonResponse({
                 error: 'Free limit reached — create a free account to keep searching.',
@@ -173,7 +173,7 @@ export async function handleStartResearch(request, env) {
     if (sessionUser) {
         await recordUserSearch(env.DB, sessionUser.id, id, normalizedQuery);
     } else {
-        await consumeQuota(env.KV, 'search', clientIp);
+        await consumeQuota(env.KV, 'search', clientIp, env);
     }
 
     // Enqueue research job (message shape unchanged — queue consumer keys on it).
@@ -204,7 +204,10 @@ export async function handleStartResearch(request, env) {
  * Returns current status. Designed for polling from the client.
  */
 export async function handleResearchStatus(reportId, env) {
-    const row = await getResearchById(env.DB, reportId);
+    let row = await getResearchById(env.DB, reportId);
+    if (!row) {
+        row = await getResearchBySlug(env.DB, reportId);
+    }
     if (!row) {
         return jsonResponse({ error: 'Report not found' }, 404);
     }
@@ -222,18 +225,18 @@ export async function handleResearchStatus(reportId, env) {
     }
 
     if (row.status === 'failed') {
-        const errMsg = parseJsonSafe(row.result, {}).error || 'Unknown error';
+        const errMsg = parseJsonSafe(row.result, {}).error;
         return jsonResponse({
             id: row.id,
             slug: row.slug,
             status: 'error',
-            error: errMsg,
+            error: safeUserFacingError(errMsg),
         });
     }
 
     // Return current status + progress for polling
-    const progress = await env.KV.get(`progress:${reportId}`, 'json');
-    const progressLog = await env.KV.get(`progress_log:${reportId}`, 'json') || [];
+    const progress = await env.KV.get(`progress:${row.id}`, 'json');
+    const progressLog = await env.KV.get(`progress_log:${row.id}`, 'json') || [];
     return jsonResponse({
         id: row.id,
         slug: row.slug,
@@ -259,7 +262,10 @@ export async function handleResearchStream(reportId, env, request) {
             };
 
           try {
-            const dbRow = await getResearchById(env.DB, reportId);
+            let dbRow = await getResearchById(env.DB, reportId);
+            if (!dbRow) {
+                dbRow = await getResearchBySlug(env.DB, reportId);
+            }
 
             if (!dbRow) {
                 send(9997, { type: 'error', error: 'Report not found' });
@@ -268,10 +274,10 @@ export async function handleResearchStream(reportId, env, request) {
             }
 
             // Completion comes from D1 (permanent), not the KV report: key
-            // (TTL'd) — mirrors handleResearchStatus.
+            // (TTL'd): mirrors handleResearchStatus.
             if (dbRow?.status === 'complete') {
                 const report = parseJsonSafe(dbRow.result, null);
-                const log = await env.KV.get(`progress_log:${reportId}`, 'json') || [];
+                const log = await env.KV.get(`progress_log:${dbRow.id}`, 'json') || [];
                 for (const entry of log) {
                     if (entry.step > lastEventId) {
                         send(entry.step, { type: 'progress', ...entry });
@@ -291,14 +297,14 @@ export async function handleResearchStream(reportId, env, request) {
 
             // Check for error
             if (dbRow?.status === 'failed') {
-                const errMsg = parseJsonSafe(dbRow.result, {}).error || 'Unknown error';
-                send(9998, { type: 'error', error: errMsg });
+                const errMsg = parseJsonSafe(dbRow.result, {}).error;
+                send(9998, { type: 'error', error: safeUserFacingError(errMsg) });
                 controller.close();
                 return;
             }
 
             // Send new progress entries since lastEventId
-            const log = await env.KV.get(`progress_log:${reportId}`, 'json') || [];
+            const log = await env.KV.get(`progress_log:${dbRow.id}`, 'json') || [];
             let maxStep = lastEventId;
             for (const entry of log) {
                 if (entry.step > lastEventId) {

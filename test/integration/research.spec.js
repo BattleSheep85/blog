@@ -5,8 +5,8 @@
 import { env } from 'cloudflare:test';
 import { beforeAll, describe, it, expect } from 'vitest';
 import { applySchema } from './_schema.js';
-import { handleStartResearch } from '../../worker/handlers/research.js';
-import { checkRateLimit } from '../../worker/lib/rate-limit.js';
+import { handleStartResearch, handleResearchStatus } from '../../worker/handlers/research.js';
+import { checkRateLimit, ipRateKey } from '../../worker/lib/rate-limit.js';
 import { generateId, insertResearch } from '../../worker/lib/db.js';
 import { canonicalizeQuery } from '../../worker/lib/utils.js';
 import { completeResearch, insertProductV2 } from './_helpers.js';
@@ -36,7 +36,8 @@ describe('handleStartResearch — wallet-DoS velocity throttle', () => {
   it('returns 429 + Retry-After once the per-IP hourly new-run cap (20) is hit', async () => {
     const ip = '203.0.113.7';
     // Pre-fill the SAME limiter key the handler uses so the next new run trips it.
-    for (let i = 0; i < 20; i++) await checkRateLimit(env.KV, `research:${ip}`, 20, 3600);
+    const key = await ipRateKey('research', ip, testEnv);
+    for (let i = 0; i < 20; i++) await checkRateLimit(env.KV, key, 20, 3600);
 
     const res = await handleStartResearch(
       post('best over-ear headphones for a quiet office', ip, { fresh: true }),
@@ -163,6 +164,33 @@ describe('handleStartResearch: forceFresh (internal benchmark bypass)', () => {
     expect(newRow).toBeTruthy();
     expect(newRow.id).toBe(bodyAuthed.id);
     expect(newRow.status).toBe('pending');
+  });
+});
+
+describe('handleResearchStatus', () => {
+  it('falls back to slug lookup when id lookup misses', async () => {
+    const id = generateId();
+    const slug = 'slug-research-' + id;
+    await insertResearch(env.DB, {
+      id,
+      slug,
+      query: 'best mechanical keyboard',
+      canonicalQuery: 'mech-kb-slug',
+    });
+    await completeResearch(env.DB, {
+      id,
+      status: 'complete',
+      summary: 'Done',
+      category: 'Keyboards',
+      result: '{"source_count":3}',
+      sources: '[]',
+    });
+    const res = await handleResearchStatus(slug, env);
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.id).toBe(id);
+    expect(body.slug).toBe(slug);
+    expect(body.status).toBe('completed');
   });
 });
 

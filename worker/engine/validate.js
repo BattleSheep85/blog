@@ -124,6 +124,14 @@ function clarificationValues(clarifications) {
   return Object.values(clarifications).filter((v) => typeof v === 'string');
 }
 
+// Field length and array size caps for persisted research objects.
+export const CAP_NAME = 120;
+export const CAP_VERDICT = 600;
+export const CAP_SUMMARY = 1200;
+export const CAP_PRO_CON = 240;
+export const CAP_PROS_CONS_COUNT = 10;
+export const CAP_PRODUCTS_COUNT = 20;
+
 /**
  * @param {object} data - raw synth JSON
  * @param {{ query?: string, topicalCategory?: string, clarifications?: object }} [ctx] - when set, drops cross-category products and enforces a stated price cap or floor
@@ -132,34 +140,47 @@ export function validateResearchResult(data, ctx = {}) {
   if (!data || typeof data !== 'object') throw new Error('Response is not an object');
   const obj = data;
 
-  const summary = typeof obj.summary === 'string' ? obj.summary : '';
-  const category = typeof obj.category === 'string' ? obj.category : 'General';
-  const methodology = typeof obj.methodology === 'string' ? obj.methodology : '';
+  const rawSummary = typeof obj.summary === 'string' ? obj.summary : '';
+  const summary = rawSummary.slice(0, CAP_SUMMARY);
+  const category = (typeof obj.category === 'string' ? obj.category : 'General').slice(0, 80);
+  const methodology = (typeof obj.methodology === 'string' ? obj.methodology : '').slice(0, 1200);
 
   if (!summary) throw new Error('Missing summary in response');
 
   const rawProducts = Array.isArray(obj.products) ? obj.products : [];
-  const products = rawProducts.slice(0, 20).map((p, i) => {
+  const products = rawProducts.slice(0, CAP_PRODUCTS_COUNT).map((p, i) => {
     // Drop items the LLM left under-specified — honest cards need pros AND cons.
     if (!p || typeof p !== 'object') {
       return { name: `Item ${i + 1}`, brand: '', price: null, rating: null, productUrl: '', manufacturerUrl: '', imageUrl: '', pros: [], cons: [], specs: {}, metadata: {}, verdict: '', rank: i + 1, bestFor: '' };
     }
     const prod = p;
+    const rawName = typeof prod.name === 'string' && prod.name ? prod.name : `Item ${i + 1}`;
+    const name = rawName.slice(0, CAP_NAME);
+    const brand = (typeof prod.brand === 'string' ? prod.brand : '').slice(0, 80);
+    const verdict = (typeof prod.verdict === 'string' ? prod.verdict : '').slice(0, CAP_VERDICT);
+    const bestFor = (typeof prod.bestFor === 'string' ? prod.bestFor : '').slice(0, 120);
+    const pros = (Array.isArray(prod.pros) ? prod.pros.filter((x) => typeof x === 'string') : [])
+      .map((x) => x.slice(0, CAP_PRO_CON))
+      .slice(0, CAP_PROS_CONS_COUNT);
+    const cons = (Array.isArray(prod.cons) ? prod.cons.filter((x) => typeof x === 'string') : [])
+      .map((x) => x.slice(0, CAP_PRO_CON))
+      .slice(0, CAP_PROS_CONS_COUNT);
+
     return {
-      name: typeof prod.name === 'string' && prod.name ? prod.name : `Item ${i + 1}`,
-      brand: typeof prod.brand === 'string' ? prod.brand : '',
+      name,
+      brand,
       price: typeof prod.price === 'number' ? prod.price : null,
       rating: typeof prod.rating === 'number' && prod.rating >= 0 && prod.rating <= 5 ? prod.rating : null,
       productUrl: typeof prod.productUrl === 'string' ? prod.productUrl : '',
       manufacturerUrl: typeof prod.manufacturerUrl === 'string' ? prod.manufacturerUrl : '',
       imageUrl: sanitizeImageUrl(prod.imageUrl),
-      pros: Array.isArray(prod.pros) ? prod.pros.filter((x) => typeof x === 'string') : [],
-      cons: Array.isArray(prod.cons) ? prod.cons.filter((x) => typeof x === 'string') : [],
+      pros,
+      cons,
       specs: coerceStringRecord(prod.specs),
       metadata: sanitizeMetadata(prod.metadata),
-      verdict: typeof prod.verdict === 'string' ? prod.verdict : '',
+      verdict,
       rank: typeof prod.rank === 'number' ? prod.rank : i + 1,
-      bestFor: typeof prod.bestFor === 'string' ? prod.bestFor : '',
+      bestFor,
     };
   });
 

@@ -40,24 +40,57 @@ describe('handleSubscribe', () => {
     expect((await handleSubscribe(postJson({ email: 'not-an-email' }), env)).status).toBe(400);
   });
   it('200 + persists a valid subscription (idempotent)', async () => {
-    expect((await (await handleSubscribe(postJson({ email: 'Fan@Example.com', researchId: 'r1' }), env)).json()).ok).toBe(true);
-    await handleSubscribe(postJson({ email: 'fan@example.com', researchId: 'r1' }), env); // dup → INSERT OR IGNORE
+    const rid = generateId();
+    expect((await (await handleSubscribe(postJson({ email: 'Fan@Example.com', researchId: rid }), env)).json()).ok).toBe(true);
+    await handleSubscribe(postJson({ email: 'fan@example.com', researchId: rid }), env); // dup → INSERT OR IGNORE
     const n = await env.DB.prepare("SELECT COUNT(*) n FROM subscribers WHERE email = 'fan@example.com'").first();
     expect(n.n).toBe(1);
   });
+  it('a well-formed id is stored as given', async () => {
+    const rid = generateId();
+    const res = await handleSubscribe(postJson({ email: 'wellformed@example.com', researchId: rid }), env);
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.ok).toBe(true);
+    const row = await env.DB.prepare("SELECT research_id FROM subscribers WHERE email = 'wellformed@example.com'").first();
+    expect(row.research_id).toBe(rid);
+  });
+  it('a malformed researchId returns 400 with error details', async () => {
+    const malformed = ['../../x', 'a'.repeat(200), 'abc'];
+    for (const badId of malformed) {
+      const res = await handleSubscribe(postJson({ email: 'badid@example.com', researchId: badId }), env);
+      expect(res.status).toBe(400);
+      const body = await res.json();
+      expect(body).toEqual({
+        ok: false,
+        error: 'invalid_research_id',
+        message: 'Invalid research ID.',
+      });
+    }
+  });
+  it('an absent researchId creates a general subscription with null research_id', async () => {
+    const res = await handleSubscribe(postJson({ email: 'general@example.com' }), env);
+    expect(res.status).toBe(200);
+    expect((await res.json()).ok).toBe(true);
+    const row = await env.DB.prepare("SELECT research_id FROM subscribers WHERE email = 'general@example.com'").first();
+    expect(row.research_id).toBe(null);
+  });
   it('stores an unsub_token + created_at (consent timestamp) on new rows', async () => {
     await handleSubscribe(postJson({ email: 'consent@example.com' }), env);
-    const row = await env.DB.prepare("SELECT unsub_token, created_at, unsubscribed_at FROM subscribers WHERE email='consent@example.com'").first();
+    const row = await env.DB.prepare("SELECT unsub_token, created_at, unsubscribed_at, research_id FROM subscribers WHERE email='consent@example.com'").first();
     expect(row.unsub_token).toBeTruthy();
     expect(row.created_at).toBeGreaterThan(0);
     expect(row.unsubscribed_at).toBe(null);
+    expect(row.research_id).toBe(null);
   });
 });
 
 describe('handleUnsubscribe', () => {
   it('a valid token unsubscribes every row for that email; bad/missing token 404/400', async () => {
-    await handleSubscribe(postJson({ email: 'bye@example.com', researchId: 'rA' }), env);
-    await handleSubscribe(postJson({ email: 'bye@example.com', researchId: 'rB' }), env);
+    const ridA = generateId();
+    const ridB = generateId();
+    await handleSubscribe(postJson({ email: 'bye@example.com', researchId: ridA }), env);
+    await handleSubscribe(postJson({ email: 'bye@example.com', researchId: ridB }), env);
     const row = await env.DB.prepare("SELECT unsub_token FROM subscribers WHERE email='bye@example.com' LIMIT 1").first();
     expect(row.unsub_token).toBeTruthy();
 

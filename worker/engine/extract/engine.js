@@ -116,14 +116,14 @@ export function analyze(query, notes, sources, facets = {}, topicalCategory = ''
   // rank by RATING first (quality — the cap already requires real evidence for a high
   // score), then credible-evidence mass as the tiebreaker. Ranking by mention-count
   // alone wrongly floats the "cheap alternative" above the actual top pick.
-  products.sort((a, b) => b.rating - a.rating || b._weight - a._weight);
+  const sortedProducts = [...products].sort((a, b) => b.rating - a.rating || b._weight - a._weight);
   if (typeof process !== 'undefined' && process.env && process.env.DEBUG_FUNNEL) {
-    console.error(`[funnel] harvested=${harvested.length} dropZeroProCon=${_zeroPC} dropCredible=${_corrob} passed=${products.length} → shown=${Math.min(products.length, 40)}`);
+    console.error(`[funnel] harvested=${harvested.length} dropZeroProCon=${_zeroPC} dropCredible=${_corrob} passed=${products.length} → shown=${Math.min(sortedProducts.length, 40)}`);
   }
   // Comprehensive but pipeline-safe: each shown product costs downstream ASIN + image +
   // con-selector work, so an unbounded list times out the queue consumer. 24 is ~2.5x the
   // old 10 (the "see them all" win) while staying within the per-run subrequest/time budget.
-  const capped = products.slice(0, 24);
+  const capped = sortedProducts.slice(0, 24);
   capped.forEach((p, i) => { p.rank = i + 1; });
   return capped;
 }

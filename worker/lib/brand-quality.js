@@ -44,5 +44,3 @@ export function isChurnBrand(brand) {
   return CHURN_BRANDS.has(norm);
 }
 
-// Exposed for tests / introspection.
-export const CHURN_BRAND_COUNT = CHURN_BRANDS.size;

@@ -1,17 +1,20 @@
 /**
  * Auth handlers + SSR account pages.
- * POST /api/auth/signup — create account, set session cookie
- * POST /api/auth/login  — verify password, set session cookie
- * POST /api/auth/logout — destroy session, clear cookie
- * GET  /account         — past searches (redirects to /login when signed out)
- * GET  /login           — sign in / create account page
+ * POST /api/auth/signup - create account, set session cookie
+ * POST /api/auth/login  - verify password, set session cookie
+ * POST /api/auth/logout - destroy session, clear cookie
+ * POST /api/account/delete - delete account, wipe rows
+ * GET  /api/account/export - export user data
+ * GET  /account         - past searches (redirects to /login when signed out)
+ * GET  /login           - sign in / create account page
  */
 
 import {
     createUser, findUserByEmail, verifyPassword, validEmail, validPassword,
     createSession, destroySession, clearSessionCookie, getSessionUser, getUserSearches,
+    deleteUser,
 } from '../lib/auth.js';
-import { checkRateLimit } from '../lib/rate-limit.js';
+import { checkRateLimit, ipRateKey } from '../lib/rate-limit.js';
 import { checkBurstGate } from '../lib/burst-gate.js';
 import { layout } from '../lib/html.js';
 import { escapeHtml, displayQuery } from '../lib/utils.js';
@@ -30,7 +33,7 @@ function jsonResponse(data, status = 200, extraHeaders = {}) {
 // one pre-write state and lands every attempt, each costing 100k PBKDF2 rounds.
 async function authRateLimited(request, env) {
     const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
-    const rateKey = `auth:${ip}`;
+    const rateKey = await ipRateKey('auth', ip, env);
     const burst = await checkBurstGate(env.RL_BURST, rateKey);
     const check = burst.allowed
         ? await checkRateLimit(env.KV, rateKey, 10, 3600)
@@ -83,7 +86,7 @@ export async function handleLogin(request, env) {
     if (!creds) return jsonResponse({ error: 'Invalid request body' }, 400);
 
     const user = await findUserByEmail(env.DB, creds.email);
-    // Same message for unknown email and wrong password — no account enumeration.
+    // Same message for unknown email and wrong password: no account enumeration.
     const failMsg = { error: 'Email or password is incorrect.' };
     if (!user) return jsonResponse(failMsg, 401);
     const ok = await verifyPassword(creds.password, user.password_hash);
@@ -100,6 +103,52 @@ export async function handleLogout(request, env) {
     }
     return jsonResponse({ ok: true }, 200, { 'Set-Cookie': clearSessionCookie() });
 }
+
+export async function handleDeleteAccount(request, env) {
+    const user = await getSessionUser(request, env);
+    if (!user) {
+        return jsonResponse({ error: 'Authentication required.' }, 401);
+    }
+    let body;
+    try { body = await request.json(); } catch { body = {}; }
+    if (body?.confirm !== 'DELETE') {
+        return jsonResponse({ error: 'Confirmation required. Pass {"confirm":"DELETE"} to delete your account.' }, 400);
+    }
+    await deleteUser(env.DB, user.id);
+    return jsonResponse({ ok: true, message: 'Account and associated data deleted.' }, 200, {
+        'Set-Cookie': clearSessionCookie(),
+    });
+}
+export const handleAccountDelete = handleDeleteAccount;
+
+export async function handleExportAccount(request, env) {
+    const user = await getSessionUser(request, env);
+    if (!user) {
+        return jsonResponse({ error: 'Authentication required.' }, 401);
+    }
+    const userRow = await env.DB.prepare('SELECT id, email, created_at FROM users WHERE id = ?1').bind(user.id).first();
+    if (!userRow) {
+        return jsonResponse({ error: 'User not found.' }, 404);
+    }
+    const searches = await getUserSearches(env.DB, user.id, 500);
+    const exportData = {
+        user: {
+            id: userRow.id,
+            email: userRow.email,
+            created_at: userRow.created_at,
+        },
+        searches: (searches || []).map((s) => ({
+            query: s.query,
+            slug: s.slug || null,
+            category: s.category || null,
+            status: s.status || null,
+            created_at: s.created_at,
+        })),
+        exported_at: Math.floor(Date.now() / 1000),
+    };
+    return jsonResponse(exportData, 200);
+}
+export const handleAccountExport = handleExportAccount;
 
 // --- SSR pages ----------------------------------------------------------------
 
@@ -178,14 +227,14 @@ function authForm(id, submitLabel, autocompletePw) {
 </form>`;
 }
 
-// What an account unlocks — honest, specific microcopy (no vague "unlock
+// What an account unlocks - honest, specific microcopy (no vague "unlock
 // premium features"): it bypasses the anonymous per-IP quota gates enforced
 // in worker/lib/rate-limit.js (5 mass searches / 10 verifies per IP).
 function accountBenefits() {
     return `<div class="mb-6 border-b border-line pb-6">
 <p class="font-mono text-[11px] uppercase tracking-widest text-ink-3">Why create an account</p>
 <div class="mt-3 space-y-2 font-mono text-xs text-ink-2">
-<div class="flex items-start gap-2"><span aria-hidden="true" class="mt-0.5 text-accent">[✓]</span><p>Bypass the free-quota limits &mdash; 5 mass searches / 10 verifies per IP without an account.</p></div>
+<div class="flex items-start gap-2"><span aria-hidden="true" class="mt-0.5 text-accent">[✓]</span><p>Bypass the free-quota limits: 5 mass searches / 10 verifies per IP without an account.</p></div>
 <div class="flex items-start gap-2"><span aria-hidden="true" class="mt-0.5 text-accent">[✓]</span><p>Search history synced across every device you sign in on.</p></div>
 <div class="flex items-start gap-2"><span aria-hidden="true" class="mt-0.5 text-accent">[✓]</span><p>Email used only for sign-in and the research alerts you opt into. No spam, ever.</p></div>
 </div>
@@ -225,6 +274,53 @@ const ACCOUNT_PAGE_SCRIPT = `<script nonce="__CSP_NONCE__" src="/js/list-layouts
   if(btn){
     btn.addEventListener('click',function(){
       fetch('/api/auth/logout',{method:'POST'}).then(function(){window.location.href='/'}).catch(function(){window.location.href='/'});
+    });
+  }
+  var exportBtn=document.getElementById('export-btn');
+  var deleteBtn=document.getElementById('delete-btn');
+  var actionMsg=document.getElementById('account-action-msg');
+  if(exportBtn){
+    exportBtn.addEventListener('click',function(){
+      if(actionMsg)actionMsg.textContent='Exporting data...';
+      fetch('/api/account/export')
+        .then(function(r){return r.json()})
+        .then(function(data){
+          var blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+          var url=URL.createObjectURL(blob);
+          var a=document.createElement('a');
+          a.href=url;
+          a.download='frank-account-export.json';
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          URL.revokeObjectURL(url);
+          if(actionMsg)actionMsg.textContent='Export complete.';
+        })
+        .catch(function(){
+          if(actionMsg)actionMsg.textContent='Failed to export data.';
+        });
+    });
+  }
+  if(deleteBtn){
+    deleteBtn.addEventListener('click',function(){
+      if(!confirm('Are you sure you want to permanently delete your account and all saved search history? This cannot be undone.'))return;
+      if(actionMsg)actionMsg.textContent='Deleting account...';
+      fetch('/api/account/delete',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({confirm:'DELETE'})
+      })
+        .then(function(r){return r.json()})
+        .then(function(d){
+          if(d&&d.ok){
+            window.location.href='/';
+          }else{
+            if(actionMsg)actionMsg.textContent=(d&&d.error)||'Failed to delete account.';
+          }
+        })
+        .catch(function(){
+          if(actionMsg)actionMsg.textContent='Network error. Try again.';
+        });
     });
   }
   var el=document.getElementById('account-history-list');
@@ -269,6 +365,14 @@ export async function renderAccountPage(request, env) {
 <div class="container mx-auto max-w-5xl px-6 py-10">
 <script type="application/json" id="account-history-data">${historyJson}</script>
 <div id="account-history-list" aria-live="polite"></div>
+<div class="mt-12 border-t border-line pt-8">
+<h2 class="font-mono text-xs font-semibold uppercase tracking-widest text-ink-3">Manage Account</h2>
+<div class="mt-4 flex flex-wrap gap-4">
+<button id="export-btn" type="button" class="border border-line bg-surface-1 px-4 py-2 font-mono text-xs font-semibold uppercase tracking-wide text-ink hover:border-line-strong">Export my data</button>
+<button id="delete-btn" type="button" class="border border-trust-low bg-trust-low-bg px-4 py-2 font-mono text-xs font-semibold uppercase tracking-wide text-trust-low hover:bg-trust-low hover:text-white">Delete account</button>
+</div>
+<p id="account-action-msg" role="status" aria-live="polite" class="mt-2 min-h-[1.25rem] font-mono text-xs text-ink-3"></p>
+</div>
 </div>`;
     return layout('Your research', 'Your past Frank searches.', body, '<meta name="robots" content="noindex, follow">' + ACCOUNT_PAGE_SCRIPT, { canonical: 'https://chrisputer.tech/account' });
 }

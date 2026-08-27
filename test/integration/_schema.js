@@ -13,11 +13,13 @@ import claims from '../../schema/010_claims.sql?raw';
 import productsNoFk from '../../schema/012_products_nofk.sql?raw';
 import verification from '../../schema/011_verification.sql?raw';
 import squashedQuery from '../../schema/014_squashed_query.sql?raw';
+import processingStarted from '../../schema/015_processing_started.sql?raw';
+import consentEvidence from '../../schema/016_subscribers_consent_evidence.sql?raw';
 
 export async function applySchema(db) {
   // 012 must precede 011: it drops the products->research FK so 011 can
   // rebuild `research` (mirrors the required prod ordering).
-  for (const sql of [init, guides, v2, subscribers, subscribersConsent, subscribersConfirm, keywords, users, claims, productsNoFk, verification, squashedQuery]) {
+  for (const sql of [init, guides, v2, subscribers, subscribersConsent, subscribersConfirm, keywords, users, claims, productsNoFk, verification, squashedQuery, processingStarted, consentEvidence]) {
     const stmts = sql.replace(/--[^\n]*/g, '').split(';').map((s) => s.trim()).filter(Boolean);
     for (const s of stmts) await db.prepare(s).run();
   }

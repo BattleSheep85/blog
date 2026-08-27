@@ -103,5 +103,27 @@ export async function runResearchCanonicalTests() {
     ok('solo cluster: no "newer report" banner', !html.includes('A newer report answers this question'));
   }
 
+  // 4. renderResearchResult returns status field on all rendered return paths.
+  {
+    const completeEntry = baseEntry({ status: 'complete' });
+    const completeRes = await renderResearchResult('best-widget', mockEnv(completeEntry, null));
+    ok('complete entry returns status === complete', completeRes.status === 'complete');
+
+    const pendingEntry = baseEntry({ status: 'pending' });
+    const pendingRes = await renderResearchResult('best-widget', mockEnv(pendingEntry, null));
+    ok('pending entry returns status === pending', pendingRes.status === 'pending');
+
+    const processingEntry = baseEntry({ status: 'processing' });
+    const processingRes = await renderResearchResult('best-widget', mockEnv(processingEntry, null));
+    ok('processing entry returns status === processing', processingRes.status === 'processing');
+
+    const failedEntry = baseEntry({ status: 'failed' });
+    const failedRes = await renderResearchResult('best-widget', mockEnv(failedEntry, null));
+    ok('failed entry returns status === failed', failedRes.status === 'failed');
+
+    const notFoundRes = await renderResearchResult('not-found-slug', mockEnv(null, null));
+    ok('missing entry returns Response object with status 404', notFoundRes instanceof Response && notFoundRes.status === 404);
+  }
+
   return report;
 }

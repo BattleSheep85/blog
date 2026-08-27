@@ -18,6 +18,20 @@ const MIN_BYTES = 1_000;
 // content, not a product image — reject rather than proxy it through the worker.
 const MAX_BYTES = 10 * 1024 * 1024;
 
+function createByteLimitStream(maxBytes) {
+    let bytes = 0;
+    return new TransformStream({
+        transform(chunk, controller) {
+            bytes += chunk.byteLength || chunk.length || 0;
+            if (bytes > maxBytes) {
+                controller.error(new Error(`Image exceeded max size of ${maxBytes} bytes`));
+                return;
+            }
+            controller.enqueue(chunk);
+        },
+    });
+}
+
 export async function handleProductImage(productId, env) {
     const row = await env.DB.prepare(
         'SELECT image_url FROM products WHERE id = ?1'
@@ -50,7 +64,9 @@ export async function handleProductImage(productId, env) {
         return notFoundImage();
     }
 
-    return new Response(upstream.body, {
+    const body = upstream.body ? upstream.body.pipeThrough(createByteLimitStream(MAX_BYTES)) : null;
+
+    return new Response(body, {
         headers: {
             'Content-Type': contentType,
             'Cache-Control': 'public, max-age=86400, s-maxage=604800, stale-while-revalidate=604800',

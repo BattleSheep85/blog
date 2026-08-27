@@ -4,6 +4,7 @@ import { env } from 'cloudflare:test';
 import { beforeAll, describe, it, expect } from 'vitest';
 import { applySchema } from './_schema.js';
 import { handleGetReport, handleFeedback } from '../../worker/handlers/report.js';
+import { checkRateLimit } from '../../worker/lib/rate-limit.js';
 import { generateId, insertResearch, updateResearchStatus } from '../../worker/lib/db.js';
 import { completeResearch, insertProductV2 } from './_helpers.js';
 
@@ -36,6 +37,17 @@ describe('handleGetReport', () => {
     expect(body.error).toBe('boom');
   });
 
+  it('200 + sanitizes raw sensitive errors on a failed run', async () => {
+    const id = generateId();
+    await insertResearch(env.DB, { id, slug: 's-' + id, query: 'q', canonicalQuery: 'q' });
+    await completeResearch(env.DB, { id, status: 'failed', result: JSON.stringify({ error: 'OpenRouter 403 Forbidden: https://openrouter.ai/api' }) });
+    const res = await handleGetReport(id, env);
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.status).toBe('error');
+    expect(body.error).toBe('Research failed');
+  });
+
   it('200 + completed report with products', async () => {
     const id = generateId();
     await insertResearch(env.DB, { id, slug: 's-' + id, query: 'best nas', canonicalQuery: 'nas2' });
@@ -47,6 +59,21 @@ describe('handleGetReport', () => {
     expect(body.status).toBe('completed');
     expect(body.products.length).toBe(1);
     expect(body.sourceCount).toBe(5);
+  });
+
+  it('200 for slug lookup when id lookup misses', async () => {
+    const id = generateId();
+    const slug = 'slug-test-' + id;
+    await insertResearch(env.DB, { id, slug, query: 'best nas', canonicalQuery: 'nas-slug' });
+    await completeResearch(env.DB, { id, status: 'complete', summary: 'S', category: 'NAS', result: JSON.stringify({ source_count: 5 }), sources: '[]' });
+    await insertProductV2(env.DB, { researchId: id, name: 'P1', rank: 1, rating: 4.5 });
+    const res = await handleGetReport(slug, env);
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.id).toBe(id);
+    expect(body.slug).toBe(slug);
+    expect(body.status).toBe('completed');
+    expect(body.products.length).toBe(1);
   });
 });
 
@@ -75,5 +102,21 @@ describe('handleFeedback', () => {
     expect((await res.json()).success).toBe(true);
     const fb = await env.DB.prepare('SELECT rating FROM feedback WHERE report_id = ?').bind(id).first();
     expect(fb.rating).toBe(4);
+  });
+  it('returns 429 + Retry-After when feedback rate limit (20/hr) is exceeded', async () => {
+    const ip = '203.0.113.80';
+    for (let i = 0; i < 20; i++) {
+      await checkRateLimit(env.KV, `feedback:${ip}`, 20, 3600);
+    }
+    const r = new Request('https://x/api/feedback', {
+      method: 'POST',
+      body: JSON.stringify({ reportId: id, rating: 5 }),
+      headers: { 'Content-Type': 'application/json', 'CF-Connecting-IP': ip },
+    });
+    const res = await handleFeedback(r, env);
+    expect(res.status).toBe(429);
+    expect(Number(res.headers.get('Retry-After'))).toBeGreaterThan(0);
+    const data = await res.json();
+    expect(data.error).toMatch(/too many/i);
   });
 });

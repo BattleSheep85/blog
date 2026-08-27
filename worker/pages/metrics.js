@@ -17,7 +17,8 @@
 // (schema/005) that may not be applied yet. Their queries are wrapped in
 // try/catch and degrade to zero/empty results if the table is missing.
 
-import { monthKey } from '../pipeline/orchestrator.js';
+import { monthKey, monthlyBudgetUsd } from '../pipeline/orchestrator.js';
+import { jsonResponse as sharedJsonResponse } from '../lib/http-response.js';
 import {
   ingestGsc,
   getGscSummary,
@@ -31,12 +32,8 @@ const DAY_SECONDS = 86400;
 const THIRTY_DAYS_SECONDS = 30 * DAY_SECONDS;
 
 function jsonResponse(body, status) {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: {
-      'Content-Type': 'application/json',
-      'Cache-Control': 'no-store',
-    },
+  return sharedJsonResponse(body, status, {
+    'Cache-Control': 'no-store',
   });
 }
 
@@ -64,7 +61,7 @@ async function getMonthSpend(env, nowSeconds) {
   } catch {
     spent = 0;
   }
-  const budget = Number(env.MONTHLY_BUDGET_USD || 60);
+  const budget = monthlyBudgetUsd(env);
   return {
     month,
     spent_usd: spent,

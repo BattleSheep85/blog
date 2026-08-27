@@ -2,6 +2,53 @@
 
 Last updated: 2026-08-26
 
+## 2026-08-26: whole-project review board audit
+
+Findings from a 14-persona board audit plus a live-site sweep of https://chrisputer.tech. All items verified against the code unless marked unverified.
+
+### Security and spend
+- [x] CRITICAL: POST /api/classify has no rate limit, no burst gate and no budget gate, and it passes canonical=null so the KV cache is skipped, making every anonymous request a paid OpenRouter call the monthly budget governor never sees (worker/index.js:120-136, worker/lib/classifier.js:254-265) (now burst gated, rate limited at 60/hr and cache-keyed via canonicalizeQuery).
+- [x] CRITICAL: five SQL-injection scanner probes became live, indexed, sitemap-listed report pages (paid runs, index pollution), for example /research/best-tax-software-for-self-employed-and-9323-utl-inaddr-get-host-address-chr-113-4g0k1i0o. Intake screening plus canonical clustering both let near-identical payloads through (worker/lib/safety.js, worker/lib/listable.js) (deterministic probe screen in worker/lib/safety.js isProbeQuery, prod rows purged).
+- [x] HIGH: /verify/:slug injects user text into an inline script with JSON.stringify, which does not escape a closing script tag, so a crafted product name breaks out into HTML. The CSP nonce blocks script execution, so the impact is HTML injection, not stored XSS (worker/pages/verify-page.js:221, :307) (jsonForScript in worker/lib/html.js).
+- [x] HIGH: the verification resubmit UPDATE checks neither kind='verification' nor ownership, so any caller with a report id can flip a failed ranking row back to pending and enqueue a paid run, outside the free-tier quota (worker/handlers/verify.js:145-160) (kind = 'verification' in the UPDATE).
+- [x] HIGH: read_page fetches any http URL the LLM chooses with no host allowlist and no private-IP block, which is an SSRF path driven by prompt injection if the gatherer ever runs on a host with LAN access (worker/engine/tools.js:643-651, worker/lib/jina.js:105-116) (worker/lib/url-guard.js isFetchableUrl, applied in worker/engine/tools.js and worker/lib/jina.js).
+- [x] HIGH: POST /api/feedback has no auth, no rate limit and no burst gate, allowing unbounded D1 inserts keyed on a public report id (worker/handlers/report.js:60-91) (burst gate + 20/hr).
+- [x] HIGH: the engine may spend up to 950 of 1000 subrequests before persistEngineResult runs ASIN resolution, image resolution, IndexNow and up to 100 SMTP sends, so a deep run can throw "Too many subrequests" after the money is spent (worker/engine/engine.js:46-47, worker/pipeline/orchestrator.js:186-191) (POST_ENGINE_RESERVE in worker/engine/engine.js).
+- [x] MEDIUM: the 20-minute reaper keys on created_at rather than on when processing started, so a row that waited in pending can be failed while its run is still in flight (worker/jobs.js:28-30) (processing_started_at, schema/015).
+- [x] MEDIUM: the flywheel budget gate reads only the racy KV counter instead of MAX(KV, D1 sum), so a lost KV write lets cron spend past the cap (worker/lib/keywords.js:102-105) (now budgetExhausted).
+- [x] MEDIUM: validate.js type-checks but never length-caps summary, name, verdict, pros and cons before they are written to D1 (worker/engine/validate.js:135-164) (missing length caps added in validate.js).
+
+### Privacy and compliance
+- [x] CRITICAL: Google AdSense loads on every page for every visitor with no consent mechanism anywhere in the repo, so EEA and UK visitors get advertising cookies before consent (public/index.html:43, public/best/*/index.html:37, worker/lib/http-response.js:109) (worker/lib/consent.js plus a first-party banner, EEA/UK/CH gated, fail closed when country is unknown).
+- [x] CRITICAL: quota keys embed the raw IP address and are written with no expirationTtl, so raw IPs are retained indefinitely, which contradicts the privacy policy claim that no raw IP is stored (worker/lib/quota.js:16,41, public/privacy.html:92,97) (worker/lib/ip-hash.js salted hashes, quota keys bumped to v2 with a 365 day TTL).
+- [x] HIGH: rate-limit keys also embed raw IPs, TTL-bounded but undisclosed (worker/lib/rate-limit.js:11) (ipRateKey).
+- [x] HIGH: the affiliate click IP hash falls back to an empty salt when neither IP_HASH_SALT nor WORKER_SECRET is set, and neither variable appears in wrangler.toml (worker/handlers/affiliate.js:251) (salted hash fallback in worker/lib/ip-hash.js).
+- [x] HIGH: expired sessions are never purged, despite a code comment claiming a periodic delete exists (worker/lib/auth.js:109,129) (purgeExpiredSessions on the cron).
+- [x] HIGH: the nav drawer stays in the tab order while visually hidden on every server-rendered page, because it is only translated off-screen (worker/lib/html.js:129, public/css/app.css:111) (hidden nav drawer removed from tab order in worker/lib/html.js and public/css/app.css).
+- [x] HIGH: on the main report page the affiliate CTAs render above the only inline FTC disclosure, and /reviews carries affiliate CTAs with no inline disclosure at all (worker/pages/research-page.js:306-310, worker/pages/reviews.js:41-119) (affiliate disclosure below the first buy link and missing on /reviews added).
+- [x] MEDIUM: there is no in-product account deletion or data export path (worker/handlers/auth.js, public/privacy.html:123) (POST /api/account/delete and GET /api/account/export, consent evidence fields in schema/016).
+- [x] MEDIUM: the privacy policy does not list Google Fonts as a third party, and understates local storage (search history and layout keys) (privacy policy updated for Google Fonts, local storage, retention, opt out).
+
+### Correctness and UX
+- [x] HIGH: the API status route, the SSE error event and GET /api/report/:id all return the raw stored error string, which the server-rendered page sanitizes but these paths do not (worker/handlers/research.js:229-231,295, worker/handlers/report.js:26) (safeUserFacingError).
+- [x] HIGH: nothing ever deletes a page cache key, so a failed render stays cached for up to an hour and a flywheel refresh can blank a live report page (worker/routes/pages.js:56-58, worker/lib/keywords.js:290) (purgePageCache on write, and only complete pages are cached now).
+- [x] HIGH: the forbidden "fake review detection" claim still ships in the PWA manifest, OpenSearch description, terms page, guide hub and README (public/manifest.webmanifest:10, public/opensearch.xml:4, public/terms.html:88, public/best/index.html:7,72, README.md:3) (fake review detection claims removed).
+- [x] MEDIUM: recall gather uses naive substring matching for evidence, so a short leader name matches incidental substrings and the recall phase skips the leader it exists to recover (worker/engine/recall-gather.js nameEvidenced) (word boundaries).
+- [x] MEDIUM: the clarify page form has no double-submit guard, so a double tap creates two rows and two paid runs (worker/pages/clarify.js:101-109) (double-submit guard in worker/pages/clarify.js).
+- [x] MEDIUM: /best/:slug loads every public row and filters in JS with no LIMIT (worker/pages/category.js:43-51) (LIMIT in worker/pages/category.js).
+- [x] MEDIUM: static HTML pages never receive the intended cacheable Cache-Control because the HTML branch returns before the override (worker/lib/http-response.js:140-157) (static HTML cache headers in worker/lib/http-response.js).
+- [ ] MEDIUM: www.chrisputer.tech is a configured worker route with no DNS record (wrangler.toml:8) (needs a DNS record added in Cloudflare, not a code change).
+- [x] MEDIUM: no Strict-Transport-Security header is sent anywhere (worker/lib/http-response.js:92-100) (Strict-Transport-Security in worker/lib/http-response.js).
+- [x] LOW: the PWA manifest still names the product TrueRank while every page says Frank (public/manifest.webmanifest:2-3) (Frank in public/manifest.webmanifest).
+- [x] LOW: README architecture tree, pipeline description and the truerank.io canonical note are stale (README.md:119-140, :194-195) (updated README.md).
+- [x] LOW: PRD.md still names GPT-5.4-mini and Claude as the synthesis stack (PRD.md:15,193,201,273) (updated PRD.md).
+- [x] LOW: CLAUDE.md still says deploys run through GitHub Actions, but deploys moved to GitLab CI on 2026-08-03 (CLAUDE.md:44, .github/workflows/deploy.yml:7) (updated CLAUDE.md).
+- [x] LOW: dead code, verified unused: runParallelEngine, the whole /api/internal/* handler set while the external worker is off, getClaimsByResearchId, markKeywordOutcome, CHURN_BRAND_COUNT, the duckduckgo provider module (dead code removed).
+- [x] LOW: scripts/backfill-reviews.mjs flips live rows to pending, and with the external worker off nothing claims pending rows, so the rows spin forever (scripts/backfill-reviews.mjs:64) (fixed in scripts/backfill-reviews.mjs).
+- [x] LOW: /favicon.ico returns 404 and the 404 page is bare text with no branded shell or link back (worker/lib/http-response.js:20-25) (branded 404 page and /favicon.ico in worker/lib/http-response.js).
+- [ ] LOW: the gitlab remote is behind and needs the owner's credentials to push, so GitLab CI is not the effective deploy path right now. Deploys are being done with the documented manual wrangler fallback.
+- [ ] LOW: IP_HASH_SALT is not set as a worker secret, so IP hashing currently falls back to WORKER_SECRET. Set a dedicated salt and record it in Bitwarden Secrets Manager.
+
 ## 2026-08-26: gather stability + query clustering work
 
 Improvements to query canonicalization, search gathering stability, and research run controls.

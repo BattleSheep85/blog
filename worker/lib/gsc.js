@@ -18,6 +18,7 @@ const DEFAULT_SITE = 'sc-domain:chrisputer.tech';
 const API_BASE = 'https://www.googleapis.com/webmasters/v3/sites';
 const URL_INSPECTION_ENDPOINT = 'https://searchconsole.googleapis.com/v1/urlInspection/index:inspect';
 const DAY_MS = 86_400_000;
+const GSC_FETCH_TIMEOUT_MS = 10_000;
 
 // Delay between URL Inspection calls. Google documents ~2000 inspections/day
 // and a low per-minute burst limit for this API; a fixed gap keeps a ~30-URL
@@ -85,6 +86,7 @@ async function getAccessToken(sa) {
 
     const res = await fetch(sa.token_uri || TOKEN_URI, {
         method: 'POST',
+        signal: AbortSignal.timeout(GSC_FETCH_TIMEOUT_MS),
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: `grant_type=${encodeURIComponent('urn:ietf:params:oauth:grant-type:jwt-bearer')}&assertion=${encodeURIComponent(jwt)}`,
     });
@@ -98,6 +100,7 @@ async function queryAnalytics(accessToken, site, body) {
     const url = `${API_BASE}/${encodeURIComponent(site)}/searchAnalytics/query`;
     const res = await fetch(url, {
         method: 'POST',
+        signal: AbortSignal.timeout(GSC_FETCH_TIMEOUT_MS),
         headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
     });
@@ -188,6 +191,7 @@ async function sleep(ms) {
 async function inspectUrl(accessToken, siteUrl, inspectionUrl) {
     const res = await fetch(URL_INSPECTION_ENDPOINT, {
         method: 'POST',
+        signal: AbortSignal.timeout(GSC_FETCH_TIMEOUT_MS),
         headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({ inspectionUrl, siteUrl }),
     });
@@ -370,7 +374,10 @@ export async function listSitemaps(env) {
     const token = await getAccessToken(sa);
     const site = siteUrl(env);
     const url = `${API_BASE}/${encodeURIComponent(site)}/sitemaps`;
-    const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
+    const res = await fetch(url, {
+        signal: AbortSignal.timeout(GSC_FETCH_TIMEOUT_MS),
+        headers: { Authorization: `Bearer ${token}` },
+    });
     if (!res.ok) {
         return { site, status: res.status, error: (await res.text()).slice(0, 500) };
     }
@@ -388,7 +395,10 @@ export async function listSites(env) {
     if (!sa) return { skipped: 'no GSC_SA_KEY' };
 
     const token = await getAccessToken(sa);
-    const res = await fetch(API_BASE, { headers: { Authorization: `Bearer ${token}` } });
+    const res = await fetch(API_BASE, {
+        signal: AbortSignal.timeout(GSC_FETCH_TIMEOUT_MS),
+        headers: { Authorization: `Bearer ${token}` },
+    });
     if (!res.ok) {
         return { status: res.status, error: (await res.text()).slice(0, 500) };
     }
@@ -409,7 +419,11 @@ export async function submitSitemap(env, feedpath) {
     const token = await getAccessToken(sa);
     const site = siteUrl(env);
     const url = `${API_BASE}/${encodeURIComponent(site)}/sitemaps/${encodeURIComponent(feedpath)}`;
-    const res = await fetch(url, { method: 'PUT', headers: { Authorization: `Bearer ${token}` } });
+    const res = await fetch(url, {
+        method: 'PUT',
+        signal: AbortSignal.timeout(GSC_FETCH_TIMEOUT_MS),
+        headers: { Authorization: `Bearer ${token}` },
+    });
     if (!res.ok) {
         return { site, feedpath, status: res.status, error: (await res.text()).slice(0, 500) };
     }

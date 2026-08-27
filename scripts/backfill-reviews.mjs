@@ -12,6 +12,11 @@
 // run re-queries the current targets, so re-running picks up whatever still needs work.
 import { execSync } from 'node:child_process';
 
+if (process.env.EXTERNAL_WORKER_ENABLED !== 'true') {
+  console.error('Refusing to run: EXTERNAL_WORKER_ENABLED is not true. Plain pending rows will not be claimed by any poller when the external worker is disabled.');
+  process.exit(1);
+}
+
 const DB = 'truerank-db';
 const BASE = 'https://chrisputer.tech';
 const arg = (k, d) => { const v = (process.argv.find((a) => a.startsWith(`--${k}=`)) || '').split('=')[1]; return v === undefined ? d : v; };

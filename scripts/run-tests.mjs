@@ -25,6 +25,7 @@ import { runVerdictTests } from '../test/unit/verdict.test.js';
 import { runVerifyTests } from '../test/unit/verify.test.js';
 import { runVerificationRenderTests } from '../test/unit/verification-render.test.js';
 import { runJinaTests } from '../test/unit/jina.test.js';
+import { runIpHashTests } from '../test/unit/ip-hash.test.js';
 import { runQuotaTests } from '../test/unit/quota.test.js';
 import { runConstraintsTests } from '../test/unit/constraints.test.js';
 import { runBurstGateTests } from '../test/unit/burst-gate.test.js';
@@ -43,8 +44,12 @@ import { runWorkerAuthTests } from '../test/unit/worker-auth.test.js';
 import { runGroundingCheckTests } from '../benchmarks/tests/grounding-check.test.mjs';
 import { runNoAnthropicOnOpenRouterTests } from '../benchmarks/tests/no-anthropic-on-openrouter.test.mjs';
 import { runClaudeCodeJudgeTests } from '../benchmarks/tests/claude-code-judge.test.mjs';
+import { runUrlGuardTests } from '../test/unit/url-guard.test.js';
+import { runSafetyTests } from '../test/unit/safety.test.js';
+import { runConsentTests } from '../test/unit/consent.test.js';
 
 const suites = [
+  ['consent', runConsentTests],
   ['credibility', runCredibilityTests],
   ['validate-quality-gate', runValidateTests],
   ['product-search', runProductSearchTests],
@@ -64,6 +69,7 @@ const suites = [
   ['verify', runVerifyTests],
   ['verification-render', runVerificationRenderTests],
   ['jina', runJinaTests], // async suite (awaited below)
+  ['ip-hash', runIpHashTests], // async suite (awaited below)
   ['quota', runQuotaTests], // async suite (awaited below)
   ['constraints', runConstraintsTests],
   ['burst-gate', runBurstGateTests], // async suite (awaited below)
@@ -84,6 +90,8 @@ const suites = [
   ['grounding-check', runGroundingCheckTests],
   ['no-anthropic-on-openrouter', runNoAnthropicOnOpenRouterTests],
   ['claude-code-judge', runClaudeCodeJudgeTests],
+  ['url-guard', runUrlGuardTests],
+  ['safety', runSafetyTests],
 ];
 
 let failed = 0;

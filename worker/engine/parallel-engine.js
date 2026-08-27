@@ -1,12 +1,15 @@
-// Parallel research engine v2 — burst, not loops.
+// Parallel research engine v2: burst, not loops.
 //
-// The lead planner decomposes the query into aspects WITH search queries, then
-// the engine fires EVERY search in parallel, reads the top credible pages in
+// Retired external-worker path. EXTERNAL_WORKER_ENABLED is false.
+// This is used only by the retired off-Cloudflare worker entrypoint (research-worker.mjs)
+// and its spec as a documented rollback path. The opening book and recall gather
+// live only in worker/engine/engine.js, so this path lacks them.
+//
+// The lead planner decomposes the query into aspects with search queries, then
+// the engine fires every search in parallel, reads the top credible pages in
 // parallel, extracts findings in a few batched LLM calls, and synthesizes once.
-// ~3-5 LLM calls total (vs ~50 for an agent loop), so wall-clock is dominated by
-// parallel I/O + synthesis, depth scales for ~free, and there are no runaway
-// loops. Same signature + return shape as runEngine() (drop-in). Built for the
-// off-Cloudflare worker, where concurrency/depth aren't capped.
+// About 3 to 5 LLM calls total (vs about 50 for an agent loop). Built for the
+// off-Cloudflare worker where concurrency and depth are not capped.
 
 import { runSearch, readPageInto } from './tools.js';
 import { buildSynthesisPrompt } from './prompts.js';

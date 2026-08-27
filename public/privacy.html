@@ -79,48 +79,70 @@
         </nav>
 
         <h1 class="font-serif text-h1 font-semibold text-ink">Privacy Policy</h1>
-        <p class="mt-3 text-caption text-ink-3">Last updated: June 12, 2026</p>
+        <p class="mt-3 text-caption text-ink-3">Last updated: August 26, 2026</p>
 
         <div class="mt-8 flex flex-col gap-5 text-body text-ink-2">
             <p class="text-lead">Frank (chrisputer.tech) is operated by Chrisputer Labs. We collect as little as we can get away with. This page explains exactly what we store, why, and what your choices are.</p>
 
             <h2 class="mt-6 font-serif text-h2 font-semibold text-ink">What we collect</h2>
             <ul class="flex flex-col gap-3">
-                <li class="flex gap-2"><span class="mt-0.5 shrink-0 text-accent">&bull;</span><span><strong class="text-ink">Search queries.</strong> The questions you submit are stored and may be published as public research pages. Don't put personal information in a search query.</span></li>
-                <li class="flex gap-2"><span class="mt-0.5 shrink-0 text-accent">&bull;</span><span><strong class="text-ink">Account data.</strong> If you create an account, we store your email address and a salted, one-way hash of your password (we never store the password itself), plus the list of searches you ran while signed in so you can revisit them.</span></li>
-                <li class="flex gap-2"><span class="mt-0.5 shrink-0 text-accent">&bull;</span><span><strong class="text-ink">Email subscriptions.</strong> If you ask to be notified about a report, we store that email for that purpose only.</span></li>
-                <li class="flex gap-2"><span class="mt-0.5 shrink-0 text-accent">&bull;</span><span><strong class="text-ink">Salted IP hashes.</strong> For rate limiting and click analytics we store a salted, truncated one-way hash of your IP address &mdash; never the raw IP. The secret salt is what makes the hash impractical to reverse back into an address.</span></li>
+                <li class="flex gap-2"><span class="mt-0.5 shrink-0 text-accent">&bull;</span><span><strong class="text-ink">Search queries.</strong> The questions you submit are stored and may be published as public research pages. Do not put personal information in a search query.</span></li>
+                <li class="flex gap-2"><span class="mt-0.5 shrink-0 text-accent">&bull;</span><span><strong class="text-ink">Account data.</strong> If you create an account, we store your email address and a salted, one-way hash of your password (we never store the password itself), plus the list of searches you ran while signed in so you can revisit them across devices.</span></li>
+                <li class="flex gap-2"><span class="mt-0.5 shrink-0 text-accent">&bull;</span><span><strong class="text-ink">Email subscriptions.</strong> If you ask to be notified when a report is ready, we store your email address, a salted IP hash, and consent metadata for that notification purpose only.</span></li>
+                <li class="flex gap-2"><span class="mt-0.5 shrink-0 text-accent">&bull;</span><span><strong class="text-ink">Salted IP hashes.</strong> For rate limiting, lifetime quota counters, and affiliate click logging, we store a salted, one-way hash of your IP address (using WebCrypto SHA-256), never the raw address. The secret salt makes the hash impractical to reverse back into an IP address.</span></li>
                 <li class="flex gap-2"><span class="mt-0.5 shrink-0 text-accent">&bull;</span><span><strong class="text-ink">Chat messages.</strong> Messages you send to the "Talk about it" assistant are processed to generate a reply and are not stored by us afterwards.</span></li>
             </ul>
 
-            <h2 class="mt-6 font-serif text-h2 font-semibold text-ink">What we don't collect</h2>
-            <p>No advertising profiles built by us, no sale of personal data, no third-party trackers beyond the services listed below, no raw IP logs, no fingerprinting.</p>
+            <h2 class="mt-6 font-serif text-h2 font-semibold text-ink">What we do not collect</h2>
+            <p>No advertising profiles built by us, no sale of personal data, no third-party trackers beyond the services listed below, no raw IP logs, and no fingerprinting.</p>
 
             <h2 class="mt-6 font-serif text-h2 font-semibold text-ink">Cookies and local storage</h2>
+            <p>We use a minimal set of cookies and local storage keys:</p>
             <ul class="flex flex-col gap-3">
-                <li class="flex gap-2"><span class="mt-0.5 shrink-0 text-accent">&bull;</span><span><strong class="text-ink">Theme preference</strong> is kept in your browser's local storage. It never leaves your device.</span></li>
-                <li class="flex gap-2"><span class="mt-0.5 shrink-0 text-accent">&bull;</span><span><strong class="text-ink">Session cookie.</strong> Signing in sets one HttpOnly, Secure cookie that keeps you signed in for 30 days. Signing out deletes it.</span></li>
-                <li class="flex gap-2"><span class="mt-0.5 shrink-0 text-accent">&bull;</span><span><strong class="text-ink">Advertising cookies.</strong> See the advertising section below.</span></li>
+                <li class="flex gap-2"><span class="mt-0.5 shrink-0 text-accent">&bull;</span><span><strong class="text-ink">Session cookie (<code>tr_sess</code>).</strong> When you sign in, we set an HttpOnly, Secure, SameSite=Lax session cookie named <code>tr_sess</code> that keeps you signed in for 30 days. Signing out deletes this cookie.</span></li>
+                <li class="flex gap-2"><span class="mt-0.5 shrink-0 text-accent">&bull;</span><span><strong class="text-ink">Consent cookie (<code>ads_consent</code>).</strong> Stores your choice for advertising cookies (<code>1</code> for accepted, <code>0</code> for declined). It lasts 180 days.</span></li>
+                <li class="flex gap-2"><span class="mt-0.5 shrink-0 text-accent">&bull;</span><span><strong class="text-ink">Theme preference (<code>theme</code>).</strong> Stored in browser localStorage to remember light or dark mode. It never leaves your device.</span></li>
+                <li class="flex gap-2"><span class="mt-0.5 shrink-0 text-accent">&bull;</span><span><strong class="text-ink">Search history (<code>truerank_history</code>).</strong> Stored in browser localStorage to display your recent searches on this device. It never leaves your device unless you sign in to sync history.</span></li>
+                <li class="flex gap-2"><span class="mt-0.5 shrink-0 text-accent">&bull;</span><span><strong class="text-ink">Layout preferences (<code>truerank_list_layout</code>, <code>truerank_history_layout</code>).</strong> Stored in browser localStorage to remember your preferred view (spreadsheet, cards, compact, or timeline). They never leave your device.</span></li>
+                <li class="flex gap-2"><span class="mt-0.5 shrink-0 text-accent">&bull;</span><span><strong class="text-ink">Advertising cookies.</strong> Set by Google AdSense only when consent is granted. See below.</span></li>
             </ul>
 
             <h2 class="mt-6 font-serif text-h2 font-semibold text-ink">Advertising (Google AdSense)</h2>
-            <p>We display ads served by Google AdSense. Google, as a third-party vendor, uses cookies to serve ads based on your prior visits to this and other websites. Google's use of advertising cookies enables it and its partners to serve personalized ads. You can opt out of personalized advertising at <a href="https://www.google.com/settings/ads" class="text-accent hover:text-accent-hover" rel="noopener noreferrer" target="_blank">Google Ads Settings</a>, or opt out of many third-party vendors' cookies at <a href="https://www.aboutads.info/choices/" class="text-accent hover:text-accent-hover" rel="noopener noreferrer" target="_blank">aboutads.info</a>. Google's own privacy practices are described in the <a href="https://policies.google.com/technologies/partner-sites" class="text-accent hover:text-accent-hover" rel="noopener noreferrer" target="_blank">Google partner sites policy</a>.</p>
+            <p>We display ads served by Google AdSense. Visitors in the European Economic Area (EEA), the United Kingdom, and Switzerland are asked for consent before advertising cookies are set. If you decline consent, ad cookies are not set and personalized ads are not served. Google and its partners use advertising cookies to serve ads based on your visits to this and other websites. You can opt out of personalized advertising at <a href="https://www.google.com/settings/ads" class="text-accent hover:text-accent-hover" rel="noopener noreferrer" target="_blank">Google Ads Settings</a>, or opt out of many third-party vendors' cookies at <a href="https://www.aboutads.info/choices/" class="text-accent hover:text-accent-hover" rel="noopener noreferrer" target="_blank">aboutads.info</a>. Google's own privacy practices are described in the <a href="https://policies.google.com/technologies/partner-sites" class="text-accent hover:text-accent-hover" rel="noopener noreferrer" target="_blank">Google partner sites policy</a>.</p>
 
             <h2 class="mt-6 font-serif text-h2 font-semibold text-ink">Affiliate links</h2>
             <p>As an Amazon Associate, Chrisputer Labs earns from qualifying purchases. Outbound buy links may carry an affiliate tag; retailers may set their own cookies when you click through. Affiliate relationships never influence our rankings. See our full disclosure on the <a href="/about" class="text-accent hover:text-accent-hover">About page</a>.</p>
 
             <h2 class="mt-6 font-serif text-h2 font-semibold text-ink">Other services we rely on</h2>
             <ul class="flex flex-col gap-3">
+                <li class="flex gap-2"><span class="mt-0.5 shrink-0 text-accent">&bull;</span><span><strong class="text-ink">Google Fonts.</strong> We load fonts from <code>fonts.googleapis.com</code> and <code>fonts.gstatic.com</code> on every page. Loading fonts sends your IP address and browser user agent to Google to serve the font files.</span></li>
                 <li class="flex gap-2"><span class="mt-0.5 shrink-0 text-accent">&bull;</span><span><strong class="text-ink">Cloudflare</strong> hosts the site and provides cookieless, privacy-first analytics (Cloudflare Web Analytics).</span></li>
-                <li class="flex gap-2"><span class="mt-0.5 shrink-0 text-accent">&bull;</span><span><strong class="text-ink">Google Search</strong> &mdash; for products Amazon doesn't sell, our <code>/find</code> link redirects you to a Google search for your query; that query is sent to Google as part of the redirect.</span></li>
+                <li class="flex gap-2"><span class="mt-0.5 shrink-0 text-accent">&bull;</span><span><strong class="text-ink">Google Search.</strong> For products Amazon does not sell, our <code>/find</code> link redirects you to a Google search for your query; that query is sent to Google as part of the redirect.</span></li>
                 <li class="flex gap-2"><span class="mt-0.5 shrink-0 text-accent">&bull;</span><span><strong class="text-ink">AI providers.</strong> Research and chat are generated by large language models accessed through OpenRouter. Queries are processed to produce reports and replies.</span></li>
                 <li class="flex gap-2"><span class="mt-0.5 shrink-0 text-accent">&bull;</span><span><strong class="text-ink">Search providers.</strong> We send the words you type into the search box to Serper.dev, Brave Search, DuckDuckGo, and Hacker News search (through Algolia). This helps us find review pages for your report.</span></li>
-                <li class="flex gap-2"><span class="mt-0.5 shrink-0 text-accent">&bull;</span><span><strong class="text-ink">Page reader.</strong> To read the text of a review or product page, we send its web address to Jina Reader (r.jina.ai). If that service can't read a page, or the page is a video, we fetch it directly instead. Only the page address goes to these services, not personal data.</span></li>
+                <li class="flex gap-2"><span class="mt-0.5 shrink-0 text-accent">&bull;</span><span><strong class="text-ink">Page reader.</strong> To read the text of a review or product page, we send its web address to Jina Reader (r.jina.ai). If that service cannot read a page, or the page is a video, we fetch it directly instead. Only the page address goes to these services, not personal data.</span></li>
                 <li class="flex gap-2"><span class="mt-0.5 shrink-0 text-accent">&bull;</span><span><strong class="text-ink">Email notifications.</strong> If you ask for an email when a report is ready, we store your address in our database (Cloudflare D1) and send the message through Hostinger, our mailbox provider. Your address is used only for the notifications you requested. Every notification contains a one-click unsubscribe link.</span></li>
             </ul>
 
+            <h2 class="mt-6 font-serif text-h2 font-semibold text-ink">Data retention</h2>
+            <ul class="flex flex-col gap-3">
+                <li class="flex gap-2"><span class="mt-0.5 shrink-0 text-accent">&bull;</span><span><strong class="text-ink">Quota counters.</strong> Free-tier quota records in KV storage expire automatically after 365 days.</span></li>
+                <li class="flex gap-2"><span class="mt-0.5 shrink-0 text-accent">&bull;</span><span><strong class="text-ink">Rate-limit windows.</strong> Rate-limiting records expire within seconds to one hour depending on the endpoint.</span></li>
+                <li class="flex gap-2"><span class="mt-0.5 shrink-0 text-accent">&bull;</span><span><strong class="text-ink">Email subscriptions.</strong> Active subscriptions remain until you unsubscribe. Unconfirmed subscription requests that are not verified within 30 days are automatically deleted.</span></li>
+                <li class="flex gap-2"><span class="mt-0.5 shrink-0 text-accent">&bull;</span><span><strong class="text-ink">Accounts and sessions.</strong> Account data is retained until you delete your account. Session tokens expire after 30 days, and expired sessions are purged on a regular schedule.</span></li>
+            </ul>
+
             <h2 class="mt-6 font-serif text-h2 font-semibold text-ink">Your choices and rights</h2>
-            <p>You can use the entire research side of the site without an account. To delete your account, your search history, or a subscription email, <a href="/contact" class="text-accent hover:text-accent-hover">contact us</a> from the relevant email address and we'll remove it. Depending on where you live (e.g. EU/EEA under GDPR, California under CCPA), you may have rights to access, correct, or delete personal data we hold about you — the same contact address handles those requests.</p>
+            <p>You can use the entire research side of the site without an account. Signed-in users can export all their stored data as JSON or delete their account at any time on the <a href="/account" class="text-accent hover:text-accent-hover">Account page</a>. To remove a subscription email, use the one-click link in any email or <a href="/contact" class="text-accent hover:text-accent-hover">contact us</a>. Depending on where you live (such as the EU/EEA under GDPR or California under CCPA/CPRA), you have rights to access, correct, export, or delete personal data we hold about you.</p>
+
+            <div class="mt-4 rounded-xl border border-line bg-surface-1 p-5">
+                <h3 class="font-serif text-h3 font-semibold text-ink">Opt out of advertising cookies (CCPA / CPRA)</h3>
+                <p class="mt-2 text-body-sm text-ink-2">Any visitor can opt out of personalized advertising cookies at any time. Clicking the button below sets your advertising consent to declined (<code>ads_consent=0</code>).</p>
+                <div class="mt-4 flex flex-wrap items-center gap-3">
+                    <button id="optout-ads-btn" type="button" class="border border-line bg-surface-2 px-4 py-2 font-mono text-xs font-semibold uppercase tracking-wide text-ink hover:border-line-strong hover:text-accent">Opt out of advertising cookies</button>
+                    <span id="optout-status" class="font-mono text-xs text-trust-high" role="status" aria-live="polite"></span>
+                </div>
+            </div>
 
             <h2 class="mt-6 font-serif text-h2 font-semibold text-ink">Children</h2>
             <p>This site is not directed at children under 13 and we do not knowingly collect personal information from them.</p>
@@ -164,17 +186,27 @@
     <script nonce="__CSP_NONCE__">
         (function () {
             var btn = document.getElementById('theme-toggle');
-            if (!btn) return;
-            function sync(isDark) {
-                var moon = document.getElementById('icon-moon'), sun = document.getElementById('icon-sun');
-                if (moon && sun) { moon.classList.toggle('hidden', !isDark); sun.classList.toggle('hidden', isDark); }
+            if (btn) {
+                function sync(isDark) {
+                    var moon = document.getElementById('icon-moon'), sun = document.getElementById('icon-sun');
+                    if (moon && sun) { moon.classList.toggle('hidden', !isDark); sun.classList.toggle('hidden', isDark); }
+                }
+                sync(document.documentElement.classList.contains('dark'));
+                btn.addEventListener('click', function () {
+                    var isDark = document.documentElement.classList.toggle('dark');
+                    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+                    sync(isDark);
+                });
             }
-            sync(document.documentElement.classList.contains('dark'));
-            btn.addEventListener('click', function () {
-                var isDark = document.documentElement.classList.toggle('dark');
-                localStorage.setItem('theme', isDark ? 'dark' : 'light');
-                sync(isDark);
-            });
+
+            var optOutBtn = document.getElementById('optout-ads-btn');
+            if (optOutBtn) {
+                optOutBtn.addEventListener('click', function () {
+                    document.cookie = 'ads_consent=0; Path=/; Max-Age=15552000; SameSite=Lax; Secure';
+                    var status = document.getElementById('optout-status');
+                    if (status) status.textContent = 'Advertising cookies declined (ads_consent=0).';
+                });
+            }
         })();
     </script>
 <script nonce="__CSP_NONCE__" src="/js/frank-egg.js" defer></script>

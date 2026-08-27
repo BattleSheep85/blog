@@ -276,11 +276,13 @@ ${adSlot(env, 'top', 'Advertisement')}
 <div class="reviews-shell mt-6 items-start gap-8 sm:grid sm:grid-cols-[15rem_minmax(0,1fr)]">
 ${sidebar}
 <div>
+<h2 class="sr-only">Product reviews list</h2>
 <div class="mb-4 flex flex-wrap items-baseline justify-between gap-x-5 gap-y-3 border-b border-line pb-3">
 <p class="font-mono text-xs text-ink-2"><strong class="readout text-ink">${total.toLocaleString()}</strong> product${total === 1 ? '' : 's'}</p>
 <div class="flex flex-wrap items-center gap-x-4 gap-y-0.5"><span class="font-mono text-[11px] uppercase tracking-widest text-ink-3">Sort</span>${sortLinks}</div>
 </div>
 ${chipsRow}
+<p class="affiliate-disclosure mb-4 font-mono text-[11px] text-ink-3">We may earn an affiliate commission on qualifying purchases made through links on this page. Rankings remain independent and objective.</p>
 ${resultsHtml}
 ${pagerHtml}
 ${numberedPagerHtml}

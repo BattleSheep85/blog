@@ -5,6 +5,18 @@
  */
 
 import { isNotModified } from './utils.js';
+import { requiresConsent, hasAdsConsent, hasConsentCookie, renderConsentBanner } from './consent.js';
+
+export function jsonResponse(data, status = 200, extraHeaders = {}) {
+    return new Response(JSON.stringify(data), {
+        status,
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Content-Type-Options': 'nosniff',
+            ...extraHeaders,
+        },
+    });
+}
 
 export function suggestJson(data) {
     return new Response(JSON.stringify(data), {
@@ -12,12 +24,50 @@ export function suggestJson(data) {
             'Content-Type': 'application/json',
             'Cache-Control': 'public, max-age=300, s-maxage=300, stale-while-revalidate=600',
             'Vary': 'Accept-Encoding',
+            'X-Content-Type-Options': 'nosniff',
         },
     });
 }
 
-// Plain-text 404 that still carries the standard security headers.
-export function notFound() {
+// 404 response: small branded HTML 404 with links to / and /research when client accepts HTML,
+// plain text otherwise. Both carry standard security headers.
+export function notFound(requestOrAccept) {
+    const accept = typeof requestOrAccept === 'string'
+        ? requestOrAccept
+        : (requestOrAccept?.headers?.get('Accept') || requestOrAccept?.headers?.get('accept') || '');
+    const isHtml = accept.includes('text/html');
+
+    if (isHtml) {
+        const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>404 Not Found — TrueRank</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; padding: 2rem; background: #0f172a; color: #f8fafc; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 80vh; }
+    h1 { font-size: 3rem; margin: 0 0 0.5rem 0; color: #38bdf8; }
+    p { font-size: 1.125rem; color: #94a3b8; max-width: 480px; margin: 0 0 2rem 0; line-height: 1.5; }
+    .links { display: flex; gap: 1rem; }
+    a { color: #38bdf8; text-decoration: none; font-weight: 500; padding: 0.5rem 1rem; border: 1px solid #38bdf8; border-radius: 0.375rem; transition: background 0.2s; }
+    a:hover { background: rgba(56, 189, 248, 0.1); }
+  </style>
+</head>
+<body>
+  <h1>404 Not Found</h1>
+  <p>The page you requested could not be found.</p>
+  <div class="links">
+    <a href="/">Home</a>
+    <a href="/research">Research</a>
+  </div>
+</body>
+</html>`;
+        return withSecurityHeaders(new Response(html, {
+            status: 404,
+            headers: { 'Content-Type': 'text/html;charset=utf-8', 'Cache-Control': 'no-store' },
+        }), null);
+    }
+
     return withSecurityHeaders(new Response('Not found', {
         status: 404,
         headers: { 'Content-Type': 'text/plain;charset=utf-8', 'Cache-Control': 'no-store' },
@@ -92,6 +142,7 @@ export function makeNonce() {
 
 export function withSecurityHeaders(res, nonce, body) {
     const headers = new Headers(res.headers);
+    headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
     headers.set('X-Content-Type-Options', 'nosniff');
     headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
     headers.set('X-Frame-Options', 'DENY');
@@ -102,11 +153,22 @@ export function withSecurityHeaders(res, nonce, body) {
 
 // Serve a server-rendered HTML page: nonce substitution, AdSense loader +
 // Cloudflare Insights injection (nonce'd), Last-Modified, cache headers.
-export function htmlPageResponse(body, env, { status = 200, lastModifiedSec, cacheControl } = {}) {
+export function htmlPageResponse(body, env, { status = 200, lastModifiedSec, cacheControl, request } = {}) {
     const nonce = makeNonce();
     let out = body.replaceAll('__CSP_NONCE__', nonce);
-    if (env.ADSENSE_PUBLISHER_ID) {
+
+    const needsConsent = requiresConsent(request);
+    const hasConsent = hasAdsConsent(request);
+    const consentDecided = hasConsentCookie(request);
+
+    if (env.ADSENSE_PUBLISHER_ID && (!needsConsent || hasConsent)) {
         out = out.replace('</head>', `<script async nonce="${nonce}" src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-${env.ADSENSE_PUBLISHER_ID}" crossorigin="anonymous"></script>\n</head>`);
+    } else if (env.ADSENSE_PUBLISHER_ID && needsConsent && !consentDecided) {
+        if (out.includes('</body>')) {
+            out = out.replace('</body>', `${renderConsentBanner(nonce)}\n</body>`);
+        } else {
+            out += renderConsentBanner(nonce);
+        }
     }
     if (env.CF_ANALYTICS_TOKEN) {
         out = out.replace('</body>', `<script defer nonce="${nonce}" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"${env.CF_ANALYTICS_TOKEN}"}'></script></body>`);
@@ -137,10 +199,18 @@ export async function serveAsset(request, env, overrideUrl) {
         return notFound();
     }
     const contentType = res.headers.get('Content-Type') || '';
+    const pathname = new URL(overrideUrl || request.url).pathname;
+    const longLived = /\.(?:svg|png|jpe?g|gif|webp|avif|ico|woff2?|webmanifest)$/i.test(pathname);
+    const cacheControl = longLived
+        ? 'public, max-age=604800, stale-while-revalidate=2592000'
+        : 'public, max-age=3600, stale-while-revalidate=604800';
+
     if (contentType.includes('text/html')) {
         const nonce = makeNonce();
         const html = (await res.text()).replaceAll('__CSP_NONCE__', nonce);
-        return withSecurityHeaders(res, nonce, html);
+        const out = withSecurityHeaders(res, nonce, html);
+        out.headers.set('Cache-Control', cacheControl);
+        return out;
     }
     // The [assets] binding serves static files with `max-age=0, must-revalidate`,
     // forcing a conditional round-trip on every repeat visit. Override with a
@@ -150,10 +220,6 @@ export async function serveAsset(request, env, overrideUrl) {
     // effectively never change → long fresh window; css/js change on deploy → short
     // fresh window so updates land within ~an hour.
     const out = withSecurityHeaders(res, null);
-    const pathname = new URL(overrideUrl || request.url).pathname;
-    const longLived = /\.(?:svg|png|jpe?g|gif|webp|avif|ico|woff2?|webmanifest)$/i.test(pathname);
-    out.headers.set('Cache-Control', longLived
-        ? 'public, max-age=604800, stale-while-revalidate=2592000'
-        : 'public, max-age=3600, stale-while-revalidate=604800');
+    out.headers.set('Cache-Control', cacheControl);
     return out;
 }

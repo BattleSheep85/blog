@@ -306,5 +306,38 @@ export function runValidateTests() {
     ],
   }).products.length, 3);
 
+  // Length and array size capping (data integrity defense)
+  {
+    const longName = 'N'.repeat(200);
+    const longVerdict = 'V'.repeat(1000);
+    const longSummary = 'S'.repeat(2000);
+    const longPro = 'P'.repeat(500);
+    const longCon = 'C'.repeat(500);
+    const manyPros = Array.from({ length: 25 }, (_, i) => `Pro ${i}: ${longPro}`);
+    const manyCons = Array.from({ length: 25 }, (_, i) => `Con ${i}: ${longCon}`);
+    const manyProducts = Array.from({ length: 30 }, (_, i) => ({
+      name: i === 0 ? longName : `Product ${i + 1}`,
+      rating: 4.5,
+      verdict: i === 0 ? longVerdict : 'Solid performer across all tests.',
+      pros: i === 0 ? manyPros : ['pro1'],
+      cons: i === 0 ? manyCons : ['con1'],
+    }));
+
+    const r = validateResearchResult({
+      summary: longSummary,
+      category: 'Electronics',
+      products: manyProducts,
+    });
+
+    eq('summary capped at 1200', r.summary.length, 1200);
+    eq('products array capped at 20', r.products.length, 20);
+    eq('first product name capped at 120', r.products[0].name.length, 120);
+    eq('first product verdict capped at 600', r.products[0].verdict.length, 600);
+    eq('first product pros capped at 10 items', r.products[0].pros.length, 10);
+    eq('first product cons capped at 10 items', r.products[0].cons.length, 10);
+    eq('each pro capped at 240 chars', r.products[0].pros[0].length, 240);
+    eq('each con capped at 240 chars', r.products[0].cons[0].length, 240);
+  }
+
   return report;
 }

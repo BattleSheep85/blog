@@ -139,12 +139,6 @@ export async function findRankingForCategory(db, category, limit = 3) {
     return { research, products: productRows.results ?? [] };
 }
 
-// -- Claims (verification pipeline; see schema/010_claims.sql) --
-
-export async function getClaimsByResearchId(db, researchId) {
-    return db.prepare('SELECT * FROM claims WHERE research_id = ? ORDER BY created_at ASC')
-        .bind(researchId).all();
-}
 
 // -- Affiliate Clicks --
 

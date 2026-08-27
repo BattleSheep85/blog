@@ -33,7 +33,8 @@ function fetchListingRows(env, { searchQuery, perPage, offset }) {
       extraWhere: `r.query LIKE ?1 ESCAPE '\\'`,
       tail: 'LIMIT ?2 OFFSET ?3',
     });
-    const escaped = `%${escapeLikeWildcards(searchQuery)}%`;
+    const capped = searchQuery.slice(0, 40);
+    const escaped = `%${escapeLikeWildcards(capped)}%`;
     return env.DB.prepare(sql).bind(escaped, perPage + 1, offset).all();
   }
   const sql = listableRowsSql({
@@ -225,6 +226,7 @@ ${categoryStrip}
 
 ${renderSearchChip(searchQuery)}
 
+<h2 class="sr-only">Research archive</h2>
 ${grid}
 
 ${renderPrevNext(page, hasMore, searchQuery)}

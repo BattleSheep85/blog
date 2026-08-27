@@ -1,3 +1,5 @@
+import { isFetchableUrl } from './url-guard.js';
+
 const JINA_TIMEOUT_MS = 8000;
 const DIRECT_TIMEOUT_MS = 8000;
 const MAX_CONTENT_LENGTH = 15_000;
@@ -48,6 +50,7 @@ const defaultSleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
  * two-arg call sites used throughout the codebase.
  */
 export async function fetchPageContent(url, apiKey, opts = {}) {
+  if (!isFetchableUrl(url)) return '';
   const fetchImpl = opts.fetchImpl ?? fetch;
   const sleepImpl = opts.sleepImpl ?? defaultSleep;
   const started = Date.now();
@@ -103,6 +106,7 @@ export async function fetchPageContent(url, apiKey, opts = {}) {
  * readable text without any DOM library. Returns '' on any failure; never throws.
  */
 async function fetchDirect(url, fetchImpl = fetch) {
+  if (!isFetchableUrl(url)) return '';
   try {
     const response = await fetchImpl(url, {
       signal: AbortSignal.timeout(DIRECT_TIMEOUT_MS),

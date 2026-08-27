@@ -4,9 +4,10 @@ import { apiStatus } from '../../worker/lib/status.js';
 import { STATIC_GUIDES, STATIC_GUIDE_SLUGS, GUIDES_LASTMOD } from '../../worker/lib/guides.js';
 import { ENGINE_CONFIG } from '../../worker/lib/engine-config.js';
 import { adSlot } from '../../worker/lib/ads.js';
-import { html, raw, jsonLdScript, layout } from '../../worker/lib/html.js';
+import { html, raw, jsonForScript, jsonLdScript, layout } from '../../worker/lib/html.js';
 import { searchBar } from '../../worker/lib/search-bar.js';
 import { screenQuery, rejectionMessage } from '../../worker/lib/safety.js';
+import { buildResearchSeo } from '../../worker/pages/research-jsonld.js';
 
 export function runLibPureTests() {
   const report = { passed: 0, failed: 0, failures: [] };
@@ -47,7 +48,9 @@ export function runLibPureTests() {
   eq('html joins arrays (raw + escaped)', html`${[raw('<i>'), '<x>']}`, '<i>&lt;x&gt;');
   eq('html null → empty', html`a${null}b`, 'ab');
   eq('raw brand', raw('<b>').__html, '<b>');
-  ok('jsonLdScript escapes <', jsonLdScript({ a: '</script>' }).includes('\\u003c/script>'));
+  ok('jsonLdScript escapes <', jsonLdScript({ a: '</script>' }).includes('\\u003c/script\\u003e'));
+  ok('jsonForScript escapes closing script tag', jsonForScript('</script><script>').includes('\\u003c/script\\u003e'));
+  ok('jsonForScript escapes &', jsonForScript('rock & roll').includes('rock \\u0026 roll'));
 
   // html.js layout() — exercise the meta branches + capDescription
   {
@@ -91,6 +94,27 @@ export function runLibPureTests() {
   ok('safety does NOT block "developer mode" queries', !screenQuery('best android phone with developer mode').blocked);
   eq('safety blocks illegal', screenQuery('how to make counterfeit money').reason, 'illegal');
   ok('safety empty query is allowed (not blocked)', !screenQuery('').blocked);
+
+  // research-jsonld.js: priceValidUntil is rolling and in the future
+  {
+    const today = new Date().toISOString().split('T')[0];
+    const seo = buildResearchSeo({
+      entry: { status: 'complete', created_at: 1000000, query: 'best nas' },
+      products: [{ name: 'NAS Pro', price: 299, product_url: 'https://www.amazon.com/dp/B0TEST1234', pros: [] }],
+      affiliateIds: {},
+      pageUrl: 'https://chrisputer.tech/research/best-nas',
+      displayTitle: 'Best NAS',
+      lastModifiedTs: 1000000,
+      hasBuyersGuide: false,
+      buyersGuide: null,
+      isService: false,
+    });
+    const match = seo.structuredData.match(/"priceValidUntil":"([^"]+)"/);
+    ok('priceValidUntil found in structuredData', !!match);
+    if (match) {
+      ok('priceValidUntil is in the future', match[1] > today);
+    }
+  }
 
   return report;
 }

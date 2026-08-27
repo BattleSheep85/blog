@@ -52,19 +52,29 @@ async function injectRecentReports(request, env) {
   if (asset.status === 404) return notFound();
 
   const contentType = asset.headers.get('Content-Type') || '';
+  const pathname = new URL(request.url).pathname;
+  const longLived = /\.(?:svg|png|jpe?g|gif|webp|avif|ico|woff2?|webmanifest)$/i.test(pathname);
+  const cacheControl = longLived
+    ? 'public, max-age=604800, stale-while-revalidate=2592000'
+    : 'public, max-age=3600, stale-while-revalidate=604800';
+
   if (!contentType.includes('text/html')) {
-    return withSecurityHeaders(asset, null);
+    const out = withSecurityHeaders(asset, null);
+    out.headers.set('Cache-Control', cacheControl);
+    return out;
   }
 
   let html = await asset.text();
   if (html.includes(MARKER)) {
     const section = await recentReportsSection(env).catch(() => '');
-    html = html.replace(MARKER, section);
+    html = html.replace(MARKER, () => section);
   }
 
   const nonce = makeNonce();
   html = html.replaceAll('__CSP_NONCE__', nonce);
-  return withSecurityHeaders(asset, nonce, html);
+  const out = withSecurityHeaders(asset, nonce, html);
+  out.headers.set('Cache-Control', cacheControl);
+  return out;
 }
 
 export async function renderHome(request, env) {

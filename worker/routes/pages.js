@@ -16,6 +16,20 @@ import { listableRowsSql } from '../lib/listable.js';
 
 // --- Server-rendered research page with KV page cache ---------------------
 
+export async function purgePageCache(env, slug) {
+    if (!env?.KV || !slug) return;
+    const cacheKey = `page:${CACHE_VERSION}:${slug}`;
+    const cacheMetaKey = `page:${CACHE_VERSION}:${slug}:lm`;
+    try {
+        await Promise.all([
+            env.KV.delete(cacheKey).catch(() => {}),
+            env.KV.delete(cacheMetaKey).catch(() => {}),
+        ]);
+    } catch {
+        // never throws
+    }
+}
+
 export async function handleResearchPage(slug, url, request, env, ctx) {
     const fromQuery = url.searchParams.get('from');
     // ?src=... renders a clean-link (no affiliate tags) variant for community
@@ -41,7 +55,7 @@ export async function handleResearchPage(slug, url, request, env, ctx) {
             const lm = cachedLm ? parseInt(cachedLm, 10) || undefined : undefined;
             const notModified = maybe304(ifModifiedSince, lm);
             if (notModified) return notModified;
-            return htmlPageResponse(cached, env, { lastModifiedSec: lm });
+            return htmlPageResponse(cached, env, { lastModifiedSec: lm, request });
         }
     }
 
@@ -52,14 +66,15 @@ export async function handleResearchPage(slug, url, request, env, ctx) {
         return withSecurityHeaders(result, null);
     }
 
-    // Cache completed/failed pages only (not the live-processing variant).
-    if (!fromQuery && !cleanLinks && !result.html.includes('id="processing"')) {
+    // Cache completed pages only (not failed or in-flight processing variants).
+    // Cached body is consent-neutral by construction; htmlPageResponse injects ads/banner per request.
+    if (!fromQuery && !cleanLinks && result.status === 'complete') {
         ctx.waitUntil(env.KV.put(cacheKey, result.html, { expirationTtl: 3600 }));
         ctx.waitUntil(env.KV.put(cacheMetaKey, String(result.lastModified), { expirationTtl: 3600 }));
     }
     const notModified = maybe304(ifModifiedSince, result.lastModified);
     if (notModified) return notModified;
-    return htmlPageResponse(result.html, env, { lastModifiedSec: result.lastModified });
+    return htmlPageResponse(result.html, env, { lastModifiedSec: result.lastModified, request });
 }
 
 // GET /best/:slug — static guide asset wins; dynamic category hub is the
@@ -84,6 +99,7 @@ export async function handleBestHub(slug, request, env) {
     if (!html) return notFound();
     return htmlPageResponse(html, env, {
         cacheControl: 'public, max-age=300, s-maxage=300, stale-while-revalidate=3600',
+        request,
     });
 }
 
@@ -135,7 +151,7 @@ export async function handleNewResearch(request, url, env) {
                 return htmlPageResponse(
                     renderClarifyPage(query, classification.clarifying_questions, env),
                     env,
-                    { cacheControl: 'no-store' },
+                    { cacheControl: 'no-store', request },
                 );
             }
         } catch { /* classifier failure: fall open and proceed without the grill */ }

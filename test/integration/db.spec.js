@@ -6,6 +6,7 @@ import init from '../../schema/001_initial.sql?raw';
 import guides from '../../schema/002_guide_clicks.sql?raw';
 import v2 from '../../schema/003_research_v2.sql?raw';
 import squashedQuery from '../../schema/014_squashed_query.sql?raw';
+import processingStarted from '../../schema/015_processing_started.sql?raw';
 import * as db from '../../worker/lib/db.js';
 import { completeResearch, insertProductV2 } from './_helpers.js';
 
@@ -22,6 +23,7 @@ beforeAll(async () => {
   await applySql(guides);
   await applySql(v2);
   await applySql(squashedQuery);
+  await applySql(processingStarted);
 });
 
 describe('db.js', () => {

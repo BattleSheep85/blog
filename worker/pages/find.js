@@ -13,7 +13,7 @@
  */
 
 import { logGuideClick } from '../lib/db.js';
-import { checkRateLimit } from '../lib/rate-limit.js';
+import { checkRateLimit, ipRateKey } from '../lib/rate-limit.js';
 
 export async function handleFind(request, url, env) {
     const q = (url.searchParams.get('q') || '').trim().slice(0, 200);
@@ -23,7 +23,8 @@ export async function handleFind(request, url, env) {
     // redirect) is throttled per IP so a scripted loop can't flood guide_clicks.
     try {
         const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
-        const lim = await checkRateLimit(env.KV, `find:${ip}`, 30, 3600);
+        const rateKey = await ipRateKey('find', ip, env);
+        const lim = await checkRateLimit(env.KV, rateKey, 30, 3600);
         if (lim.allowed) {
             const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(ip));
             const ipHash = Array.from(new Uint8Array(digest)).map((b) => b.toString(16).padStart(2, '0')).join('').slice(0, 16);

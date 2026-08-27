@@ -65,8 +65,9 @@ const tokenFor = (email) => env.DB.prepare('SELECT confirm_token FROM subscriber
 
 describe('subscribe: double opt-in', () => {
   it('stores an unconfirmed row and sends exactly one confirmation', async () => {
+    const rid = generateId();
     const { calls, transport } = recordingTransport();
-    const res = await handleSubscribe(postJson({ email: 'new@example.test', researchId: 'r-conf' }, '10.0.0.1'), mailEnv(transport));
+    const res = await handleSubscribe(postJson({ email: 'new@example.test', researchId: rid }, '10.0.0.1'), mailEnv(transport));
     expect(res.status).toBe(200);
     expect(await res.json()).toEqual({ ok: true });
 
@@ -92,10 +93,11 @@ describe('subscribe: double opt-in', () => {
   });
 
   it('a repeat signup inside the cooldown sends nothing and still answers ok', async () => {
+    const rid = generateId();
     const { calls, transport } = recordingTransport();
     const mail = mailEnv(transport);
-    await handleSubscribe(postJson({ email: 'dup@example.test', researchId: 'r-dup' }, '10.0.0.3'), mail);
-    const second = await handleSubscribe(postJson({ email: 'dup@example.test', researchId: 'r-dup' }, '10.0.0.3'), mail);
+    await handleSubscribe(postJson({ email: 'dup@example.test', researchId: rid }, '10.0.0.3'), mail);
+    const second = await handleSubscribe(postJson({ email: 'dup@example.test', researchId: rid }, '10.0.0.3'), mail);
     expect(second.status).toBe(200);
     expect(await second.json()).toEqual({ ok: true });
     expect(calls).toHaveLength(1);
@@ -104,12 +106,14 @@ describe('subscribe: double opt-in', () => {
   });
 
   it('a second report for a confirmed address is added with no new mail', async () => {
+    const ridA = generateId();
+    const ridB = generateId();
     const { calls, transport } = recordingTransport();
     const mail = mailEnv(transport);
-    await handleSubscribe(postJson({ email: 'proven@example.test', researchId: 'r-a' }, '10.0.0.4'), mail);
+    await handleSubscribe(postJson({ email: 'proven@example.test', researchId: ridA }, '10.0.0.4'), mail);
     const token = (await tokenFor('proven@example.test')).confirm_token;
     await handleConfirm(new Request(`https://x/confirm?token=${token}`), mail);
-    await handleSubscribe(postJson({ email: 'proven@example.test', researchId: 'r-b' }, '10.0.0.4'), mail);
+    await handleSubscribe(postJson({ email: 'proven@example.test', researchId: ridB }, '10.0.0.4'), mail);
 
     const rows = await env.DB.prepare("SELECT research_id, confirmed_at FROM subscribers WHERE email = 'proven@example.test' ORDER BY research_id").all();
     expect(rows.results).toHaveLength(2);
@@ -118,8 +122,9 @@ describe('subscribe: double opt-in', () => {
   });
 
   it('a failed send leaves confirm_sent_at unset so the next submit retries', async () => {
+    const rid = generateId();
     const { transport } = recordingTransport('throw');
-    await handleSubscribe(postJson({ email: 'retry@example.test', researchId: 'r-retry' }, '10.0.0.5'), mailEnv(transport));
+    await handleSubscribe(postJson({ email: 'retry@example.test', researchId: rid }, '10.0.0.5'), mailEnv(transport));
     const row = await env.DB.prepare("SELECT confirm_sent_at, confirm_send_count FROM subscribers WHERE email = 'retry@example.test'").first();
     expect(row.confirm_sent_at).toBe(null);
     expect(row.confirm_send_count).toBe(0);
@@ -140,10 +145,12 @@ describe('subscribe: double opt-in', () => {
 
 describe('confirm route', () => {
   it('confirms every pending row of the address and is idempotent', async () => {
+    const rid1 = generateId();
+    const rid2 = generateId();
     const { transport } = recordingTransport();
     const mail = mailEnv(transport);
-    await handleSubscribe(postJson({ email: 'multi@example.test', researchId: 'r-1' }, '10.0.0.6'), mail);
-    await handleSubscribe(postJson({ email: 'multi@example.test', researchId: 'r-2' }, '10.0.0.6'), mail);
+    await handleSubscribe(postJson({ email: 'multi@example.test', researchId: rid1 }, '10.0.0.6'), mail);
+    await handleSubscribe(postJson({ email: 'multi@example.test', researchId: rid2 }, '10.0.0.6'), mail);
     const token = (await tokenFor('multi@example.test')).confirm_token;
 
     const res = await handleConfirm(new Request(`https://x/confirm?token=${token}`), mail);
@@ -165,8 +172,9 @@ describe('confirm route', () => {
   });
 
   it('refuses an expired link and changes nothing', async () => {
+    const rid = generateId();
     const { transport } = recordingTransport();
-    await handleSubscribe(postJson({ email: 'old@example.test', researchId: 'r-old' }, '10.0.0.7'), mailEnv(transport));
+    await handleSubscribe(postJson({ email: 'old@example.test', researchId: rid }, '10.0.0.7'), mailEnv(transport));
     const token = (await tokenFor('old@example.test')).confirm_token;
     const stale = Math.floor(Date.now() / 1000) - CONFIRM_TTL_S - 60;
     await env.DB.prepare("UPDATE subscribers SET confirm_sent_at = ?1 WHERE email = 'old@example.test'").bind(stale).run();
@@ -260,13 +268,35 @@ describe('notify: report ready', () => {
     expect((await notifySubscribersForResearch(mail, { researchId: 'r', query: 'q', slug: '' })).reason).toBe('no-target');
     expect(calls).toHaveLength(0);
   });
+
+  it('batches notifications and defers overflow rows without updating last_notified_at', async () => {
+    const rid = generateId();
+    const subscribers = Array.from({ length: 30 }, (_, i) => ({
+      email: `sub${i}@example.test`,
+      confirmedAt: 100,
+    }));
+    await seed(rid, subscribers);
+    const { calls, transport } = recordingTransport();
+    const result = await notifySubscribersForResearch(mailEnv(transport), { researchId: rid, query: 'best laptops', slug: `slug-${rid}` });
+
+    expect(result.sent).toBe(25);
+    expect(result.deferred).toBe(5);
+    expect(calls).toHaveLength(25);
+
+    const notified = await env.DB.prepare("SELECT COUNT(*) n FROM subscribers WHERE research_id = ?1 AND last_notified_at IS NOT NULL").bind(rid).first();
+    expect(notified.n).toBe(25);
+
+    const deferred = await env.DB.prepare("SELECT COUNT(*) n FROM subscribers WHERE research_id = ?1 AND last_notified_at IS NULL").bind(rid).first();
+    expect(deferred.n).toBe(5);
+  });
 });
 
 describe('unsubscribe receipt', () => {
   it('removes every row for the address and sends one receipt', async () => {
+    const rid = generateId();
     const { calls, transport } = recordingTransport();
     const mail = mailEnv(transport);
-    await handleSubscribe(postJson({ email: 'bye@example.test', researchId: 'r-x' }, '10.0.0.8'), mail);
+    await handleSubscribe(postJson({ email: 'bye@example.test', researchId: rid }, '10.0.0.8'), mail);
     const row = await env.DB.prepare("SELECT unsub_token FROM subscribers WHERE email = 'bye@example.test'").first();
 
     const res = await handleUnsubscribe(new Request(`https://x/unsubscribe?token=${row.unsub_token}`, { method: 'POST' }), mail);
@@ -281,9 +311,10 @@ describe('unsubscribe receipt', () => {
   });
 
   it('a repeat click changes nothing and sends no second receipt', async () => {
+    const rid = generateId();
     const { calls, transport } = recordingTransport();
     const mail = mailEnv(transport);
-    await handleSubscribe(postJson({ email: 'twice@example.test', researchId: 'r-y' }, '10.0.0.9'), mail);
+    await handleSubscribe(postJson({ email: 'twice@example.test', researchId: rid }, '10.0.0.9'), mail);
     const row = await env.DB.prepare("SELECT unsub_token FROM subscribers WHERE email = 'twice@example.test'").first();
     const link = new Request(`https://x/unsubscribe?token=${row.unsub_token}`, { method: 'POST' });
     await handleUnsubscribe(link, mail);

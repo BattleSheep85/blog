@@ -6,7 +6,7 @@
  * first. Additive-only — no ranking-page behavior is touched.
  */
 
-import { layout } from '../lib/html.js';
+import { layout, jsonForScript } from '../lib/html.js';
 import { escapeHtml, displayQuery, isValidHttpsUrl, parseJsonSafe } from '../lib/utils.js';
 import { getResearchBySlug, findRankingForCategory } from '../lib/db.js';
 import { buildAffiliateUrl, retailerLabel, resolveAmazonTag } from '../lib/affiliate-links.js';
@@ -216,9 +216,9 @@ ${isNeedsInput ? renderUrlPromptMarkup(row.preview) : ''}
 
 <script nonce="__CSP_NONCE__">
 (function(){
-  var reportId = ${JSON.stringify(row.id)};
-  var slug = ${JSON.stringify(row.slug)};
-  var product = ${JSON.stringify(row.query)};
+  var reportId = ${jsonForScript(row.id)};
+  var slug = ${jsonForScript(row.slug)};
+  var product = ${jsonForScript(row.query)};
   var needsInput = ${isNeedsInput ? 'true' : 'false'};
 
   function poll() {
@@ -231,7 +231,7 @@ ${isNeedsInput ? renderUrlPromptMarkup(row.preview) : ''}
             document.getElementById('verify-status-text').textContent = 'Waiting for a product URL…';
             var promptBox = document.getElementById('verify-url-prompt');
             promptBox.style.display = '';
-            promptBox.innerHTML = ${JSON.stringify('')};
+            promptBox.innerHTML = ${jsonForScript('')};
             renderPrompt(data.message);
           }
           setTimeout(poll, 3000);
@@ -304,7 +304,7 @@ ${isNeedsInput ? renderUrlPromptMarkup(row.preview) : ''}
     });
   }
 
-  if (needsInput) renderPrompt(${JSON.stringify(row.preview || '')});
+  if (needsInput) renderPrompt(${jsonForScript(row.preview || '')});
   setTimeout(poll, needsInput ? 3000 : 1500);
 })();
 </script>`;
