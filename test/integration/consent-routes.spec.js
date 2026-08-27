@@ -75,7 +75,10 @@ beforeAll(async () => {
 
 describe('Consent & AdSense gating on major page routes', () => {
   const routes = [
-    { name: 'research page', path: `/research/${researchSlug}` },
+    { name: 'home page (static asset with recent reports)', path: '/' },
+    { name: 'best index page (static asset with recent reports)', path: '/best' },
+    { name: 'static guide page', path: '/best/mechanical-keyboards-under-100' },
+    { name: 'server-rendered research page', path: `/research/${researchSlug}` },
     { name: 'browse page', path: '/research' },
     { name: 'reviews page', path: '/reviews' },
     { name: 'history page', path: '/history' },
@@ -84,6 +87,7 @@ describe('Consent & AdSense gating on major page routes', () => {
     { name: 'category hub page', path: '/best/nas' },
     { name: 'login page', path: '/login' },
     { name: 'frank easter-egg page', path: '/frank' },
+    { name: 'generic static html asset', path: '/about.html' },
   ];
 
   for (const route of routes) {
@@ -96,6 +100,15 @@ describe('Consent & AdSense gating on major page routes', () => {
       const body = await res.text();
       expect(body).toContain(ADSENSE_SCRIPT);
       expect(body).not.toContain(CONSENT_BANNER);
+
+      // Verify CSP header and injected AdSense script tag carry the exact same nonce
+      const csp = res.headers.get('Content-Security-Policy') || '';
+      const cspNonceMatch = csp.match(/'nonce-([^']+)'/);
+      expect(cspNonceMatch).not.toBeNull();
+      const cspNonce = cspNonceMatch[1];
+      const scriptNonceMatch = body.match(/<script async nonce="([^"]+)" src="https:\/\/pagead2\.googlesyndication\.com/);
+      expect(scriptNonceMatch).not.toBeNull();
+      expect(scriptNonceMatch[1]).toBe(cspNonce);
     });
 
     it(`DE visitor without consent cookie gets consent banner and no AdSense script on ${route.name} (${route.path})`, async () => {
@@ -107,6 +120,15 @@ describe('Consent & AdSense gating on major page routes', () => {
       const body = await res.text();
       expect(body).not.toContain(ADSENSE_SCRIPT);
       expect(body).toContain(CONSENT_BANNER);
+
+      // Verify CSP header and injected consent banner script tag carry the exact same nonce
+      const csp = res.headers.get('Content-Security-Policy') || '';
+      const cspNonceMatch = csp.match(/'nonce-([^']+)'/);
+      expect(cspNonceMatch).not.toBeNull();
+      const cspNonce = cspNonceMatch[1];
+      const bannerNonceMatch = body.match(/<script nonce="([^"]+)">\s*document\.getElementById\('consent-accept'\)/);
+      expect(bannerNonceMatch).not.toBeNull();
+      expect(bannerNonceMatch[1]).toBe(cspNonce);
     });
   }
 
@@ -179,4 +201,30 @@ describe('Consent & AdSense gating on major page routes', () => {
     expect(bodyDEDeclined).not.toContain(ADSENSE_SCRIPT);
     expect(bodyDEDeclined).not.toContain(CONSENT_BANNER);
   });
+});
+
+describe('Revenue regression pinning: static home, static guide, and server-rendered pages', () => {
+  const pinnedSurfaces = [
+    { surface: 'home page (static asset)', path: '/' },
+    { surface: 'static guide page under /best/', path: '/best/mechanical-keyboards-under-100' },
+    { surface: 'server-rendered page', path: `/research/${researchSlug}` },
+  ];
+
+  for (const { surface, path } of pinnedSurfaces) {
+    it(`US visitor receives AdSense loader on ${surface} (${path})`, async () => {
+      const res = await SELF.fetch(new Request(`${BASE}${path}`, { cf: { country: 'US' } }));
+      expect(res.status).toBe(200);
+      const body = await res.text();
+      expect(body).toContain(ADSENSE_SCRIPT);
+      expect(body).not.toContain(CONSENT_BANNER);
+    });
+
+    it(`DE visitor without consent receives consent banner and NOT loader on ${surface} (${path})`, async () => {
+      const res = await SELF.fetch(new Request(`${BASE}${path}`, { cf: { country: 'DE' } }));
+      expect(res.status).toBe(200);
+      const body = await res.text();
+      expect(body).toContain(CONSENT_BANNER);
+      expect(body).not.toContain(ADSENSE_SCRIPT);
+    });
+  }
 });

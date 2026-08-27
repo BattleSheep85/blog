@@ -11,7 +11,7 @@
 
 import { escapeHtml, displayQuery, timeAgo } from '../lib/utils.js';
 import { listableRowsSql } from '../lib/listable.js';
-import { notFound, withSecurityHeaders, makeNonce } from '../lib/http-response.js';
+import { notFound, withSecurityHeaders, injectHtml } from '../lib/http-response.js';
 
 const RECENT_HOME_LIMIT = 6;
 const MARKER = '<!--RECENT_REPORTS-->';
@@ -70,9 +70,8 @@ async function injectRecentReports(request, env) {
     html = html.replace(MARKER, () => section);
   }
 
-  const nonce = makeNonce();
-  html = html.replaceAll('__CSP_NONCE__', nonce);
-  const out = withSecurityHeaders(asset, nonce, html);
+  const { html: outHtml, nonce } = injectHtml(html, env, request);
+  const out = withSecurityHeaders(asset, nonce, outHtml);
   out.headers.set('Cache-Control', cacheControl);
   return out;
 }

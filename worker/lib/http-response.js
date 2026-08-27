@@ -151,9 +151,10 @@ export function withSecurityHeaders(res, nonce, body) {
     return new Response(body !== undefined ? body : res.body, { status: res.status, headers });
 }
 
-// Serve a server-rendered HTML page: nonce substitution, AdSense loader +
-// Cloudflare Insights injection (nonce'd), Last-Modified, cache headers.
-export function htmlPageResponse(body, env, { status = 200, lastModifiedSec, cacheControl, request } = {}) {
+// Injects CSP nonce substitution, AdSense loader (or consent banner), and
+// Cloudflare Insights beacon into HTML based on request consent and env config.
+// Shared by htmlPageResponse, serveAsset, and any other static/rendered HTML paths.
+export function injectHtml(body, env = {}, request) {
     const nonce = makeNonce();
     let out = body.replaceAll('__CSP_NONCE__', nonce);
 
@@ -161,18 +162,33 @@ export function htmlPageResponse(body, env, { status = 200, lastModifiedSec, cac
     const hasConsent = hasAdsConsent(request);
     const consentDecided = hasConsentCookie(request);
 
-    if (env.ADSENSE_PUBLISHER_ID && (!needsConsent || hasConsent)) {
-        out = out.replace('</head>', `<script async nonce="${nonce}" src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-${env.ADSENSE_PUBLISHER_ID}" crossorigin="anonymous"></script>\n</head>`);
-    } else if (env.ADSENSE_PUBLISHER_ID && needsConsent && !consentDecided) {
+    if (env?.ADSENSE_PUBLISHER_ID && (!needsConsent || hasConsent)) {
+        if (out.includes('</head>')) {
+            out = out.replace('</head>', `<script async nonce="${nonce}" src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-${env.ADSENSE_PUBLISHER_ID}" crossorigin="anonymous"></script>\n</head>`);
+        } else {
+            out = `<script async nonce="${nonce}" src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-${env.ADSENSE_PUBLISHER_ID}" crossorigin="anonymous"></script>\n` + out;
+        }
+    } else if (env?.ADSENSE_PUBLISHER_ID && needsConsent && !consentDecided) {
         if (out.includes('</body>')) {
             out = out.replace('</body>', `${renderConsentBanner(nonce)}\n</body>`);
         } else {
             out += renderConsentBanner(nonce);
         }
     }
-    if (env.CF_ANALYTICS_TOKEN) {
-        out = out.replace('</body>', `<script defer nonce="${nonce}" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"${env.CF_ANALYTICS_TOKEN}"}'></script></body>`);
+    if (env?.CF_ANALYTICS_TOKEN) {
+        if (out.includes('</body>')) {
+            out = out.replace('</body>', `<script defer nonce="${nonce}" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"${env.CF_ANALYTICS_TOKEN}"}'></script></body>`);
+        } else {
+            out += `<script defer nonce="${nonce}" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"${env.CF_ANALYTICS_TOKEN}"}'></script>`;
+        }
     }
+    return { html: out, nonce };
+}
+
+// Serve a server-rendered HTML page: nonce substitution, AdSense loader +
+// Cloudflare Insights injection (nonce'd), Last-Modified, cache headers.
+export function htmlPageResponse(body, env, { status = 200, lastModifiedSec, cacheControl, request } = {}) {
+    const { html: out, nonce } = injectHtml(body, env, request);
     const headers = new Headers({
         'Content-Type': 'text/html;charset=utf-8',
         'Content-Language': 'en',
@@ -206,8 +222,8 @@ export async function serveAsset(request, env, overrideUrl) {
         : 'public, max-age=3600, stale-while-revalidate=604800';
 
     if (contentType.includes('text/html')) {
-        const nonce = makeNonce();
-        const html = (await res.text()).replaceAll('__CSP_NONCE__', nonce);
+        const raw = await res.text();
+        const { html, nonce } = injectHtml(raw, env, request);
         const out = withSecurityHeaders(res, nonce, html);
         out.headers.set('Cache-Control', cacheControl);
         return out;

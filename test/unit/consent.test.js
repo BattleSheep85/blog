@@ -6,7 +6,7 @@ import {
   renderConsentBanner,
   CONSENT_COUNTRIES,
 } from '../../worker/lib/consent.js';
-import { htmlPageResponse } from '../../worker/lib/http-response.js';
+import { htmlPageResponse, injectHtml } from '../../worker/lib/http-response.js';
 
 export async function runConsentTests() {
   const report = { passed: 0, failed: 0, failures: [] };
@@ -67,10 +67,39 @@ export async function runConsentTests() {
   ok('hasConsentCookie true when ads_consent=0', hasConsentCookie({ headers: new Headers({ Cookie: 'ads_consent=0' }) }));
   ok('hasConsentCookie true when ads_consent=1', hasConsentCookie({ headers: new Headers({ Cookie: 'ads_consent=1' }) }));
 
+  // ── injectHtml shared helper ───────────────────────────────────────────────
+  const staticHtml = '<!DOCTYPE html><html><head><script nonce="__CSP_NONCE__">console.log(1)</script></head><body><h1>Home</h1></body></html>';
+  const plainHtml = '<!DOCTYPE html><html><head><title>Plain</title></head><body><h1>No Nonce</h1></body></html>';
+  const envWithAds = { ADSENSE_PUBLISHER_ID: 'pub-test-12345', CF_ANALYTICS_TOKEN: 'cf-tok-99' };
+  const envWithoutAds = {};
+
+  {
+    const reqUS = { cf: { country: 'US' }, headers: new Headers() };
+    const { html, nonce } = injectHtml(staticHtml, envWithAds, reqUS);
+    ok('injectHtml US replaces __CSP_NONCE__', html.includes(`nonce="${nonce}"`));
+    ok('injectHtml US does not contain raw placeholder', !html.includes('__CSP_NONCE__'));
+    ok('injectHtml US injects AdSense script', html.includes('pagead2.googlesyndication.com'));
+    ok('injectHtml US AdSense tag has matching nonce', html.includes(`nonce="${nonce}" src="https://pagead2.googlesyndication.com`));
+    ok('injectHtml US injects CF beacon', html.includes('beacon.min.js') && html.includes('cf-tok-99'));
+    ok('injectHtml US omits banner', !html.includes('id="consent-banner"'));
+  }
+
+  {
+    const reqUS = { cf: { country: 'US' }, headers: new Headers() };
+    const { html, nonce } = injectHtml(plainHtml, envWithAds, reqUS);
+    ok('injectHtml on plain HTML without placeholder gives AdSense matching nonce', html.includes(`nonce="${nonce}" src="https://pagead2.googlesyndication.com`));
+  }
+
+  {
+    const reqDE = { cf: { country: 'DE' }, headers: new Headers() };
+    const { html, nonce } = injectHtml(staticHtml, envWithAds, reqDE);
+    ok('injectHtml DE omits AdSense script', !html.includes('pagead2.googlesyndication.com'));
+    ok('injectHtml DE includes consent banner with matching nonce', html.includes('id="consent-banner"') && html.includes(`<script nonce="${nonce}">`));
+    ok('injectHtml DE includes CF beacon', html.includes('beacon.min.js'));
+  }
+
   // ── htmlPageResponse rendering ─────────────────────────────────────────────
   const testHtml = '<!DOCTYPE html><html><head><title>Test</title></head><body><h1>Hello</h1></body></html>';
-  const envWithAds = { ADSENSE_PUBLISHER_ID: 'pub-test-12345' };
-  const envWithoutAds = {};
 
   // 1. Consent-required visitor without consent cookie:
   // Omits AdSense script, includes banner
