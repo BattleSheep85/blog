@@ -4,7 +4,7 @@
  * /api/search/suggest autocomplete endpoint. Extracted from worker/index.js.
  */
 
-import { htmlPageResponse, maybe304, withSecurityHeaders, notFound, makeNonce, suggestJson } from '../lib/http-response.js';
+import { htmlPageResponse, maybe304, withSecurityHeaders, notFound, suggestJson, injectHtml } from '../lib/http-response.js';
 import { CACHE_VERSION } from '../lib/flags.js';
 import { renderResearchResult } from '../pages/research-page.js';
 import { renderCategoryHub } from '../pages/category.js';
@@ -88,8 +88,7 @@ export async function handleBestHub(slug, request, env) {
     if (asset.status !== 404) {
         const contentType = asset.headers.get('Content-Type') || '';
         if (contentType.includes('text/html')) {
-            const nonce = makeNonce();
-            const html = (await asset.text()).replaceAll('__CSP_NONCE__', nonce);
+            const { html, nonce } = injectHtml(await asset.text(), env, request);
             return withSecurityHeaders(asset, nonce, html);
         }
         return withSecurityHeaders(asset, null);
