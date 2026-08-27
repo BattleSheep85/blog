@@ -116,6 +116,12 @@ describe('index.js routing', () => {
     expect(res.headers.get('Content-Type')).toContain('image/svg+xml');
   });
 
+  it('GET /favicon.ico -> 200 with SVG content type', async () => {
+    const res = await SELF.fetch(`${BASE}/favicon.ico`);
+    expect(res.status).toBe(200);
+    expect(res.headers.get('Content-Type')).toContain('image/svg+xml');
+  });
+
   it('GET /api/research/:id → completed status JSON', async () => {
     const res = await SELF.fetch(`${BASE}/api/research/${completeId}`);
     expect((await res.json()).status).toBe('completed');
