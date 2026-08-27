@@ -3,10 +3,11 @@
 // MONTHLY_BUDGET_USD cap was the only backstop after the per-IP throttle was
 // removed 2026-06-24, so one actor could drain the month and 503 everyone.
 import { env } from 'cloudflare:test';
-import { beforeAll, describe, it, expect } from 'vitest';
+import { beforeAll, describe, it, expect, vi } from 'vitest';
 import { applySchema } from './_schema.js';
 import { handleStartResearch, handleResearchStatus } from '../../worker/handlers/research.js';
 import { checkRateLimit, ipRateKey } from '../../worker/lib/rate-limit.js';
+import { quotaKey } from '../../worker/lib/quota.js';
 import { generateId, insertResearch } from '../../worker/lib/db.js';
 import { canonicalizeQuery } from '../../worker/lib/utils.js';
 import { completeResearch, insertProductV2 } from './_helpers.js';
@@ -191,6 +192,97 @@ describe('handleResearchStatus', () => {
     expect(body.id).toBe(id);
     expect(body.slug).toBe(slug);
     expect(body.status).toBe('completed');
+  });
+});
+
+describe('handleStartResearch: internal auth throttle and quota bypass', () => {
+  it('bypasses rate limit when X-Worker-Secret is valid', async () => {
+    const ip = '203.0.113.150';
+    // Pre-fill rate limit to exhausted
+    const rateKey = await ipRateKey('research', ip, testEnv);
+    for (let i = 0; i < 20; i++) await checkRateLimit(env.KV, rateKey, 20, 3600);
+
+    const res = await handleStartResearch(
+      post('best noise cancelling headphones for flights', ip, { fresh: true }, { 'X-Worker-Secret': SECRET }),
+      testEnv,
+    );
+
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.status).toBe('pending');
+    expect(body.id).toBeTruthy();
+  });
+
+  it('refuses internal requests with 503 when the monthly budget is exhausted', async () => {
+    const ip = '203.0.113.151';
+    const budgetEnv = { ...testEnv, MONTHLY_BUDGET_USD: '0' };
+    const res = await handleStartResearch(
+      post('best budget robotic vacuum cleaner', ip, { fresh: true }, { 'X-Worker-Secret': SECRET }),
+      budgetEnv,
+    );
+
+    expect(res.status).toBe(503);
+    const body = await res.json();
+    expect(body.error).toMatch(/monthly research budget exhausted/i);
+  });
+
+  it('still throttles callers with a wrong secret when rate limit is exceeded', async () => {
+    const ip1 = '203.0.113.152';
+    const rateKey1 = await ipRateKey('research', ip1, testEnv);
+    for (let i = 0; i < 20; i++) await checkRateLimit(env.KV, rateKey1, 20, 3600);
+
+    const resThrottled = await handleStartResearch(
+      post('best lightweight 4k monitor', ip1, { fresh: true }, { 'X-Worker-Secret': 'wrong-secret' }),
+      testEnv,
+    );
+    expect(resThrottled.status).toBe(429);
+    expect(Number(resThrottled.headers.get('Retry-After'))).toBeGreaterThan(0);
+  });
+
+  it('accepts signed-out callers even if legacy search quota in KV is exhausted', async () => {
+    const ip2 = '203.0.113.153';
+    const qKey2 = await quotaKey('search', ip2, testEnv);
+    await env.KV.put(qKey2, '5');
+
+    const resQuotaAccepted = await handleStartResearch(
+      post('best lightweight gaming laptop', ip2, { fresh: true }),
+      testEnv,
+    );
+    expect(resQuotaAccepted.status).toBe(200);
+    const bodyQuota = await resQuotaAccepted.json();
+    expect(bodyQuota.status).toBe('pending');
+    expect(bodyQuota.id).toBeTruthy();
+  });
+
+  it('accepts callers with a wrong secret as public callers when not rate-limited even if legacy quota is exhausted', async () => {
+    const ip3 = '203.0.113.155';
+    const qKey3 = await quotaKey('search', ip3, testEnv);
+    await env.KV.put(qKey3, '5');
+
+    const resWrongSecret = await handleStartResearch(
+      post('best gaming mechanical keyboard', ip3, { fresh: true }, { 'X-Worker-Secret': 'wrong-secret' }),
+      testEnv,
+    );
+    expect(resWrongSecret.status).toBe(200);
+    const bodyWrongSecret = await resWrongSecret.json();
+    expect(bodyWrongSecret.status).toBe('pending');
+    expect(bodyWrongSecret.id).toBeTruthy();
+  });
+
+  it('performs the secret comparison only once per request', async () => {
+    const digestSpy = vi.spyOn(crypto.subtle, 'digest');
+    digestSpy.mockClear();
+
+    const ip = '203.0.113.154';
+    const res = await handleStartResearch(
+      post('best soundbar for home theater with dolby atmos', ip, { forceFresh: true }, { 'X-Worker-Secret': SECRET }),
+      testEnv,
+    );
+    expect(res.status).toBe(200);
+    // timingSafeEqual digests both secret and header once, resulting in exactly 2 digest calls.
+    expect(digestSpy).toHaveBeenCalledTimes(2);
+
+    digestSpy.mockRestore();
   });
 });
 

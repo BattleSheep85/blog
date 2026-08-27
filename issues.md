@@ -7,6 +7,7 @@ Last updated: 2026-08-26
 Findings from a 14-persona board audit plus a live-site sweep of https://chrisputer.tech. All items verified against the code unless marked unverified.
 
 ### Security and spend
+- [ ] HIGH (risk): the signup gate on research is removed by owner decision, so the per-IP hourly cap and the monthly budget cap are now the only spend controls on the paid research pipeline, and a distributed source across many IPs can consume the monthly budget.
 - [x] CRITICAL: POST /api/classify has no rate limit, no burst gate and no budget gate, and it passes canonical=null so the KV cache is skipped, making every anonymous request a paid OpenRouter call the monthly budget governor never sees (worker/index.js:120-136, worker/lib/classifier.js:254-265) (now burst gated, rate limited at 60/hr and cache-keyed via canonicalizeQuery).
 - [x] CRITICAL: five SQL-injection scanner probes became live, indexed, sitemap-listed report pages (paid runs, index pollution), for example /research/best-tax-software-for-self-employed-and-9323-utl-inaddr-get-host-address-chr-113-4g0k1i0o. Intake screening plus canonical clustering both let near-identical payloads through (worker/lib/safety.js, worker/lib/listable.js) (deterministic probe screen in worker/lib/safety.js isProbeQuery, prod rows purged).
 - [x] HIGH: /verify/:slug injects user text into an inline script with JSON.stringify, which does not escape a closing script tag, so a crafted product name breaks out into HTML. The CSP nonce blocks script execution, so the impact is HTML injection, not stored XSS (worker/pages/verify-page.js:221, :307) (jsonForScript in worker/lib/html.js).
@@ -57,7 +58,7 @@ Improvements to query canonicalization, search gathering stability, and research
 - [x] MEDIUM: the recall supplement ran only after gathering, so its grounding gate dropped every leader it was meant to recover (worker/engine/recall-gather.js, 8 reserved searches in worker/engine/engine.js `runEngine`).
 - [x] LOW: repeat runs of the same query gathered disjoint corpora, so top ranks moved between runs (worker/engine/opening-book.js deterministic template searches).
 - [x] LOW: no way for a benchmark harness to force a fresh run (internal-only `forceFresh` on POST /api/research, gated by X-Worker-Secret, worker/lib/worker-auth.js).
-- [ ] LOW: the public `fresh` flag on POST /api/research still bypasses the 14-day cluster cache with no authentication (worker/handlers/research.js). It is behind the burst gate, the 20 per hour per IP velocity cap, the free-tier quota, and the monthly budget governor, so it is a spend-amplifier rather than an open drain, but a public caller can still force paid runs for queries that already have a cached report. Decide whether to keep it for the re-run button or restrict it.
+- [ ] LOW: the public `fresh` flag on POST /api/research still bypasses the 14-day cluster cache with no authentication (worker/handlers/research.js). It is behind the burst gate, the 20 per hour per IP velocity cap, and the monthly budget governor, so it is a spend-amplifier rather than an open drain, but a public caller can still force paid runs for queries that already have a cached report. Decide whether to keep it for the re-run button or restrict it.
 
 ## 2026-08-15: IP-rotating affiliate click fraud, site-wide gate added
 

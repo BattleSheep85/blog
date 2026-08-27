@@ -17,7 +17,6 @@ import { checkRateLimit, ipRateKey } from '../lib/rate-limit.js';
 import { checkBurstGate } from '../lib/burst-gate.js';
 import { getSessionUser, recordUserSearch } from '../lib/auth.js';
 import { apiStatus } from '../lib/status.js';
-import { getQuota, consumeQuota, FREE_SEARCHES } from '../lib/quota.js';
 import { isWorkerAuthed } from '../lib/worker-auth.js';
 
 /**
@@ -53,12 +52,14 @@ export async function handleStartResearch(request, env) {
         return jsonResponse({ error: rejectionMessage(screen.reason), rejected: true, reason: screen.reason }, 422);
     }
 
+    const isInternal = await isWorkerAuthed(request, env);
+
     const normalizedQuery = query.toLowerCase();
     // Optional 'fresh' flag bypasses clustering (re-run buttons); rate
     // limiting below still applies.
     const fresh = !!body.fresh;
     // Internal-only: an external benchmark harness measures run-to-run stability, so it must be able to force a genuinely fresh run. Honored ONLY for callers that present the same X-Worker-Secret used by /api/internal/*; a public caller's forceFresh is ignored.
-    const forceFresh = body.forceFresh === true && (await isWorkerAuthed(request, env));
+    const forceFresh = body.forceFresh === true && isInternal;
     if (forceFresh) console.log('[research] forceFresh honored (internal auth)');
 
     // Sanitize clarifications: map of string→string, keys snake_case <=40 chars,
@@ -119,19 +120,29 @@ export async function handleStartResearch(request, env) {
     // source. It admits at most 10/60s, which serializes traffic enough for the
     // KV window below to count correctly. Burst-blocked requests never touch
     // KV, so they do not consume hourly quota.
+    //
+    // Internal auth bypass: internal callers (such as the GatherBench
+    // benchmark harness) already unlock paid fresh runs with forceFresh.
+    // The rate limit exists to stop anonymous wallet drain. It does not
+    // apply to a secret-holding first-party benchmark. Note that the
+    // monthly budget cap deliberately still applies to prevent silent overspend.
     const clientIp = request.headers.get('CF-Connecting-IP') || 'unknown';
-    const rateKey = await ipRateKey('research', clientIp, env);
-    const burst = await checkBurstGate(env.RL_BURST, rateKey);
-    const velocity = burst.allowed
-        ? await checkRateLimit(env.KV, rateKey, 20, 3600)
-        : burst;
-    if (!velocity.allowed) {
-        const retryAfter = Math.max(1, Math.ceil((velocity.resetAt - Date.now()) / 1000));
-        return jsonResponse(
-            { error: 'Too many new research runs from your connection in the last hour. Please try again shortly.' },
-            429,
-            { 'Retry-After': String(retryAfter) },
-        );
+    if (isInternal) {
+        console.log('[research] throttles bypassed (internal auth)');
+    } else {
+        const rateKey = await ipRateKey('research', clientIp, env);
+        const burst = await checkBurstGate(env.RL_BURST, rateKey);
+        const velocity = burst.allowed
+            ? await checkRateLimit(env.KV, rateKey, 20, 3600)
+            : burst;
+        if (!velocity.allowed) {
+            const retryAfter = Math.max(1, Math.ceil((velocity.resetAt - Date.now()) / 1000));
+            return jsonResponse(
+                { error: 'Too many new research runs from your connection in the last hour. Please try again shortly.' },
+                429,
+                { 'Retry-After': String(retryAfter) },
+            );
+        }
     }
 
     // Monthly budget governor — gate on MAX(KV soft counter, D1 completed-spend)
@@ -141,21 +152,10 @@ export async function handleStartResearch(request, env) {
         return jsonResponse({ error: 'Monthly research budget exhausted — resets at the start of next month.' }, 503);
     }
 
-    // Free-tier gate: signed-out IPs get a lifetime allowance of new (paid)
-    // search runs before a free account is required. Cache/cluster hits
-    // already returned above and never reach this check. Signed-in users are
-    // exempt entirely.
-    if (!sessionUser) {
-        const quota = await getQuota(env.KV, 'search', clientIp, env);
-        if (quota.remaining <= 0) {
-            return jsonResponse({
-                error: 'Free limit reached — create a free account to keep searching.',
-                code: 'signup_required',
-                kind: 'search',
-                limit: FREE_SEARCHES,
-            }, 403);
-        }
-    }
+    // The signup wall is deliberately gone, the per-IP velocity cap plus the shared
+    // monthly budget cap are now the sole protection against a wallet drain, and
+    // lowering or removing either one without a replacement would expose the whole
+    // month of budget to a single actor.
 
     // Create the permanent research row. Slug mirrors Exhaustive's shape:
     // slugify(query) + '-' + first 8 chars of the id.
@@ -172,8 +172,6 @@ export async function handleStartResearch(request, env) {
 
     if (sessionUser) {
         await recordUserSearch(env.DB, sessionUser.id, id, normalizedQuery);
-    } else {
-        await consumeQuota(env.KV, 'search', clientIp, env);
     }
 
     // Enqueue research job (message shape unchanged — queue consumer keys on it).

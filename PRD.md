@@ -257,7 +257,8 @@ User Input
 
 ## Non-Goals (v1)
 
-- ~~User accounts / login~~ — **graduated 2026-06-12**: lightweight
+- ~~User accounts / login~~ — **graduated 2026-06-12**: search is free with
+  no account, and accounts remain for history and verification features. Lightweight
   email/password accounts shipped (PBKDF2 via WebCrypto, zero deps) to power
   per-user search history; still no OAuth, profiles, or social features
 - User-generated reviews (we aggregate, not collect)

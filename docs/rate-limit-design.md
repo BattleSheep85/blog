@@ -37,8 +37,9 @@ Note: `RATE_LIMIT_MAX` and `RATE_LIMIT_WINDOW_SECONDS` in `wrangler.toml`
 1. Monthly budget governor. `budgetExhausted()` in
    `worker/pipeline/orchestrator.js` gates intake on
    MAX(KV `cost:YYYY-MM`, D1 SUM(cost_usd)) against $60.
-2. Anonymous lifetime quota. `worker/lib/quota.js`: 5 searches and 10
-   verifies per IP, forever. Signed-in users are exempt. Also racy
+2. Anonymous lifetime quota. Search is free with no account; accounts remain
+   for history and verification features (verification retains a 10-verify
+   lifetime quota in `worker/lib/quota.js` for signed-out users). Also racy
    (read-then-write, same defect).
 3. Canonical-query clustering. Repeat queries within 14 days return the
    cached page, free and uncounted.
